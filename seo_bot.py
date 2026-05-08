@@ -298,6 +298,13 @@ TOPIC_POOL = [
 ]
 
 
+GLASSES_ROTATION = [
+    "velluto-stradapro-cycling-glasses-nero",
+    "velluto-stradapro-cycling-glasses-viola",
+    "velluto-stradapro-cycling-glasses-espresso",
+    "velluto-stradapro-cycling-glasses-arancia",
+]
+
 def get_unused_topic() -> str:
     used = json.load(open(TOPIC_LOG)) if os.path.exists(TOPIC_LOG) else []
     available = [t for t in TOPIC_POOL if t not in used]
@@ -307,6 +314,16 @@ def get_unused_topic() -> str:
     used.append(topic)
     json.dump(used, open(TOPIC_LOG, "w"), indent=2)
     return topic
+
+
+def get_featured_glasses(products: list[dict]) -> dict | None:
+    """Rotate through the 4 StradaPro colours day by day."""
+    day_index = datetime.date.today().toordinal() % len(GLASSES_ROTATION)
+    target_handle = GLASSES_ROTATION[day_index]
+    for p in products:
+        if p["handle"] == target_handle:
+            return p
+    return next((p for p in products if "stradapro" in p["handle"]), None)
 
 
 # ── Trend search ─────────────────────────────────────────────────────────────
@@ -361,15 +378,14 @@ function vl(l){
 def generate(topic: str, trends: str, ai_images: list[str], products: list[dict]) -> tuple[dict, str]:
 
     img1_url = ai_images[0] if len(ai_images) > 0 else ""
-    img2_url = ai_images[1] if len(ai_images) > 1 else ""
 
     def itag(url, alt):
         return f'<img src="{url}" alt="{alt}" style="max-width:100%;width:100%;border-radius:8px;margin:28px 0;display:block;">' if url else ""
 
-    # Select 1-2 relevant products to feature (prefer glasses)
-    glasses = [p for p in products if "stradapro" in p["handle"] or "visione" in p["handle"] or "puro" in p["handle"]]
-    accessories = [p for p in products if p not in glasses]
-    featured_products = (glasses[:1] + accessories[:1])[:2]
+    # Featured glasses: rotate daily through 4 colours
+    featured_glasses = get_featured_glasses(products)
+    accessories = [p for p in products if "stradapro" not in p["handle"]][:1]
+    featured_products = [p for p in [featured_glasses] + accessories if p][:2]
 
     product_json = json.dumps([{
         "title": p["title"], "url": p["url"], "image": p["image"]
@@ -391,17 +407,15 @@ def generate(topic: str, trends: str, ai_images: list[str], products: list[dict]
     img1_tag_en = itag(img1_url, f"Velluto road cycling glasses — {topic[:40]}")
     img1_tag_nl = itag(img1_url, f"Velluto wielrenbril — {topic[:40]}")
     img1_tag_de = itag(img1_url, f"Velluto Rennradbrille — {topic[:40]}")
-    img2_tag = itag(img2_url, "Velluto cycling glasses lifestyle")
 
     user = f"""Date: {datetime.date.today().strftime('%d %B %Y')} | {get_cycling_context()}
 Topic: {topic}
 Trends: {trends}
 
-LIFESTYLE IMAGES (use EXACT URLs, do not modify):
-Image 1: {img1_url}
-Image 2: {img2_url}
+BLOG IMAGE (use EXACT URL, place after intro paragraph):
+{img1_url}
 
-PRODUCTS TO FEATURE (use EXACT URLs and image URLs, verify links are correct):
+PRODUCTS TO FEATURE (use EXACT URLs and image URLs — do not invent any URLs):
 {product_json}
 
 Write the blog post in 3 complete language versions.
@@ -409,30 +423,31 @@ Each version (550-700 words) must follow this structure:
 
 <h1>[Title in this language — SEO-optimised, includes main keyword]</h1>
 <p>[Engaging intro — hooks with current race season: {get_cycling_context()}]</p>
-{img1_tag_en} ← insert this exact HTML after intro (adapt alt text for NL/DE versions)
+{img1_tag_en} ← EN version: insert this exact HTML tag here
+(for NL use: {img1_tag_nl})
+(for DE use: {img1_tag_de})
 <h2>[Core problem or question cyclists have]</h2>
 <p>[Expert explanation, 2-3 paragraphs]</p>
-{img2_tag} ← insert this exact HTML mid-post
 <h2>[Expert advice: what to look for]</h2>
 <p>[Practical checklist or criteria]</p>
 <h2>[Why Velluto — 1 featured product card]</h2>
-[Insert product card HTML using this template — fill in EXACT values from product JSON above:
+[Insert product card HTML — EXACT values from product JSON:
 <div style="border:2px solid #111;border-radius:8px;padding:20px;margin:24px 0;max-width:340px;">
   <img src="EXACT_PRODUCT_IMAGE_URL" alt="PRODUCT_TITLE" style="max-width:160px;border-radius:6px;margin-bottom:12px;display:block;">
   <strong style="font-size:15px;">PRODUCT_TITLE</strong><br>
   <a href="EXACT_PRODUCT_URL" style="display:inline-block;margin-top:12px;padding:9px 20px;background:#111;color:#fff;text-decoration:none;border-radius:4px;font-weight:700;">SHOP_CTA_IN_THIS_LANGUAGE</a>
 </div>]
-<h2>[FAQ — 3 questions people ask AI chatbots about this topic]</h2>
-<p>[CTA paragraph → https://velluto-shop.com]</p>
+<h2>[FAQ — 3 questions cyclists ask about this topic]</h2>
+<p>[CTA → https://velluto-shop.com]</p>
 
 RETURN ONLY valid JSON (no markdown, no code blocks):
 {{
   "title_en": "SEO title in English, max 60 chars",
   "meta_description": "max 155 chars in English",
-  "tags": "tag1,tag2,cycling glasses,wielrenbril,Rennradbrille,road cycling",
-  "en_html": "complete English HTML as described",
-  "nl_html": "complete Dutch HTML — must be 100% Dutch including all headings and CTA",
-  "de_html": "complete German HTML — must be 100% German including all headings and CTA"
+  "tags": "ENGLISH ONLY tags: tag1,tag2,cycling glasses,road cycling,StradaPro",
+  "en_html": "complete English HTML",
+  "nl_html": "complete Dutch HTML — 100% Dutch including headings and CTA",
+  "de_html": "complete German HTML — 100% German including headings and CTA"
 }}"""
 
     response = client.messages.create(
@@ -531,13 +546,12 @@ def main():
 
     cycling_ctx = get_cycling_context()
 
-    print("🎨 Generating AI images with DALL-E 3...")
+    print("🎨 Generating AI image with DALL-E 3...")
     ai_images = []
-    for shot in ["wide", "detail"]:
-        url = generate_and_upload_image(topic, cycling_ctx, shot)
-        if url:
-            ai_images.append(url)
-    print(f"   {len(ai_images)} AI images ready")
+    url = generate_and_upload_image(topic, cycling_ctx, "wide")
+    if url:
+        ai_images.append(url)
+    print(f"   {len(ai_images)} AI image ready")
 
     print("✍️  Generating content...")
     post, featured_url = generate(topic, trends, ai_images, products)
