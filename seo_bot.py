@@ -313,8 +313,17 @@ def generate(topic: str, trends: str, ai_images: list[str], products: list[dict]
 
     img1_url = ai_images[0] if len(ai_images) > 0 else ""
 
+    IMG_W, IMG_H = 1200, 800  # fixed cover size for all posts
+
+    def sized_url(url):
+        sep = "&" if "?" in url else "?"
+        return f"{url}{sep}width={IMG_W}&height={IMG_H}&crop=center"
+
     def itag(url, alt):
-        return f'<img src="{url}" alt="{alt}" style="max-width:100%;width:100%;border-radius:8px;margin:28px 0;display:block;">' if url else ""
+        if not url: return ""
+        return (f'<img src="{sized_url(url)}" alt="{alt}" '
+                f'style="width:100%;height:{IMG_H}px;object-fit:cover;'
+                f'border-radius:8px;margin:28px 0;display:block;">')
 
     # Featured glasses: rotate daily through 4 colours
     featured_glasses = get_featured_glasses(products)
@@ -346,42 +355,44 @@ def generate(topic: str, trends: str, ai_images: list[str], products: list[dict]
 Topic: {topic}
 Trends: {trends}
 
-BLOG IMAGE (use EXACT URL, place after intro paragraph):
-{img1_url}
+KEYWORD STRATEGY — pick ONE long-tail keyword (3-5 words, low-medium competition, buyer intent).
+Use it naturally in: H1, opening paragraph, one H2, meta description. Max 4 uses total. No stuffing.
 
-PRODUCTS TO FEATURE (use EXACT URLs and image URLs — do not invent any URLs):
+BLOG IMAGE — insert the EXACT tag below after the intro paragraph:
+EN: {img1_tag_en}
+NL: {img1_tag_nl}
+DE: {img1_tag_de}
+
+PRODUCTS (EXACT URLs only — never invent):
 {product_json}
 
-Write the blog post in 3 complete language versions.
-Each version (550-700 words) must follow this structure:
+Write 3 language versions (550-700 words each):
 
-<h1>[Title in this language — SEO-optimised, includes main keyword]</h1>
-<p>[Engaging intro — hooks with current race season: {get_cycling_context()}]</p>
-{img1_tag_en} ← EN version: insert this exact HTML tag here
-(for NL use: {img1_tag_nl})
-(for DE use: {img1_tag_de})
-<h2>[Core problem or question cyclists have]</h2>
-<p>[Expert explanation, 2-3 paragraphs]</p>
-<h2>[Expert advice: what to look for]</h2>
-<p>[Practical checklist or criteria]</p>
-<h2>[Why Velluto — 1 featured product card]</h2>
-[Insert product card HTML — EXACT values from product JSON:
+<h1>[Contains long-tail keyword naturally]</h1>
+<p>[Intro — {get_cycling_context()} hook, keyword appears here]</p>
+[image tag for this language]
+<h2>[Core cyclist problem]</h2>
+<p>[2-3 expert paragraphs]</p>
+<h2>[What to look for — practical checklist]</h2>
+<h2>[Why Velluto]</h2>
+[Product card:
 <div style="border:2px solid #111;border-radius:8px;padding:20px;margin:24px 0;max-width:340px;">
-  <img src="EXACT_PRODUCT_IMAGE_URL" alt="PRODUCT_TITLE" style="max-width:160px;border-radius:6px;margin-bottom:12px;display:block;">
+  <img src="PRODUCT_IMAGE_URL" alt="PRODUCT_TITLE" style="max-width:160px;border-radius:6px;margin-bottom:12px;display:block;">
   <strong style="font-size:15px;">PRODUCT_TITLE</strong><br>
-  <a href="EXACT_PRODUCT_URL" style="display:inline-block;margin-top:12px;padding:9px 20px;background:#111;color:#fff;text-decoration:none;border-radius:4px;font-weight:700;">SHOP_CTA_IN_THIS_LANGUAGE</a>
+  <a href="PRODUCT_URL" style="display:inline-block;margin-top:12px;padding:9px 20px;background:#111;color:#fff;text-decoration:none;border-radius:4px;font-weight:700;">CTA</a>
 </div>]
-<h2>[FAQ — 3 questions cyclists ask about this topic]</h2>
+<h2>[FAQ — 3 questions]</h2>
 <p>[CTA → https://velluto-shop.com]</p>
 
-RETURN ONLY valid JSON (no markdown, no code blocks):
+RETURN ONLY valid JSON:
 {{
-  "title_en": "SEO title in English, max 60 chars",
-  "meta_description": "max 155 chars in English",
-  "tags": "ENGLISH ONLY tags: tag1,tag2,cycling glasses,road cycling,StradaPro",
+  "keyword": "chosen long-tail keyword",
+  "title_en": "max 60 chars, contains keyword",
+  "meta_description": "max 155 chars English, contains keyword",
+  "tags": "ENGLISH ONLY: keyword,cycling glasses,road cycling,Velluto StradaPro",
   "en_html": "complete English HTML",
-  "nl_html": "complete Dutch HTML — 100% Dutch including headings and CTA",
-  "de_html": "complete German HTML — 100% German including headings and CTA"
+  "nl_html": "complete Dutch HTML — 100% Dutch",
+  "de_html": "complete German HTML — 100% German"
 }}"""
 
     response = client.messages.create(
@@ -399,6 +410,7 @@ RETURN ONLY valid JSON (no markdown, no code blocks):
         if raw.startswith("json"): raw = raw[4:]
 
     post = json.loads(raw)
+    print(f"   Keyword: {post.get('keyword', '—')}")
     return post, img1_url
 
 
@@ -449,7 +461,8 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
                         "type": "single_line_text_field", "namespace": "global"}]
     }}
     if featured_url:
-        payload["article"]["image"] = {"src": featured_url}
+        sep = "&" if "?" in featured_url else "?"
+        payload["article"]["image"] = {"src": f"{featured_url}{sep}width=1200&height=800&crop=center"}
 
     r = requests.post(
         f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json",
