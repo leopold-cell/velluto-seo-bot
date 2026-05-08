@@ -22,6 +22,74 @@ TOPIC_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_use
 SHOPIFY_HEADERS = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 
 
+# ── Verified brand facts (updated from Shopify product data) ─────────────────
+# NEVER write anything that contradicts these facts.
+BRAND_FACTS = """
+VELLUTO — VERIFIED PRODUCT FACTS (do not deviate from these):
+
+STRADAPRO GLASSES (available in 4 colours: Arancia/orange, Espresso/brown, Nero/black, Viola/purple):
+- Italian design, high-performance functionality
+- UV400 protection — certified eye safety, blocks 100% UVA and UVB
+- Ultra-lightweight: 25 grams
+- Adjustable nose pads — secure fit, zero pressure on long rides
+- Built-in anti-fog system — clear vision on climbs and in variable weather
+- Compatible with VellutoPuro and VellutoVisione interchangeable lenses (click-in, tool-free)
+- 30-day risk-free trial — test on real rides
+- Free shipping on orders over €99
+
+VellutoPuro TRANSPARENT LENS:
+- Optimised for road cyclists: ideal protection against wind and insects
+- UV400 certified — 100% UVA and UVB protection
+- Anti-fog performance
+- Click-in system: fast, secure, tool-free lens swap
+- 100% compatible with Velluto StradaPro
+
+VellutoVisione™ HIGH CONTRAST LENS:
+- VellutoVisione™ technology: instantly sharpens contrast and visual definition
+- UV400 certified protection
+- Click-in system: lens swap in seconds
+- 100% compatible with Velluto StradaPro
+
+ACCESSORIES:
+- Hard Case: anti-crash guarantee, fits all road cycling glasses, luxurious velvet finish
+- Microfiber Cleaning Cloth: 25×25cm, 80% polyester / 20% polyamide
+- Cleaning Spray: 50ml, apple fragrance, refillable, made in Germany
+- TACX Bidon (Limited Edition): 500ml, dishwasher safe up to 40°C, made in Netherlands
+
+WHAT VELLUTO DOES NOT OFFER — NEVER WRITE THESE:
+✗ Photochromic / self-tinting lenses
+✗ Polarized lenses
+✗ Prescription lenses / optical inserts
+✗ Mirrored lenses (not mentioned in product range)
+✗ Multiple lens tints beyond Puro (clear) and Visione (high contrast)
+"""
+
+# ── Ogilvy & Schwartz copywriting principles ─────────────────────────────────
+COPY_PRINCIPLES = """
+COPYWRITING PRINCIPLES (David Ogilvy + Eugene Schwartz):
+
+OGILVY:
+1. The headline must promise a specific, desirable benefit — not cleverness.
+2. Be concrete and specific. "25 grams" beats "ultra-light". Specificity builds trust.
+3. Write to one real person, not a crowd.
+4. Never use superlatives without proof ("best", "number one" — back it up or cut it).
+5. Testimonials and social proof convert. Weave in cyclist scenarios, not abstract claims.
+6. The opening paragraph must pull the reader in. If it's boring, they're gone.
+
+SCHWARTZ:
+1. You don't create desire — you channel mass desire that already exists.
+   Cyclists already want: to go faster, suffer less, see better, look good on the bike.
+2. Match awareness level: these readers KNOW cycling glasses exist. They're deciding WHICH and WHY.
+3. Build desire progressively — each paragraph deepens the want before the sell.
+4. The product must feel inevitable by the time the CTA arrives.
+5. Stack specific proof: weight, UV rating, anti-fog tech — specifics create belief.
+
+RESULT: Every post must feel like advice from a faster, more experienced cycling friend
+— not a sales pitch. The product mention should feel like a natural recommendation,
+not an interruption.
+"""
+
+
 # ── Token tracking ───────────────────────────────────────────────────────────
 
 def log_usage(inp: int, out: int) -> float:
@@ -214,21 +282,27 @@ def get_cycling_context() -> str:
 
 
 TOPIC_POOL = [
-    "photochromic cycling glasses vs regular lenses — when to use which",
-    "why cyclists should not use polarized sunglasses on the road",
-    "best cycling glasses for low light and overcast weather",
-    "how to choose cycling glasses for your face shape",
-    "cycling glasses that don't fog up — tips and features to look for",
+    # Awareness / educational — no false product claims possible
+    "why UV400 protection matters for road cyclists",
+    "how anti-fog cycling glasses work — what to look for",
     "interchangeable lens cycling glasses — are they worth it",
-    "how to clean cycling glasses properly without scratching lenses",
-    "UV400 protection in cycling glasses — what it means and why it matters",
-    "best cycling glasses for long climbs with changing light conditions",
+    "how to choose cycling glasses for your face shape",
     "cycling glasses for wind and rain — what to look for",
-    "lens categories 0-3 explained for cyclists",
-    "gravel cycling glasses vs road cycling glasses — what's the difference",
+    "lens categories 0-3 explained for road cyclists",
+    "gravel cycling glasses vs road cycling glasses — key differences",
     "how cycling glasses protect against insects, debris and UV",
-    "best cycling glasses for the Giro and Tour stage types",
-    "high contrast lenses for cycling — what they do and when you need them",
+    "best cycling glasses for long climbs with changing light",
+    "why lightweight cycling glasses matter on long rides",
+    "how to clean cycling glasses properly without scratching lenses",
+    "high contrast lenses for cycling — when you need them",
+    "cycling glasses fit guide — adjustable nose pads and frame sizing",
+    "best cycling glasses for the Giro and Tour stage conditions",
+    "cycling glasses for low light and overcast Dutch weather",
+    "what makes road cycling glasses different from regular sunglasses",
+    "how to prevent cycling glasses from fogging on cold climbs",
+    "clear lens cycling glasses — when and why to use them",
+    "the best cycling glasses under €150 in 2026",
+    "cycling eye protection — why glasses are non-negotiable equipment",
 ]
 
 
@@ -334,18 +408,21 @@ def generate(topic: str, trends: str, ai_images: list[str], products: list[dict]
         "title": p["title"], "url": p["url"], "image": p["image"]
     } for p in featured_products], indent=2)
 
-    system = (
-        "You are the SEO content manager for Velluto (velluto-shop.com), "
-        "a premium Dutch road cycling eyewear brand. "
-        "Voice: expert cyclist, passionate, premium Dolce Vita lifestyle. "
-        "Natural writing — no keyword stuffing. Deep knowledge of Dutch cycling culture and races. "
-        "CRITICAL RULES: "
-        "1. Every language version must be 100% consistent in that language — no mixed words. "
-        "2. Each language block must start with a full H1 title in that language. "
-        "3. Only link to products using the exact URLs provided — never invent URLs. "
-        "4. Include product images using the exact image URLs provided. "
-        "5. Use ONLY the lifestyle image URLs provided — do not invent image URLs."
-    )
+    system = f"""You are the SEO content manager and lead copywriter for Velluto (velluto-shop.com), \
+a premium Dutch road cycling eyewear brand.
+
+{BRAND_FACTS}
+
+{COPY_PRINCIPLES}
+
+WRITING RULES:
+1. Every language version must be 100% in that language — no mixed words (brand names Velluto/StradaPro are OK).
+2. Each language block starts with a full H1 in that language.
+3. Only link to products using the EXACT URLs provided — never invent URLs.
+4. Use ONLY the image URLs provided — never invent image URLs.
+5. Before writing a single claim about Velluto products, verify it against BRAND_FACTS above.
+6. If a topic implies a feature Velluto doesn't have (e.g. photochromic, polarized), \
+   reframe honestly: explain the category, then show how Velluto's actual lenses (Puro/Visione) solve the need."""
 
     img1_tag_en = itag(img1_url, f"Velluto road cycling glasses — {topic[:40]}")
     img1_tag_nl = itag(img1_url, f"Velluto wielrenbril — {topic[:40]}")
@@ -416,15 +493,29 @@ RETURN ONLY valid JSON:
 
 # ── Quality validation ───────────────────────────────────────────────────────
 
+FORBIDDEN_CLAIMS = [
+    (r'photochrom', "claims photochromic lenses — Velluto doesn't offer these"),
+    (r'polari[sz]', "claims polarized lenses — Velluto doesn't offer these"),
+    (r'prescription|op(tic|tisch)', "claims prescription lenses — not in range"),
+    (r'mirror(ed)?(\s+lens)?', "claims mirrored lenses — not in range"),
+    (r'tinted?\s+lens', "claims tinted lens beyond Puro/Visione — verify"),
+]
+
 def validate(post: dict, products: list[dict]) -> list[str]:
     """Return list of quality issues found."""
     issues = []
     allowed_urls = {p["url"] for p in products} | {"https://velluto-shop.com"}
+    all_html = " ".join(post.get(f"{l}_html", "") for l in ["en", "nl", "de"])
+
+    # ── Brand fact-check ──────────────────────────────────────────────────────
+    for pattern, msg in FORBIDDEN_CLAIMS:
+        if re.search(pattern, all_html, re.IGNORECASE):
+            issues.append(f"[FACT] Post {msg}")
 
     for lang in ["en", "nl", "de"]:
         html = post.get(f"{lang}_html", "")
 
-        # Check language consistency (rough heuristic)
+        # Check language consistency (rough heuristic — brand names are OK)
         if lang == "nl" and re.search(r'\b(the|and|for|with|your)\b', html):
             issues.append(f"[{lang}] May contain English words in Dutch version")
         if lang == "de" and re.search(r'\b(the|and|for|with)\b', html):
@@ -436,7 +527,7 @@ def validate(post: dict, products: list[dict]) -> list[str]:
             if not any(href.startswith(base) for base in allowed_urls):
                 issues.append(f"[{lang}] Unrecognised link: {href}")
 
-        # Check no invented image URLs (must contain cdn.shopify.com)
+        # Check no invented image URLs
         img_srcs = re.findall(r'<img[^>]+src="(https?://[^"]+)"', html)
         for src in img_srcs:
             if "cdn.shopify.com" not in src:
@@ -501,14 +592,23 @@ def main():
     post, featured_url = generate(topic, trends, ai_images, products)
 
     print("🔍 Quality check...")
-    issues = validate(post, products)
-    if issues:
-        print("   ⚠️  Issues found:")
-        for iss in issues:
-            print(f"      - {iss}")
-        print("   Proceeding with caution — review the post manually.")
-    else:
-        print("   ✅ All checks passed")
+    for attempt in range(2):
+        issues = validate(post, products)
+        fact_issues = [i for i in issues if i.startswith("[FACT]")]
+        other_issues = [i for i in issues if not i.startswith("[FACT]")]
+
+        if fact_issues and attempt == 0:
+            print(f"   ✗ Brand fact violation — regenerating ({', '.join(fact_issues)})")
+            post, featured_url = generate(topic, trends, ai_images, products)
+            continue
+
+        if issues:
+            print("   ⚠️  Minor issues:")
+            for iss in other_issues:
+                print(f"      - {iss}")
+        else:
+            print("   ✅ All checks passed")
+        break
 
     body_html = build_article_html(post["en_html"], post["nl_html"], post["de_html"])
 
