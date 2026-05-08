@@ -4,9 +4,8 @@ Velluto SEO Bot — Daily blog automation
 Quality-first: validates images, links, and language consistency before publishing.
 """
 
-import os, json, datetime, random, re, requests, time, urllib.parse
+import os, json, datetime, random, re, requests
 from anthropic import Anthropic
-from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
@@ -16,8 +15,7 @@ SHOPIFY_STORE = os.getenv("SHOPIFY_STORE", "velluto-brand.myshopify.com")
 BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 API_KEY       = os.getenv("ANTHROPIC_API_KEY")
 
-client       = Anthropic(api_key=API_KEY)
-openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = Anthropic(api_key=API_KEY)
 USAGE_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token_usage.json")
 TOPIC_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_used.json")
 
@@ -57,143 +55,79 @@ def graphql(query: str) -> dict:
 
 # ── AI image generation ──────────────────────────────────────────────────────
 
-# Velluto brand style — appended to every image prompt for visual consistency
-BRAND_STYLE = (
-    "RAW photo, shot on Sony A7R V with 85mm f/1.4 lens, "
-    "real photograph, ultra-realistic, 8K UHD, photojournalism quality, "
-    "natural golden hour sunlight, shallow depth of field, "
-    "sharp focus on subject, realistic skin and material textures, "
-    "muted warm film tones, premium Italian cycling lifestyle. "
-    "Must look like a real published magazine photograph — "
-    "no CGI, no illustration, no AI artefacts, no text, no logos, no watermarks."
-)
+# ── Approved image whitelist ─────────────────────────────────────────────────
+# Keyed by filename (without extension) for Claude to match against topic.
+WHITELIST = {
+    "brown1":                    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/brown1.webp?v=1776868549",
+    "002":                       "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/002.webp?v=1776868548",
+    "004":                       "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/004_1462e923-4e9b-497f-a0a0-0f58cb98b84a.webp?v=1776868548",
+    "003":                       "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/003.webp?v=1776868548",
+    "Rick_Arancia":              "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Rick_Arancia.webp?v=1776855699",
+    "Review_19":                 "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_19.webp?v=1776854998",
+    "Review_18":                 "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_18.jpg?v=1776852440",
+    "visioneexplained":          "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/visioneexplained.webp?v=1776851525",
+    "purplestats":               "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/purplestats.webp?v=1776851523",
+    "offerpurple":               "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/offerpurple.webp?v=1776851522",
+    "Review_16":                 "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_16.webp?v=1776851056",
+    "Review_17":                 "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_17.webp?v=1776851053",
+    "Review_12":                 "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_12.webp?v=1776851049",
+    "Review_6":                  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_6.webp?v=1776851050",
+    "Review_7":                  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_7.webp?v=1776851050",
+    "Review_10":                 "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_10.webp?v=1776851050",
+    "Review_5":                  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_5.webp?v=1776851050",
+    "Review_3":                  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_3.webp?v=1776851050",
+    "Review_9":                  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_9.webp?v=1776851049",
+    "Review_13":                 "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_13.webp?v=1776851048",
+    "Review_4":                  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_4.webp?v=1776851048",
+    "Review_1":                  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_1.webp?v=1776851050",
+    "Review_2":                  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_2.webp?v=1776851048",
+    "Review_14":                 "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_14.webp?v=1776851049",
+    "testimonialmob7":           "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/testimonialmob7.webp?v=1776794573",
+    "image00012":                "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/image00012.jpg?v=1776695290",
+    "Hero-mobile-v2":            "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Hero-mobile-v2.webp?v=1776419818",
+    "Hero-mobile":               "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Hero-mobile.webp?v=1776355362",
+    "Lifestyle_1x1":             "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestyle_1x1_fe573806-27fe-4b9d-8be3-be91c2f1aadb.webp?v=1775581088",
+    "TransparentMale":           "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/TransparentMale.webp?v=1775574512",
+    "productbrown":              "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productbrown.webp?v=1776792355",
+    "productorange":             "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productorange.webp?v=1776792409",
+    "productblack":              "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productblack.webp?v=1776792135",
+    "productblackmale":          "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productblackmale.webp?v=1776792135",
+    "productorangemale":         "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productorangemale.webp?v=1776792409",
+    "productbrownfemale":        "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productbrownfemale.webp?v=1776792355",
+    "VellutoModelMale002":       "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/VellutoModelMale002.webp?v=1775213817",
+    "FooterExportsPeople":       "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/FooterExportsPeople.webp?v=1775212054",
+    "Lifestylestudiomobile":     "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestylestudiomobile.webp?v=1775138516",
+    "Lifestyle_mobileUGC":       "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestyle_mobileUGC.webp?v=1775138102",
+    "FooterExports_Female":      "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/FooterExports_Female.webp?v=1775138042",
+    "BuildtoPerform":            "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/BuildtoPerformEditedv2Mobile.webp?v=1775081368",
+    "VellutoAboutUs":            "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/VellutoAboutUs.webp?v=1775037042",
+    "AllGlasses":                "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/AllGlasses.webp?v=1774979597",
+    "LifestyleSection_Transparent": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Transparent.webp?v=1774975640",
+    "LifestyleSection_Orange":   "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Orange.webp?v=1774975205",
+    "Velluto_BuilttoPerform_Violet": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Velluto_BuilttoPerform_Mobile_Violet.webp?v=1774970814",
+}
 
-def build_image_prompt(topic: str, cycling_context: str, shot: str = "wide") -> str:
-    """Ask Claude to write a vivid DALL-E 3 subject prompt; brand style is appended separately."""
-    shot_desc = (
-        "wide editorial shot: road cyclist in scenic Italian or Dutch landscape, wearing sunglasses"
-        if shot == "wide" else
-        "tight close-up detail: premium cycling sunglasses on a surface or being held, beautiful light"
-    )
+# Images that should NOT be used as blog hero (stats, offers, UI graphics)
+_EXCLUDE_AS_HERO = {"purplestats", "offerpurple", "visioneexplained"}
+HERO_WHITELIST = {k: v for k, v in WHITELIST.items() if k not in _EXCLUDE_AS_HERO}
+
+
+def pick_image(topic: str) -> str:
+    """Ask Claude to pick the single most relevant image key from the whitelist."""
+    keys = list(HERO_WHITELIST.keys())
     r = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=120,
+        max_tokens=20,
         messages=[{"role": "user", "content":
-            f"Write a subject description (max 30 words) for a DALL-E 3 image. "
-            f"Blog topic: '{topic}'. Season: {cycling_context}. Shot: {shot_desc}. "
-            f"Describe only the subject and scene — no style words. Return ONLY the description."}]
+            f"Blog topic: '{topic}'.\n"
+            f"Available image filenames: {keys}\n"
+            f"Return ONLY the single most thematically relevant filename key. No explanation."}]
     )
     log_usage(r.usage.input_tokens, r.usage.output_tokens)
-    subject = r.content[0].text.strip().strip('"')
-    return f"{subject}. {BRAND_STYLE}"
-
-
-def generate_and_upload_image(topic: str, cycling_context: str, shot: str = "wide") -> str | None:
-    """Generate an image via DALL-E 3 and upload it to Shopify CDN."""
-    prompt = build_image_prompt(topic, cycling_context, shot)
-    print(f"   Prompt: {prompt[:90]}")
-
-    print("   Generating with DALL-E 3...")
-    try:
-        try:
-            # Try gpt-image-1 first (most realistic, requires model access)
-            import base64
-            response = openai_client.images.generate(
-                model="gpt-image-1",
-                prompt=prompt,
-                size="1024x1024",
-                quality="high",
-                n=1,
-            )
-            img_bytes = base64.b64decode(response.data[0].b64_json)
-        except Exception:
-            # Fallback to DALL-E 3
-            response = openai_client.images.generate(
-                model="dall-e-3",
-                prompt=prompt,
-                size="1024x1024",
-                quality="hd",
-                n=1,
-            )
-            img_resp = requests.get(response.data[0].url, timeout=30)
-            img_bytes = img_resp.content
-        return upload_image_to_shopify(img_bytes, prompt[:50])
-    except Exception as e:
-        print(f"   ✗ DALL-E 3 error: {e}")
-        return None
-
-
-
-def upload_image_to_shopify(image_bytes: bytes, label: str) -> str | None:
-    """Upload raw image bytes to Shopify CDN using staged upload."""
-    # Step 1: request a staged upload target
-    stage_query = """
-    mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
-      stagedUploadsCreate(input: $input) {
-        stagedTargets {
-          url
-          resourceUrl
-          parameters { name value }
-        }
-        userErrors { field message }
-      }
-    }"""
-    variables = {"input": [{"filename": "blog-ai-image.jpg", "mimeType": "image/jpeg",
-                             "fileSize": str(len(image_bytes)), "resource": "IMAGE",
-                             "httpMethod": "POST"}]}
-    data = graphql_with_vars(stage_query, variables)
-    targets = data.get("stagedUploadsCreate", {}).get("stagedTargets", [])
-    if not targets:
-        print("   ✗ Staged upload target failed")
-        return None
-
-    target = targets[0]
-    upload_url = target["url"]
-    resource_url = target["resourceUrl"]
-    params = {p["name"]: p["value"] for p in target["parameters"]}
-
-    # Step 2: POST image to the S3/GCS target
-    files = {"file": ("blog-ai-image.jpg", image_bytes, "image/jpeg")}
-    upload_resp = requests.post(upload_url, data=params, files=files, timeout=30)
-    if upload_resp.status_code not in (200, 201, 204):
-        print(f"   ✗ Upload to storage failed: {upload_resp.status_code}")
-        return None
-
-    # Step 3: register the file in Shopify
-    create_query = """
-    mutation fileCreate($files: [FileCreateInput!]!) {
-      fileCreate(files: $files) {
-        files { id fileStatus ... on MediaImage { image { url } } }
-        userErrors { field message }
-      }
-    }"""
-    create_vars = {"files": [{"originalSource": resource_url, "contentType": "IMAGE",
-                               "alt": f"Velluto cycling glasses — {label}"}]}
-    create_data = graphql_with_vars(create_query, create_vars)
-    files_created = create_data.get("fileCreate", {}).get("files", [])
-    if not files_created:
-        print("   ✗ File registration failed")
-        return None
-
-    # Poll until file is READY (Shopify processes async)
-    file_id = files_created[0]["id"]
-    for _ in range(10):
-        time.sleep(3)
-        poll = graphql(f'{{ node(id: "{file_id}") {{ ... on MediaImage {{ image {{ url }} fileStatus }} }} }}')
-        node = poll.get("node", {})
-        if node.get("fileStatus") == "READY":
-            url = node.get("image", {}).get("url", "")
-            print(f"   ✓ AI image on CDN: ...{url[-40:]}")
-            return url
-    print("   ✗ Image processing timed out")
-    return None
-
-
-def graphql_with_vars(query: str, variables: dict) -> dict:
-    r = requests.post(f"https://{SHOPIFY_STORE}/admin/api/2024-01/graphql.json",
-                      headers=SHOPIFY_HEADERS,
-                      json={"query": query, "variables": variables}, timeout=30)
-    return r.json().get("data", {})
+    key = r.content[0].text.strip().strip('"').strip("'")
+    url = HERO_WHITELIST.get(key) or random.choice(list(HERO_WHITELIST.values()))
+    print(f"   Image: {key}")
+    return url
 
 
 # Only active products, only cycling glasses + relevant accessories
@@ -546,12 +480,9 @@ def main():
 
     cycling_ctx = get_cycling_context()
 
-    print("🎨 Generating AI image with DALL-E 3...")
-    ai_images = []
-    url = generate_and_upload_image(topic, cycling_ctx, "wide")
-    if url:
-        ai_images.append(url)
-    print(f"   {len(ai_images)} AI image ready")
+    print("🖼️  Selecting image from whitelist...")
+    img_url = pick_image(topic)
+    ai_images = [img_url] if img_url else []
 
     print("✍️  Generating content...")
     post, featured_url = generate(topic, trends, ai_images, products)
