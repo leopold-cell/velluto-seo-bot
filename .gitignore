@@ -1,0 +1,6 @@
+.env
+token_usage.json
+topics_used.json
+cron.log
+__pycache__/
+*.pyc
