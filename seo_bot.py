@@ -16,8 +16,9 @@ BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 API_KEY       = os.getenv("ANTHROPIC_API_KEY")
 
 client = Anthropic(api_key=API_KEY)
-USAGE_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token_usage.json")
-TOPIC_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_used.json")
+USAGE_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token_usage.json")
+TOPIC_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_used.json")
+IMAGES_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images_used.json")
 
 SHOPIFY_HEADERS = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 
@@ -187,22 +188,19 @@ _EXCLUDE_AS_HERO = {"purplestats", "offerpurple", "visioneexplained"}
 HERO_WHITELIST = {k: v for k, v in WHITELIST.items() if k not in _EXCLUDE_AS_HERO}
 
 
-def pick_image(topic: str) -> str:
-    """Ask Claude to pick the single most relevant image key from the whitelist."""
-    keys = list(HERO_WHITELIST.keys())
-    r = client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=20,
-        messages=[{"role": "user", "content":
-            f"Blog topic: '{topic}'.\n"
-            f"Available image filenames: {keys}\n"
-            f"Return ONLY the single most thematically relevant filename key. No explanation."}]
-    )
-    log_usage(r.usage.input_tokens, r.usage.output_tokens, model="claude-haiku-4-5-20251001")
-    key = r.content[0].text.strip().strip('"').strip("'")
-    url = HERO_WHITELIST.get(key) or random.choice(list(HERO_WHITELIST.values()))
-    print(f"   Image: {key}")
-    return url
+def pick_image() -> str:
+    """Rotate through HERO_WHITELIST shuffled, resetting only when all have been used."""
+    used  = json.load(open(IMAGES_LOG)) if os.path.exists(IMAGES_LOG) else []
+    pool  = list(HERO_WHITELIST.keys())
+    avail = [k for k in pool if k not in used]
+    if not avail:
+        used, avail = [], pool[:]
+    # Pick randomly from the unused half to avoid long streaks of similar shots
+    key = random.choice(avail)
+    used.append(key)
+    json.dump(used, open(IMAGES_LOG, "w"), indent=2)
+    print(f"   Cover image: {key}")
+    return HERO_WHITELIST[key]
 
 
 # Only active products, only cycling glasses + relevant accessories
@@ -390,21 +388,7 @@ function vl(l){
 
 # ── Content generation ───────────────────────────────────────────────────────
 
-def generate(topic: str, trends: str, ai_images: list[str], products: list[dict]) -> tuple[dict, str]:
-
-    img1_url = ai_images[0] if len(ai_images) > 0 else ""
-
-    IMG_W, IMG_H = 1200, 800  # fixed cover size for all posts
-
-    def sized_url(url):
-        sep = "&" if "?" in url else "?"
-        return f"{url}{sep}width={IMG_W}&height={IMG_H}&crop=center"
-
-    def itag(url, alt):
-        if not url: return ""
-        return (f'<img src="{sized_url(url)}" alt="{alt}" '
-                f'style="width:100%;height:{IMG_H}px;object-fit:cover;'
-                f'border-radius:8px;margin:28px 0;display:block;">')
+def generate(topic: str, trends: str, cover_url: str, products: list[dict]) -> tuple[dict, str]:
 
     # Featured glasses: rotate daily through 4 colours
     featured_glasses = get_featured_glasses(products)
@@ -431,10 +415,6 @@ WRITING RULES:
 6. If a topic implies a feature Velluto doesn't have (e.g. photochromic, polarized), \
    reframe honestly: explain the category, then show how Velluto's actual lenses (Puro/Visione) solve the need."""
 
-    img1_tag_en = itag(img1_url, f"Velluto road cycling glasses — {topic[:40]}")
-    img1_tag_nl = itag(img1_url, f"Velluto wielrenbril — {topic[:40]}")
-    img1_tag_de = itag(img1_url, f"Velluto Rennradbrille — {topic[:40]}")
-
     user = f"""Date: {datetime.date.today().strftime('%d %B %Y')} | {get_cycling_context()}
 Topic: {topic}
 Trends: {trends}
@@ -442,10 +422,8 @@ Trends: {trends}
 KEYWORD STRATEGY — pick ONE long-tail keyword (3-5 words, low-medium competition, buyer intent).
 Use it naturally in: H1, opening paragraph, one H2, meta description. Max 4 uses total. No stuffing.
 
-BLOG IMAGE — insert the EXACT tag below after the intro paragraph:
-EN: {img1_tag_en}
-NL: {img1_tag_nl}
-DE: {img1_tag_de}
+NO IMAGES in the body. The cover image is set separately. Do not write any <img> tags.
+Use hyperlinks and product cards only for visual product integration.
 
 PRODUCTS (EXACT URLs only — never invent):
 {product_json}
@@ -454,7 +432,6 @@ Write 3 language versions (550-700 words each):
 
 <h1>[Contains long-tail keyword naturally]</h1>
 <p>[Intro — {get_cycling_context()} hook, keyword appears here]</p>
-[image tag for this language]
 <h2>[Core cyclist problem]</h2>
 <p>[2-3 expert paragraphs]</p>
 <h2>[What to look for — practical checklist]</h2>
@@ -496,7 +473,7 @@ RETURN ONLY valid JSON:
 
     post = json.loads(raw)
     print(f"   Keyword: {post.get('keyword', '—')}")
-    return post, img1_url
+    return post
 
 
 # ── Quality validation ───────────────────────────────────────────────────────
@@ -535,11 +512,9 @@ def validate(post: dict, products: list[dict]) -> list[str]:
             if not any(href.startswith(base) for base in allowed_urls):
                 issues.append(f"[{lang}] Unrecognised link: {href}")
 
-        # Check no invented image URLs
-        img_srcs = re.findall(r'<img[^>]+src="(https?://[^"]+)"', html)
-        for src in img_srcs:
-            if "cdn.shopify.com" not in src:
-                issues.append(f"[{lang}] Non-CDN image URL: {src[:80]}")
+        # No inline images allowed in body — cover only
+        if re.search(r'<img\b', html):
+            issues.append(f"[{lang}] Inline <img> tag found — body must be text/links only")
 
         # Check H1 present
         if "<h1" not in html.lower():
@@ -590,14 +565,11 @@ def main():
     topic = get_unused_topic()
     print(f"📝 Topic: {topic}")
 
-    cycling_ctx = get_cycling_context()
-
-    print("🖼️  Selecting image from whitelist...")
-    img_url = pick_image(topic)
-    ai_images = [img_url] if img_url else []
+    print("🖼️  Selecting cover image...")
+    cover_url = pick_image()
 
     print("✍️  Generating content...")
-    post, featured_url = generate(topic, trends, ai_images, products)
+    post = generate(topic, trends, cover_url, products)
 
     print("🔍 Quality check...")
     for attempt in range(2):
@@ -607,7 +579,7 @@ def main():
 
         if fact_issues and attempt == 0:
             print(f"   ✗ Brand fact violation — regenerating ({', '.join(fact_issues)})")
-            post, featured_url = generate(topic, trends, ai_images, products)
+            post = generate(topic, trends, cover_url, products)
             continue
 
         if issues:
@@ -626,7 +598,7 @@ def main():
         body_html=body_html,
         meta_desc=post["meta_description"],
         tags=post["tags"],
-        featured_url=featured_url
+        featured_url=cover_url
     )
 
     print_usage()
