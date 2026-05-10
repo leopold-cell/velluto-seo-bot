@@ -15,6 +15,7 @@ BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 HEADERS       = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 USAGE_LOG     = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token_usage.json")
 TOPIC_LOG     = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_used.json")
+RANKING_LOG   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ranking_history.json")
 
 TOPIC_POOL = [
     "why UV400 protection matters for road cyclists",
@@ -39,6 +40,35 @@ TOPIC_POOL = [
     "cycling eye protection — why glasses are non-negotiable equipment",
 ]
 
+# Competitors: display name → domain substring to match in search results
+COMPETITORS = {
+    "Velluto":     "velluto-shop.com",
+    "POC":         "pocbike.com",
+    "Blitz":       "blitzeyewear.com",
+    "Oakley":      "oakley.com",
+    "Rapha":       "rapha.cc",
+    "Rudy Project":"rudyproject.com",
+    "Evil Eye":    "evil-eye.com",
+}
+
+RANK_KEYWORDS = [
+    "cycling glasses",
+    "road cycling glasses",
+    "best cycling glasses 2026",
+    "wielrenbril kopen",
+    "wielrenbril",
+]
+
+COMPETITOR_COLORS = {
+    "Velluto":      "#111111",
+    "POC":          "#e63946",
+    "Blitz":        "#2563eb",
+    "Oakley":       "#d97706",
+    "Rapha":        "#7c3aed",
+    "Rudy Project": "#059669",
+    "Evil Eye":     "#db2777",
+}
+
 
 # ── Data fetchers ────────────────────────────────────────────────────────────
 
@@ -61,6 +91,51 @@ def get_used_topics():
     if not os.path.exists(TOPIC_LOG):
         return []
     return json.load(open(TOPIC_LOG))
+
+
+def load_ranking_history():
+    if not os.path.exists(RANKING_LOG):
+        return {}
+    return json.load(open(RANKING_LOG))
+
+
+def save_ranking_history(history):
+    json.dump(history, open(RANKING_LOG, "w"), indent=2)
+
+
+def check_rankings():
+    """Search DuckDuckGo for each keyword; record top-20 positions for each competitor."""
+    today = str(datetime.date.today())
+    history = load_ranking_history()
+
+    if today in history:
+        print("   Rankings already checked today — using cached data.")
+        return history
+
+    today_data = {}
+    try:
+        from ddgs import DDGS
+        with DDGS() as ddgs:
+            for kw in RANK_KEYWORDS:
+                print(f"   Ranking: '{kw}'...")
+                hits = list(ddgs.text(kw, max_results=20))
+                positions = {}
+                for name, domain in COMPETITORS.items():
+                    pos = 0
+                    for i, h in enumerate(hits, start=1):
+                        url = h.get("href", "") + h.get("body", "")
+                        if domain in url.lower():
+                            pos = i
+                            break
+                    positions[name] = pos
+                today_data[kw] = positions
+    except Exception as e:
+        print(f"   ✗ Ranking check failed: {e}")
+        today_data = {kw: {n: 0 for n in COMPETITORS} for kw in RANK_KEYWORDS}
+
+    history[today] = today_data
+    save_ranking_history(history)
+    return history
 
 
 def check_geo_visibility():
@@ -98,24 +173,10 @@ def badge(text, color):
     return f'<span style="background:{bg};color:{fg};padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">{text}</span>'
 
 
-def sparkline(values, width=120, height=32):
-    if not values or max(values) == 0:
-        return ""
-    mx = max(values)
-    pts = []
-    for i, v in enumerate(values):
-        x = i * width / max(len(values) - 1, 1)
-        y = height - (v / mx * height * 0.9) - 2
-        pts.append(f"{x:.1f},{y:.1f}")
-    path = " ".join(pts)
-    return (f'<svg width="{width}" height="{height}" style="vertical-align:middle">'
-            f'<polyline points="{path}" fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round"/>'
-            f'</svg>')
-
-
-def build_html(articles, usage, used_topics, geo):
-    today = datetime.date.today()
-    now   = datetime.datetime.now().strftime("%d %b %Y, %H:%M")
+def build_html(articles, usage, used_topics, geo, ranking_history):
+    today     = datetime.date.today()
+    today_str = str(today)
+    now       = datetime.datetime.now().strftime("%d %b %Y, %H:%M")
 
     # ── Stats ──
     total_posts  = len(articles)
@@ -127,14 +188,63 @@ def build_html(articles, usage, used_topics, geo):
     topics_done  = len(used_topics)
     topics_left  = len([t for t in TOPIC_POOL if t not in used_topics])
     geo_score    = sum(1 for g in geo if g["found"])
+    geo_pct      = int(geo_score / max(len(geo), 1) * 100)
+    geo_color    = "green" if geo_pct >= 75 else "yellow" if geo_pct >= 40 else "red"
 
-    # ── Daily cost sparkline (last 14 days) ──
-    spark_days   = [(today - datetime.timedelta(days=i)).isoformat() for i in range(13, -1, -1)]
-    spark_values = [usage.get(d, {}).get("cost_usd", 0) for d in spark_days]
+    # Estimated cost with Sonnet (for display — actual may vary for older opus entries)
+    avg_daily_cost = (cost_30d / 30) if cost_30d else 0
+
+    # ── Cost chart data (last 30 days) ──
+    cost_days   = [(today - datetime.timedelta(days=i)).isoformat() for i in range(29, -1, -1)]
+    cost_values = [round(usage.get(d, {}).get("cost_usd", 0), 4) for d in cost_days]
+    cost_labels = [d[5:] for d in cost_days]  # MM-DD
+
+    # ── Ranking chart data ──
+    # Collect last 30 days where we have ranking data
+    rank_dates = sorted(d for d in ranking_history if d >= str(today - datetime.timedelta(days=29)))
+    rank_labels = [d[5:] for d in rank_dates]  # MM-DD labels
+
+    # Build dataset per competitor for the first keyword (most representative)
+    primary_kw = RANK_KEYWORDS[0]
+    rank_datasets = []
+    for name, color in COMPETITOR_COLORS.items():
+        data_points = []
+        for d in rank_dates:
+            pos = ranking_history.get(d, {}).get(primary_kw, {}).get(name, 0)
+            # 0 = not in top 20; invert so higher is better (21 = not found, 1 = #1)
+            data_points.append(None if pos == 0 else pos)
+        rank_datasets.append({
+            "label": name,
+            "data": data_points,
+            "borderColor": color,
+            "backgroundColor": color,
+            "tension": 0.3,
+            "pointRadius": 4,
+            "borderWidth": name == "Velluto" and 3 or 1.5,
+        })
+
+    # ── Today's ranking table ──
+    today_rankings = ranking_history.get(today_str, {})
+    ranking_table_rows = ""
+    for kw in RANK_KEYWORDS:
+        kw_data = today_rankings.get(kw, {})
+        cells = ""
+        for name in COMPETITORS:
+            pos = kw_data.get(name, 0)
+            if pos == 0:
+                cell = '<span style="color:#d1d5db">—</span>'
+            elif pos <= 3:
+                cell = f'<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:12px;font-weight:700;font-size:12px">#{pos}</span>'
+            elif pos <= 10:
+                cell = f'<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-weight:600;font-size:12px">#{pos}</span>'
+            else:
+                cell = f'<span style="color:#9ca3af;font-size:12px">#{pos}</span>'
+            cells += f'<td style="padding:10px 12px;text-align:center">{cell}</td>'
+        ranking_table_rows += f'<tr><td style="padding:10px 12px;font-size:13px;color:#374151;font-weight:500">{kw}</td>{cells}</tr>'
 
     # ── Article rows ──
     article_rows = ""
-    for a in articles[:30]:
+    for a in articles[:20]:
         date  = a["created_at"][:10]
         tags  = a.get("tags", "")
         kw    = tags.split(",")[0].strip() if tags else "—"
@@ -171,8 +281,7 @@ def build_html(articles, usage, used_topics, geo):
           <td style="padding:10px 12px">{found_b}</td>
         </tr>"""
 
-    geo_pct = int(geo_score / max(len(geo), 1) * 100)
-    geo_color = "green" if geo_pct >= 75 else "yellow" if geo_pct >= 40 else "red"
+    competitor_th = "".join(f'<th style="padding:10px 12px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:{COMPETITOR_COLORS[n]}">{n}</th>' for n in COMPETITORS)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -180,6 +289,7 @@ def build_html(articles, usage, used_topics, geo):
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Velluto SEO Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     *{{box-sizing:border-box;margin:0;padding:0}}
     body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9fafb;color:#111;min-height:100vh}}
@@ -193,6 +303,8 @@ def build_html(articles, usage, used_topics, geo):
     .card .sub{{font-size:12px;color:#6b7280;margin-top:4px}}
     .section{{margin:24px 32px 0}}
     .section h2{{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#6b7280;margin-bottom:12px}}
+    .chart-wrap{{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px}}
+    .chart-note{{font-size:11px;color:#9ca3af;margin-top:8px}}
     table{{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden}}
     th{{background:#f9fafb;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#9ca3af;padding:10px 12px;text-align:left;font-weight:600}}
     tr:not(:last-child){{border-bottom:1px solid #f3f4f6}}
@@ -200,6 +312,8 @@ def build_html(articles, usage, used_topics, geo):
     .geo-bar{{height:8px;border-radius:4px;background:#e5e7eb;margin-top:8px}}
     .geo-fill{{height:8px;border-radius:4px;background:#111;transition:width .5s}}
     footer{{text-align:center;padding:32px;font-size:12px;color:#9ca3af}}
+    .two-col{{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+    @media(max-width:768px){{.two-col{{grid-template-columns:1fr}}}}
   </style>
 </head>
 <body>
@@ -209,6 +323,7 @@ def build_html(articles, usage, used_topics, geo):
   <span>Updated {now} · velluto-shop.com</span>
 </div>
 
+<!-- ── Stat cards ── -->
 <div class="grid">
   <div class="card">
     <div class="label">Total posts</div>
@@ -223,7 +338,7 @@ def build_html(articles, usage, used_topics, geo):
   <div class="card">
     <div class="label">Total API cost</div>
     <div class="value">${total_cost:.2f}</div>
-    <div class="sub">${cost_30d:.2f} last 30 days</div>
+    <div class="sub">${cost_30d:.2f} last 30 days · ~${avg_daily_cost:.3f}/day</div>
   </div>
   <div class="card">
     <div class="label">Days active</div>
@@ -236,29 +351,59 @@ def build_html(articles, usage, used_topics, geo):
     <div class="sub">{badge(f'{geo_pct}% found', geo_color)}</div>
     <div class="geo-bar"><div class="geo-fill" style="width:{geo_pct}%"></div></div>
   </div>
-  <div class="card">
-    <div class="label">Daily cost (14d)</div>
-    <div class="value" style="font-size:18px;padding-top:4px">{sparkline(spark_values)}</div>
-    <div class="sub">avg ${(sum(spark_values)/max(len([v for v in spark_values if v>0]),1)):.2f}/day</div>
+</div>
+
+<!-- ── Cost chart ── -->
+<div class="section">
+  <h2>Daily API Cost — Last 30 Days</h2>
+  <div class="chart-wrap">
+    <canvas id="costChart" height="80"></canvas>
+    <p class="chart-note">Using claude-sonnet-4-6 ($3/$15 per M tokens) · ~5× cheaper than Opus</p>
   </div>
 </div>
 
+<!-- ── Keyword ranking chart ── -->
 <div class="section">
-  <h2>GEO Visibility — Brand in Search</h2>
-  <table>
-    <thead><tr><th>Search Query</th><th>Velluto Found</th></tr></thead>
-    <tbody>{geo_rows}</tbody>
-  </table>
+  <h2>Keyword Ranking — Velluto vs Competitors · "{primary_kw}"</h2>
+  <div class="chart-wrap">
+    <canvas id="rankChart" height="100"></canvas>
+    <p class="chart-note">Position in DuckDuckGo top 20 · lower = better · — = not found · tracked daily</p>
+  </div>
 </div>
 
+<!-- ── Today's ranking table ── -->
 <div class="section">
-  <h2>Published Blog Posts</h2>
-  <table>
-    <thead><tr><th>Title</th><th>Date</th><th>Age</th><th>Keyword</th></tr></thead>
-    <tbody>{article_rows}</tbody>
-  </table>
+  <h2>Current Rankings — Today ({today_str})</h2>
+  <div style="overflow-x:auto">
+    <table>
+      <thead><tr>
+        <th>Keyword</th>
+        {competitor_th}
+      </tr></thead>
+      <tbody>{ranking_table_rows}</tbody>
+    </table>
+  </div>
 </div>
 
+<!-- ── GEO + Posts ── -->
+<div class="section two-col">
+  <div>
+    <h2>GEO Visibility — AI &amp; Search Mentions</h2>
+    <table>
+      <thead><tr><th>Search Query</th><th>Velluto Found</th></tr></thead>
+      <tbody>{geo_rows}</tbody>
+    </table>
+  </div>
+  <div>
+    <h2>Recent Blog Posts</h2>
+    <table>
+      <thead><tr><th>Title</th><th>Date</th><th>Age</th><th>Keyword</th></tr></thead>
+      <tbody>{article_rows}</tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── Topic coverage ── -->
 <div class="section">
   <h2>Topic Coverage</h2>
   <table>
@@ -268,6 +413,75 @@ def build_html(articles, usage, used_topics, geo):
 </div>
 
 <footer>Velluto SEO Bot · Auto-updated daily via GitHub Actions · <a href="https://github.com/leopold-cell/velluto-seo-bot" style="color:#111">leopold-cell/velluto-seo-bot</a></footer>
+
+<script>
+// ── Cost bar chart ──
+new Chart(document.getElementById('costChart'), {{
+  type: 'bar',
+  data: {{
+    labels: {json.dumps(cost_labels)},
+    datasets: [{{
+      label: 'API cost (USD)',
+      data: {json.dumps(cost_values)},
+      backgroundColor: '#111',
+      borderRadius: 3,
+    }}]
+  }},
+  options: {{
+    responsive: true,
+    plugins: {{
+      legend: {{ display: false }},
+      tooltip: {{ callbacks: {{ label: ctx => '$' + ctx.parsed.y.toFixed(4) }} }}
+    }},
+    scales: {{
+      y: {{ ticks: {{ callback: v => '$' + v.toFixed(3) }}, beginAtZero: true }},
+      x: {{ ticks: {{ maxTicksLimit: 15, font: {{ size: 10 }} }} }}
+    }}
+  }}
+}});
+
+// ── Ranking line chart ──
+const rankDatasets = {json.dumps(rank_datasets)};
+// Invert: null stays null, pos becomes 21-pos so chart goes up = better
+const invertedDatasets = rankDatasets.map(ds => ({{
+  ...ds,
+  data: ds.data.map(v => v === null ? null : (21 - v)),
+  spanGaps: false,
+}}));
+
+new Chart(document.getElementById('rankChart'), {{
+  type: 'line',
+  data: {{
+    labels: {json.dumps(rank_labels)},
+    datasets: invertedDatasets
+  }},
+  options: {{
+    responsive: true,
+    plugins: {{
+      legend: {{ position: 'bottom', labels: {{ boxWidth: 12, font: {{ size: 11 }} }} }},
+      tooltip: {{
+        callbacks: {{
+          label: ctx => {{
+            if (ctx.parsed.y === null) return ctx.dataset.label + ': not found';
+            return ctx.dataset.label + ': #' + (21 - ctx.parsed.y);
+          }}
+        }}
+      }}
+    }},
+    scales: {{
+      y: {{
+        min: 0, max: 20,
+        ticks: {{
+          callback: v => v === 0 ? 'not found' : '#' + (21 - v),
+          stepSize: 5,
+        }},
+        title: {{ display: true, text: 'Position (higher = better ranking)' }}
+      }},
+      x: {{ ticks: {{ maxTicksLimit: 14, font: {{ size: 10 }} }} }}
+    }}
+  }}
+}});
+</script>
 
 </body>
 </html>"""
@@ -281,10 +495,14 @@ def main():
     articles    = get_articles(50)
     usage       = get_usage()
     used_topics = get_used_topics()
-    print("   Checking GEO visibility...")
-    geo         = check_geo_visibility()
 
-    html = build_html(articles, usage, used_topics, geo)
+    print("   Checking keyword rankings vs competitors...")
+    ranking_history = check_rankings()
+
+    print("   Checking GEO visibility...")
+    geo = check_geo_visibility()
+
+    html = build_html(articles, usage, used_topics, geo, ranking_history)
 
     out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
     os.makedirs(out_dir, exist_ok=True)
@@ -296,6 +514,12 @@ def main():
     geo_found = sum(1 for g in geo if g["found"])
     print(f"   GEO: {geo_found}/{len(geo)} queries find Velluto")
     print(f"   Posts: {len(articles)} total")
+    today_str = str(datetime.date.today())
+    today_rank = ranking_history.get(today_str, {})
+    if today_rank:
+        velluto_positions = [today_rank.get(kw, {}).get("Velluto", 0) for kw in RANK_KEYWORDS]
+        found = [f"#{p}" for p in velluto_positions if p > 0]
+        print(f"   Velluto ranking positions: {found or ['not found in top 20']}")
 
 
 if __name__ == "__main__":

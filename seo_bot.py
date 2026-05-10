@@ -92,12 +92,19 @@ not an interruption.
 
 # ── Token tracking ───────────────────────────────────────────────────────────
 
-def log_usage(inp: int, out: int) -> float:
+_MODEL_COSTS = {
+    "claude-opus-4-7":           (15.0, 75.0),
+    "claude-sonnet-4-6":         (3.0,  15.0),
+    "claude-haiku-4-5-20251001": (0.80,  4.0),
+}
+
+def log_usage(inp: int, out: int, model: str = "claude-sonnet-4-6") -> float:
     today = str(datetime.date.today())
     log = json.load(open(USAGE_LOG)) if os.path.exists(USAGE_LOG) else {}
     e = log.setdefault(today, {"runs": 0, "input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0})
     e["runs"] += 1; e["input_tokens"] += inp; e["output_tokens"] += out
-    cost = (inp * 15 + out * 75) / 1_000_000
+    ip, op = _MODEL_COSTS.get(model, (3.0, 15.0))
+    cost = (inp * ip + out * op) / 1_000_000
     e["cost_usd"] = round(e["cost_usd"] + cost, 6)
     json.dump(log, open(USAGE_LOG, "w"), indent=2)
     return cost
@@ -191,7 +198,7 @@ def pick_image(topic: str) -> str:
             f"Available image filenames: {keys}\n"
             f"Return ONLY the single most thematically relevant filename key. No explanation."}]
     )
-    log_usage(r.usage.input_tokens, r.usage.output_tokens)
+    log_usage(r.usage.input_tokens, r.usage.output_tokens, model="claude-haiku-4-5-20251001")
     key = r.content[0].text.strip().strip('"').strip("'")
     url = HERO_WHITELIST.get(key) or random.choice(list(HERO_WHITELIST.values()))
     print(f"   Image: {key}")
@@ -472,13 +479,14 @@ RETURN ONLY valid JSON:
   "de_html": "complete German HTML — 100% German"
 }}"""
 
+    GENERATE_MODEL = "claude-sonnet-4-6"
     response = client.messages.create(
-        model="claude-opus-4-7",
+        model=GENERATE_MODEL,
         max_tokens=16000,
         system=system,
         messages=[{"role": "user", "content": user}]
     )
-    cost = log_usage(response.usage.input_tokens, response.usage.output_tokens)
+    cost = log_usage(response.usage.input_tokens, response.usage.output_tokens, model=GENERATE_MODEL)
     print(f"   Tokens in:{response.usage.input_tokens} out:{response.usage.output_tokens} | ${cost:.4f}")
 
     raw = response.content[0].text.strip()
