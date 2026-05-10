@@ -2,7 +2,7 @@ name: Daily SEO Blog Post
 
 on:
   schedule:
-    - cron: '0 7 * * *'  # 08:00 CET (07:00 UTC)
+    - cron: '0 6 * * *'  # 08:00 CEST summer / 07:00 CET winter (06:00 UTC)
   workflow_dispatch:       # allow manual trigger from GitHub UI
 
 jobs:
