@@ -27,6 +27,8 @@ jobs:
           OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
           SHOPIFY_STORE:     ${{ secrets.SHOPIFY_STORE }}
           BLOG_ID:           ${{ secrets.BLOG_ID }}
+          WHATSAPP_PHONE:    ${{ secrets.WHATSAPP_PHONE }}
+          WHATSAPP_API_KEY:  ${{ secrets.WHATSAPP_API_KEY }}
         run: python seo_bot.py
 
       - name: Build dashboard
@@ -43,3 +45,9 @@ jobs:
           git add docs/index.html token_usage.json topics_used.json ranking_history.json images_used.json
           git diff --cached --quiet || git commit -m "chore: daily dashboard update $(date -u +%Y-%m-%d)"
           git push
+
+      - name: Notify WhatsApp on failure
+        if: failure()
+        run: |
+          TEXT="Velluto+SEO+Bot+FAILED+$(date +%Y-%m-%d)+--+check+GitHub+Actions:+https://github.com/leopold-cell/velluto-seo-bot/actions"
+          curl -s "https://api.callmebot.com/whatsapp.php?phone=${{ secrets.WHATSAPP_PHONE }}&text=${TEXT}&apikey=${{ secrets.WHATSAPP_API_KEY }}" || true
