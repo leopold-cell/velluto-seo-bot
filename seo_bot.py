@@ -21,18 +21,18 @@ TOPIC_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_us
 IMAGES_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images_used.json")
 
 SHOPIFY_HEADERS   = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
-WHATSAPP_PHONE    = os.getenv("WHATSAPP_PHONE", "")
-WHATSAPP_API_KEY  = os.getenv("WHATSAPP_API_KEY", "")
+TELEGRAM_TOKEN   = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 
 def notify(msg: str):
-    """Send a WhatsApp message via Callmebot. Silently skips if credentials missing."""
-    if not WHATSAPP_PHONE or not WHATSAPP_API_KEY:
+    """Send a Telegram message. Silently skips if credentials missing."""
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
         return
     try:
-        requests.get(
-            "https://api.callmebot.com/whatsapp.php",
-            params={"phone": WHATSAPP_PHONE, "text": msg, "apikey": WHATSAPP_API_KEY},
+        requests.post(
+            f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+            json={"chat_id": TELEGRAM_CHAT_ID, "text": msg},
             timeout=10
         )
     except Exception:
