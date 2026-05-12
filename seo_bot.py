@@ -34,9 +34,10 @@ BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 API_KEY       = os.getenv("ANTHROPIC_API_KEY")
 
 client = Anthropic(api_key=API_KEY)
-USAGE_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token_usage.json")
-TOPIC_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_used.json")
-IMAGES_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images_used.json")
+USAGE_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token_usage.json")
+TOPIC_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_used.json")
+IMAGES_LOG   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images_used.json")
+DYNAMIC_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_dynamic.json")
 
 SHOPIFY_HEADERS   = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 TELEGRAM_TOKEN   = os.getenv("TELEGRAM_BOT_TOKEN", "")
@@ -322,27 +323,74 @@ def get_cycling_context() -> str:
 
 
 TOPIC_POOL = [
-    # Awareness / educational — no false product claims possible
+    # UV & lens technology
     "why UV400 protection matters for road cyclists",
-    "how anti-fog cycling glasses work — what to look for",
-    "interchangeable lens cycling glasses — are they worth it",
-    "how to choose cycling glasses for your face shape",
-    "cycling glasses for wind and rain — what to look for",
     "lens categories 0-3 explained for road cyclists",
+    "high contrast lenses for cycling — when you need them",
+    "clear lens cycling glasses — when and why to use them",
+    "how anti-fog coating works on cycling glasses",
+    "VellutoVisione high contrast lens review for road cyclists",
+    "transparent cycling lens vs tinted lens — complete guide",
+    "UV400 vs UV380 cycling glasses — what is the difference",
+    # Anti-fog & weather
+    "how anti-fog cycling glasses work — what to look for",
+    "how to prevent cycling glasses from fogging on cold climbs",
+    "cycling glasses for wind and rain — what to look for",
+    "cycling glasses for low light and overcast Dutch weather",
+    "best cycling glasses for autumn rides in the Netherlands",
+    "winter cycling glasses guide — what to look for",
+    "cycling glasses for early morning rides — low light tips",
+    # Fit & comfort
+    "cycling glasses fit guide — adjustable nose pads and frame sizing",
+    "how to choose cycling glasses for your face shape",
+    "why lightweight cycling glasses matter on long rides",
+    "cycling glasses that don't slip — what to look for",
+    "cycling glasses for small faces — fit guide 2026",
+    "best cycling glasses for long distance sportives",
+    "cycling glasses for narrow faces — a buyers guide",
+    # Interchangeable lenses
+    "interchangeable lens cycling glasses — are they worth it",
+    "how to swap cycling glass lenses in under 10 seconds",
+    "best interchangeable lens cycling glasses 2026",
+    "click-in lens system cycling glasses — what to look for",
+    "cycling glasses with two lenses — complete buying guide",
+    # Road cycling specific
     "gravel cycling glasses vs road cycling glasses — key differences",
     "how cycling glasses protect against insects, debris and UV",
     "best cycling glasses for long climbs with changing light",
-    "why lightweight cycling glasses matter on long rides",
-    "how to clean cycling glasses properly without scratching lenses",
-    "high contrast lenses for cycling — when you need them",
-    "cycling glasses fit guide — adjustable nose pads and frame sizing",
-    "best cycling glasses for the Giro and Tour stage conditions",
-    "cycling glasses for low light and overcast Dutch weather",
-    "what makes road cycling glasses different from regular sunglasses",
-    "how to prevent cycling glasses from fogging on cold climbs",
-    "clear lens cycling glasses — when and why to use them",
+    "cycling glasses for the Giro d'Italia — what the pros use",
+    "best cycling glasses for the Tour de France stage conditions",
+    "cycling glasses for criteriums — speed and clarity",
+    "cycling glasses for gran fondos — the complete guide",
+    "road cycling glasses for beginners — what you need to know",
+    # Buying guides & comparisons
     "the best cycling glasses under €150 in 2026",
+    "cycling glasses under €100 — worth it or not",
+    "what makes road cycling glasses different from regular sunglasses",
     "cycling eye protection — why glasses are non-negotiable equipment",
+    "how to clean cycling glasses properly without scratching lenses",
+    "best cycling glasses for wide heads 2026",
+    "cycling glasses buying guide — 10 things to check",
+    "cycling glasses vs ski goggles — key differences explained",
+    # Dutch & NL market
+    "de beste wielrenbril van 2026 — koopgids",
+    "wielrenbril met verwisselbare glazen — wat je moet weten",
+    "anti-condens wielrenbril — hoe werkt het",
+    "wielrenbril voor brede gezichten — pasgids",
+    "sportbril voor wielrennen — UV bescherming uitgelegd",
+    "wielrenbril voor slechte weersomstandigheden — Nederland",
+    "beste wielrenbril onder 150 euro in 2026",
+    "wielrenbril voor de Amstel Gold Race — wat te kiezen",
+    # Competitor comparison (educational angle)
+    "POC cycling glasses vs budget alternatives — honest comparison",
+    "Oakley cycling glasses — are premium brands worth the price",
+    "cycling glasses brands compared — what to look for in 2026",
+    "why expensive cycling glasses are not always better",
+    # Seasonal & event-driven
+    "cycling glasses for spring classics — Ronde van Vlaanderen tips",
+    "best cycling glasses for summer heat and bright sun",
+    "cycling glasses gift guide for road cyclists 2026",
+    "new cycling glasses for the new season — what changed in 2026",
 ]
 
 
@@ -353,11 +401,53 @@ GLASSES_ROTATION = [
     "velluto-stradapro-cycling-glasses-arancia",
 ]
 
+def research_new_topics() -> list[str]:
+    """Use DuckDuckGo trends + Claude Haiku to discover 3 fresh blog topics daily."""
+    existing_dynamic = json.load(open(DYNAMIC_LOG)) if os.path.exists(DYNAMIC_LOG) else []
+    all_known = TOPIC_POOL + existing_dynamic
+    try:
+        from ddgs import DDGS
+        snippets = []
+        with DDGS() as ddgs:
+            for q in ["cycling glasses trend 2026", "wielrenbril review 2026", "best sports glasses cyclists"]:
+                for h in list(ddgs.text(q, max_results=3)):
+                    snippets.append(f"{h.get('title','')}: {h.get('body','')[:100]}")
+        context = "\n".join(snippets[:8])
+    except Exception:
+        context = "cycling glasses, road cycling eyewear, UV protection, anti-fog lenses"
+
+    r = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=300,
+        messages=[{"role": "user", "content":
+            f"Trending cycling search context:\n{context}\n\n"
+            f"Already covered topics (DO NOT repeat):\n{all_known[-20:]}\n\n"
+            "Suggest 3 NEW blog post topics for a cycling glasses brand targeting Dutch road cyclists. "
+            "Focus on what people are actively searching for: buyer intent, comparisons, how-tos, seasonal. "
+            "Return ONLY a JSON array of 3 strings."}]
+    )
+    log_usage(r.usage.input_tokens, r.usage.output_tokens, model="claude-haiku-4-5-20251001")
+    try:
+        raw = r.content[0].text.strip()
+        if raw.startswith("```"): raw = raw.split("```")[1].lstrip("json").strip()
+        new_topics = json.loads(raw)
+        merged = list(dict.fromkeys(existing_dynamic + new_topics))  # dedup, preserve order
+        json.dump(merged, open(DYNAMIC_LOG, "w"), indent=2)
+        print(f"   Discovered {len(new_topics)} new topics: {new_topics}")
+        return new_topics
+    except Exception as e:
+        print(f"   ⚠️  Topic research parse failed: {e}")
+        return []
+
+
 def get_unused_topic() -> str:
+    """Pick an unused topic from static pool + dynamically discovered topics."""
     used = json.load(open(TOPIC_LOG)) if os.path.exists(TOPIC_LOG) else []
-    available = [t for t in TOPIC_POOL if t not in used]
+    dynamic = json.load(open(DYNAMIC_LOG)) if os.path.exists(DYNAMIC_LOG) else []
+    full_pool = list(dict.fromkeys(TOPIC_POOL + dynamic))  # static first, then dynamic
+    available = [t for t in full_pool if t not in used]
     if not available:
-        used, available = [], TOPIC_POOL[:]
+        used, available = [], full_pool[:]
     topic = random.choice(available)
     used.append(topic)
     json.dump(used, open(TOPIC_LOG, "w"), indent=2)
@@ -611,48 +701,28 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
-def main():
-    print(f"\n🚴 Velluto SEO Bot — {datetime.date.today()}")
-    print("=" * 50)
-
-    print("📡 Searching trends...")
-    trends = search_trends()
-
-    print("🛍️  Fetching active products...")
-    products = get_products()
-    print(f"   {len(products)} active products")
-
-    topic = get_unused_topic()
+def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
+    print(f"\n── Post {post_num}/3 ─────────────────────────────")
     print(f"📝 Topic: {topic}")
-
-    print("🖼️  Selecting cover image...")
     cover_url = pick_image()
 
-    print("✍️  Generating content...")
     post = generate(topic, trends, cover_url, products)
 
-    print("🔍 Quality check...")
     for attempt in range(2):
-        issues = validate(post, products)
-        fact_issues = [i for i in issues if i.startswith("[FACT]")]
+        issues   = validate(post, products)
+        fact_issues  = [i for i in issues if i.startswith("[FACT]")]
         other_issues = [i for i in issues if not i.startswith("[FACT]")]
-
         if fact_issues and attempt == 0:
-            print(f"   ✗ Brand fact violation — regenerating ({', '.join(fact_issues)})")
+            print(f"   ✗ Brand fact violation — regenerating")
             post = generate(topic, trends, cover_url, products)
             continue
-
-        if issues:
-            print("   ⚠️  Minor issues:")
-            for iss in other_issues:
-                print(f"      - {iss}")
+        if other_issues:
+            for iss in other_issues: print(f"   ⚠️  {iss}")
         else:
-            print("   ✅ All checks passed")
+            print("   ✅ Quality check passed")
         break
 
     body_html = build_article_html(post["en_html"], post["nl_html"], post["de_html"])
-
-    print("📤 Publishing...")
     publish(
         title=post["title_en"],
         body_html=body_html,
@@ -661,8 +731,35 @@ def main():
         featured_url=cover_url
     )
 
+
+def main():
+    print(f"\n🚴 Velluto SEO Bot — {datetime.date.today()} (3 posts/day)")
+    print("=" * 55)
+
+    print("📡 Searching trends + researching new topics...")
+    trends = search_trends()
+    try:
+        research_new_topics()
+    except Exception as e:
+        print(f"   ⚠️  Topic research skipped: {e}")
+
+    print("🛍️  Fetching active products...")
+    products = get_products()
+    print(f"   {len(products)} active products")
+
+    published = 0
+    for i in range(1, 4):
+        try:
+            topic = get_unused_topic()
+            publish_one(topic, trends, products, i)
+            published += 1
+        except Exception as e:
+            print(f"   ❌ Post {i} failed: {e}")
+        if i < 3:
+            time.sleep(8)  # brief pause between posts to avoid rate limits
+
     print_usage()
-    print("\n✅ Done!\n")
+    print(f"\n✅ {published}/3 posts published today.\n")
 
 
 if __name__ == "__main__":

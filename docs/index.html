@@ -1,358 +1,480 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Velluto SEO Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9fafb;color:#111;min-height:100vh}
-    .top{background:#111;color:#fff;padding:20px 32px;display:flex;justify-content:space-between;align-items:center}
-    .top h1{font-size:18px;font-weight:700;letter-spacing:.5px}
-    .top span{font-size:12px;opacity:.6}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;padding:24px 32px 0}
-    .card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px}
-    .card .label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#9ca3af;margin-bottom:6px}
-    .card .value{font-size:32px;font-weight:800;color:#111}
-    .card .sub{font-size:12px;color:#6b7280;margin-top:4px}
-    .section{margin:24px 32px 0}
-    .section h2{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#6b7280;margin-bottom:12px}
-    .chart-wrap{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px}
-    .chart-note{font-size:11px;color:#9ca3af;margin-top:8px}
-    table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden}
-    th{background:#f9fafb;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#9ca3af;padding:10px 12px;text-align:left;font-weight:600}
-    tr:not(:last-child){border-bottom:1px solid #f3f4f6}
-    tr:hover{background:#fafafa}
-    .geo-bar{height:8px;border-radius:4px;background:#e5e7eb;margin-top:8px}
-    .geo-fill{height:8px;border-radius:4px;background:#111;transition:width .5s}
-    footer{text-align:center;padding:32px;font-size:12px;color:#9ca3af}
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    @media(max-width:768px){.two-col{grid-template-columns:1fr}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Velluto SEO Intelligence</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif;background:#f1f5f9;color:#0f172a;font-size:14px}
+/* Top bar */
+.topbar{background:#0f172a;color:#fff;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.topbar .brand{font-size:15px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:10px}
+.topbar .brand span{background:#1d4ed8;padding:3px 10px;border-radius:4px;font-size:12px}
+.topbar .meta{font-size:11px;opacity:.5}
+/* Layout */
+.wrap{max-width:1400px;margin:0 auto;padding:20px 24px}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748b;margin:0 0 10px}
+/* KPI strip */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px 18px}
+.kpi .label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.kpi .val{font-size:28px;font-weight:800;color:#0f172a;line-height:1}
+.kpi .sub{font-size:11px;color:#94a3b8;margin-top:4px}
+.kpi.accent{border-left:3px solid #1d4ed8}
+/* Charts */
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+.chart-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:18px}
+.chart-card h3{font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
+/* Tables */
+.table-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:20px}
+.table-card .table-header{padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center}
+.table-card .table-header h3{font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.6px}
+table{width:100%;border-collapse:collapse}
+th{background:#f8fafc;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;padding:9px 12px;text-align:left;font-weight:600;border-bottom:1px solid #e2e8f0}
+td{padding:9px 12px;border-bottom:1px solid #f8fafc;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.td-kw{font-size:13px;color:#1e293b;font-weight:500;max-width:260px}
+.td-center{text-align:center}
+.td-spark{text-align:center;width:90px}
+.td-num{text-align:center;color:#94a3b8;font-size:12px;width:32px}
+/* Position badges */
+.pos-top3{background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:4px;font-weight:700;font-size:12px}
+.pos-top10{background:#fef9c3;color:#854d0e;padding:2px 8px;border-radius:4px;font-weight:600;font-size:12px}
+.pos-top20{background:#ffedd5;color:#9a3412;padding:2px 8px;border-radius:4px;font-size:12px}
+.pos-none{color:#cbd5e1;font-size:12px}
+/* Delta badges */
+.delta-up{color:#16a34a;font-weight:700;font-size:12px}
+.delta-down{color:#dc2626;font-weight:700;font-size:12px}
+.delta-flat{color:#94a3b8;font-size:12px}
+.delta-none{color:#e2e8f0;font-size:12px}
+/* Misc */
+.badge-dyn{background:#ede9fe;color:#6d28d9;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:6px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:900px){.chart-grid,.two-col{grid-template-columns:1fr}}
+footer{text-align:center;padding:24px;font-size:11px;color:#94a3b8}
+</style>
 </head>
 <body>
 
-<div class="top">
-  <h1>🚴 Velluto SEO &amp; GEO Dashboard</h1>
-  <span>Updated 10 May 2026, 09:33 · velluto-shop.com</span>
+<div class="topbar">
+  <div class="brand">
+    🚴 Velluto SEO Intelligence
+    <span>velluto-shop.com</span>
+  </div>
+  <div class="meta">Updated 12 May 2026 09:13 · auto-refreshes daily at 06:00 UTC</div>
 </div>
 
-<!-- ── Stat cards ── -->
-<div class="grid">
-  <div class="card">
-    <div class="label">Total posts</div>
-    <div class="value">10</div>
-    <div class="sub">10 in last 30 days</div>
-  </div>
-  <div class="card">
-    <div class="label">Topics covered</div>
-    <div class="value">7</div>
-    <div class="sub">18 remaining in pool</div>
-  </div>
-  <div class="card">
-    <div class="label">Total API cost</div>
-    <div class="value">$13.65</div>
-    <div class="sub">$13.65 last 30 days · ~$0.455/day</div>
-  </div>
-  <div class="card">
-    <div class="label">Days active</div>
-    <div class="value">2</div>
-    <div class="sub">since launch</div>
-  </div>
-  <div class="card">
-    <div class="label">GEO visibility</div>
-    <div class="value">2/4</div>
-    <div class="sub"><span style="background:#fef3c7;color:#92400e;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">50% found</span></div>
-    <div class="geo-bar"><div class="geo-fill" style="width:50%"></div></div>
-  </div>
-</div>
+<div class="wrap">
 
-<!-- ── Cost chart ── -->
-<div class="section">
-  <h2>Daily API Cost — Last 30 Days</h2>
-  <div class="chart-wrap">
-    <canvas id="costChart" height="80"></canvas>
-    <p class="chart-note">Using claude-sonnet-4-6 ($3/$15 per M tokens) · ~5× cheaper than Opus</p>
+<!-- KPI strip -->
+<div style="margin-bottom:8px;margin-top:4px" class="section-title">Overview</div>
+<div class="kpi-grid">
+  <div class="kpi accent">
+    <div class="label">SEO Visibility</div>
+    <div class="val">5%</div>
+    <div class="sub" style="color:#16a34a">▲ 4.7% vs 7 days ago</div>
   </div>
-</div>
-
-<!-- ── Keyword ranking chart ── -->
-<div class="section">
-  <h2>Keyword Ranking — Velluto vs Competitors · "cycling glasses"</h2>
-  <div class="chart-wrap">
-    <canvas id="rankChart" height="100"></canvas>
-    <p class="chart-note">Position in DuckDuckGo top 20 · lower = better · — = not found · tracked daily</p>
+  <div class="kpi">
+    <div class="label">Keywords Tracked</div>
+    <div class="val">15</div>
+    <div class="sub">across EN + NL market</div>
+  </div>
+  <div class="kpi">
+    <div class="label">GEO Mentions</div>
+    <div class="val">2/5</div>
+    <div class="sub">40% of queries find Velluto</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Blog Posts</div>
+    <div class="val">12</div>
+    <div class="sub">12 published last 7 days</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Topic Pipeline</div>
+    <div class="val">57</div>
+    <div class="sub">7 published · 0 AI-discovered</div>
+  </div>
+  <div class="kpi">
+    <div class="label">API Cost (7d)</div>
+    <div class="val">$13.65</div>
+    <div class="sub">total $13.65 since launch</div>
   </div>
 </div>
 
-<!-- ── Today's ranking table ── -->
-<div class="section">
-  <h2>Current Rankings — Today (2026-05-10)</h2>
+<!-- Visibility + Competitor charts -->
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>SEO Visibility Index — Velluto vs Competitors (30 days)</h3>
+    <canvas id="compChart" height="90"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3>Velluto Visibility Trend (60 days)</h3>
+    <canvas id="visChart" height="90"></canvas>
+  </div>
+</div>
+
+<!-- Keyword rankings table -->
+<div class="table-card">
+  <div class="table-header">
+    <h3>Keyword Rankings — 2026-05-12</h3>
+    <span style="font-size:11px;color:#94a3b8">Position in DuckDuckGo top 20 · Δ = position change (▲ = improved)</span>
+  </div>
   <div style="overflow-x:auto">
     <table>
       <thead><tr>
         <th>Keyword</th>
-        <th style="padding:10px 12px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#111111">Velluto</th><th style="padding:10px 12px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#e63946">POC</th><th style="padding:10px 12px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#2563eb">Blitz</th><th style="padding:10px 12px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#d97706">Oakley</th><th style="padding:10px 12px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#7c3aed">Rapha</th><th style="padding:10px 12px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#059669">Rudy Project</th><th style="padding:10px 12px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#db2777">Evil Eye</th>
+        <th class="td-center">Position</th>
+        <th class="td-center">Δ 3d</th>
+        <th class="td-center">Δ 7d</th>
+        <th class="td-center">Δ 30d</th>
+        <th class="td-center">Δ 60d</th>
+        <th class="td-center">14d Trend</th>
+        <th style="color:#dc2626">POC</th><th style="color:#d97706">Blitz</th><th style="color:#7c3aed">Oakley</th><th style="color:#db2777">Rapha</th><th style="color:#059669">Rudy Project</th><th style="color:#0891b2">Evil Eye</th>
       </tr></thead>
-      <tbody><tr><td style="padding:10px 12px;font-size:13px;color:#374151;font-weight:500">cycling glasses</td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td></tr><tr><td style="padding:10px 12px;font-size:13px;color:#374151;font-weight:500">road cycling glasses</td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-weight:600;font-size:12px">#6</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td></tr><tr><td style="padding:10px 12px;font-size:13px;color:#374151;font-weight:500">best cycling glasses 2026</td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td></tr><tr><td style="padding:10px 12px;font-size:13px;color:#374151;font-weight:500">wielrenbril kopen</td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td></tr><tr><td style="padding:10px 12px;font-size:13px;color:#374151;font-weight:500">wielrenbril</td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td><td style="padding:10px 12px;text-align:center"><span style="color:#d1d5db">—</span></td></tr></tbody>
+      <tbody><tr>
+          <td class="td-kw">cycling glasses</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">wielrenbril</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">road cycling glasses</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-top3">#2</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">best cycling glasses 2026</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">cycling sunglasses</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-top10">#8</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">wielrenbril kopen</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">anti-fog cycling glasses</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">UV400 cycling glasses</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">interchangeable lens cycling glasses</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">sportbril fietsen</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">cycling glasses review</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">lightweight cycling glasses</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">best wielrenbril 2026</td>
+          <td class="td-center"><span class="pos-top10">#6</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><polyline points="0.0,21.2 6.2,21.2 12.3,21.2 18.5,21.2 24.6,21.2 30.8,21.2 36.9,21.2 43.1,21.2 49.2,21.2 55.4,21.2 61.5,21.2 67.7,21.2 73.8,21.2 80.0,6.8" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">cycling glasses under 150</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr><tr>
+          <td class="td-kw">cycling glasses adjustable nose pads</td>
+          <td class="td-center"><span class="pos-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-center"><span class="delta-none">—</span></td>
+          <td class="td-spark"><svg width="80" height="24"><line x1="0" y1="12" x2="80" y2="12" stroke="#e2e8f0" stroke-width="1.5"/></svg></td>
+          <td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td><td class="td-center"><span class="pos-none">—</span></td>
+        </tr></tbody>
     </table>
   </div>
 </div>
 
-<!-- ── GEO + Posts ── -->
-<div class="section two-col">
-  <div>
-    <h2>GEO Visibility — AI &amp; Search Mentions</h2>
+<!-- Cost chart + Next posts -->
+<div class="two-col">
+  <div class="chart-card" style="margin-bottom:0">
+    <h3>Daily API Cost — Last 30 Days</h3>
+    <canvas id="costChart" height="110"></canvas>
+    <p style="font-size:10px;color:#94a3b8;margin-top:8px">claude-sonnet-4-6 · 3 posts/day · ~$0.15/day</p>
+  </div>
+  <div class="table-card" style="margin-bottom:0">
+    <div class="table-header"><h3>Next 10 Scheduled Posts</h3></div>
     <table>
-      <thead><tr><th>Search Query</th><th>Velluto Found</th></tr></thead>
-      <tbody>
-        <tr>
-          <td style="padding:10px 12px;font-size:13px;color:#374151">best cycling glasses 2026</td>
-          <td style="padding:10px 12px"><span style="background:#fee2e2;color:#991b1b;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">Not found</span></td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;font-size:13px;color:#374151">wielrenbril kopen</td>
-          <td style="padding:10px 12px"><span style="background:#fee2e2;color:#991b1b;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">Not found</span></td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;font-size:13px;color:#374151">Velluto cycling glasses review</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">Found ✓</span></td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;font-size:13px;color:#374151">StradaPro cycling glasses</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">Found ✓</span></td>
+      <thead><tr><th style="width:28px">#</th><th>Topic</th><th class="td-center">Est.</th></tr></thead>
+      <tbody><tr>
+          <td class="td-num">1</td>
+          <td class="td-kw">why UV400 protection matters for road cyclists </td>
+          <td class="td-center" style="color:#64748b">12 May</td>
+        </tr><tr>
+          <td class="td-num">2</td>
+          <td class="td-kw">lens categories 0-3 explained for road cyclists </td>
+          <td class="td-center" style="color:#64748b">12 May</td>
+        </tr><tr>
+          <td class="td-num">3</td>
+          <td class="td-kw">high contrast lenses for cycling — when you need them </td>
+          <td class="td-center" style="color:#64748b">12 May</td>
+        </tr><tr>
+          <td class="td-num">4</td>
+          <td class="td-kw">clear lens cycling glasses — when and why to use them </td>
+          <td class="td-center" style="color:#64748b">13 May</td>
+        </tr><tr>
+          <td class="td-num">5</td>
+          <td class="td-kw">how anti-fog coating works on cycling glasses </td>
+          <td class="td-center" style="color:#64748b">13 May</td>
+        </tr><tr>
+          <td class="td-num">6</td>
+          <td class="td-kw">VellutoVisione high contrast lens review for road cyclists </td>
+          <td class="td-center" style="color:#64748b">13 May</td>
+        </tr><tr>
+          <td class="td-num">7</td>
+          <td class="td-kw">transparent cycling lens vs tinted lens — complete guide </td>
+          <td class="td-center" style="color:#64748b">14 May</td>
+        </tr><tr>
+          <td class="td-num">8</td>
+          <td class="td-kw">UV400 vs UV380 cycling glasses — what is the difference </td>
+          <td class="td-center" style="color:#64748b">14 May</td>
+        </tr><tr>
+          <td class="td-num">9</td>
+          <td class="td-kw">how anti-fog cycling glasses work — what to look for </td>
+          <td class="td-center" style="color:#64748b">14 May</td>
+        </tr><tr>
+          <td class="td-num">10</td>
+          <td class="td-kw">how to prevent cycling glasses from fogging on cold climbs </td>
+          <td class="td-center" style="color:#64748b">15 May</td>
         </tr></tbody>
     </table>
   </div>
-  <div>
-    <h2>Recent Blog Posts</h2>
+</div>
+
+<!-- GEO + Recent posts -->
+<div class="two-col" style="margin-top:16px">
+  <div class="table-card" style="margin-bottom:0">
+    <div class="table-header"><h3>GEO Visibility — AI &amp; Search Mentions</h3></div>
     <table>
-      <thead><tr><th>Title</th><th>Date</th><th>Age</th><th>Keyword</th></tr></thead>
-      <tbody>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">How to Clean Cycling Glasses Without Scratching Lenses</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-09</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">1d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">clean cycling glasses without scratching</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">Gravel Cycling Glasses vs Road: Key Differences for 2026</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-08</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">2d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">Best Cycling Glasses for Long Climbs with Changing Light</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-08</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">2d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">Best Cycling Glasses for Giro & Tour Stages 2026</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-08</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">2d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Alpe d'HuZes</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">Cycling Glasses: Insect, Debris & UV Protection Guide</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-08</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">2d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">High Contrast Lenses for Cycling: When You Need Them</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-08</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">2d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">Best Cycling Glasses for Low Light & Overcast Weather 2026</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-08</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">2d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Alpe d'HuZes</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">Gravel vs Road Cycling Glasses: Key Differences 2026</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-08</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">2d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">UV400 Protection in Cycling Glasses: What It Means</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-08</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">2d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Alpe d'HuZes</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;color:#111;font-weight:500">Gravel vs Road Cycling Glasses: Key Differences in 2026</td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:13px">2026-05-07</td>
-          <td style="padding:10px 12px"><span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">3d ago</span></td>
-          <td style="padding:10px 12px;color:#6b7280;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
+      <thead><tr><th>Query</th><th class="td-center">Found</th></tr></thead>
+      <tbody><tr><td class="td-kw">best cycling glasses 2026</td><td class="td-center" style="color:#dc2626;font-weight:700">✗</td></tr><tr><td class="td-kw">wielrenbril kopen</td><td class="td-center" style="color:#dc2626;font-weight:700">✗</td></tr><tr><td class="td-kw">Velluto cycling glasses review</td><td class="td-center" style="color:#16a34a;font-weight:700">✓</td></tr><tr><td class="td-kw">StradaPro cycling glasses</td><td class="td-center" style="color:#16a34a;font-weight:700">✓</td></tr><tr><td class="td-kw">beste wielrenbril 2026</td><td class="td-center" style="color:#dc2626;font-weight:700">✗</td></tr></tbody>
+    </table>
+  </div>
+  <div class="table-card" style="margin-bottom:0">
+    <div class="table-header"><h3>Recent Blog Posts</h3></div>
+    <table>
+      <thead><tr><th>Title</th><th class="td-center">Date</th><th class="td-center">Age</th><th>Keyword</th></tr></thead>
+      <tbody><tr>
+          <td class="td-kw">Cycling Lens Categories 0–3 Explained for Road Cyclists</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-12</td>
+          <td class="td-center" style="color:#16a34a;font-size:12px">0d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
+        </tr><tr>
+          <td class="td-kw">Best Cycling Glasses Under €150 in 2026 | Velluto</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-10</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">best cycling glasses under 150</td>
+        </tr><tr>
+          <td class="td-kw">How to Clean Cycling Glasses Without Scratching Lenses</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-09</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">3d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">clean cycling glasses without scratching</td>
+        </tr><tr>
+          <td class="td-kw">Gravel Cycling Glasses vs Road: Key Differences for 2026</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-08</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">4d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
+        </tr><tr>
+          <td class="td-kw">Best Cycling Glasses for Long Climbs with Changing Light</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-08</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">4d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
+        </tr><tr>
+          <td class="td-kw">Best Cycling Glasses for Giro & Tour Stages 2026</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-08</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">4d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Alpe d'HuZes</td>
+        </tr><tr>
+          <td class="td-kw">Cycling Glasses: Insect, Debris & UV Protection Guide</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-08</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">4d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
+        </tr><tr>
+          <td class="td-kw">High Contrast Lenses for Cycling: When You Need Them</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-08</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">4d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
+        </tr><tr>
+          <td class="td-kw">Best Cycling Glasses for Low Light & Overcast Weather 2026</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-08</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">4d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Alpe d'HuZes</td>
+        </tr><tr>
+          <td class="td-kw">Gravel vs Road Cycling Glasses: Key Differences 2026</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-08</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">4d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
+        </tr><tr>
+          <td class="td-kw">UV400 Protection in Cycling Glasses: What It Means</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-08</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">4d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Alpe d'HuZes</td>
+        </tr><tr>
+          <td class="td-kw">Gravel vs Road Cycling Glasses: Key Differences in 2026</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">2026-05-07</td>
+          <td class="td-center" style="color:#64748b;font-size:12px">5d ago</td>
+          <td style="font-size:11px;color:#94a3b8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">cycling glasses</td>
         </tr></tbody>
     </table>
   </div>
 </div>
 
-<!-- ── Topic coverage ── -->
-<div class="section">
-  <h2>Topic Coverage</h2>
-  <table>
-    <thead><tr><th style="width:40px"></th><th>Topic</th></tr></thead>
-    <tbody>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">why UV400 protection matters for road cyclists</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">how anti-fog cycling glasses work — what to look for</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">interchangeable lens cycling glasses — are they worth it</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">how to choose cycling glasses for your face shape</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">cycling glasses for wind and rain — what to look for</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">lens categories 0-3 explained for road cyclists</td>
-        </tr>
-        <tr style="background:#f0fdf4">
-          <td style="padding:8px 12px;color:#065f46;font-weight:700;font-size:14px">✓</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">gravel cycling glasses vs road cycling glasses — key differences</td>
-        </tr>
-        <tr style="background:#f0fdf4">
-          <td style="padding:8px 12px;color:#065f46;font-weight:700;font-size:14px">✓</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">how cycling glasses protect against insects, debris and UV</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">best cycling glasses for long climbs with changing light</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">why lightweight cycling glasses matter on long rides</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">how to clean cycling glasses properly without scratching lenses</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">high contrast lenses for cycling — when you need them</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">cycling glasses fit guide — adjustable nose pads and frame sizing</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">best cycling glasses for the Giro and Tour stage conditions</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">cycling glasses for low light and overcast Dutch weather</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">what makes road cycling glasses different from regular sunglasses</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">how to prevent cycling glasses from fogging on cold climbs</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">clear lens cycling glasses — when and why to use them</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">the best cycling glasses under €150 in 2026</td>
-        </tr>
-        <tr style="background:#fff">
-          <td style="padding:8px 12px;color:#9ca3af;font-weight:700;font-size:14px">○</td>
-          <td style="padding:8px 12px;color:#374151;font-size:13px">cycling eye protection — why glasses are non-negotiable equipment</td>
-        </tr></tbody>
-  </table>
-</div>
+</div><!-- /wrap -->
 
-<footer>Velluto SEO Bot · Auto-updated daily via GitHub Actions · <a href="https://github.com/leopold-cell/velluto-seo-bot" style="color:#111">leopold-cell/velluto-seo-bot</a></footer>
+<footer>Velluto SEO Intelligence · <a href="https://github.com/leopold-cell/velluto-seo-bot" style="color:#94a3b8">leopold-cell/velluto-seo-bot</a> · auto-updated daily</footer>
 
 <script>
-// ── Cost bar chart ──
-new Chart(document.getElementById('costChart'), {
-  type: 'bar',
+const BLUE = '#1d4ed8';
+
+// Competitor visibility chart
+new Chart(document.getElementById('compChart'), {
+  type: 'line',
   data: {
-    labels: ["04-11", "04-12", "04-13", "04-14", "04-15", "04-16", "04-17", "04-18", "04-19", "04-20", "04-21", "04-22", "04-23", "04-24", "04-25", "04-26", "04-27", "04-28", "04-29", "04-30", "05-01", "05-02", "05-03", "05-04", "05-05", "05-06", "05-07", "05-08", "05-09", "05-10"],
-    datasets: [{
-      label: 'API cost (USD)',
-      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9.6445, 4.001, 0, 0],
-      backgroundColor: '#111',
-      borderRadius: 3,
-    }]
+    labels: ["04-13", "04-14", "04-15", "04-16", "04-17", "04-18", "04-19", "04-20", "04-21", "04-22", "04-23", "04-24", "04-25", "04-26", "04-27", "04-28", "04-29", "04-30", "05-01", "05-02", "05-03", "05-04", "05-05", "05-06", "05-07", "05-08", "05-09", "05-10", "05-11", "05-12"],
+    datasets: [{"label": "Velluto", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, null, 4.7], "borderColor": "#1d4ed8", "backgroundColor": "#1d4ed8", "borderWidth": 3, "tension": 0.3, "pointRadius": 2, "spanGaps": true}, {"label": "POC", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, null, 0.0], "borderColor": "#dc2626", "backgroundColor": "#dc2626", "borderWidth": 1.5, "tension": 0.3, "pointRadius": 2, "spanGaps": true}, {"label": "Blitz", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, null, 0.0], "borderColor": "#d97706", "backgroundColor": "#d97706", "borderWidth": 1.5, "tension": 0.3, "pointRadius": 2, "spanGaps": true}, {"label": "Oakley", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, null, 0.0], "borderColor": "#7c3aed", "backgroundColor": "#7c3aed", "borderWidth": 1.5, "tension": 0.3, "pointRadius": 2, "spanGaps": true}, {"label": "Rapha", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, null, 0.0], "borderColor": "#db2777", "backgroundColor": "#db2777", "borderWidth": 1.5, "tension": 0.3, "pointRadius": 2, "spanGaps": true}, {"label": "Rudy Project", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 14.0, null, 11.3], "borderColor": "#059669", "backgroundColor": "#059669", "borderWidth": 1.5, "tension": 0.3, "pointRadius": 2, "spanGaps": true}, {"label": "Evil Eye", "data": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0.0, null, 0.0], "borderColor": "#0891b2", "backgroundColor": "#0891b2", "borderWidth": 1.5, "tension": 0.3, "pointRadius": 2, "spanGaps": true}]
   },
   options: {
-    responsive: true,
+    responsive: true, maintainAspectRatio: true,
     plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: ctx => '$' + ctx.parsed.y.toFixed(4) } }
+      legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
+      tooltip: { callbacks: { label: c => c.dataset.label + ': ' + (c.parsed.y ?? '—') + '%' } }
     },
     scales: {
-      y: { ticks: { callback: v => '$' + v.toFixed(3) }, beginAtZero: true },
-      x: { ticks: { maxTicksLimit: 15, font: { size: 10 } } }
+      y: { min: 0, max: 100, ticks: { callback: v => v + '%', font: { size: 10 } }, grid: { color: '#f1f5f9' } },
+      x: { ticks: { maxTicksLimit: 10, font: { size: 10 } }, grid: { display: false } }
     }
   }
 });
 
-// ── Ranking line chart ──
-const rankDatasets = [{"label": "Velluto", "data": [null], "borderColor": "#111111", "backgroundColor": "#111111", "tension": 0.3, "pointRadius": 4, "borderWidth": 3}, {"label": "POC", "data": [null], "borderColor": "#e63946", "backgroundColor": "#e63946", "tension": 0.3, "pointRadius": 4, "borderWidth": 1.5}, {"label": "Blitz", "data": [null], "borderColor": "#2563eb", "backgroundColor": "#2563eb", "tension": 0.3, "pointRadius": 4, "borderWidth": 1.5}, {"label": "Oakley", "data": [null], "borderColor": "#d97706", "backgroundColor": "#d97706", "tension": 0.3, "pointRadius": 4, "borderWidth": 1.5}, {"label": "Rapha", "data": [null], "borderColor": "#7c3aed", "backgroundColor": "#7c3aed", "tension": 0.3, "pointRadius": 4, "borderWidth": 1.5}, {"label": "Rudy Project", "data": [null], "borderColor": "#059669", "backgroundColor": "#059669", "tension": 0.3, "pointRadius": 4, "borderWidth": 1.5}, {"label": "Evil Eye", "data": [null], "borderColor": "#db2777", "backgroundColor": "#db2777", "tension": 0.3, "pointRadius": 4, "borderWidth": 1.5}];
-// Invert: null stays null, pos becomes 21-pos so chart goes up = better
-const invertedDatasets = rankDatasets.map(ds => ({
-  ...ds,
-  data: ds.data.map(v => v === null ? null : (21 - v)),
-  spanGaps: false,
-}));
-
-new Chart(document.getElementById('rankChart'), {
+// Velluto 60-day visibility trend
+new Chart(document.getElementById('visChart'), {
   type: 'line',
   data: {
-    labels: ["05-10"],
-    datasets: invertedDatasets
+    labels: ["03-14", "03-15", "03-16", "03-17", "03-18", "03-19", "03-20", "03-21", "03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09", "04-10", "04-11", "04-12", "04-13", "04-14", "04-15", "04-16", "04-17", "04-18", "04-19", "04-20", "04-21", "04-22", "04-23", "04-24", "04-25", "04-26", "04-27", "04-28", "04-29", "04-30", "05-01", "05-02", "05-03", "05-04", "05-05", "05-06", "05-07", "05-08", "05-09", "05-10", "05-11", "05-12"],
+    datasets: [{
+      label: 'Visibility %',
+      data: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.7],
+      borderColor: BLUE,
+      backgroundColor: 'rgba(29,78,216,0.08)',
+      fill: true,
+      tension: 0.4, borderWidth: 2, pointRadius: 0
+    }]
   },
   options: {
-    responsive: true,
-    plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
-      tooltip: {
-        callbacks: {
-          label: ctx => {
-            if (ctx.parsed.y === null) return ctx.dataset.label + ': not found';
-            return ctx.dataset.label + ': #' + (21 - ctx.parsed.y);
-          }
-        }
-      }
-    },
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y + '%' } } },
     scales: {
-      y: {
-        min: 0, max: 20,
-        ticks: {
-          callback: v => v === 0 ? 'not found' : '#' + (21 - v),
-          stepSize: 5,
-        },
-        title: { display: true, text: 'Position (higher = better ranking)' }
-      },
-      x: { ticks: { maxTicksLimit: 14, font: { size: 10 } } }
+      y: { min: 0, max: 100, ticks: { callback: v => v + '%', font: { size: 10 } }, grid: { color: '#f1f5f9' } },
+      x: { ticks: { maxTicksLimit: 10, font: { size: 10 } }, grid: { display: false } }
+    }
+  }
+});
+
+// Cost bar chart
+new Chart(document.getElementById('costChart'), {
+  type: 'bar',
+  data: {
+    labels: ["04-13", "04-14", "04-15", "04-16", "04-17", "04-18", "04-19", "04-20", "04-21", "04-22", "04-23", "04-24", "04-25", "04-26", "04-27", "04-28", "04-29", "04-30", "05-01", "05-02", "05-03", "05-04", "05-05", "05-06", "05-07", "05-08", "05-09", "05-10", "05-11", "05-12"],
+    datasets: [{ label: 'USD', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9.6445, 4.001, 0, 0, 0, 0], backgroundColor: '#1d4ed8', borderRadius: 3 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '$' + c.parsed.y.toFixed(4) } } },
+    scales: {
+      y: { ticks: { callback: v => '$' + v.toFixed(2), font: { size: 10 } }, beginAtZero: true, grid: { color: '#f1f5f9' } },
+      x: { ticks: { maxTicksLimit: 12, font: { size: 10 } }, grid: { display: false } }
     }
   }
 });
 </script>
-
 </body>
 </html>
