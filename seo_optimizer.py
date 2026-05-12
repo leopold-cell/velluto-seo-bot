@@ -20,9 +20,11 @@ SHOPIFY_STORE = os.getenv("SHOPIFY_STORE", "velluto-brand.myshopify.com")
 BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 SHOPIFY_HDR   = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 
-BASE         = os.path.dirname(os.path.abspath(__file__))
-INSIGHTS_LOG = os.path.join(BASE, "seo_insights.json")
-USAGE_LOG    = os.path.join(BASE, "token_usage.json")
+BASE          = os.path.dirname(os.path.abspath(__file__))
+INSIGHTS_LOG  = os.path.join(BASE, "seo_insights.json")
+USAGE_LOG     = os.path.join(BASE, "token_usage.json")
+DYNAMIC_LOG   = os.path.join(BASE, "topics_dynamic.json")
+TOPIC_LOG     = os.path.join(BASE, "topics_used.json")
 
 # Keywords to analyse competitors for (pick highest-value subset to stay within DDG limits)
 ANALYSIS_KEYWORDS = [
@@ -41,6 +43,19 @@ COMPETITORS = {
     "Rudy Project": "rudyproject.com",
     "Evil Eye":     "evil-eye.com",
 }
+
+# Velluto's honest advantages to use in comparison posts
+VELLUTO_ADVANTAGES = """
+Velluto StradaPro advantages over premium competitors:
+- 25g ultralight frame (lighter than most premium brands)
+- Interchangeable lenses (VellutoPuro clear + VellutoVisione high-contrast) — click-in, tool-free
+- 30-day risk-free trial — test on real rides before committing
+- Anti-fog system built-in
+- UV400 certified
+- Italian design aesthetic at a fraction of premium brand pricing
+- Adjustable nose pads for custom fit
+- Free shipping over €99
+"""
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -138,6 +153,90 @@ def research_competitors() -> dict:
     return findings
 
 
+# ── Competitor ranking detection ─────────────────────────────────────────────
+
+def detect_top_competitors(competitor_data: dict) -> list[dict]:
+    """
+    Find competitors ranking in top 3 positions for our keywords.
+    Returns list of {competitor, keyword, position, title, snippet} sorted by position.
+    """
+    hits = []
+    for kw, pages in competitor_data.items():
+        for i, page in enumerate(pages[:3], start=1):
+            name = page.get("competitor", "")
+            if name and name != "other":
+                hits.append({
+                    "competitor": name,
+                    "keyword":    kw,
+                    "position":   i,
+                    "title":      page.get("title", ""),
+                    "snippet":    page.get("snippet", ""),
+                    "h2s":        page.get("h2s", []),
+                    "word_count": page.get("word_count", 0),
+                })
+    # Sort: top positions first
+    hits.sort(key=lambda x: x["position"])
+    return hits
+
+
+def generate_comparison_topics(top_competitors: list[dict], already_used: list[str]) -> list[str]:
+    """
+    For each high-ranking competitor, generate a targeted comparison blog topic.
+    Only generates a topic if we haven't already published a similar one.
+    """
+    if not top_competitors:
+        return []
+
+    # Deduplicate by competitor — only one topic per competitor at a time
+    seen_competitors = set()
+    unique_hits = []
+    for h in top_competitors:
+        if h["competitor"] not in seen_competitors:
+            seen_competitors.add(h["competitor"])
+            unique_hits.append(h)
+
+    topics = []
+    for h in unique_hits[:4]:  # max 4 comparison posts queued at once
+        name = h["competitor"]
+        kw   = h["keyword"]
+        pos  = h["position"]
+
+        # Skip if we already have a comparison post for this competitor
+        already_covered = any(
+            name.lower() in t.lower() and "vs" in t.lower()
+            for t in already_used
+        )
+        if already_covered:
+            print(f"   Already have a {name} comparison post — skipping")
+            continue
+
+        # Generate topic based on keyword context
+        if "kopen" in kw or "buy" in kw or "best" in kw:
+            topic = f"{name} vs Velluto StradaPro — which cycling glasses are worth buying in 2026"
+        elif "review" in kw:
+            topic = f"{name} cycling glasses review vs Velluto — an honest comparison"
+        elif "wielrenbril" in kw:
+            topic = f"{name} wielrenbril vs Velluto StradaPro — eerlijke vergelijking 2026"
+        else:
+            topic = f"{name} vs Velluto cycling glasses — same performance, better value"
+
+        print(f"   → Competitor post queued: '{topic}' (they rank #{pos} for '{kw}')")
+        topics.append(topic)
+
+    return topics
+
+
+def inject_priority_topics(topics: list[str]):
+    """Prepend comparison topics to the dynamic pool so they get picked next."""
+    if not topics:
+        return
+    existing = json.load(open(DYNAMIC_LOG)) if os.path.exists(DYNAMIC_LOG) else []
+    # Put comparison topics at the FRONT — they have high buyer intent
+    merged = list(dict.fromkeys(topics + existing))
+    json.dump(merged, open(DYNAMIC_LOG, "w"), indent=2)
+    print(f"   ✓ {len(topics)} comparison topic(s) added to priority queue")
+
+
 # ── Our recent posts ──────────────────────────────────────────────────────────
 
 def get_recent_posts(n=6) -> list[dict]:
@@ -164,26 +263,31 @@ def get_recent_posts(n=6) -> list[dict]:
 
 # ── Claude analysis ───────────────────────────────────────────────────────────
 
-def analyse_and_generate_insights(competitor_data: dict, our_posts: list[dict]) -> dict:
+def analyse_and_generate_insights(competitor_data: dict, our_posts: list[dict],
+                                   top_competitors: list[dict]) -> dict:
     """Claude analyses competitor patterns vs our posts and generates actionable insights."""
 
-    comp_summary = json.dumps(competitor_data, indent=2)[:6000]
-    our_summary  = json.dumps(our_posts, indent=2)[:2000]
-
+    comp_summary  = json.dumps(competitor_data, indent=2)[:5000]
+    our_summary   = json.dumps(our_posts, indent=2)[:2000]
+    top_comp_str  = json.dumps(top_competitors[:6], indent=2)[:1500]
     today = str(datetime.date.today())
 
     response = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=2000,
-        system="""You are an expert SEO strategist analysing a cycling eyewear brand (Velluto, velluto-shop.com).
-Your job: analyse competitor search rankings and content, compare to Velluto's recent posts,
-and produce specific, actionable improvements for tomorrow's blog posts.
-Be concrete — cite patterns you actually see in the data, not generic advice.""",
+        max_tokens=2500,
+        system=f"""You are an expert SEO strategist analysing a cycling eyewear brand (Velluto, velluto-shop.com).
+Your job: analyse competitor rankings and content, compare to Velluto's recent posts,
+and produce specific actionable improvements. Be concrete — use data from the actual results.
+
+{VELLUTO_ADVANTAGES}""",
         messages=[{"role": "user", "content": f"""
 Today: {today}
 
 TOP COMPETITOR CONTENT (search results + page structure):
 {comp_summary}
+
+COMPETITORS RANKING IN TOP 3 (these are the ones we should specifically target):
+{top_comp_str}
 
 OUR RECENT POSTS:
 {our_summary}
@@ -192,22 +296,25 @@ Analyse and return ONLY this JSON (no extra text):
 {{
   "analysis_date": "{today}",
   "competitor_patterns": [
-    "3-5 specific patterns you see in top-ranking competitor content (structure, word count, topics, features)"
+    "3-5 specific patterns you see in top-ranking competitor content"
   ],
   "our_gaps": [
-    "3-5 specific gaps where our posts fall short vs competitors"
+    "3-5 specific gaps where our posts fall short vs top-ranking competitors"
   ],
   "keyword_opportunities": [
     "3-5 specific long-tail keywords competitors rank for that we haven't covered"
   ],
   "next_post_guidelines": [
-    "5-7 specific writing instructions for tomorrow's posts (e.g. word count target, must-include sections, tone, specific keywords to use)"
+    "5-7 specific writing instructions for tomorrow's posts"
   ],
   "seo_quick_wins": [
-    "2-3 immediate technical/structural improvements to apply to all future posts"
+    "2-3 immediate structural improvements to apply to all future posts"
   ],
   "geo_angles": [
-    "2-3 angles that would help Velluto appear in AI-generated answers (ChatGPT, Perplexity, Google AI Overview)"
+    "2-3 angles that help Velluto appear in AI answers (ChatGPT, Perplexity, Google AI Overview)"
+  ],
+  "comparison_post_angles": [
+    "For each top-ranking competitor: 1 specific angle for a Velluto vs [Competitor] post. Format: 'COMPETITOR: angle — e.g. headline idea, key differentiator to highlight, which Velluto advantage to lead with'"
   ]
 }}
 """}]
@@ -230,20 +337,35 @@ def main():
     print("📡 Researching competitor content...")
     competitor_data = research_competitors()
 
+    print("🎯 Detecting top-ranking competitors...")
+    top_competitors = detect_top_competitors(competitor_data)
+    if top_competitors:
+        for h in top_competitors[:5]:
+            print(f"   {h['competitor']} ranks #{h['position']} for '{h['keyword']}'")
+    else:
+        print("   No known competitors found in top 3")
+
     print("📋 Fetching our recent posts...")
-    our_posts = get_recent_posts(6)
+    our_posts    = get_recent_posts(6)
+    already_used = json.load(open(TOPIC_LOG)) if os.path.exists(TOPIC_LOG) else []
     print(f"   {len(our_posts)} recent posts analysed")
+
+    print("🥊 Generating comparison post topics...")
+    comparison_topics = generate_comparison_topics(top_competitors, already_used)
+    if comparison_topics:
+        inject_priority_topics(comparison_topics)
 
     print("🧠 Running Claude SEO analysis...")
     try:
-        insights = analyse_and_generate_insights(competitor_data, our_posts)
+        insights = analyse_and_generate_insights(competitor_data, our_posts, top_competitors)
         json.dump(insights, open(INSIGHTS_LOG, "w"), indent=2)
         print(f"   ✓ Insights saved to seo_insights.json")
-        print(f"   Gaps found: {len(insights.get('our_gaps', []))}")
-        print(f"   Opportunities: {len(insights.get('keyword_opportunities', []))}")
+        print(f"   Gaps: {len(insights.get('our_gaps', []))} | "
+              f"Opportunities: {len(insights.get('keyword_opportunities', []))} | "
+              f"Comparison angles: {len(insights.get('comparison_post_angles', []))}")
     except Exception as e:
         print(f"   ✗ Analysis failed: {e}")
-        # Don't crash the whole workflow — seo_bot.py runs fine without insights
+        # Don't crash — seo_bot.py runs fine without insights
 
 
 if __name__ == "__main__":

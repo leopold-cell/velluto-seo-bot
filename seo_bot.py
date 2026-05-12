@@ -41,8 +41,8 @@ DYNAMIC_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_
 INSIGHTS_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seo_insights.json")
 
 
-def load_seo_insights() -> str:
-    """Load yesterday's SEO optimizer output as a prompt injection."""
+def load_seo_insights(topic: str = "") -> str:
+    """Load SEO optimizer output as a prompt injection. Adds comparison guidelines if topic is a vs-post."""
     if not os.path.exists(INSIGHTS_LOG):
         return ""
     try:
@@ -60,6 +60,20 @@ def load_seo_insights() -> str:
         if ins.get("geo_angles"):
             parts.append("GEO/AI VISIBILITY ANGLES:\n" +
                          "\n".join(f"• {a}" for a in ins["geo_angles"]))
+        # Inject comparison-specific guidance if this is a vs-post
+        if "vs" in topic.lower() and ins.get("comparison_post_angles"):
+            competitor = topic.split("vs")[0].strip().split()[-1]  # e.g. "Oakley"
+            angle = next((a for a in ins["comparison_post_angles"]
+                          if competitor.lower() in a.lower()), None)
+            if angle:
+                parts.append(
+                    f"COMPARISON POST STRATEGY (from competitor analysis):\n• {angle}\n"
+                    "• Frame as 'why cyclists switch to Velluto' — not an attack on the competitor\n"
+                    "• Lead with Velluto's concrete specs: 25g, UV400, 30-day trial, interchangeable lenses\n"
+                    "• Target search intent: people comparing before buying\n"
+                    "• Include a side-by-side section highlighting key differentiators\n"
+                    "• CTA: '30-day risk-free trial — try it on your next ride'"
+                )
         return "\n\n".join(parts)
     except Exception:
         return ""
@@ -578,7 +592,7 @@ def generate(topic: str, trends: str, cover_url: str, products: list[dict]) -> t
         "title": p["title"], "url": p["url"], "image": p["image"]
     } for p in featured_products], indent=2)
 
-    seo_insights = load_seo_insights()
+    seo_insights = load_seo_insights(topic=topic)
 
     system = f"""You are the SEO content manager and lead copywriter for Velluto (velluto-shop.com), \
 a premium Dutch road cycling eyewear brand.
