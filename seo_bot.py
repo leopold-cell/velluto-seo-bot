@@ -4,9 +4,27 @@ Velluto SEO Bot — Daily blog automation
 Quality-first: validates images, links, and language consistency before publishing.
 """
 
-import os, json, datetime, random, re, requests
+import os, json, datetime, random, re, requests, time, traceback
 from anthropic import Anthropic
 from dotenv import load_dotenv
+
+
+def retry(max_attempts=3, delay=8, label=""):
+    """Exponential-backoff retry decorator for flaky API calls."""
+    def decorator(fn):
+        def wrapper(*args, **kwargs):
+            name = label or fn.__name__
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    return fn(*args, **kwargs)
+                except Exception as e:
+                    if attempt == max_attempts:
+                        raise
+                    wait = delay * (2 ** (attempt - 1))
+                    print(f"   ⚠️  {name} failed (attempt {attempt}/{max_attempts}): {e} — retrying in {wait}s")
+                    time.sleep(wait)
+        return wrapper
+    return decorator
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
 
@@ -233,6 +251,7 @@ ALLOWED_HANDLES = {
     "velluto-cleaning-spray",
 }
 
+@retry(max_attempts=3, delay=5, label="get_products")
 def get_products() -> list[dict]:
     r = requests.get(
         f"https://{SHOPIFY_STORE}/admin/api/2024-01/products.json"
@@ -404,6 +423,7 @@ function vl(l){
 
 # ── Content generation ───────────────────────────────────────────────────────
 
+@retry(max_attempts=3, delay=10, label="generate")
 def generate(topic: str, trends: str, cover_url: str, products: list[dict]) -> tuple[dict, str]:
 
     # Featured glasses: rotate daily through 4 colours
@@ -565,6 +585,7 @@ def validate(post: dict, products: list[dict]) -> list[str]:
 
 # ── Publish ──────────────────────────────────────────────────────────────────
 
+@retry(max_attempts=3, delay=5, label="publish")
 def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url: str) -> int | None:
     payload = {"article": {
         "title":     title,
@@ -585,8 +606,7 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
         aid = r.json()["article"]["id"]
         print(f"   ✓ Published: {title} (ID: {aid})")
         return aid
-    print(f"   ✗ Failed {r.status_code}: {r.text[:300]}")
-    return None
+    raise RuntimeError(f"Shopify publish failed {r.status_code}: {r.text[:300]}")
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
@@ -649,7 +669,12 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        msg = f"Velluto SEO Bot FAILED ({datetime.date.today()}): {type(e).__name__}: {str(e)[:200]}"
-        print(f"\n❌ {msg}")
+        tb = traceback.format_exc().splitlines()
+        # Keep last 5 lines of traceback for context
+        tb_short = " | ".join(tb[-5:]).strip()
+        msg = (f"❌ Velluto SEO Bot FAILED {datetime.date.today()}\n"
+               f"{type(e).__name__}: {str(e)[:180]}\n"
+               f"Logs: https://github.com/leopold-cell/velluto-seo-bot/actions")
+        print(f"\n{msg}\n{tb_short}")
         notify(msg)
         raise
