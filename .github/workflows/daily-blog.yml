@@ -31,6 +31,15 @@ jobs:
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python seo_bot.py
 
+      - name: Run SEO optimizer
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SHOPIFY_TOKEN:     ${{ secrets.SHOPIFY_TOKEN }}
+          SHOPIFY_STORE:     ${{ secrets.SHOPIFY_STORE }}
+          BLOG_ID:           ${{ secrets.BLOG_ID }}
+        run: python seo_optimizer.py
+
       - name: Build dashboard
         continue-on-error: true
         env:
@@ -44,7 +53,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html token_usage.json topics_used.json topics_dynamic.json ranking_history.json images_used.json
+          git add docs/index.html token_usage.json topics_used.json topics_dynamic.json ranking_history.json images_used.json seo_insights.json
           git diff --cached --quiet || git commit -m "chore: daily dashboard update $(date -u +%Y-%m-%d)"
           git push
 

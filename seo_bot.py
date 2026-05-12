@@ -38,6 +38,31 @@ USAGE_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token_u
 TOPIC_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_used.json")
 IMAGES_LOG   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images_used.json")
 DYNAMIC_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_dynamic.json")
+INSIGHTS_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seo_insights.json")
+
+
+def load_seo_insights() -> str:
+    """Load yesterday's SEO optimizer output as a prompt injection."""
+    if not os.path.exists(INSIGHTS_LOG):
+        return ""
+    try:
+        ins = json.load(open(INSIGHTS_LOG))
+        parts = []
+        if ins.get("next_post_guidelines"):
+            parts.append("WRITING GUIDELINES FROM SEO ANALYSIS:\n" +
+                         "\n".join(f"• {g}" for g in ins["next_post_guidelines"]))
+        if ins.get("keyword_opportunities"):
+            parts.append("KEYWORD OPPORTUNITIES TO COVER:\n" +
+                         "\n".join(f"• {k}" for k in ins["keyword_opportunities"]))
+        if ins.get("seo_quick_wins"):
+            parts.append("SEO QUICK WINS TO APPLY:\n" +
+                         "\n".join(f"• {w}" for w in ins["seo_quick_wins"]))
+        if ins.get("geo_angles"):
+            parts.append("GEO/AI VISIBILITY ANGLES:\n" +
+                         "\n".join(f"• {a}" for a in ins["geo_angles"]))
+        return "\n\n".join(parts)
+    except Exception:
+        return ""
 
 SHOPIFY_HEADERS   = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 TELEGRAM_TOKEN   = os.getenv("TELEGRAM_BOT_TOKEN", "")
@@ -222,19 +247,47 @@ WHITELIST = {
 _EXCLUDE_AS_HERO = {"purplestats", "offerpurple", "visioneexplained"}
 HERO_WHITELIST = {k: v for k, v in WHITELIST.items() if k not in _EXCLUDE_AS_HERO}
 
+# Categorise so 3 daily posts always rotate across visually distinct image types
+IMAGE_CATEGORIES = {
+    "review":    ["Review_1","Review_2","Review_3","Review_4","Review_5","Review_6",
+                  "Review_7","Review_9","Review_10","Review_12","Review_13","Review_14",
+                  "Review_16","Review_17","Review_18","Review_19","testimonialmob7","image00012"],
+    "lifestyle": ["Rick_Arancia","TransparentMale","VellutoModelMale002","FooterExportsPeople",
+                  "FooterExports_Female","Lifestylestudiomobile","Lifestyle_mobileUGC",
+                  "Lifestyle_1x1","LifestyleSection_Transparent","LifestyleSection_Orange",
+                  "Velluto_BuilttoPerform_Violet","Hero-mobile-v2","Hero-mobile","brown1"],
+    "product":   ["productblack","productblackmale","productorange","productorangemale",
+                  "productbrown","productbrownfemale","AllGlasses","BuildtoPerform",
+                  "VellutoAboutUs","002","003","004"],
+}
+# Cycle: review → lifestyle → product → review → …
+_CAT_ORDER = ["review", "lifestyle", "product"]
+
 
 def pick_image() -> str:
-    """Rotate through HERO_WHITELIST shuffled, resetting only when all have been used."""
-    used  = json.load(open(IMAGES_LOG)) if os.path.exists(IMAGES_LOG) else []
-    pool  = list(HERO_WHITELIST.keys())
-    avail = [k for k in pool if k not in used]
-    if not avail:
-        used, avail = [], pool[:]
-    # Pick randomly from the unused half to avoid long streaks of similar shots
+    """
+    Rotate through categories (review/lifestyle/product) so consecutive posts
+    never look similar. Within each category, shuffle without repeating.
+    State is persisted in images_used.json.
+    """
+    state = json.load(open(IMAGES_LOG)) if os.path.exists(IMAGES_LOG) else {"used": [], "cat_index": 0}
+    if isinstance(state, list):          # migrate old format
+        state = {"used": state, "cat_index": 0}
+
+    cat_index = state.get("cat_index", 0) % len(_CAT_ORDER)
+    category  = _CAT_ORDER[cat_index]
+    pool      = [k for k in IMAGE_CATEGORIES[category] if k in HERO_WHITELIST]
+    used      = state.get("used", [])
+    avail     = [k for k in pool if k not in used]
+    if not avail:                         # all used in this category — reset just this category
+        used  = [k for k in used if k not in pool]
+        avail = pool[:]
+
     key = random.choice(avail)
     used.append(key)
-    json.dump(used, open(IMAGES_LOG, "w"), indent=2)
-    print(f"   Cover image: {key}")
+    state = {"used": used, "cat_index": (cat_index + 1) % len(_CAT_ORDER)}
+    json.dump(state, open(IMAGES_LOG, "w"), indent=2)
+    print(f"   Cover image: {key} [{category}]")
     return HERO_WHITELIST[key]
 
 
@@ -525,13 +578,15 @@ def generate(topic: str, trends: str, cover_url: str, products: list[dict]) -> t
         "title": p["title"], "url": p["url"], "image": p["image"]
     } for p in featured_products], indent=2)
 
+    seo_insights = load_seo_insights()
+
     system = f"""You are the SEO content manager and lead copywriter for Velluto (velluto-shop.com), \
 a premium Dutch road cycling eyewear brand.
 
 {BRAND_FACTS}
 
 {COPY_PRINCIPLES}
-
+{(chr(10) + seo_insights + chr(10)) if seo_insights else ""}
 WRITING RULES:
 1. Every language version must be 100% in that language — no mixed words (brand names Velluto/StradaPro are OK).
 2. Each language block starts with a full H1 in that language.
