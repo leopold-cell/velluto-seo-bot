@@ -20,29 +20,62 @@ SHOPIFY_STORE = os.getenv("SHOPIFY_STORE", "velluto-brand.myshopify.com")
 BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 SHOPIFY_HDR   = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 
-BASE          = os.path.dirname(os.path.abspath(__file__))
-INSIGHTS_LOG  = os.path.join(BASE, "seo_insights.json")
-USAGE_LOG     = os.path.join(BASE, "token_usage.json")
-DYNAMIC_LOG   = os.path.join(BASE, "topics_dynamic.json")
-TOPIC_LOG     = os.path.join(BASE, "topics_used.json")
+BASE               = os.path.dirname(os.path.abspath(__file__))
+INSIGHTS_LOG       = os.path.join(BASE, "seo_insights.json")
+USAGE_LOG          = os.path.join(BASE, "token_usage.json")
+DYNAMIC_LOG        = os.path.join(BASE, "topics_dynamic.json")
+TOPIC_LOG          = os.path.join(BASE, "topics_used.json")
+COMPETITORS_LOG    = os.path.join(BASE, "competitors_discovered.json")
 
-# Keywords to analyse competitors for (pick highest-value subset to stay within DDG limits)
-ANALYSIS_KEYWORDS = [
-    "best cycling glasses 2026",
-    "wielrenbril kopen",
-    "interchangeable lens cycling glasses",
-    "anti-fog cycling glasses",
-    "road cycling glasses review",
-]
-
-COMPETITORS = {
-    "POC":          "pocbike.com",
-    "Blitz":        "blitzeyewear.com",
-    "Oakley":       "oakley.com",
-    "Rapha":        "rapha.cc",
-    "Rudy Project": "rudyproject.com",
-    "Evil Eye":     "evil-eye.com",
+# Multilingual keyword sets — one per shop language (EN / NL / DE)
+ANALYSIS_KEYWORDS = {
+    "en": [
+        "best cycling glasses 2026",
+        "road cycling glasses review",
+        "interchangeable lens cycling glasses",
+        "anti-fog cycling glasses",
+        "buy cycling sunglasses",
+        "lightweight road cycling glasses",
+    ],
+    "nl": [
+        "wielrenbril kopen",
+        "beste wielrenbril 2026",
+        "wielrenbril met verwisselbare glazen",
+        "sportbril wielrennen test",
+        "fietsbril kopen",
+    ],
+    "de": [
+        "Rennradbrille kaufen 2026",
+        "beste Fahrradbrille Test",
+        "Rennradbrille Wechselgläser",
+        "Fahrradbrille UV400 kaufen",
+        "leichte Rennradbrille",
+    ],
 }
+
+# Domains that are NOT brand competitors (retailers, media, marketplaces, aggregators)
+_SKIP_DOMAINS = {
+    "amazon", "bol.com", "google", "youtube", "reddit", "trustpilot", "kiyoh",
+    "wikipedia", "instagram", "facebook", "twitter", "pinterest", "tiktok",
+    "decathlon", "wiggle", "chainreactioncycles", "bike24", "bikester",
+    "coolblue", "mediamarkt", "sportsdirect", "aliexpress", "ebay",
+    "cyclingnews", "bikeradar", "velonews", "cyclingweekly", "rouleur",
+    "fiets.nl", "wielrennen.nl", "strava", "komoot", "garmin",
+    "velluto",  # ourselves
+}
+
+
+def extract_brand_name(domain: str) -> str:
+    """Turn a domain into a clean brand name. e.g. 'uvex-sports.com' → 'Uvex'."""
+    name = re.sub(r'\.(com|nl|de|cc|co\.uk|eu|be|fr|es|it|us)$', '', domain, flags=re.I)
+    for suffix in ["-sports", "-eyewear", "-optics", "-glasses", "-cycling",
+                   "sports", "eyewear", "optics", "glasses", "cycling", "bike"]:
+        name = re.sub(rf'{re.escape(suffix)}$', '', name, flags=re.I)
+    name = name.replace("-", " ").strip()
+    words = []
+    for w in name.split():
+        words.append(w.upper() if len(w) <= 3 else w.capitalize())
+    return " ".join(words) or domain
 
 # Velluto's honest advantages to use in comparison posts
 VELLUTO_ADVANTAGES = """
@@ -109,47 +142,97 @@ def fetch_page_intel(url: str) -> dict | None:
 
 # ── Competitor research ───────────────────────────────────────────────────────
 
+def is_competitor(domain: str) -> bool:
+    """True if domain looks like a brand competitor, not a retailer/media/marketplace."""
+    d = domain.lower()
+    return not any(skip in d for skip in _SKIP_DOMAINS)
+
+
+def load_known_competitors() -> dict:
+    """Load previously discovered competitors {domain: brand_name}."""
+    return json.load(open(COMPETITORS_LOG)) if os.path.exists(COMPETITORS_LOG) else {}
+
+
+def save_known_competitors(registry: dict):
+    json.dump(registry, open(COMPETITORS_LOG, "w"), indent=2)
+
+
 def research_competitors() -> dict:
     """
-    For each analysis keyword: get top search results, identify competitor pages,
-    fetch their SEO structure.
+    Search all languages (EN/NL/DE), discover any brand ranking in top 5 dynamically.
+    Returns {keyword: [page_intel, ...]} across all languages.
     """
-    findings = {}
+    findings   = {}
+    registry   = load_known_competitors()  # persist discovered brands across runs
+    new_brands = 0
+
     try:
         from ddgs import DDGS
+        all_keywords = [
+            (lang, kw)
+            for lang, kws in ANALYSIS_KEYWORDS.items()
+            for kw in kws
+        ]
         with DDGS() as ddgs:
-            for kw in ANALYSIS_KEYWORDS:
-                print(f"   Researching: '{kw}'...")
+            for lang, kw in all_keywords:
+                print(f"   [{lang.upper()}] '{kw}'")
                 try:
                     hits = list(ddgs.text(kw, max_results=10))
                 except Exception:
                     hits = []
+
                 top_pages = []
                 for hit in hits:
                     url  = hit.get("href", "")
                     body = hit.get("body", "")
                     titl = hit.get("title", "")
-                    if "velluto" in url.lower():
+
+                    # Extract domain
+                    m = re.search(r'https?://(?:www\.)?([^/]+)', url)
+                    if not m:
                         continue
-                    # Include any cycling/eyewear relevant result, not just known competitors
+                    domain = m.group(1).lower()
+
+                    if not is_competitor(domain):
+                        continue
+
+                    # Register new competitor dynamically
+                    if domain not in registry:
+                        brand = extract_brand_name(domain)
+                        registry[domain] = brand
+                        new_brands += 1
+                        print(f"      🆕 Discovered competitor: {brand} ({domain})")
+                    else:
+                        brand = registry[domain]
+
                     intel = {
-                        "url": url,
-                        "title": titl,
-                        "snippet": body[:200],
-                        "competitor": next((n for n, d in COMPETITORS.items() if d in url.lower()), "other"),
+                        "url":        url,
+                        "title":      titl,
+                        "snippet":    body[:200],
+                        "competitor": brand,
+                        "domain":     domain,
+                        "language":   lang,
                     }
-                    # Try to fetch page structure for top 3 results
+                    # Deep-fetch page structure for top 3 per keyword
                     if len(top_pages) < 3:
                         page = fetch_page_intel(url)
                         if page:
                             intel.update(page)
+
                     top_pages.append(intel)
                     if len(top_pages) >= 5:
                         break
-                findings[kw] = top_pages
-                time.sleep(2)
+
+                if top_pages:
+                    findings[f"[{lang.upper()}] {kw}"] = top_pages
+                time.sleep(1.5)
+
     except Exception as e:
         print(f"   ✗ Competitor research failed: {e}")
+
+    save_known_competitors(registry)
+    if new_brands:
+        print(f"   ✓ {new_brands} new competitor(s) added to registry ({len(registry)} total)")
     return findings
 
 
@@ -157,70 +240,81 @@ def research_competitors() -> dict:
 
 def detect_top_competitors(competitor_data: dict) -> list[dict]:
     """
-    Find competitors ranking in top 3 positions for our keywords.
-    Returns list of {competitor, keyword, position, title, snippet} sorted by position.
+    Find any brand ranking in top 3 across all language keyword searches.
+    Returns list sorted by position (best first).
     """
     hits = []
     for kw, pages in competitor_data.items():
         for i, page in enumerate(pages[:3], start=1):
             name = page.get("competitor", "")
-            if name and name != "other":
+            if name:
                 hits.append({
                     "competitor": name,
+                    "domain":     page.get("domain", ""),
                     "keyword":    kw,
                     "position":   i,
                     "title":      page.get("title", ""),
                     "snippet":    page.get("snippet", ""),
                     "h2s":        page.get("h2s", []),
                     "word_count": page.get("word_count", 0),
+                    "language":   page.get("language", "en"),
                 })
-    # Sort: top positions first
     hits.sort(key=lambda x: x["position"])
     return hits
 
 
 def generate_comparison_topics(top_competitors: list[dict], already_used: list[str]) -> list[str]:
     """
-    For each high-ranking competitor, generate a targeted comparison blog topic.
-    Only generates a topic if we haven't already published a similar one.
+    For each top-ranking competitor (any brand, any language), generate a
+    targeted comparison topic in the language of the keyword that triggered it.
     """
     if not top_competitors:
         return []
 
-    # Deduplicate by competitor — only one topic per competitor at a time
-    seen_competitors = set()
-    unique_hits = []
+    seen = set()
+    unique = []
     for h in top_competitors:
-        if h["competitor"] not in seen_competitors:
-            seen_competitors.add(h["competitor"])
-            unique_hits.append(h)
+        if h["competitor"] not in seen:
+            seen.add(h["competitor"])
+            unique.append(h)
 
     topics = []
-    for h in unique_hits[:4]:  # max 4 comparison posts queued at once
+    for h in unique[:5]:
         name = h["competitor"]
-        kw   = h["keyword"]
+        kw   = h["keyword"]        # e.g. "[NL] wielrenbril kopen"
         pos  = h["position"]
+        lang = h.get("language", "en")
 
-        # Skip if we already have a comparison post for this competitor
         already_covered = any(
             name.lower() in t.lower() and "vs" in t.lower()
             for t in already_used
         )
         if already_covered:
-            print(f"   Already have a {name} comparison post — skipping")
+            print(f"   {name} comparison already published — skipping")
             continue
 
-        # Generate topic based on keyword context
-        if "kopen" in kw or "buy" in kw or "best" in kw:
-            topic = f"{name} vs Velluto StradaPro — which cycling glasses are worth buying in 2026"
-        elif "review" in kw:
-            topic = f"{name} cycling glasses review vs Velluto — an honest comparison"
-        elif "wielrenbril" in kw:
-            topic = f"{name} wielrenbril vs Velluto StradaPro — eerlijke vergelijking 2026"
+        # Match topic language to keyword language
+        if lang == "nl" or "wielrenbril" in kw or "fietsbril" in kw:
+            if "kopen" in kw or "beste" in kw:
+                topic = f"{name} wielrenbril vs Velluto StradaPro — welke is het waard in 2026"
+            elif "test" in kw or "review" in kw:
+                topic = f"{name} vs Velluto — eerlijke vergelijking voor wielrenners"
+            else:
+                topic = f"{name} vs Velluto StradaPro wielrenbril — eerlijke vergelijking 2026"
+        elif lang == "de" or "Rennrad" in kw or "Fahrrad" in kw:
+            if "kaufen" in kw or "beste" in kw:
+                topic = f"{name} vs Velluto StradaPro Rennradbrille — welche lohnt sich 2026"
+            else:
+                topic = f"{name} Rennradbrille vs Velluto — ehrlicher Vergleich 2026"
         else:
-            topic = f"{name} vs Velluto cycling glasses — same performance, better value"
+            if "buy" in kw or "best" in kw:
+                topic = f"{name} vs Velluto StradaPro — which cycling glasses are worth buying in 2026"
+            elif "review" in kw:
+                topic = f"{name} cycling glasses vs Velluto — an honest comparison"
+            else:
+                topic = f"{name} vs Velluto cycling glasses — same performance, better value"
 
-        print(f"   → Competitor post queued: '{topic}' (they rank #{pos} for '{kw}')")
+        print(f"   → Queued: '{topic}' [{lang.upper()}] (#{pos} for '{kw}')")
         topics.append(topic)
 
     return topics
