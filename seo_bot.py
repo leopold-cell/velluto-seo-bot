@@ -461,16 +461,20 @@ Write 3 language versions (550-700 words each):
 <h2>[FAQ — 3 questions]</h2>
 <p>[CTA → https://velluto-shop.com]</p>
 
-RETURN ONLY valid JSON:
-{{
-  "keyword": "chosen long-tail keyword",
-  "title_en": "max 60 chars, contains keyword",
-  "meta_description": "max 155 chars English, contains keyword",
-  "tags": "ENGLISH ONLY: keyword,cycling glasses,road cycling,Velluto StradaPro",
-  "en_html": "complete English HTML",
-  "nl_html": "complete Dutch HTML — 100% Dutch",
-  "de_html": "complete German HTML — 100% German"
-}}"""
+Use EXACTLY this output format — delimiters on their own lines, no extra text outside them:
+
+===META===
+keyword: <chosen long-tail keyword>
+title_en: <max 60 chars, contains keyword>
+meta_description: <max 155 chars English, contains keyword>
+tags: <ENGLISH ONLY: keyword,cycling glasses,road cycling,Velluto StradaPro>
+===EN===
+<complete English HTML here>
+===NL===
+<complete Dutch HTML here — 100% Dutch>
+===DE===
+<complete German HTML here — 100% German>
+===END==="""
 
     GENERATE_MODEL = "claude-sonnet-4-6"
     response = client.messages.create(
@@ -482,13 +486,33 @@ RETURN ONLY valid JSON:
     cost = log_usage(response.usage.input_tokens, response.usage.output_tokens, model=GENERATE_MODEL)
     print(f"   Tokens in:{response.usage.input_tokens} out:{response.usage.output_tokens} | ${cost:.4f}")
 
-    raw = response.content[0].text.strip()
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"): raw = raw[4:]
-
-    post = json.loads(raw)
+    raw = response.content[0].text
+    post = _parse_response(raw)
     print(f"   Keyword: {post.get('keyword', '—')}")
+    return post
+
+
+def _parse_response(raw: str) -> dict:
+    """Parse delimiter-based response — robust against HTML containing quotes or braces."""
+    def extract(tag_start, tag_end):
+        m = re.search(rf'{re.escape(tag_start)}\n(.*?)\n{re.escape(tag_end)}', raw, re.DOTALL)
+        return m.group(1).strip() if m else ""
+
+    meta_block = extract("===META===", "===EN===")
+    en_html    = extract("===EN===",   "===NL===")
+    nl_html    = extract("===NL===",   "===DE===")
+    de_html    = extract("===DE===",   "===END===")
+
+    post = {"en_html": en_html, "nl_html": nl_html, "de_html": de_html}
+    for line in meta_block.splitlines():
+        if ":" in line:
+            k, _, v = line.partition(":")
+            post[k.strip()] = v.strip()
+
+    required = {"keyword", "title_en", "meta_description", "tags", "en_html", "nl_html", "de_html"}
+    missing = required - set(post.keys())
+    if missing or not post.get("en_html"):
+        raise ValueError(f"Response missing fields: {missing}. Raw snippet: {raw[:300]}")
     return post
 
 
