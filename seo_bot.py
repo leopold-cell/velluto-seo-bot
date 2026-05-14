@@ -34,11 +34,12 @@ BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 API_KEY       = os.getenv("ANTHROPIC_API_KEY")
 
 client = Anthropic(api_key=API_KEY)
-USAGE_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token_usage.json")
-TOPIC_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_used.json")
-IMAGES_LOG   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images_used.json")
-DYNAMIC_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_dynamic.json")
-INSIGHTS_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seo_insights.json")
+USAGE_LOG      = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token_usage.json")
+TOPIC_LOG      = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_used.json")
+IMAGES_LOG     = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images_used.json")
+DYNAMIC_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_dynamic.json")
+INSIGHTS_LOG   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seo_insights.json")
+PUBLISHED_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "published_today.json")
 
 
 def load_seo_insights(topic: str = "") -> str:
@@ -57,6 +58,12 @@ def load_seo_insights(topic: str = "") -> str:
         if ins.get("seo_quick_wins"):
             parts.append("SEO QUICK WINS TO APPLY:\n" +
                          "\n".join(f"• {w}" for w in ins["seo_quick_wins"]))
+        if ins.get("meta_title_fixes"):
+            parts.append("META TITLE IMPROVEMENTS (real Google CTR data — apply these patterns):\n" +
+                         "\n".join(f"• {f}" for f in ins["meta_title_fixes"]))
+        if ins.get("content_quick_wins"):
+            parts.append("CONTENT DEPTH TARGETS (real Google impression data — topics needing richer posts):\n" +
+                         "\n".join(f"• {w}" for w in ins["content_quick_wins"]))
         if ins.get("geo_angles"):
             parts.append("GEO/AI VISIBILITY ANGLES:\n" +
                          "\n".join(f"• {a}" for a in ins["geo_angles"]))
@@ -259,14 +266,20 @@ WHITELIST = {
 
 # Images that should NOT be used as blog hero (stats, offers, UI graphics)
 _EXCLUDE_AS_HERO = {"purplestats", "offerpurple", "visioneexplained"}
-HERO_WHITELIST = {k: v for k, v in WHITELIST.items() if k not in _EXCLUDE_AS_HERO}
+
+# Images confirmed too small for a 1200×800 cover (would be upscaled → blurry/oversized)
+# Dimensions from scan: Rick_Arancia=534×626, Review_2=1024×1365, Review_14=670×803
+_TOO_SMALL_FOR_HERO = {"Rick_Arancia", "Review_2", "Review_14"}
+
+HERO_WHITELIST = {k: v for k, v in WHITELIST.items()
+                  if k not in _EXCLUDE_AS_HERO and k not in _TOO_SMALL_FOR_HERO}
 
 # Categorise so 3 daily posts always rotate across visually distinct image types
 IMAGE_CATEGORIES = {
-    "review":    ["Review_1","Review_2","Review_3","Review_4","Review_5","Review_6",
-                  "Review_7","Review_9","Review_10","Review_12","Review_13","Review_14",
+    "review":    ["Review_1","Review_3","Review_4","Review_5","Review_6",
+                  "Review_7","Review_9","Review_10","Review_12","Review_13",
                   "Review_16","Review_17","Review_18","Review_19","testimonialmob7","image00012"],
-    "lifestyle": ["Rick_Arancia","TransparentMale","VellutoModelMale002","FooterExportsPeople",
+    "lifestyle": ["TransparentMale","VellutoModelMale002","FooterExportsPeople",
                   "FooterExports_Female","Lifestylestudiomobile","Lifestyle_mobileUGC",
                   "Lifestyle_1x1","LifestyleSection_Transparent","LifestyleSection_Orange",
                   "Velluto_BuilttoPerform_Violet","Hero-mobile-v2","Hero-mobile","brown1"],
@@ -623,7 +636,7 @@ Use hyperlinks and product cards only for visual product integration.
 PRODUCTS (EXACT URLs only — never invent):
 {product_json}
 
-Write 3 language versions (550-700 words each):
+Write 3 language versions (800-1000 words each — quality over quantity, go deep):
 
 <h1>[Contains long-tail keyword naturally]</h1>
 <p>[Intro — {get_cycling_context()} hook, keyword appears here]</p>
@@ -762,9 +775,10 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
         f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json",
         headers=SHOPIFY_HEADERS, json=payload, timeout=20)
     if r.status_code == 201:
-        aid = r.json()["article"]["id"]
+        art = r.json()["article"]
+        aid, handle = art["id"], art.get("handle", "")
         print(f"   ✓ Published: {title} (ID: {aid})")
-        return aid
+        return aid, handle
     raise RuntimeError(f"Shopify publish failed {r.status_code}: {r.text[:300]}")
 
 
@@ -792,18 +806,30 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
         break
 
     body_html = build_article_html(post["en_html"], post["nl_html"], post["de_html"])
-    publish(
+    aid, handle = publish(
         title=post["title_en"],
         body_html=body_html,
         meta_desc=post["meta_description"],
         tags=post["tags"],
         featured_url=cover_url
     )
+    # Record for link_builder.py
+    published = json.load(open(PUBLISHED_LOG)) if os.path.exists(PUBLISHED_LOG) else []
+    published.append({
+        "title":   post["title_en"],
+        "url":     f"https://velluto-shop.com/blogs/news/{handle}",
+        "topic":   topic,
+        "keyword": post.get("keyword", ""),
+        "tags":    post.get("tags", ""),
+    })
+    json.dump(published, open(PUBLISHED_LOG, "w"), indent=2)
 
 
 def main():
-    print(f"\n🚴 Velluto SEO Bot — {datetime.date.today()} (3 posts/day)")
+    print(f"\n🚴 Velluto SEO Bot — {datetime.date.today()} (1 post/day, quality-first)")
     print("=" * 55)
+
+    json.dump([], open(PUBLISHED_LOG, "w"))  # reset daily publish log
 
     print("📡 Searching trends + researching new topics...")
     trends = search_trends()
@@ -817,18 +843,15 @@ def main():
     print(f"   {len(products)} active products")
 
     published = 0
-    for i in range(1, 4):
-        try:
-            topic = get_unused_topic()
-            publish_one(topic, trends, products, i)
-            published += 1
-        except Exception as e:
-            print(f"   ❌ Post {i} failed: {e}")
-        if i < 3:
-            time.sleep(8)  # brief pause between posts to avoid rate limits
+    try:
+        topic = get_unused_topic()
+        publish_one(topic, trends, products, 1)
+        published += 1
+    except Exception as e:
+        print(f"   ❌ Post failed: {e}")
 
     print_usage()
-    print(f"\n✅ {published}/3 posts published today.\n")
+    print(f"\n✅ {published}/1 post published today.\n")
 
 
 if __name__ == "__main__":
