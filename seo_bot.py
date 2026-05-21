@@ -654,14 +654,14 @@ ARTICLE_CSS = """
     left:50%;
     transform:translateX(-50%);
     overflow-x:hidden;
-    background:#f5f4f1;
+    background:#ffffff;
     color:#0a0a0a;
     font-family:'Manrope','Helvetica Neue',Helvetica,Arial,sans-serif;
     font-size:16px;line-height:1.55;
     -webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility;
-    --bg:#f5f4f1;--bg-2:#ebeae5;--ink:#0a0a0a;--ink-2:#1b1b1b;--mute:#8b8a85;
-    --hair:#0a0a0a14;--hair-strong:#0a0a0a26;--paper:#ffffff;
+    --bg:#ffffff;--bg-2:#f0efec;--ink:#0a0a0a;--ink-2:#1b1b1b;--mute:#8b8a85;
+    --hair:#0a0a0a14;--hair-strong:#0a0a0a26;--paper:#f7f6f3;
     --sans:'Manrope','Helvetica Neue',Helvetica,Arial,sans-serif;
   }
   .vl *,.vl *::before,.vl *::after{box-sizing:border-box;margin:0;padding:0}
@@ -674,10 +674,6 @@ ARTICLE_CSS = """
   @media(max-width:480px){.vl .wrap{padding:0 16px}}
   /* ── Hero ── */
   .vl .hero{padding:64px 0 0}
-  .vl .hero-meta-top{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);font-weight:500;margin-bottom:48px;}
-  .vl .hero-meta-top a{text-decoration:none;color:var(--mute)}
-  .vl .hero-meta-top a:hover{color:var(--ink)}
-  .vl .hero-meta-top .sep{margin:0 10px;opacity:.5}
   .vl .hero-eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;margin-bottom:24px;display:inline-flex;gap:10px;align-items:center;}
   .vl .hero-eyebrow::before{content:"";width:24px;height:1px;background:var(--ink);display:inline-block;}
   .vl .hero-title{font-family:var(--sans);font-weight:600;font-size:clamp(40px,6.4vw,92px);line-height:1.0;letter-spacing:-0.035em;color:var(--ink);max-width:18ch;text-wrap:balance;}
@@ -689,7 +685,7 @@ ARTICLE_CSS = """
   .vl .hero-meta-bottom dd{font-size:14px;color:var(--ink);font-weight:500}
   /* Hero figure — full bleed inside .vl */
   .vl .hero-figure{margin:48px 0 0;aspect-ratio:21/9;max-height:560px;background:var(--bg-2);overflow:hidden;position:relative;}
-  .vl .hero-figure img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.02);}
+  .vl .hero-figure img{width:100%;height:100%;object-fit:cover;}
   .vl .hero-figure .credit{position:absolute;left:24px;bottom:18px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#fff;font-weight:500;mix-blend-mode:difference;}
   /* ── Mobile TOC (replaces sidebar on phones) ── */
   .vl .toc-mobile{display:none}
@@ -744,7 +740,7 @@ ARTICLE_CSS = """
   .vl .crit p{font-size:14px;color:var(--ink-2);line-height:1.5;margin-top:auto}
   @media(max-width:520px){.vl .criteria{grid-template-columns:1fr}}
   /* ── Product card ── */
-  .vl .product{margin:64px 0;background:var(--paper);display:grid;grid-template-columns:1fr 1fr;overflow:hidden;border:1px solid var(--hair-strong);}
+  .vl .product{margin:64px 0;background:var(--paper);display:grid;grid-template-columns:1fr 1fr;overflow:hidden;border:1px solid var(--hair-strong);box-shadow:0 2px 12px rgba(0,0,0,0.07);}
   .vl .product-media{background:var(--paper);position:relative;aspect-ratio:4/3;overflow:hidden;border-right:1px solid var(--hair-strong);}
   .vl .product-media img{width:100%;height:100%;object-fit:cover;transition:transform .8s ease;}
   .vl .product:hover .product-media img{transform:scale(1.03)}
@@ -794,6 +790,8 @@ ARTICLE_CSS = """
   .vl .faq details[open] summary::after{background-size:14px 1.4px,0 0;transform:rotate(180deg);}
   .vl .faq .answer{padding:0 36px 28px 0;font-size:15.5px;line-height:1.6;color:var(--ink-2);animation:vl-fadein .25s ease;}
   @keyframes vl-fadein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  /* ── Mobile share strip (visible only ≤760px, below article) ── */
+  .vl .mobile-share{display:none}
   /* ── Right sidebar ── */
   .vl aside.right{position:sticky;top:120px;font-size:13px;color:var(--mute)}
   .vl .author-card{padding:0 0 24px;}
@@ -828,42 +826,41 @@ ARTICLE_CSS = """
   }
   /* ── Responsive — 720px ── */
   @media(max-width:720px){
-    .vl .hero{padding-top:32px}
-    .vl .hero-meta-top{flex-direction:column;gap:8px;align-items:flex-start;margin-bottom:28px;font-size:10.5px;}
+    .vl .hero{padding-top:40px}
     .vl .hero-eyebrow{margin-bottom:18px;font-size:10.5px}
     .vl .hero-title{font-size:clamp(34px,9vw,52px);max-width:none}
-    .vl .hero-sub{margin-top:20px;font-size:16px}
+    .vl .hero-sub{margin-top:20px;font-size:16.5px}
     .vl .hero-meta-bottom{margin-top:36px;padding:18px 0;grid-template-columns:repeat(2,1fr);gap:16px 18px;}
     .vl .hero-meta-bottom dd{font-size:13px}
-    .vl .hero-figure{margin-top:32px;aspect-ratio:4/3}
+    .vl .hero-figure{margin-top:32px;aspect-ratio:3/2}
     .vl .hero-figure .credit{left:14px;bottom:12px;font-size:9.5px}
     /* show mobile TOC */
     .vl .toc-mobile{
-      display:block;margin:32px -18px 0;background:var(--paper);
-      border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);
+      display:block;margin:36px -18px 0;background:var(--paper);
+      border-top:2px solid var(--ink);border-bottom:1px solid var(--hair-strong);
     }
     .vl .toc-mobile summary{
-      list-style:none;cursor:pointer;padding:18px;display:flex;justify-content:space-between;
+      list-style:none;cursor:pointer;padding:18px 20px;display:flex;justify-content:space-between;
       align-items:center;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-      color:var(--ink);font-weight:700;
+      color:var(--ink);font-weight:700;min-height:52px;
     }
     .vl .toc-mobile summary::-webkit-details-marker{display:none}
     .vl .toc-mobile summary .count{font-weight:500;color:var(--mute);letter-spacing:.18em;font-size:10.5px;display:flex;align-items:center;gap:10px;}
-    .vl .toc-mobile summary .count::after{content:"+";font-size:16px;color:var(--ink);font-weight:400;line-height:1;transition:transform .25s}
+    .vl .toc-mobile summary .count::after{content:"+";font-size:18px;color:var(--ink);font-weight:300;line-height:1;transition:transform .25s}
     .vl .toc-mobile[open] summary .count::after{transform:rotate(45deg)}
     .vl .toc-mobile ol{list-style:none;border-top:1px solid var(--hair);}
     .vl .toc-mobile li{border-bottom:1px solid var(--hair)}
     .vl .toc-mobile li:last-child{border-bottom:0}
-    .vl .toc-mobile a{display:flex;gap:14px;padding:14px 18px;font-size:14.5px;color:var(--ink);text-decoration:none;line-height:1.35;min-height:44px;align-items:center;}
+    .vl .toc-mobile a{display:flex;gap:14px;padding:16px 20px;font-size:15px;color:var(--ink);text-decoration:none;line-height:1.35;min-height:52px;align-items:center;}
     .vl .toc-mobile a .n{font-size:11px;color:var(--mute);font-weight:700;letter-spacing:.08em;flex-shrink:0;width:24px;}
     /* article */
-    .vl .article{padding:40px 0 24px}
-    .vl article > * + *{margin-top:16px}
-    .vl article p{font-size:16px}
-    .vl article p.lede{font-size:18px;margin-bottom:24px}
+    .vl .article{padding:56px 0 32px}
+    .vl article > * + *{margin-top:18px}
+    .vl article p{font-size:16.5px}
+    .vl article p.lede{font-size:19px;margin-bottom:28px}
     .vl article h2{font-size:clamp(24px,6.4vw,30px);margin-top:48px;padding-top:24px;scroll-margin-top:80px;}
     .vl article h2 .sec-num{font-size:10.5px;margin-bottom:10px}
-    .vl article ul li,.vl article ol li{padding:14px 0 14px 48px;font-size:15.5px;}
+    .vl article ul li,.vl article ol li{padding:14px 0 14px 48px;font-size:16px;min-height:52px;}
     .vl article ul li::before{top:23px;left:16px;width:16px}
     .vl article ol li::before{font-size:10.5px}
     .vl .inline-figure{margin:32px -18px;border-left:0;border-right:0}
@@ -878,36 +875,51 @@ ARTICLE_CSS = """
     .vl .spec-strip > div{padding:22px 16px}
     .vl .spec-strip .big{font-size:36px}
     .vl .product{margin:44px 0}
-    .vl .product-media{aspect-ratio:1/1}
+    .vl .product-media{aspect-ratio:4/3}
     .vl .product-info{padding:24px 20px;gap:16px}
     .vl .product-name{font-size:24px}
     .vl .product-specs{padding:14px 0;gap:14px}
     .vl .product-cta-row{flex-direction:column;align-items:stretch}
-    .vl .product-cta{flex:0 0 auto;min-width:0;min-height:48px;width:100%;justify-content:space-between;}
+    .vl .product-cta{flex:0 0 auto;min-width:0;min-height:52px;width:100%;justify-content:space-between;}
     .vl .product-cta.secondary{text-align:center;justify-content:center}
     .vl .variants{margin:28px 0}
     .vl .variants .v-info{padding:12px 14px}
-    .vl .faq summary{font-size:16px;padding:20px 0;gap:16px}
-    .vl .faq .answer{padding:0 0 20px;font-size:15px}
+    .vl .faq summary{font-size:16.5px;padding:20px 0;gap:16px;min-height:56px;}
+    .vl .faq .answer{padding:0 0 22px;font-size:15.5px}
+    /* mobile share strip */
+    .vl .mobile-share{
+      display:flex;align-items:center;gap:0;margin:40px 0 0;
+      border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);
+      padding:0;overflow:hidden;
+    }
+    .vl .mobile-share span{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;padding:16px 18px;flex-shrink:0;border-right:1px solid var(--hair);}
+    .vl .mobile-share a{flex:1;display:flex;align-items:center;justify-content:center;padding:16px 12px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--ink);letter-spacing:.06em;text-transform:uppercase;border-right:1px solid var(--hair);min-height:52px;transition:background .2s;}
+    .vl .mobile-share a:last-child{border-right:none}
+    .vl .mobile-share a:active{background:var(--bg-2)}
     .vl .ride{margin:64px 0 0;padding:64px 18px}
     .vl .ride-inner{grid-template-columns:1fr;gap:20px}
     .vl .ride h2{font-size:clamp(40px,11vw,64px)}
     .vl .ride p{font-size:15px;max-width:none}
-    .vl .ride-cta{width:100%;justify-content:space-between;padding:16px 20px;min-height:48px;}
+    .vl .ride-cta{width:100%;justify-content:space-between;padding:16px 20px;min-height:52px;}
   }
   /* ── Responsive — 480px ── */
   @media(max-width:480px){
     .vl .wrap{padding:0 16px}
     .vl .hero-title{font-size:clamp(30px,10vw,46px);letter-spacing:-0.03em;line-height:1.02}
+    .vl .hero-meta-bottom div:nth-child(n+3){display:none}
     .vl .toc-mobile{margin-left:-16px;margin-right:-16px}
-    .vl .toc-mobile summary{padding:16px}
-    .vl .toc-mobile a{padding:13px 16px;font-size:14px}
+    .vl .toc-mobile summary{padding:16px 18px}
+    .vl .toc-mobile a{padding:14px 16px;font-size:14.5px}
     .vl .inline-figure{margin-left:-16px;margin-right:-16px}
+    .vl article p{font-size:16px}
+    .vl article p.lede{font-size:18px}
     .vl .product-info{padding:22px 18px}
     .vl .product-name{font-size:22px}
     .vl .crit{padding:20px 18px}
     .vl .spec-strip > div{padding:18px 14px}
     .vl .spec-strip .big{font-size:32px}
+    .vl .mobile-share span{padding:14px 14px}
+    .vl .mobile-share a{padding:14px 10px;font-size:12px}
     .vl .ride{padding:48px 20px}
     .vl .ride h2{font-size:clamp(38px,13vw,56px)}
   }
@@ -1326,10 +1338,6 @@ Schreibe einen vollständigen deutschen Magazinartikel im Velluto-HTML-Template-
 PFLICHTSTRUKTUR des ===BODY===:
 
 <section class="hero wrap">
-  <div class="hero-meta-top">
-    <span><a href="https://velluto-shop.com/blogs/velluto-the-magazine">Magazin</a><span class="sep">/</span><a href="#">[KATEGORIE]</a></span>
-    <span>№ {art_num} — {season}</span>
-  </div>
   <div class="hero-eyebrow">[THEMENBEREICH, z.B. Gläser &amp; Technologie]</div>
   <h1 class="hero-title">[Haupttitel mit Keyword — 1-2 Zeilen, mit <em>Kursivakzent</em> möglich]</h1>
   <p class="hero-sub">[Untertitel — 1-2 Sätze, Mehrwert-Versprechen]</p>
@@ -1437,6 +1445,13 @@ PFLICHTSTRUKTUR des ===BODY===:
     </div>
   </aside>
 </section>
+
+<!-- Mobile Share Strip — nur auf Smartphones sichtbar (≤720px) -->
+<div class="mobile-share">
+  <span>Teilen</span>
+  <a href="https://twitter.com/intent/tweet?url=[ARTICLE_URL]&text=[TITLE]" rel="noopener">Twitter / X</a>
+  <a href="https://wa.me/?text=[TITLE]%20[ARTICLE_URL]" rel="noopener">WhatsApp</a>
+</div>
 
 <section class="ride">
   <div class="ride-inner">
