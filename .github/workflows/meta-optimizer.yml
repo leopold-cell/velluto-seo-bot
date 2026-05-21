@@ -1,0 +1,48 @@
+name: Meta Description Optimizer
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'   # every Monday 07:00 UTC (09:00 CEST)
+  workflow_dispatch:        # run manually anytime from GitHub UI
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run meta optimizer
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SHOPIFY_TOKEN:     ${{ secrets.SHOPIFY_TOKEN }}
+          SHOPIFY_STORE:     ${{ secrets.SHOPIFY_STORE }}
+          BLOG_ID:           ${{ secrets.BLOG_ID }}
+          GOOGLE_CLIENT_ID:     ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+        run: python meta_optimizer.py
+
+      - name: Commit log
+        continue-on-error: true
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add meta_optimization_log.json token_usage.json
+          git diff --cached --quiet || git commit -m "chore: meta description optimization $(date -u +%Y-%m-%d)"
+          git push
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            --data-urlencode "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --data-urlencode "text=❌ Meta Optimizer FAILED $(date +%Y-%m-%d)" || true

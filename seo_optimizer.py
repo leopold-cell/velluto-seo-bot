@@ -8,24 +8,30 @@ Velluto SEO Optimizer — runs daily after blog posts are published.
 4. Saves insights to seo_insights.json — injected into next day's generation
 """
 
-import os, json, datetime, re, requests, time
+import os, json, datetime, re, requests, time, urllib.parse
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
 
-client       = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+client        = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 SHOPIFY_TOKEN = os.getenv("SHOPIFY_TOKEN")
 SHOPIFY_STORE = os.getenv("SHOPIFY_STORE", "velluto-brand.myshopify.com")
 BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 SHOPIFY_HDR   = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 
-BASE               = os.path.dirname(os.path.abspath(__file__))
-INSIGHTS_LOG       = os.path.join(BASE, "seo_insights.json")
-USAGE_LOG          = os.path.join(BASE, "token_usage.json")
-DYNAMIC_LOG        = os.path.join(BASE, "topics_dynamic.json")
-TOPIC_LOG          = os.path.join(BASE, "topics_used.json")
-COMPETITORS_LOG    = os.path.join(BASE, "competitors_discovered.json")
+BASE            = os.path.dirname(os.path.abspath(__file__))
+INSIGHTS_LOG    = os.path.join(BASE, "seo_insights.json")
+USAGE_LOG       = os.path.join(BASE, "token_usage.json")
+DYNAMIC_LOG     = os.path.join(BASE, "topics_dynamic.json")
+TOPIC_LOG       = os.path.join(BASE, "topics_used.json")
+COMPETITORS_LOG = os.path.join(BASE, "competitors_discovered.json")
+GSC_LOG         = os.path.join(BASE, "gsc_data.json")
+
+GSC_CLIENT_ID     = os.getenv("GOOGLE_CLIENT_ID", "")
+GSC_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+GSC_REFRESH_TOKEN = os.getenv("GOOGLE_REFRESH_TOKEN", "")
+GSC_SITE_URL      = "https://velluto-shop.com/"
 
 # Multilingual keyword sets — one per shop language (EN / NL / DE)
 ANALYSIS_KEYWORDS = {
@@ -102,6 +108,109 @@ def log_usage(inp: int, out: int):
     e["cost_usd"] = round(e["cost_usd"] + cost, 6)
     json.dump(log, open(USAGE_LOG, "w"), indent=2)
     return cost
+
+
+# ── Google Search Console ────────────────────────────────────────────────────
+
+def _gsc_token() -> str | None:
+    if not all([GSC_CLIENT_ID, GSC_CLIENT_SECRET, GSC_REFRESH_TOKEN]):
+        return None
+    try:
+        r = requests.post("https://oauth2.googleapis.com/token", data={
+            "client_id": GSC_CLIENT_ID, "client_secret": GSC_CLIENT_SECRET,
+            "refresh_token": GSC_REFRESH_TOKEN, "grant_type": "refresh_token",
+        }, timeout=15)
+        return r.json().get("access_token")
+    except Exception as e:
+        print(f"   ⚠️  GSC token error: {e}")
+        return None
+
+
+def fetch_gsc() -> dict:
+    """Fetch 28-day GSC search analytics. Saves to gsc_data.json for dashboard to reuse."""
+    today = str(datetime.date.today())
+    if os.path.exists(GSC_LOG):
+        cached = json.load(open(GSC_LOG))
+        if cached.get("date") == today:
+            print("   GSC: using today's cache.")
+            return cached
+
+    token = _gsc_token()
+    if not token:
+        print("   ⚠️  GSC: credentials missing — skipping.")
+        return {}
+
+    end_date   = today
+    start_date = str(datetime.date.today() - datetime.timedelta(days=28))
+    site       = urllib.parse.quote(GSC_SITE_URL, safe="")
+    hdrs       = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+    def _q(dimensions, row_limit=25):
+        try:
+            r = requests.post(
+                f"https://searchconsole.googleapis.com/webmasters/v3/sites/{site}/searchAnalytics/query",
+                headers=hdrs,
+                json={"startDate": start_date, "endDate": end_date,
+                      "dimensions": dimensions, "rowLimit": row_limit},
+                timeout=15,
+            )
+            return r.json().get("rows", [])
+        except Exception as e:
+            print(f"   ⚠️  GSC query error: {e}")
+            return []
+
+    data = {
+        "date":        today,
+        "top_queries": _q(["query"], row_limit=25),
+        "top_pages":   _q(["page"],  row_limit=10),
+        "daily_trend": _q(["date"],  row_limit=28),
+    }
+    json.dump(data, open(GSC_LOG, "w"), indent=2)
+    total_clicks = sum(r.get("clicks", 0) for r in data["top_queries"])
+    print(f"   ✓ GSC: {len(data['top_queries'])} queries, {int(total_clicks)} clicks (28d)")
+    return data
+
+
+def gsc_opportunities(gsc: dict) -> dict:
+    """
+    Extract three actionable opportunity sets from GSC data:
+    - low_ctr:   high impressions but <3% CTR → meta title/description fix needed
+    - near_top:  positions 4-20 with good impressions → content depth push to top 3
+    - top_performing: already winning queries → double down on these topics
+    """
+    queries = gsc.get("top_queries", [])
+    if not queries:
+        return {}
+
+    low_ctr, near_top, top_performing = [], [], []
+
+    for row in queries:
+        kw   = row["keys"][0]
+        impr = row.get("impressions", 0)
+        ctr  = row.get("ctr", 0)
+        pos  = row.get("position", 99)
+        clks = row.get("clicks", 0)
+
+        if impr >= 30 and ctr < 0.03 and pos <= 25:
+            low_ctr.append({
+                "query": kw, "impressions": int(impr),
+                "ctr_pct": round(ctr * 100, 1), "avg_position": round(pos, 1),
+            })
+
+        if 4 <= pos <= 20 and impr >= 15:
+            near_top.append({
+                "query": kw, "avg_position": round(pos, 1),
+                "impressions": int(impr), "clicks": int(clks),
+            })
+
+        if clks >= 3:
+            top_performing.append({"query": kw, "clicks": int(clks), "ctr_pct": round(ctr * 100, 1)})
+
+    return {
+        "low_ctr_keywords": sorted(low_ctr, key=lambda x: x["impressions"], reverse=True)[:6],
+        "near_top_keywords": sorted(near_top, key=lambda x: x["impressions"], reverse=True)[:8],
+        "top_performing": sorted(top_performing, key=lambda x: x["clicks"], reverse=True)[:5],
+    }
 
 
 def clean_html(html: str) -> str:
@@ -358,35 +467,41 @@ def get_recent_posts(n=6) -> list[dict]:
 # ── Claude analysis ───────────────────────────────────────────────────────────
 
 def analyse_and_generate_insights(competitor_data: dict, our_posts: list[dict],
-                                   top_competitors: list[dict]) -> dict:
-    """Claude analyses competitor patterns vs our posts and generates actionable insights."""
+                                   top_competitors: list[dict],
+                                   gsc_opps: dict) -> dict:
+    """Claude analyses competitor patterns + real GSC data and generates actionable insights."""
 
     comp_summary  = json.dumps(competitor_data, indent=2)[:5000]
     our_summary   = json.dumps(our_posts, indent=2)[:2000]
     top_comp_str  = json.dumps(top_competitors[:6], indent=2)[:1500]
+    gsc_str       = json.dumps(gsc_opps, indent=2)[:2000] if gsc_opps else "No GSC data available yet."
     today = str(datetime.date.today())
 
     response = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=2500,
+        max_tokens=3000,
         system=f"""You are an expert SEO strategist analysing a cycling eyewear brand (Velluto, velluto-shop.com).
-Your job: analyse competitor rankings and content, compare to Velluto's recent posts,
-and produce specific actionable improvements. Be concrete — use data from the actual results.
+Your job: use real Google Search Console data + competitor analysis to produce specific, data-driven
+improvements. Prioritise actions based on actual search impressions and click data.
 
 {VELLUTO_ADVANTAGES}""",
         messages=[{"role": "user", "content": f"""
 Today: {today}
 
+GOOGLE SEARCH CONSOLE DATA (real Google impressions + clicks, last 28 days):
+{gsc_str}
+
 TOP COMPETITOR CONTENT (search results + page structure):
 {comp_summary}
 
-COMPETITORS RANKING IN TOP 3 (these are the ones we should specifically target):
+COMPETITORS RANKING IN TOP 3:
 {top_comp_str}
 
 OUR RECENT POSTS:
 {our_summary}
 
-Analyse and return ONLY this JSON (no extra text):
+Use the GSC data to prioritise: low-CTR keywords need meta title fixes, near-top keywords
+need deeper content. Analyse and return ONLY this JSON (no extra text):
 {{
   "analysis_date": "{today}",
   "competitor_patterns": [
@@ -399,16 +514,22 @@ Analyse and return ONLY this JSON (no extra text):
     "3-5 specific long-tail keywords competitors rank for that we haven't covered"
   ],
   "next_post_guidelines": [
-    "5-7 specific writing instructions for tomorrow's posts"
+    "5-7 specific writing instructions for tomorrow's posts based on GSC + competitor data"
   ],
   "seo_quick_wins": [
     "2-3 immediate structural improvements to apply to all future posts"
+  ],
+  "meta_title_fixes": [
+    "For each low-CTR keyword from GSC: suggest a new meta title (max 60 chars) that will improve CTR. Format: 'QUERY → New title: [title] | Why: [reason]'"
+  ],
+  "content_quick_wins": [
+    "For each near-top-3 keyword from GSC: suggest a specific blog post topic or content angle to push it from position X to top 3. Format: 'QUERY (pos X) → Topic: [topic] | Add: [what content to add]'"
   ],
   "geo_angles": [
     "2-3 angles that help Velluto appear in AI answers (ChatGPT, Perplexity, Google AI Overview)"
   ],
   "comparison_post_angles": [
-    "For each top-ranking competitor: 1 specific angle for a Velluto vs [Competitor] post. Format: 'COMPETITOR: angle — e.g. headline idea, key differentiator to highlight, which Velluto advantage to lead with'"
+    "For each top-ranking competitor: 1 specific angle for a Velluto vs [Competitor] post. Format: 'COMPETITOR: angle — headline idea, key differentiator, Velluto advantage to lead with'"
   ]
 }}
 """}]
@@ -427,6 +548,14 @@ Analyse and return ONLY this JSON (no extra text):
 def main():
     print(f"\n🔍 Velluto SEO Optimizer — {datetime.date.today()}")
     print("=" * 55)
+
+    print("📊 Fetching Google Search Console data...")
+    gsc      = fetch_gsc()
+    gsc_opps = gsc_opportunities(gsc)
+    if gsc_opps.get("low_ctr_keywords"):
+        print(f"   Low-CTR keywords: {len(gsc_opps['low_ctr_keywords'])} (meta fix needed)")
+    if gsc_opps.get("near_top_keywords"):
+        print(f"   Near-top-3 keywords: {len(gsc_opps['near_top_keywords'])} (content push needed)")
 
     print("📡 Researching competitor content...")
     competitor_data = research_competitors()
@@ -449,14 +578,16 @@ def main():
     if comparison_topics:
         inject_priority_topics(comparison_topics)
 
-    print("🧠 Running Claude SEO analysis...")
+    print("🧠 Running Claude SEO analysis (with GSC data)...")
     try:
-        insights = analyse_and_generate_insights(competitor_data, our_posts, top_competitors)
+        insights = analyse_and_generate_insights(
+            competitor_data, our_posts, top_competitors, gsc_opps)
         json.dump(insights, open(INSIGHTS_LOG, "w"), indent=2)
         print(f"   ✓ Insights saved to seo_insights.json")
         print(f"   Gaps: {len(insights.get('our_gaps', []))} | "
               f"Opportunities: {len(insights.get('keyword_opportunities', []))} | "
-              f"Comparison angles: {len(insights.get('comparison_post_angles', []))}")
+              f"Meta fixes: {len(insights.get('meta_title_fixes', []))} | "
+              f"Content pushes: {len(insights.get('content_quick_wins', []))}")
     except Exception as e:
         print(f"   ✗ Analysis failed: {e}")
         # Don't crash — seo_bot.py runs fine without insights

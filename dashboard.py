@@ -3,7 +3,7 @@
 Velluto SEO Dashboard — Sistrix-style, auto-generated daily via GitHub Actions.
 """
 
-import os, json, datetime, requests, re, time
+import os, json, datetime, requests, re, time, urllib.parse
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
@@ -13,11 +13,17 @@ SHOPIFY_STORE = os.getenv("SHOPIFY_STORE", "velluto-brand.myshopify.com")
 BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 HEADERS       = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 
-BASE    = os.path.dirname(os.path.abspath(__file__))
+BASE        = os.path.dirname(os.path.abspath(__file__))
 USAGE_LOG   = os.path.join(BASE, "token_usage.json")
 TOPIC_LOG   = os.path.join(BASE, "topics_used.json")
 DYNAMIC_LOG = os.path.join(BASE, "topics_dynamic.json")
 RANKING_LOG = os.path.join(BASE, "ranking_history.json")
+GSC_LOG     = os.path.join(BASE, "gsc_data.json")
+
+GSC_CLIENT_ID     = os.getenv("GOOGLE_CLIENT_ID", "")
+GSC_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+GSC_REFRESH_TOKEN = os.getenv("GOOGLE_REFRESH_TOKEN", "")
+GSC_SITE_URL      = "https://velluto-shop.com/"
 
 # ── Topic pools (mirrored from seo_bot.py) ───────────────────────────────────
 TOPIC_POOL = [
@@ -119,6 +125,70 @@ RANK_KEYWORDS = [
     "cycling glasses under 150",
     "cycling glasses adjustable nose pads",
 ]
+
+
+# ── Google Search Console ────────────────────────────────────────────────────
+
+def _gsc_token() -> str | None:
+    if not all([GSC_CLIENT_ID, GSC_CLIENT_SECRET, GSC_REFRESH_TOKEN]):
+        return None
+    try:
+        r = requests.post("https://oauth2.googleapis.com/token", data={
+            "client_id":     GSC_CLIENT_ID,
+            "client_secret": GSC_CLIENT_SECRET,
+            "refresh_token": GSC_REFRESH_TOKEN,
+            "grant_type":    "refresh_token",
+        }, timeout=15)
+        return r.json().get("access_token")
+    except Exception as e:
+        print(f"   ⚠️  GSC token error: {e}")
+        return None
+
+
+def fetch_gsc() -> dict:
+    """Read GSC data saved by seo_optimizer.py. Falls back to direct fetch if needed."""
+    today = str(datetime.date.today())
+    if os.path.exists(GSC_LOG):
+        cached = json.load(open(GSC_LOG))
+        if cached.get("date") == today:
+            print("   GSC data: loaded from optimizer cache.")
+            return cached
+
+    # Fallback: fetch directly if optimizer hasn't run yet
+    token = _gsc_token()
+    if not token:
+        print("   ⚠️  GSC: no data available — run seo_optimizer.py first.")
+        return {}
+
+    end_date   = today
+    start_date = str(datetime.date.today() - datetime.timedelta(days=28))
+    site       = urllib.parse.quote(GSC_SITE_URL, safe="")
+    hdrs       = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+    def _query(dimensions, row_limit=25):
+        try:
+            r = requests.post(
+                f"https://searchconsole.googleapis.com/webmasters/v3/sites/{site}/searchAnalytics/query",
+                headers=hdrs,
+                json={"startDate": start_date, "endDate": end_date,
+                      "dimensions": dimensions, "rowLimit": row_limit},
+                timeout=15,
+            )
+            return r.json().get("rows", [])
+        except Exception as e:
+            print(f"   ⚠️  GSC query failed: {e}")
+            return []
+
+    data = {
+        "date":        today,
+        "top_queries": _query(["query"], row_limit=25),
+        "top_pages":   _query(["page"],  row_limit=10),
+        "daily_trend": _query(["date"],  row_limit=28),
+    }
+    json.dump(data, open(GSC_LOG, "w"), indent=2)
+    clicks = sum(r.get("clicks", 0) for r in data["top_queries"])
+    print(f"   ✓ GSC: {len(data['top_queries'])} queries, {int(clicks)} clicks (28d)")
+    return data
 
 
 # ── Data fetchers ─────────────────────────────────────────────────────────────
@@ -295,7 +365,146 @@ def get_next_topics(n=10) -> list[dict]:
 
 # ── HTML build ────────────────────────────────────────────────────────────────
 
-def build_html(articles, usage, geo, ranking_history):
+def build_gsc_html(gsc: dict) -> str:
+    """Render the Google Search Console section or a placeholder if no data."""
+    if not gsc or not gsc.get("top_queries"):
+        return """
+<div class="table-card" style="margin-top:16px">
+  <div class="table-header">
+    <h3>Google Search Console</h3>
+    <span style="font-size:11px;color:#94a3b8">Run <code>python gsc_auth.py</code> locally and add the 3 secrets to GitHub to enable real GSC data.</span>
+  </div>
+</div>"""
+
+    queries  = gsc.get("top_queries", [])
+    pages    = gsc.get("top_pages", [])
+    trend    = sorted(gsc.get("daily_trend", []), key=lambda r: r["keys"][0])
+
+    total_clicks      = sum(r.get("clicks", 0) for r in queries)
+    total_impressions = sum(r.get("impressions", 0) for r in queries)
+    avg_ctr  = (sum(r.get("ctr", 0) for r in queries) / len(queries) * 100) if queries else 0
+    avg_pos  = (sum(r.get("position", 0) for r in queries) / len(queries)) if queries else 0
+
+    # Query rows
+    query_rows = ""
+    for row in queries:
+        kw       = row["keys"][0]
+        clicks   = int(row.get("clicks", 0))
+        impr     = int(row.get("impressions", 0))
+        ctr      = row.get("ctr", 0) * 100
+        pos      = row.get("position", 0)
+        bar_w    = min(int(clicks / max(queries[0].get("clicks", 1), 1) * 80), 80)
+        pos_cls  = "pos-top3" if pos <= 3 else ("pos-top10" if pos <= 10 else "pos-top20")
+        query_rows += f"""<tr>
+          <td class="td-kw">{kw}</td>
+          <td class="td-center" style="font-weight:700">{clicks}
+            <div style="height:3px;background:#1d4ed8;width:{bar_w}px;margin:2px auto 0;border-radius:2px;opacity:.4"></div>
+          </td>
+          <td class="td-center" style="color:#64748b">{impr:,}</td>
+          <td class="td-center" style="color:#0891b2">{ctr:.1f}%</td>
+          <td class="td-center"><span class="{pos_cls}">#{pos:.1f}</span></td>
+        </tr>"""
+
+    # Top pages rows
+    page_rows = ""
+    for row in pages[:5]:
+        url    = row["keys"][0].replace("https://velluto-shop.com", "")
+        clicks = int(row.get("clicks", 0))
+        impr   = int(row.get("impressions", 0))
+        page_rows += f"""<tr>
+          <td class="td-kw" style="font-size:12px;color:#475569">{url}</td>
+          <td class="td-center" style="font-weight:700">{clicks}</td>
+          <td class="td-center" style="color:#64748b">{impr:,}</td>
+        </tr>"""
+
+    # Trend chart data
+    trend_labels = [r["keys"][0][5:] for r in trend]   # MM-DD
+    trend_clicks = [int(r.get("clicks", 0)) for r in trend]
+    trend_impr   = [int(r.get("impressions", 0)) for r in trend]
+
+    return f"""
+<div style="margin-top:20px" class="section-title">Google Search Console — Last 28 Days</div>
+<!-- GSC KPI strip -->
+<div class="kpi-grid" style="margin-bottom:16px">
+  <div class="kpi accent">
+    <div class="label">Total Clicks</div>
+    <div class="val">{total_clicks:,}</div>
+    <div class="sub">from Google Search</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Impressions</div>
+    <div class="val">{total_impressions:,}</div>
+    <div class="sub">times shown in results</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Avg CTR</div>
+    <div class="val">{avg_ctr:.1f}%</div>
+    <div class="sub">click-through rate</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Avg Position</div>
+    <div class="val">{avg_pos:.1f}</div>
+    <div class="sub">across top queries</div>
+  </div>
+</div>
+<!-- GSC main content: query table + click trend + top pages -->
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+  <div class="table-card" style="margin-bottom:0">
+    <div class="table-header">
+      <h3>Top Search Queries</h3>
+      <span style="font-size:11px;color:#94a3b8">organic Google clicks · last 28 days</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Query</th>
+        <th class="td-center">Clicks</th>
+        <th class="td-center">Impressions</th>
+        <th class="td-center">CTR</th>
+        <th class="td-center">Avg Pos</th>
+      </tr></thead>
+      <tbody>{query_rows}</tbody>
+    </table>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="chart-card" style="flex:1">
+      <h3>Daily Clicks &amp; Impressions</h3>
+      <canvas id="gscTrendChart" height="130"></canvas>
+    </div>
+    <div class="table-card" style="margin-bottom:0">
+      <div class="table-header"><h3>Top Pages</h3></div>
+      <table>
+        <thead><tr><th>Page</th><th class="td-center">Clicks</th><th class="td-center">Impr</th></tr></thead>
+        <tbody>{page_rows}</tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+new Chart(document.getElementById('gscTrendChart'), {{
+  type: 'bar',
+  data: {{
+    labels: {json.dumps(trend_labels)},
+    datasets: [
+      {{ label: 'Clicks', data: {json.dumps(trend_clicks)}, backgroundColor: '#1d4ed8', borderRadius: 2, yAxisID: 'y' }},
+      {{ label: 'Impressions', data: {json.dumps(trend_impr)}, type: 'line', borderColor: '#0891b2',
+         backgroundColor: 'rgba(8,145,178,.08)', fill: true, tension: 0.3, pointRadius: 0,
+         borderWidth: 2, yAxisID: 'y2' }}
+    ]
+  }},
+  options: {{
+    responsive: true, maintainAspectRatio: true,
+    plugins: {{ legend: {{ position: 'bottom', labels: {{ boxWidth: 10, font: {{ size: 10 }} }} }} }},
+    scales: {{
+      y:  {{ position: 'left',  beginAtZero: true, ticks: {{ font: {{ size: 9 }} }}, grid: {{ color: '#f1f5f9' }} }},
+      y2: {{ position: 'right', beginAtZero: true, ticks: {{ font: {{ size: 9 }} }}, grid: {{ display: false }} }},
+      x:  {{ ticks: {{ maxTicksLimit: 10, font: {{ size: 9 }} }}, grid: {{ display: false }} }}
+    }}
+  }}
+}});
+</script>"""
+
+
+def build_html(articles, usage, geo, ranking_history, gsc):
     today     = datetime.date.today()
     today_str = str(today)
     now       = datetime.datetime.now().strftime("%d %b %Y %H:%M")
@@ -418,6 +627,7 @@ def build_html(articles, usage, geo, ranking_history):
 
     vis_arrow = "▲" if vis_delta >= 0 else "▼"
     vis_color = "#16a34a" if vis_delta >= 0 else "#dc2626"
+    gsc_html  = build_gsc_html(gsc)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -594,6 +804,8 @@ footer{{text-align:center;padding:24px;font-size:11px;color:#94a3b8}}
   </div>
 </div>
 
+{gsc_html}
+
 </div><!-- /wrap -->
 
 <footer>Velluto SEO Intelligence · <a href="https://github.com/leopold-cell/velluto-seo-bot" style="color:#94a3b8">leopold-cell/velluto-seo-bot</a> · auto-updated daily</footer>
@@ -682,7 +894,10 @@ def main():
     print("   Checking GEO visibility...")
     geo = check_geo()
 
-    html = build_html(articles, usage, geo, ranking_history)
+    print("   Fetching Google Search Console data...")
+    gsc = fetch_gsc()
+
+    html = build_html(articles, usage, geo, ranking_history, gsc)
 
     out_dir = os.path.join(BASE, "docs")
     os.makedirs(out_dir, exist_ok=True)
