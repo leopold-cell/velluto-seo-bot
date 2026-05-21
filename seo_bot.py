@@ -656,13 +656,13 @@ ARTICLE_CSS = """
     overflow-x:hidden;
     background:#ffffff;
     color:#0a0a0a;
-    font-family:'Manrope','Helvetica Neue',Helvetica,Arial,sans-serif;
+    font-family:'Futura PT',Futura,'Century Gothic','Trebuchet MS',Arial,sans-serif;
     font-size:16px;line-height:1.55;
     -webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility;
     --bg:#ffffff;--bg-2:#f0efec;--ink:#0a0a0a;--ink-2:#1b1b1b;--mute:#8b8a85;
     --hair:#0a0a0a14;--hair-strong:#0a0a0a26;--paper:#f7f6f3;
-    --sans:'Manrope','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --sans:'Futura PT',Futura,'Century Gothic','Trebuchet MS',Arial,sans-serif;
   }
   .vl *,.vl *::before,.vl *::after{box-sizing:border-box;margin:0;padding:0}
   .vl img{max-width:100%;display:block}
@@ -684,7 +684,7 @@ ARTICLE_CSS = """
   .vl .hero-meta-bottom dt{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;}
   .vl .hero-meta-bottom dd{font-size:14px;color:var(--ink);font-weight:500}
   /* Hero figure — full bleed inside .vl */
-  .vl .hero-figure{margin:48px 0 0;aspect-ratio:21/9;max-height:400px;background:var(--bg-2);overflow:hidden;position:relative;}
+  .vl .hero-figure{margin:48px 0 0;aspect-ratio:21/9;max-height:260px;background:var(--bg-2);overflow:hidden;position:relative;}
   .vl .hero-figure img{width:100%;height:100%;object-fit:cover;}
   .vl .hero-figure .credit{position:absolute;left:24px;bottom:18px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#fff;font-weight:500;mix-blend-mode:difference;}
   /* ── Mobile TOC (replaces sidebar on phones) ── */
@@ -1568,13 +1568,8 @@ def build_de_html(post: dict, cover_url: str) -> str:
         body += f'\n<script type="application/ld+json">\n{post["faq_schema"]}\n</script>\n'
     # Append JS behaviors
     body += ARTICLE_JS
-    # Prepend Manrope font + CSS
-    font_link = (
-        '<link rel="preconnect" href="https://fonts.googleapis.com">'
-        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-        '<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">'
-    )
-    return f"{font_link}\n<style>{ARTICLE_CSS}</style>\n{body}"
+    # Futura PT is loaded by the Shopify theme (Adobe Fonts) — no external link needed
+    return f"<style>{ARTICLE_CSS}</style>\n{body}"
 
 
 def graphql_with_vars(query: str, variables: dict) -> dict:
