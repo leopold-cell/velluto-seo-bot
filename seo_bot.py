@@ -40,6 +40,60 @@ IMAGES_LOG     = os.path.join(os.path.dirname(os.path.abspath(__file__)), "image
 DYNAMIC_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "topics_dynamic.json")
 INSIGHTS_LOG   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seo_insights.json")
 PUBLISHED_LOG  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "published_today.json")
+QUALITY_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "quality_level.json")
+NL_KW_LOG      = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nl_keywords_used.json")
+ARTICLE_NUM_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "article_num.json")
+
+# All shop locales that receive market adaptations (DE is primary content language, not in list)
+# EN is the Shopify primary locale — content is published there directly; translation call is no-op
+SHOP_LOCALES = ["nl", "en", "fr", "es", "it", "da", "nb", "pl", "pt-PT", "sv"]
+
+# Human-readable language name per locale (for Haiku prompts)
+LOCALE_LANG_NAMES = {
+    "nl":    "Dutch",
+    "en":    "English",
+    "fr":    "French",
+    "es":    "Spanish",
+    "it":    "Italian",
+    "da":    "Danish",
+    "nb":    "Norwegian",
+    "pl":    "Polish",
+    "pt-PT": "Portuguese",
+    "sv":    "Swedish",
+}
+
+# Local cycling context hints per locale (improves adaptation quality)
+# Includes verified local competitor brands for "alternative to X" content angles
+LOCALE_CYCLING_CONTEXT = {
+    "nl":    "Dutch cycling culture, polderroutes, wielrennen; local brands: AGU, Shimano NL; "
+             "retailers: Cyclingworld, Fietsportaal",
+    "en":    "UK/international cycling context, sportives, British cycling; "
+             "local brands: Oakley, Endura; retailers: Wiggle, Chain Reaction",
+    "fr":    "French cycling culture, vélo de route, Tour de France, cols alpins; "
+             "local competitors: Julbo (premium FR brand), Ekoï (direct-to-consumer FR), "
+             "Van Rysel/Decathlon (budget dominance); retailer: Alltricks.fr",
+    "es":    "Spanish cycling culture, ciclismo en carretera, Vuelta, Sierra Nevada, Pyreneos; "
+             "local competitors: Spiuk (ES market leader, calidad-precio), "
+             "Eassun (photochromic specialist); retailer: Lordgun, Decathlon.es",
+    "it":    "Italian cycling culture, ciclismo su strada, Giro d'Italia, Dolomiti, Lago di Garda, "
+             "Strade Bianche; local competitors: Rudy Project (Italian premium, da vista specialist), "
+             "Salice (photochromic mid-market), Briko; retailer: Gambacicli.com",
+    "da":    "Danish cycling culture, landevejscykling, Bornholm, danske cykelruter; "
+             "local competitors: KOO (growing), Oakley stockists (Heino Cykler); "
+             "retailers: Cykelexperten.dk, Cykelgear.dk; opticians: Synoptik, Profil Optik",
+    "nb":    "Norwegian cycling culture, landeveissykling, fjordroutes, Birkebeinerrittet; "
+             "local competitors: Sweet Protection (strong NO brand, Falline model), "
+             "POC (Swedish, massive in Scandinavia); retailers: Bikable.no; media: Landevei.no",
+    "pl":    "Polish cycling culture, kolarstwo szosowe, Bieszczady, Tatry, Wisła; "
+             "local competitors: GOG Eyewear / Goggle (Polish brand from Poznań, Prostaf — "
+             "market leader in domestic sporting eyewear); retailers: CentrumRowerowe.pl, Bikeworld.pl",
+    "pt-PT": "Portuguese cycling culture, ciclismo de estrada, Algarve, Serra da Estrela, "
+             "Volta a Portugal; local competitors: Spiuk (via spiuk-portugal.com), "
+             "Bertoni (Italian brand with PT e-commerce); opticians: MaisOptica.pt, MultiOpticas",
+    "sv":    "Swedish cycling culture, landsvägscykling, Vätternrundan, Göta Kanal, fjällvägar; "
+             "local competitors: Bliz Active Eyewear (Swedish, affordable market leader, 2.5M/year), "
+             "POC (Swedish premium, Clarity/Zeiss lenses); retailers: Cykelkraft.se; media: Happyride.se",
+}
 
 
 def load_seo_insights(topic: str = "") -> str:
@@ -591,6 +645,342 @@ function vl(l){
 <div id="vl-de" class="vl-block">{de}</div>"""
 
 
+ARTICLE_CSS = """
+  /* ── Velluto Magazine Article — self-contained, scoped under .vl ── */
+  /* Full-viewport breakout from any Shopify article container        */
+  .vl{
+    width:100vw;
+    position:relative;
+    left:50%;
+    transform:translateX(-50%);
+    overflow-x:hidden;
+    background:#f5f4f1;
+    color:#0a0a0a;
+    font-family:'Manrope','Helvetica Neue',Helvetica,Arial,sans-serif;
+    font-size:16px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    --bg:#f5f4f1;--bg-2:#ebeae5;--ink:#0a0a0a;--ink-2:#1b1b1b;--mute:#8b8a85;
+    --hair:#0a0a0a14;--hair-strong:#0a0a0a26;--paper:#ffffff;
+    --sans:'Manrope','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  .vl *,.vl *::before,.vl *::after{box-sizing:border-box;margin:0;padding:0}
+  .vl img{max-width:100%;display:block}
+  .vl a{color:inherit}
+  /* ── Shell ── */
+  .vl .wrap{max-width:1400px;margin:0 auto;padding:0 32px}
+  @media(max-width:1080px){.vl .wrap{padding:0 24px}}
+  @media(max-width:720px){.vl .wrap{padding:0 18px}}
+  @media(max-width:480px){.vl .wrap{padding:0 16px}}
+  /* ── Hero ── */
+  .vl .hero{padding:64px 0 0}
+  .vl .hero-meta-top{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);font-weight:500;margin-bottom:48px;}
+  .vl .hero-meta-top a{text-decoration:none;color:var(--mute)}
+  .vl .hero-meta-top a:hover{color:var(--ink)}
+  .vl .hero-meta-top .sep{margin:0 10px;opacity:.5}
+  .vl .hero-eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;margin-bottom:24px;display:inline-flex;gap:10px;align-items:center;}
+  .vl .hero-eyebrow::before{content:"";width:24px;height:1px;background:var(--ink);display:inline-block;}
+  .vl .hero-title{font-family:var(--sans);font-weight:600;font-size:clamp(40px,6.4vw,92px);line-height:1.0;letter-spacing:-0.035em;color:var(--ink);max-width:18ch;text-wrap:balance;}
+  .vl .hero-title em{font-style:italic;font-weight:500;font-family:Georgia,'Times New Roman',serif;letter-spacing:-0.02em;}
+  .vl .hero-sub{margin-top:28px;font-size:18px;line-height:1.5;color:var(--ink-2);max-width:50ch;font-weight:400;}
+  .vl .hero-meta-bottom{margin-top:64px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding:24px 0;border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);}
+  .vl .hero-meta-bottom div{display:flex;flex-direction:column;gap:6px}
+  .vl .hero-meta-bottom dt{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;}
+  .vl .hero-meta-bottom dd{font-size:14px;color:var(--ink);font-weight:500}
+  /* Hero figure — full bleed inside .vl */
+  .vl .hero-figure{margin:48px 0 0;aspect-ratio:21/9;max-height:560px;background:var(--bg-2);overflow:hidden;position:relative;}
+  .vl .hero-figure img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.02);}
+  .vl .hero-figure .credit{position:absolute;left:24px;bottom:18px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#fff;font-weight:500;mix-blend-mode:difference;}
+  /* ── Mobile TOC (replaces sidebar on phones) ── */
+  .vl .toc-mobile{display:none}
+  /* ── Article grid ── */
+  .vl .article{display:grid;grid-template-columns:220px 1fr 220px;gap:48px;padding:80px 0 48px;align-items:start;}
+  @media(max-width:1080px){.vl .article{grid-template-columns:180px 1fr;gap:32px}.vl .article aside.right{display:none}}
+  @media(max-width:760px){.vl .article{grid-template-columns:1fr;gap:0;padding:48px 0}.vl .article aside.left,.vl .article aside.right{display:none}}
+  /* ── TOC sidebar ── */
+  .vl aside.left{position:sticky;top:120px}
+  .vl .toc-head{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-bottom:18px;font-weight:600;}
+  .vl .toc{list-style:none;display:flex;flex-direction:column;gap:0;border-top:1px solid var(--hair)}
+  .vl .toc li{border-bottom:1px solid var(--hair)}
+  .vl .toc a{display:flex;gap:12px;padding:11px 0;font-size:13px;color:var(--ink-2);text-decoration:none;line-height:1.35;align-items:flex-start;transition:padding-left .2s;}
+  .vl .toc a span.num{font-size:10px;color:var(--mute);font-weight:600;flex-shrink:0;width:20px;padding-top:2px;letter-spacing:.08em;}
+  .vl .toc a:hover,.vl .toc a.active{padding-left:4px;color:var(--ink)}
+  .vl .toc a.active span.num{color:var(--ink)}
+  .vl .toc a.active{font-weight:600}
+  /* ── Article body ── */
+  .vl article{max-width:680px;margin:0 auto}
+  .vl article > * + *{margin-top:20px}
+  .vl article p{font-size:17px;line-height:1.6;color:var(--ink-2);font-weight:400;text-wrap:pretty;}
+  .vl article p.lede{font-size:clamp(20px,1.8vw,24px);line-height:1.45;color:var(--ink);font-weight:400;margin-bottom:36px;}
+  .vl article h2{font-family:var(--sans);font-weight:600;font-size:clamp(26px,2.8vw,34px);line-height:1.1;letter-spacing:-0.025em;color:var(--ink);margin-top:64px;margin-bottom:8px;padding-top:28px;border-top:1px solid var(--hair-strong);scroll-margin-top:140px;text-wrap:balance;}
+  .vl article h2 .sec-num{display:block;font-size:11px;color:var(--mute);letter-spacing:.22em;font-weight:600;margin-bottom:14px;text-transform:uppercase;}
+  .vl article h2 em{font-style:italic;font-weight:500;font-family:Georgia,'Times New Roman',serif;}
+  .vl article h3{font-family:var(--sans);font-weight:600;font-size:18px;letter-spacing:-0.01em;color:var(--ink);margin-top:20px;}
+  .vl article a.inline{color:var(--ink);font-weight:600;text-decoration:none;background-image:linear-gradient(var(--ink),var(--ink));background-size:100% 1px;background-position:0 100%;background-repeat:no-repeat;padding-bottom:1px;transition:background-size .25s;}
+  .vl article a.inline:hover{background-size:0% 1px;background-position:100% 100%}
+  .vl article strong{color:var(--ink);font-weight:700}
+  .vl article ul,.vl article ol{padding-left:0;list-style:none;border-top:1px solid var(--hair);margin-top:12px}
+  .vl article ul li,.vl article ol li{position:relative;padding:16px 0 16px 56px;border-bottom:1px solid var(--hair);font-size:16px;color:var(--ink-2);line-height:1.55;}
+  .vl article ul li::before{content:"";position:absolute;left:18px;top:25px;width:18px;height:1px;background:var(--ink);}
+  .vl article ol{counter-reset:listcount}
+  .vl article ol li{counter-increment:listcount}
+  .vl article ol li::before{content:counter(listcount,decimal-leading-zero);position:absolute;left:0;top:16px;font-size:11px;letter-spacing:.12em;color:var(--ink);font-weight:700;}
+  .vl article ul li strong,.vl article ol li strong{color:var(--ink);font-weight:700;display:inline;}
+  /* ── Inline figure ── */
+  .vl .inline-figure{margin:48px -80px;border:1px solid var(--hair);background:var(--bg-2);overflow:hidden;}
+  .vl .inline-figure img{width:100%;aspect-ratio:16/9;object-fit:cover;filter:grayscale(1) contrast(1.03);}
+  .vl .inline-figure .cap{padding:14px 20px;display:flex;justify-content:space-between;gap:16px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);font-weight:500;background:var(--paper);border-top:1px solid var(--hair);}
+  .vl .inline-figure .cap span:last-child{text-transform:none;letter-spacing:0;font-style:italic;color:var(--ink-2);font-family:Georgia,serif;font-weight:400;font-size:13px}
+  @media(max-width:1080px){.vl .inline-figure{margin:40px 0}}
+  /* ── Pull quote ── */
+  .vl .pullquote{margin:56px 0;padding:48px 0;border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);text-align:center;}
+  .vl .pullquote q{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;font-size:clamp(24px,2.8vw,36px);line-height:1.25;color:var(--ink);display:block;letter-spacing:-0.01em;quotes:"\\201C" "\\201D";max-width:24ch;margin:0 auto;}
+  .vl .pullquote cite{font-family:var(--sans);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-style:normal;font-weight:600;display:block;margin-top:24px;}
+  /* ── Criteria grid ── */
+  .vl .criteria{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--hair-strong);border:1px solid var(--hair-strong);margin:32px 0;}
+  .vl .crit{background:var(--paper);padding:28px 24px;display:flex;flex-direction:column;gap:10px;min-height:180px;}
+  .vl .crit .num{font-size:10.5px;color:var(--mute);letter-spacing:.22em;font-weight:700;text-transform:uppercase;}
+  .vl .crit h4{font-weight:600;font-size:19px;line-height:1.2;letter-spacing:-0.015em;color:var(--ink);}
+  .vl .crit p{font-size:14px;color:var(--ink-2);line-height:1.5;margin-top:auto}
+  @media(max-width:520px){.vl .criteria{grid-template-columns:1fr}}
+  /* ── Product card ── */
+  .vl .product{margin:64px 0;background:var(--paper);display:grid;grid-template-columns:1fr 1fr;overflow:hidden;border:1px solid var(--hair-strong);}
+  .vl .product-media{background:var(--paper);position:relative;aspect-ratio:4/3;overflow:hidden;border-right:1px solid var(--hair-strong);}
+  .vl .product-media img{width:100%;height:100%;object-fit:cover;transition:transform .8s ease;}
+  .vl .product:hover .product-media img{transform:scale(1.03)}
+  .vl .product-tag{position:absolute;top:14px;left:14px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;background:var(--ink);color:#fff;padding:6px 10px;font-weight:600;}
+  .vl .product-info{padding:36px 32px;display:flex;flex-direction:column;gap:18px}
+  .vl .product-eyebrow{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;}
+  .vl .product-name{font-weight:600;font-size:28px;line-height:1.1;letter-spacing:-0.025em;color:var(--ink);}
+  .vl .product-name em{font-family:Georgia,serif;font-style:italic;font-weight:500;}
+  .vl .product-specs{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);}
+  .vl .spec dt{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-bottom:4px;font-weight:600;}
+  .vl .spec dd{font-size:14.5px;color:var(--ink);font-weight:600}
+  .vl .product-price{font-size:22px;color:var(--ink);font-weight:600;letter-spacing:-0.015em;}
+  .vl .product-price small{font-size:11px;color:var(--mute);letter-spacing:.18em;margin-left:8px;text-transform:uppercase;font-weight:600}
+  .vl .product-cta-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .vl .product-cta{display:inline-flex;align-items:center;justify-content:space-between;gap:14px;background:var(--ink);color:#fff;padding:14px 20px;font-weight:600;font-size:13px;text-decoration:none;letter-spacing:.06em;text-transform:uppercase;transition:background .2s,transform .2s;flex:1;min-width:200px;}
+  .vl .product-cta:hover{background:#2a2a2a;transform:translateY(-1px)}
+  .vl .product-cta svg{width:14px;height:14px;transition:transform .25s}
+  .vl .product-cta:hover svg{transform:translateX(3px)}
+  .vl .product-cta.secondary{background:transparent;color:var(--ink);border:1px solid var(--ink);flex:0 0 auto}
+  .vl .product-cta.secondary:hover{background:var(--ink);color:#fff}
+  @media(max-width:680px){.vl .product{grid-template-columns:1fr}.vl .product-media{border-right:none;border-bottom:1px solid var(--hair-strong);aspect-ratio:1/1}.vl .product-info{padding:28px 22px}}
+  .vl .product.compact .product-name{font-size:24px}
+  .vl .product.compact .product-media{aspect-ratio:1/1}
+  /* ── Spec strip ── */
+  .vl .spec-strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);margin:48px 0;}
+  .vl .spec-strip > div{padding:28px 20px;border-left:1px solid var(--hair);display:flex;flex-direction:column;gap:6px;}
+  .vl .spec-strip > div:first-child{border-left:none}
+  .vl .spec-strip .big{font-size:46px;line-height:1;letter-spacing:-0.04em;color:var(--ink);display:flex;align-items:baseline;gap:3px;font-weight:600;}
+  .vl .spec-strip .big sup{font-size:16px;color:var(--ink);font-weight:500;letter-spacing:0;opacity:.6}
+  .vl .spec-strip .lbl{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-top:8px;font-weight:600;}
+  @media(max-width:680px){.vl .spec-strip{grid-template-columns:repeat(2,1fr)}.vl .spec-strip > div:nth-child(3){border-left:none}.vl .spec-strip > div{border-top:1px solid var(--hair)}.vl .spec-strip > div:nth-child(-n+2){border-top:none}}
+  /* ── Variants ── */
+  .vl .variants{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair-strong);margin:40px 0;border:1px solid var(--hair-strong);}
+  .vl .variants a{background:var(--paper);display:flex;flex-direction:column;gap:0;text-decoration:none;color:var(--ink);transition:background .2s;}
+  .vl .variants a:hover{background:var(--bg)}
+  .vl .variants img{aspect-ratio:1/1;width:100%;object-fit:cover;background:#f7f5f0}
+  .vl .variants .v-info{padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .vl .variants .v-name{font-weight:600;font-size:13px;letter-spacing:-0.01em}
+  .vl .variants .v-price{font-size:12px;color:var(--mute);font-weight:500}
+  @media(max-width:600px){.vl .variants{grid-template-columns:repeat(2,1fr)}}
+  /* ── FAQ ── */
+  .vl .faq{margin:24px 0 0;border-top:1px solid var(--hair-strong)}
+  .vl .faq details{border-bottom:1px solid var(--hair)}
+  .vl .faq summary{list-style:none;cursor:pointer;padding:24px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:24px;font-weight:600;font-size:18px;line-height:1.3;color:var(--ink);letter-spacing:-0.015em;transition:color .15s;}
+  .vl .faq summary::-webkit-details-marker{display:none}
+  .vl .faq summary::after{content:"";display:inline-block;width:14px;height:14px;flex-shrink:0;margin-top:6px;background-image:linear-gradient(var(--ink),var(--ink)),linear-gradient(var(--ink),var(--ink));background-size:14px 1.4px,1.4px 14px;background-position:center;background-repeat:no-repeat;transition:transform .25s;}
+  .vl .faq details[open] summary::after{background-size:14px 1.4px,0 0;transform:rotate(180deg);}
+  .vl .faq .answer{padding:0 36px 28px 0;font-size:15.5px;line-height:1.6;color:var(--ink-2);animation:vl-fadein .25s ease;}
+  @keyframes vl-fadein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  /* ── Right sidebar ── */
+  .vl aside.right{position:sticky;top:120px;font-size:13px;color:var(--mute)}
+  .vl .author-card{padding:0 0 24px;}
+  .vl .author-card .avatar{width:48px;height:48px;border-radius:50%;background:#e0dfd9;background-size:cover;background-position:center;margin-bottom:14px;filter:grayscale(1) contrast(1.02);}
+  .vl .author-card .role{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-bottom:6px;font-weight:600;}
+  .vl .author-card .name{font-size:16px;color:var(--ink);font-weight:600;letter-spacing:-0.01em}
+  .vl .author-card .bio{font-size:12.5px;color:var(--mute);margin-top:8px;line-height:1.5}
+  .vl .share{margin-top:28px;padding-top:24px;border-top:1px solid var(--hair)}
+  .vl .share-head{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-bottom:10px;font-weight:600}
+  .vl .share-list{display:flex;flex-direction:column;gap:0}
+  .vl .share-list a{text-decoration:none;color:var(--ink);font-size:13px;font-weight:500;padding:10px 0;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;transition:padding .2s;}
+  .vl .share-list a:hover{padding-left:4px}
+  .vl .share-list a span:last-child{opacity:.4}
+  .vl .italian-note{margin-top:28px;padding-top:24px;border-top:1px solid var(--hair);font-family:Georgia,serif;font-style:italic;font-size:14px;line-height:1.5;color:var(--ink-2);}
+  .vl .italian-note small{display:block;font-family:var(--sans);font-style:normal;font-weight:600;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-bottom:8px;}
+  /* ── Ride Fast CTA ── */
+  .vl .ride{margin:80px 0 0;background:var(--ink);color:#fff;padding:96px 32px;position:relative;overflow:hidden;}
+  .vl .ride-inner{max-width:1340px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;}
+  .vl .ride h2{font-family:var(--sans);font-weight:600;font-size:clamp(48px,8vw,120px);line-height:.95;letter-spacing:-0.045em;color:#fff;}
+  .vl .ride h2 em{font-family:Georgia,serif;font-style:italic;font-weight:500;color:#fff;opacity:.6;}
+  .vl .ride p{font-size:15.5px;line-height:1.55;color:#ffffffaa;max-width:42ch;}
+  .vl .ride-cta{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--ink);padding:18px 28px;text-decoration:none;font-weight:700;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;margin-top:24px;transition:background .2s,transform .2s;}
+  .vl .ride-cta:hover{background:var(--bg);transform:translateY(-2px)}
+  .vl .ride-cta svg{width:14px;height:14px}
+  /* ── Reveal animation ── */
+  .vl .reveal{opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease}
+  .vl .reveal.in{opacity:1;transform:none}
+  /* ── Responsive — 1080px ── */
+  @media(max-width:1080px){
+    .vl .hero{padding-top:48px}
+    .vl .ride{padding-left:24px;padding-right:24px}
+  }
+  /* ── Responsive — 720px ── */
+  @media(max-width:720px){
+    .vl .hero{padding-top:32px}
+    .vl .hero-meta-top{flex-direction:column;gap:8px;align-items:flex-start;margin-bottom:28px;font-size:10.5px;}
+    .vl .hero-eyebrow{margin-bottom:18px;font-size:10.5px}
+    .vl .hero-title{font-size:clamp(34px,9vw,52px);max-width:none}
+    .vl .hero-sub{margin-top:20px;font-size:16px}
+    .vl .hero-meta-bottom{margin-top:36px;padding:18px 0;grid-template-columns:repeat(2,1fr);gap:16px 18px;}
+    .vl .hero-meta-bottom dd{font-size:13px}
+    .vl .hero-figure{margin-top:32px;aspect-ratio:4/3}
+    .vl .hero-figure .credit{left:14px;bottom:12px;font-size:9.5px}
+    /* show mobile TOC */
+    .vl .toc-mobile{
+      display:block;margin:32px -18px 0;background:var(--paper);
+      border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);
+    }
+    .vl .toc-mobile summary{
+      list-style:none;cursor:pointer;padding:18px;display:flex;justify-content:space-between;
+      align-items:center;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+      color:var(--ink);font-weight:700;
+    }
+    .vl .toc-mobile summary::-webkit-details-marker{display:none}
+    .vl .toc-mobile summary .count{font-weight:500;color:var(--mute);letter-spacing:.18em;font-size:10.5px;display:flex;align-items:center;gap:10px;}
+    .vl .toc-mobile summary .count::after{content:"+";font-size:16px;color:var(--ink);font-weight:400;line-height:1;transition:transform .25s}
+    .vl .toc-mobile[open] summary .count::after{transform:rotate(45deg)}
+    .vl .toc-mobile ol{list-style:none;border-top:1px solid var(--hair);}
+    .vl .toc-mobile li{border-bottom:1px solid var(--hair)}
+    .vl .toc-mobile li:last-child{border-bottom:0}
+    .vl .toc-mobile a{display:flex;gap:14px;padding:14px 18px;font-size:14.5px;color:var(--ink);text-decoration:none;line-height:1.35;min-height:44px;align-items:center;}
+    .vl .toc-mobile a .n{font-size:11px;color:var(--mute);font-weight:700;letter-spacing:.08em;flex-shrink:0;width:24px;}
+    /* article */
+    .vl .article{padding:40px 0 24px}
+    .vl article > * + *{margin-top:16px}
+    .vl article p{font-size:16px}
+    .vl article p.lede{font-size:18px;margin-bottom:24px}
+    .vl article h2{font-size:clamp(24px,6.4vw,30px);margin-top:48px;padding-top:24px;scroll-margin-top:80px;}
+    .vl article h2 .sec-num{font-size:10.5px;margin-bottom:10px}
+    .vl article ul li,.vl article ol li{padding:14px 0 14px 48px;font-size:15.5px;}
+    .vl article ul li::before{top:23px;left:16px;width:16px}
+    .vl article ol li::before{font-size:10.5px}
+    .vl .inline-figure{margin:32px -18px;border-left:0;border-right:0}
+    .vl .inline-figure .cap{padding:12px 18px;font-size:10.5px;flex-direction:column;gap:4px;align-items:flex-start}
+    .vl .pullquote{margin:36px 0;padding:32px 0}
+    .vl .pullquote q{font-size:clamp(22px,6vw,28px);max-width:18ch}
+    .vl .pullquote cite{margin-top:18px;font-size:10px}
+    .vl .criteria{margin:24px 0;grid-template-columns:1fr}
+    .vl .crit{min-height:0;padding:22px 20px}
+    .vl .crit h4{font-size:18px}
+    .vl .spec-strip{margin:32px 0}
+    .vl .spec-strip > div{padding:22px 16px}
+    .vl .spec-strip .big{font-size:36px}
+    .vl .product{margin:44px 0}
+    .vl .product-media{aspect-ratio:1/1}
+    .vl .product-info{padding:24px 20px;gap:16px}
+    .vl .product-name{font-size:24px}
+    .vl .product-specs{padding:14px 0;gap:14px}
+    .vl .product-cta-row{flex-direction:column;align-items:stretch}
+    .vl .product-cta{flex:0 0 auto;min-width:0;min-height:48px;width:100%;justify-content:space-between;}
+    .vl .product-cta.secondary{text-align:center;justify-content:center}
+    .vl .variants{margin:28px 0}
+    .vl .variants .v-info{padding:12px 14px}
+    .vl .faq summary{font-size:16px;padding:20px 0;gap:16px}
+    .vl .faq .answer{padding:0 0 20px;font-size:15px}
+    .vl .ride{margin:64px 0 0;padding:64px 18px}
+    .vl .ride-inner{grid-template-columns:1fr;gap:20px}
+    .vl .ride h2{font-size:clamp(40px,11vw,64px)}
+    .vl .ride p{font-size:15px;max-width:none}
+    .vl .ride-cta{width:100%;justify-content:space-between;padding:16px 20px;min-height:48px;}
+  }
+  /* ── Responsive — 480px ── */
+  @media(max-width:480px){
+    .vl .wrap{padding:0 16px}
+    .vl .hero-title{font-size:clamp(30px,10vw,46px);letter-spacing:-0.03em;line-height:1.02}
+    .vl .toc-mobile{margin-left:-16px;margin-right:-16px}
+    .vl .toc-mobile summary{padding:16px}
+    .vl .toc-mobile a{padding:13px 16px;font-size:14px}
+    .vl .inline-figure{margin-left:-16px;margin-right:-16px}
+    .vl .product-info{padding:22px 18px}
+    .vl .product-name{font-size:22px}
+    .vl .crit{padding:20px 18px}
+    .vl .spec-strip > div{padding:18px 14px}
+    .vl .spec-strip .big{font-size:32px}
+    .vl .ride{padding:48px 20px}
+    .vl .ride h2{font-size:clamp(38px,13vw,56px)}
+  }
+  /* hover only on real hover devices */
+  @media(hover:none){
+    .vl .product:hover .product-media img{transform:none}
+  }
+"""
+
+ARTICLE_JS = """
+<script>
+  // toc active — desktop sidebar + mobile accordion
+  const tocLinks = document.querySelectorAll('#toc a, #tocMobile a');
+  const sections = [...document.querySelectorAll('article h2')];
+  const setActive = () => {
+    const y = window.scrollY + 180;
+    let active = sections[0]?.id;
+    for (const s of sections) { if (s.offsetTop <= y) active = s.id; }
+    tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + active));
+  };
+  document.addEventListener('scroll', setActive, {passive:true});
+  setActive();
+  // close mobile TOC after tapping a link
+  document.querySelectorAll('#tocMobile a').forEach(a => {
+    a.addEventListener('click', () => {
+      const t = document.getElementById('tocMobile');
+      if (t) t.open = false;
+    });
+  });
+  // animated counters
+  const animateCount = (el) => {
+    const target = parseInt(el.dataset.count, 10);
+    const dur = 1100, start = performance.now();
+    const step = (t) => {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased).toString();
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+  // reveal + counter trigger
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        e.target.querySelectorAll?.('[data-count]').forEach(animateCount);
+        io.unobserve(e.target);
+      }
+    }
+  }, {threshold:0.2});
+  document.querySelectorAll('.spec-strip, .criteria, .product, .pullquote, .inline-figure, .variants, .hero-figure, .related-grid').forEach(el => {
+    el.classList.add('reveal'); io.observe(el);
+  });
+  // FAQ accordion — one open at a time
+  document.querySelectorAll('.faq details').forEach(d => {
+    d.addEventListener('toggle', () => {
+      if (d.open) document.querySelectorAll('.faq details').forEach(o => { if (o !== d) o.open = false; });
+    });
+  });
+</script>
+"""
+
+
+def get_season_year() -> str:
+    m = datetime.date.today().month
+    y = datetime.date.today().year
+    if m in (12, 1, 2): return f"Winter {y}"
+    if m in (3, 4, 5):  return f"Frühjahr {y}"
+    if m in (6, 7, 8):  return f"Sommer {y}"
+    return f"Herbst {y}"
+
+
 # ── Content generation ───────────────────────────────────────────────────────
 
 @retry(max_attempts=3, delay=10, label="generate")
@@ -782,6 +1172,653 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
     raise RuntimeError(f"Shopify publish failed {r.status_code}: {r.text[:300]}")
 
 
+# ── NL GEO Agent — Quality Compounding ──────────────────────────────────────
+
+def get_quality_targets() -> dict:
+    """
+    Read quality_level.json (day counter) and return writing targets.
+    Targets compound +10%/day from Day 1 baseline, capped at Day 30.
+    """
+    state = json.load(open(QUALITY_LOG)) if os.path.exists(QUALITY_LOG) else {"day": 1}
+    day = max(1, min(int(state.get("day", 1)), 30))
+    factor = 1.0 + 0.10 * (day - 1)          # Day 1 = 1.0×, Day 7 = 1.6×, Day 14 = 2.3×, Day 30 = 3.9×
+    return {
+        "day":                day,
+        "word_count":         int(900 * factor),         # 900 → 1800+ words
+        "faq_count":          min(3 + (day - 1), 9),     # 3 → 9 FAQ questions
+        "include_comparison": day >= 5,
+        "include_stats":      day >= 3,
+        "include_product_table": day >= 7,
+    }
+
+
+def increment_quality_day():
+    """Advance the quality day counter by 1."""
+    state = json.load(open(QUALITY_LOG)) if os.path.exists(QUALITY_LOG) else {"day": 1}
+    state["day"] = state.get("day", 1) + 1
+    json.dump(state, open(QUALITY_LOG, "w"), indent=2)
+
+
+def get_article_number() -> str:
+    """Return zero-padded article number (e.g. '001') and increment the counter."""
+    state = json.load(open(ARTICLE_NUM_LOG)) if os.path.exists(ARTICLE_NUM_LOG) else {"num": 1}
+    n = max(1, int(state.get("num", 1)))
+    padded = f"{n:03d}"
+    state["num"] = n + 1
+    json.dump(state, open(ARTICLE_NUM_LOG, "w"), indent=2)
+    return padded
+
+
+# TODO: replace Claude lookup with Google Keyword Planner API for real volume data
+@retry(max_attempts=2, delay=5, label="research_market_keywords")
+def research_market_keywords(kw_de: str) -> dict:
+    """
+    Given a German primary keyword, return the best keyword + search intent
+    for ALL shop markets (DE + SHOP_LOCALES) via a single Claude Haiku call.
+    Returns: {"de": {"keyword": ..., "intent": ...}, "nl": {...}, "en": {...}, "fr": {...}, ...}
+    """
+    locale_list = "\n".join(
+        f'  "{loc}": {{"keyword": "...", "intent": "..."}}'
+        for loc in ["de"] + SHOP_LOCALES
+    )
+    r = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=900,
+        system="You are an SEO keyword researcher for cycling eyewear. Return ONLY valid JSON, no extra text.",
+        messages=[{"role": "user", "content":
+            f"German primary keyword: {kw_de}\n\n"
+            "For EACH market locale below, find the BEST local search keyword a cyclist would actually type "
+            "(NOT a literal translation — use natural local search behaviour and terminology for that country) "
+            "and describe the search intent in one sentence.\n\n"
+            "Return exactly this JSON structure:\n"
+            "{{\n"
+            f"{locale_list}\n"
+            "}}"
+        }]
+    )
+    log_usage(r.usage.input_tokens, r.usage.output_tokens, model="claude-haiku-4-5-20251001")
+    raw = r.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1].lstrip("json").strip()
+    result = json.loads(raw)
+    # Normalise: ensure every locale has keyword + intent, fallback to DE keyword
+    fallback = {"keyword": kw_de, "intent": ""}
+    normalised = {"de": result.get("de", {"keyword": kw_de, "intent": ""})}
+    for loc in SHOP_LOCALES:
+        normalised[loc] = result.get(loc, fallback)
+    return normalised
+
+
+
+
+# ── DE-primary magazine article generation ───────────────────────────────────
+
+@retry(max_attempts=3, delay=10, label="generate_de_primary")
+def generate_de_primary(kw: dict, products: list[dict], quality: dict) -> dict:
+    """
+    Generate a full German magazine article using the Velluto HTML template structure.
+    kw must include 'art_num' key (e.g. '014').
+    """
+    keyword    = kw.get("keyword_de") or kw["keyword"]  # German keyword preferred
+    keyword_nl = kw.get("keyword_nl", kw["keyword"])
+    keyword_en = kw.get("keyword_en", kw["keyword"])
+    title_hint = kw.get("title_nl", keyword)
+    angle      = kw.get("angle", "")
+    art_num    = kw.get("art_num", "001")
+    word_count = quality["word_count"]
+    faq_count  = quality["faq_count"]
+
+    glasses = get_featured_glasses(products)
+    accessories = [p for p in products if "stradapro" not in p["handle"]][:1]
+    featured = [p for p in [glasses] + accessories if p][:2]
+    product_json = json.dumps([{
+        "title": p["title"], "url": p["url"], "image": p["image"]
+    } for p in featured], indent=2)
+
+    seo_ctx = load_seo_insights(topic=keyword)
+
+    # Map colours to approved CDN image URLs for the article
+    cdn_images_hint = (
+        "APPROVED CDN PRODUCT IMAGE URLs (use ONLY these for product images in the article):\n"
+        f"  Nero glasses: {WHITELIST.get('productblack','')}\n"
+        f"  Nero male model: {WHITELIST.get('productblackmale','')}\n"
+        f"  Espresso glasses: {WHITELIST.get('productbrown','')}\n"
+        f"  Espresso female model: {WHITELIST.get('productbrownfemale','')}\n"
+        f"  Arancia glasses: {WHITELIST.get('productorange','')}\n"
+        f"  Arancia male model: {WHITELIST.get('productorangemale','')}\n"
+        f"  Viola lifestyle: {WHITELIST.get('Velluto_BuilttoPerform_Violet','')}\n"
+        f"  All glasses together: {WHITELIST.get('AllGlasses','')}\n"
+        f"  Lifestyle male: {WHITELIST.get('VellutoModelMale002','')}\n"
+        f"  Lifestyle female: {WHITELIST.get('FooterExports_Female','')}\n"
+    )
+
+    season = get_season_year()
+    cycling_ctx = get_cycling_context()
+
+    system = f"""Du bist der leitende SEO-Redakteur und Texter für Velluto (velluto-shop.com), \
+eine premium deutsche Rennrad-Brillenmarke mit italienischem Design.
+
+{BRAND_FACTS}
+
+{COPY_PRINCIPLES}
+{(chr(10) + seo_ctx + chr(10)) if seo_ctx else ""}
+SCHREIBREGELN:
+1. Ausschließlich Deutsch. Markennamen (Velluto, StradaPro, VellutoPuro, VellutoVisione) sind OK.
+2. Keine <img>-Tags im Fließtext — nur das Cover-Bild wird separat gesetzt. \
+   Produktbilder NUR in .product-media-Divs mit den GENEHMIGTEN CDN-URLs.
+3. Verwende NUR die angegebenen Produkt-URLs — erfinde keine URLs.
+4. Prüfe jeden Velluto-Claim gegen BRAND_FACTS — kein fotochromatisch, polarisiert oder auf Stärke.
+5. Das Ergebnis muss sich anfühlen wie Rat von einem schnelleren, erfahreneren Radsportfreund — kein Verkaufsgespräch.
+6. Verwende die exakten CSS-Klassennamen aus dem Template (hero, article, .toc, .faq usw.)."""
+
+    user = f"""Datum: {datetime.date.today().strftime('%d. %B %Y')} | Saison: {season} | Radkontext: {cycling_ctx}
+Ziel-Keyword (DE): {keyword}
+Inhaltswinkel: {angle if angle else title_hint}
+Artikelnummer: {art_num}
+Qualitätsstufe {quality['day']} — Zielumfang: {word_count} Wörter, {faq_count} FAQ-Fragen
+
+{cdn_images_hint}
+PRODUKTE (ausschließlich diese exakten URLs):
+{product_json}
+
+Schreibe einen vollständigen deutschen Magazinartikel im Velluto-HTML-Template-Format.
+
+PFLICHTSTRUKTUR des ===BODY===:
+
+<section class="hero wrap">
+  <div class="hero-meta-top">
+    <span><a href="https://velluto-shop.com/blogs/velluto-the-magazine">Magazin</a><span class="sep">/</span><a href="#">[KATEGORIE]</a></span>
+    <span>№ {art_num} — {season}</span>
+  </div>
+  <div class="hero-eyebrow">[THEMENBEREICH, z.B. Gläser &amp; Technologie]</div>
+  <h1 class="hero-title">[Haupttitel mit Keyword — 1-2 Zeilen, mit <em>Kursivakzent</em> möglich]</h1>
+  <p class="hero-sub">[Untertitel — 1-2 Sätze, Mehrwert-Versprechen]</p>
+  <dl class="hero-meta-bottom">
+    <div><dt>Autor</dt><dd>Velluto Redaktion</dd></div>
+    <div><dt>Kategorie</dt><dd>[Kategorie]</dd></div>
+    <div><dt>Lesezeit</dt><dd>[N] Minuten</dd></div>
+    <div><dt>Ausgabe</dt><dd>{season}</dd></div>
+  </dl>
+  <figure class="hero-figure">
+    <img src="COVER_URL" alt="[Bildbeschreibung]">
+    <span class="credit">Photo · Velluto Studio</span>
+  </figure>
+
+  <!-- Mobile TOC — sichtbar nur auf Smartphones (≤720px) -->
+  <details class="toc-mobile" id="tocMobile">
+    <summary>Inhalt <span class="count">[N] Abschnitte</span></summary>
+    <ol>
+      [Gleiche TOC-Einträge wie Sidebar: <li><a href="#sN"><span class="n">0N</span>[Titel]</a></li>]
+    </ol>
+  </details>
+</section>
+
+<section class="wrap article">
+  <aside class="left">
+    <div class="toc-head">Inhalt</div>
+    <ul class="toc" id="toc">
+      [4-6 TOC-Einträge: <li><a href="#sN"><span class="num">0N</span> Abschnittstitel</a></li>]
+    </ul>
+  </aside>
+
+  <article>
+    <p class="lede">[Starker Einstieg — konkrete Szene aus dem Radsportleben, 2-3 Sätze]</p>
+    [Fließtext-Absätze]
+
+    [Pro Abschnitt:
+    <h2 id="sN"><span class="sec-num">§ 0N — Oberthema</span>[Abschnittstitel mit optionalem <em>Kursiv</em>]</h2>
+    <p>...</p>]
+
+    [Füge mindestens ein ein:
+    - <div class="spec-strip">...</div> mit <span data-count="N"> für animierte Zahlen (25g, UV400, 30 Tage, etc.)
+    - <div class="criteria">...</div> mit 2x2 .crit-Kacheln für Auswahlkriterien
+    - <div class="pullquote"><q>Zitat</q><cite>— Quelle</cite></div>]
+
+    [Produktkarte — verwende EXAKT diese Struktur:
+    <div class="product">
+      <div class="product-media">
+        <span class="product-tag">Editor's Pick</span>
+        <img src="[GENEHMIGTER CDN URL]" alt="[Produktname]">
+      </div>
+      <div class="product-info">
+        <div class="product-eyebrow">Rennradbrille · Road &amp; Gravel</div>
+        <h3 class="product-name">Velluto StradaPro<br>Brille <em>— [Farbe]</em></h3>
+        <dl class="product-specs">
+          <div class="spec"><dt>Gewicht</dt><dd>25 g</dd></div>
+          <div class="spec"><dt>Schutz</dt><dd>UV400</dd></div>
+          <div class="spec"><dt>Nasensteg</dt><dd>Verstellbar</dd></div>
+          <div class="spec"><dt>Linsen</dt><dd>Wechselbar</dd></div>
+        </dl>
+        <div class="product-price">€ 149,00 <small>· Kostenloser EU-Versand</small></div>
+        <div class="product-cta-row">
+          <a class="product-cta" href="[PRODUKT URL]">Jetzt kaufen <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a>
+          <a class="product-cta secondary" href="[PRODUKT URL]">Details</a>
+        </div>
+      </div>
+    </div>]
+
+    [Farbvarianten-Strip:
+    <div class="variants">
+      [4x <a href="[PRODUKT URL]"><img src="[CDN URL]" alt="..."><div class="v-info"><span class="v-name">[Farbe]</span><span class="v-price">€ 149</span></div></a>]
+    </div>]
+
+    [PFLICHT: FAQ als letzten Abschnitt vor CTA:
+    <h2 id="sfaq"><span class="sec-num">§ 0{faq_count} — FAQ</span>Häufig gestellte Fragen</h2>
+    <div class="faq">
+      [Exakt {faq_count} <details>-Elemente:
+      <details open>
+        <summary>[Frage 1?]</summary>
+        <div class="answer">[Antwort 1]</div>
+      </details>]
+    </div>]
+
+    <p>[Abschluss-CTA → <a class="inline" href="https://velluto-shop.com">velluto-shop.com</a>]</p>
+  </article>
+
+  <aside class="right">
+    <div class="author-card">
+      <div class="avatar"></div>
+      <div class="role">Autor</div>
+      <div class="name">Velluto Redaktion</div>
+      <div class="bio">Gear-Redaktion bei Velluto Magazine. Rennrad &amp; Gravel, obsessiv beim Thema Optik.</div>
+    </div>
+    <div class="share">
+      <div class="share-head">Artikel teilen</div>
+      <div class="share-list">
+        <a href="#">Link kopieren <span>↗</span></a>
+        <a href="#">Strava <span>↗</span></a>
+        <a href="#">Instagram <span>↗</span></a>
+        <a href="#">E-Mail <span>↗</span></a>
+      </div>
+    </div>
+    <div class="italian-note">
+      <small>Velluto · Italienisch: Samt</small>
+      Gegründet im Sommer 2023 am Ostufer des Gardasees. Inspiriert von langen Ausfahrten, kühlem Weißwein und sonnendurchfluteten Nachmittagen.
+    </div>
+  </aside>
+</section>
+
+<section class="ride">
+  <div class="ride-inner">
+    <div><h2>Ride Fast.<br><em>Live Slow.</em></h2></div>
+    <div>
+      <p>[2-3 Sätze über Velluto StradaPro — konkrete Specs, 30 Tage Testgarantie]</p>
+      <a class="ride-cta" href="https://velluto-shop.com">Zur Kollektion <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a>
+    </div>
+  </div>
+</section>
+
+WICHTIG: COVER_URL ist ein Platzhalter — ersetze ihn NICHT. Das Python-Skript setzt die echte URL ein.
+
+Verwende GENAU dieses Ausgabeformat — Trennzeichen auf eigenen Zeilen, kein Extra-Text außerhalb:
+
+===META===
+title_de: <max 65 Zeichen, 100% DEUTSCH, enthält das DE-Keyword "{keyword}">
+meta_description_de: <max 155 Zeichen, 100% Deutsch, enthält Keyword>
+keyword_de: {keyword}
+keyword_nl: <natürliches NL-Äquivalent>
+keyword_en: <natürliches EN-Äquivalent>
+tags: rennradbrille,fahrradbrille,radsport,Velluto StradaPro,{keyword}
+eyebrow: <Themenbereich-Label>
+category: <Kategorie>
+hero_sub: <Untertitel>
+read_time: <Zahl>
+===FAQ_JSON===
+[
+  {{"question": "Frage 1?", "answer": "Antwort 1."}},
+  {{"question": "Frage 2?", "answer": "Antwort 2."}}
+]
+===BODY===
+<div class="vl">
+[Hero-Sektion mit hero-figure + toc-mobile details#tocMobile + Article-Grid (aside.left mit ul#toc | article | aside.right mit avatar + share + italian-note) + Ride-Sektion]
+</div>
+===END===
+
+QUALITÄTSMASSSTAB: {word_count} Wörter, {faq_count} FAQ-Fragen, mindestens 2 interne Links zu Produktseiten."""
+
+    GENERATE_MODEL = "claude-sonnet-4-6"
+    response = client.messages.create(
+        model=GENERATE_MODEL,
+        max_tokens=16000,
+        system=system,
+        messages=[{"role": "user", "content": user}]
+    )
+    cost = log_usage(response.usage.input_tokens, response.usage.output_tokens, model=GENERATE_MODEL)
+    print(f"   Tokens in:{response.usage.input_tokens} out:{response.usage.output_tokens} | ${cost:.4f}")
+
+    raw = response.content[0].text
+    return _parse_de_response(raw, kw)
+
+
+def _parse_de_response(raw: str, kw: dict) -> dict:
+    """Parse DE primary article response with delimiters ===META===, ===FAQ_JSON===, ===BODY===, ===END===."""
+    def extract(tag_start, tag_end):
+        m = re.search(rf'{re.escape(tag_start)}\n(.*?)\n{re.escape(tag_end)}', raw, re.DOTALL)
+        return m.group(1).strip() if m else ""
+
+    meta_block = extract("===META===",     "===FAQ_JSON===")
+    faq_raw    = extract("===FAQ_JSON===", "===BODY===")
+    body_html  = extract("===BODY===",     "===END===")
+
+    post: dict = {"keyword": kw.get("keyword", ""), "body_html": body_html}
+
+    for line in meta_block.splitlines():
+        if ":" in line:
+            k, _, v = line.partition(":")
+            post[k.strip()] = v.strip()
+
+    # Build FAQPage JSON-LD
+    try:
+        faq_items = json.loads(faq_raw)
+    except Exception:
+        faq_items = []
+
+    if faq_items:
+        main_entity = []
+        for item in faq_items:
+            q = item.get("question", "").strip()
+            a = item.get("answer", "").strip()
+            if q and a:
+                a_clean = re.sub(r'<[^>]+>', '', a)
+                main_entity.append({
+                    "@type": "Question",
+                    "name": q,
+                    "acceptedAnswer": {"@type": "Answer", "text": a_clean[:500]}
+                })
+        if main_entity:
+            post["faq_schema"] = json.dumps({
+                "@context": "https://schema.org",
+                "@type":    "FAQPage",
+                "mainEntity": main_entity
+            }, ensure_ascii=False, indent=2)
+        else:
+            post["faq_schema"] = ""
+    else:
+        post["faq_schema"] = ""
+
+    required = {"title_de", "meta_description_de", "tags", "body_html"}
+    missing  = required - set(post.keys())
+    if missing or not post.get("body_html"):
+        raise ValueError(f"DE response missing fields: {missing}. Raw snippet: {raw[:300]}")
+    return post
+
+
+def build_de_html(post: dict, cover_url: str) -> str:
+    """Inject CSS, replace COVER_URL placeholder, append FAQ schema + JS."""
+    body = post["body_html"]
+    # Replace cover placeholder
+    body = body.replace("COVER_URL", cover_url)
+    # Append FAQ schema if present
+    if post.get("faq_schema"):
+        body += f'\n<script type="application/ld+json">\n{post["faq_schema"]}\n</script>\n'
+    # Append JS behaviors
+    body += ARTICLE_JS
+    # Prepend Manrope font + CSS
+    font_link = (
+        '<link rel="preconnect" href="https://fonts.googleapis.com">'
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+        '<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">'
+    )
+    return f"{font_link}\n<style>{ARTICLE_CSS}</style>\n{body}"
+
+
+def graphql_with_vars(query: str, variables: dict) -> dict:
+    """GraphQL call with variables support."""
+    r = requests.post(
+        f"https://{SHOPIFY_STORE}/admin/api/2024-01/graphql.json",
+        headers=SHOPIFY_HEADERS,
+        json={"query": query, "variables": variables},
+        timeout=20,
+    )
+    return r.json().get("data", {})
+
+
+def get_translatable_digests(article_id: int) -> dict:
+    """Fetch translatable content digests for a Shopify article."""
+    gid = f"gid://shopify/Article/{article_id}"
+    query = """
+    query($id: ID!) {
+      translatableResource(resourceId: $id) {
+        translatableContent { key value digest locale }
+      }
+    }
+    """
+    data = graphql_with_vars(query, {"id": gid})
+    items = (data.get("translatableResource") or {}).get("translatableContent", [])
+    return {item["key"]: item["digest"] for item in items if item.get("digest")}
+
+
+@retry(max_attempts=2, delay=5, label="register_translation")
+def register_shopify_translation(article_id: int, locale: str, title: str,
+                                  body_html: str, meta_desc: str, digests: dict) -> bool:
+    """Register NL or EN translation for a published article via Shopify translationsRegister."""
+    gid = f"gid://shopify/Article/{article_id}"
+    translations = []
+    for key, value in [("title", title), ("body_html", body_html), ("summary_html", meta_desc)]:
+        digest = digests.get(key, "")
+        if not digest:
+            continue
+        translations.append({
+            "key": key,
+            "value": value,
+            "translatableContentDigest": digest,
+            "locale": locale,
+        })
+    if not translations:
+        print(f"   ⚠️  No digests found for {locale} — skipping translation registration")
+        return False
+
+    mutation = """
+    mutation translationsRegister($resourceId: ID!, $translations: [TranslationInput!]!) {
+      translationsRegister(resourceId: $resourceId, translations: $translations) {
+        userErrors { field message }
+        translations { key value locale }
+      }
+    }
+    """
+    result = graphql_with_vars(mutation, {"resourceId": gid, "translations": translations})
+    errors = (result.get("translationsRegister") or {}).get("userErrors", [])
+    if errors:
+        # "primary locale" error means this locale IS the shop default — not a real failure
+        primary_locale_errors = [e for e in errors if "primary locale" in e.get("message", "").lower()]
+        if primary_locale_errors:
+            print(f"   ℹ️  [{locale}] is the shop's primary locale — translation skipped (content is the published article)")
+            return True  # not a failure
+        print(f"   ⚠️  Translation register errors [{locale}]: {errors}")
+        return False
+    registered = (result.get("translationsRegister") or {}).get("translations", [])
+    print(f"   ✅ [{locale}] {len(registered)} translation(s) registered")
+    return True
+
+
+@retry(max_attempts=2, delay=10, label="generate_market_adaptation")
+def generate_market_adaptation(de_post: dict, target_locale: str, market: dict) -> dict:
+    """
+    Adapt a DE article for a target market (NL or EN).
+    Uses Claude Haiku for cost efficiency (~$0.025 vs $0.145 with Sonnet).
+    market = {"keyword": "...", "intent": "..."}
+    """
+    lang_name  = LOCALE_LANG_NAMES.get(target_locale, target_locale)
+    cycling_ctx = LOCALE_CYCLING_CONTEXT.get(target_locale, "local cycling culture and routes")
+    target_kw  = market.get("keyword", "")
+    intent     = market.get("intent", "")
+
+    ADAPT_MODEL = "claude-haiku-4-5-20251001"
+
+    # Body adaptation — Haiku handles HTML structure well
+    body_r = client.messages.create(
+        model=ADAPT_MODEL,
+        max_tokens=12000,
+        system=(
+            f"You are an SEO copywriter adapting cycling content for the {lang_name}-speaking market. "
+            f"Target keyword: '{target_kw}'. Search intent: {intent}\n\n"
+            "Rules (follow exactly):\n"
+            f"1. Write entirely in {lang_name} — no German words anywhere.\n"
+            f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
+            "3. Keep ALL HTML tags, class names, IDs and structure IDENTICAL.\n"
+            "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
+            "5. All URLs (href, src) stay unchanged.\n"
+            f"6. Adapt local references to reflect: {cycling_ctx}.\n"
+            "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML."
+        ),
+        messages=[{"role": "user", "content": de_post["body_html"]}]
+    )
+    cost = log_usage(body_r.usage.input_tokens, body_r.usage.output_tokens, model=ADAPT_MODEL)
+    print(f"   [{target_locale}] Adaptation tokens in:{body_r.usage.input_tokens} out:{body_r.usage.output_tokens} | ${cost:.4f}")
+    adapted_body = body_r.content[0].text.strip()
+
+    # Title + meta in a single Haiku call to save one round-trip
+    meta_r = client.messages.create(
+        model=ADAPT_MODEL,
+        max_tokens=200,
+        system="Return ONLY valid JSON, no extra text.",
+        messages=[{"role": "user", "content":
+            f"Adapt these for the {lang_name} market. Keyword: '{target_kw}'.\n"
+            f"DE title: {de_post.get('title_de', '')}\n"
+            f"DE meta: {de_post.get('meta_description_de', '')}\n\n"
+            f"Return: {{\"title\": \"<max 65 chars, written in {lang_name}, contains the keyword>\", "
+            f"\"meta\": \"<max 155 chars, written in {lang_name}, contains the keyword>\"}}"
+        }]
+    )
+    log_usage(meta_r.usage.input_tokens, meta_r.usage.output_tokens, model=ADAPT_MODEL)
+    raw = meta_r.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1].lstrip("json").strip()
+    try:
+        meta_data = json.loads(raw)
+        adapted_title = meta_data.get("title", target_kw)[:65]
+        adapted_meta  = meta_data.get("meta",  target_kw)[:155]
+    except Exception:
+        adapted_title = target_kw
+        adapted_meta  = target_kw
+
+    return {
+        "title":     adapted_title,
+        "body_html": adapted_body,
+        "meta_desc": adapted_meta,
+    }
+
+
+def publish_de_primary(kw: dict, products: list[dict]):
+    """Orchestrate: generate DE article → publish → register NL + EN market adaptations."""
+    from de_keyword_queue import mark_de_keyword_used
+
+    keyword = kw["keyword"]
+    print(f"\n── DE Primary Article ───────────────────────────────")
+    print(f"   Keyword: {keyword} (vol: {kw.get('volume','?')}, phase: {kw.get('phase','?')})")
+
+    art_num = get_article_number()
+
+    print(f"   Researching market keywords...")
+    try:
+        mkt_kws = research_market_keywords(keyword)
+        kw_summary = " | ".join(
+            f"{loc.upper()}: {mkt_kws[loc]['keyword']}"
+            for loc in ["de", "nl", "en", "fr", "es", "it"]
+            if loc in mkt_kws
+        )
+        print(f"   {kw_summary}")
+        extra = " | ".join(
+            f"{loc.upper()}: {mkt_kws[loc]['keyword']}"
+            for loc in ["da", "nb", "pl", "pt-PT", "sv"]
+            if loc in mkt_kws
+        )
+        if extra:
+            print(f"   {extra}")
+    except Exception as e:
+        print(f"   ⚠️  Keyword research failed: {e} — using fallback")
+        mkt_kws = {"de": {"keyword": keyword, "intent": ""}}
+        for loc in SHOP_LOCALES:
+            mkt_kws[loc] = {"keyword": keyword, "intent": ""}
+
+    # Pass DE keyword and article number into the generation context
+    kw_ctx = {**kw, "art_num": art_num,
+              "keyword_de": mkt_kws["de"]["keyword"],
+              "keyword_nl": mkt_kws.get("nl", {}).get("keyword", keyword),
+              "keyword_en": mkt_kws.get("en", {}).get("keyword", keyword)}
+
+    quality = get_quality_targets()
+    print(f"   Quality Day {quality['day']} — target: {quality['word_count']} words, {quality['faq_count']} FAQ")
+
+    cover_url = pick_image()
+
+    # Generate DE article — up to 3 attempts on fact violations
+    post = generate_de_primary(kw_ctx, products, quality)
+    for attempt in range(3):
+        issues      = [i for pat, msg in FORBIDDEN_CLAIMS
+                       for i in ([f"[FACT] {msg}"] if re.search(pat, post.get("body_html",""), re.IGNORECASE) else [])]
+        if not post.get("body_html") or "<h1" not in post["body_html"].lower():
+            issues.append("[FACT] Missing H1 in body")
+        fact_issues = [i for i in issues if i.startswith("[FACT]")]
+        if fact_issues:
+            if attempt < 2:
+                print(f"   ✗ Brand fact violation (attempt {attempt+1}/3) — regenerating: {fact_issues[0]}")
+                post = generate_de_primary(kw_ctx, products, quality)
+                continue
+            else:
+                raise RuntimeError(f"Brand fact violation after 3 attempts: {fact_issues}")
+        if not issues:
+            print("   ✅ DE quality check passed")
+        else:
+            for iss in issues:
+                print(f"   ⚠️  {iss}")
+        break
+
+    body_html = build_de_html(post, cover_url)
+    aid, handle = publish(
+        title=post["title_de"],
+        body_html=body_html,
+        meta_desc=post.get("meta_description_de", "")[:155],
+        tags=post.get("tags", f"rennradbrille,fahrradbrille,{keyword}"),
+        featured_url=cover_url,
+    )
+
+    mark_de_keyword_used(keyword)
+    increment_quality_day()
+
+    # Register market adaptations
+    print(f"   Fetching translatable digests for article {aid}...")
+    try:
+        digests = get_translatable_digests(aid)
+        print(f"   Got {len(digests)} digests: {list(digests.keys())}")
+    except Exception as e:
+        print(f"   ⚠️  Could not fetch digests: {e}")
+        digests = {}
+
+    for locale in SHOP_LOCALES:
+        market = mkt_kws.get(locale, {"keyword": keyword, "intent": ""})
+        print(f"   Generating {locale.upper()} adaptation (kw: {market['keyword']})...")
+        try:
+            adaptation = generate_market_adaptation(post, locale, market)
+            ok = register_shopify_translation(
+                aid, locale,
+                adaptation["title"],
+                adaptation["body_html"],
+                adaptation["meta_desc"],
+                digests,
+            )
+            status = "registered" if ok else "failed"
+            print(f"   [{locale}] Adaptation {status}: {adaptation['title']}")
+        except Exception as e:
+            print(f"   ❌ [{locale}] Adaptation error: {e}")
+
+    blog_handle = "velluto-the-magazine"
+    published = json.load(open(PUBLISHED_LOG)) if os.path.exists(PUBLISHED_LOG) else []
+    published.append({
+        "title":    post["title_de"],
+        "url":      f"https://velluto-shop.com/blogs/{blog_handle}/{handle}",
+        "topic":    keyword,
+        "keyword":  keyword,
+        "lang":     "de",
+        "phase":    kw.get("phase"),
+        "tags":     post.get("tags", ""),
+        "translations": {loc: mkt_kws.get(loc, {}) for loc in SHOP_LOCALES},
+    })
+    json.dump(published, open(PUBLISHED_LOG, "w"), indent=2)
+    print(f"   DE published: {post['title_de']}")
+    print(f"   https://velluto-shop.com/blogs/{blog_handle}/{handle}")
+
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
@@ -826,29 +1863,51 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
 
 
 def main():
-    print(f"\n🚴 Velluto SEO Bot — {datetime.date.today()} (1 post/day, quality-first)")
+    print(f"\n🚴 Velluto SEO Bot — {datetime.date.today()} (DE-first, quality-compounding, multilingual via Shopify Translate & Adapt)")
     print("=" * 55)
 
     json.dump([], open(PUBLISHED_LOG, "w"))  # reset daily publish log
-
-    print("📡 Searching trends + researching new topics...")
-    trends = search_trends()
-    try:
-        research_new_topics()
-    except Exception as e:
-        print(f"   ⚠️  Topic research skipped: {e}")
 
     print("🛍️  Fetching active products...")
     products = get_products()
     print(f"   {len(products)} active products")
 
     published = 0
+
+    # ── Primary path: DE magazine article from DE keyword queue ─────────────
     try:
-        topic = get_unused_topic()
-        publish_one(topic, trends, products, 1)
-        published += 1
+        from de_keyword_queue import get_next_de_keyword, get_de_queue_status
+        kw = get_next_de_keyword()
+        if kw:
+            status = get_de_queue_status()
+            by_p  = status.get("by_phase", {})
+            remaining = status["total"] - status["used"]
+            print(f"   Keyword queue: {remaining} remaining "
+                  f"(P1:{by_p.get('1',{}).get('total',0)-by_p.get('1',{}).get('done',0)} "
+                  f"P2:{by_p.get('2',{}).get('total',0)-by_p.get('2',{}).get('done',0)} "
+                  f"P3:{by_p.get('3',{}).get('total',0)-by_p.get('3',{}).get('done',0)})")
+            publish_de_primary(kw, products)
+            published += 1
+        else:
+            print("   ⚠️  Keyword queue exhausted — falling back to multi-lang post")
     except Exception as e:
-        print(f"   ❌ Post failed: {e}")
+        print(f"   ❌ DE primary post failed: {e}")
+        import traceback; traceback.print_exc()
+
+    # ── Fallback: classic multi-language post ────────────────────────────────
+    if published == 0:
+        print("\n📡 Searching trends + researching new topics (fallback mode)...")
+        trends = search_trends()
+        try:
+            research_new_topics()
+        except Exception as e:
+            print(f"   ⚠️  Topic research skipped: {e}")
+        try:
+            topic = get_unused_topic()
+            publish_one(topic, trends, products, 1)
+            published += 1
+        except Exception as e:
+            print(f"   ❌ Fallback post failed: {e}")
 
     print_usage()
     print(f"\n✅ {published}/1 post published today.\n")
