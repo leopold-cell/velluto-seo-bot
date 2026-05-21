@@ -684,7 +684,7 @@ ARTICLE_CSS = """
   .vl .hero-meta-bottom dt{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;}
   .vl .hero-meta-bottom dd{font-size:14px;color:var(--ink);font-weight:500}
   /* Hero figure — full bleed inside .vl */
-  .vl .hero-figure{margin:48px 0 0;aspect-ratio:21/9;max-height:560px;background:var(--bg-2);overflow:hidden;position:relative;}
+  .vl .hero-figure{margin:48px 0 0;aspect-ratio:21/9;max-height:400px;background:var(--bg-2);overflow:hidden;position:relative;}
   .vl .hero-figure img{width:100%;height:100%;object-fit:cover;}
   .vl .hero-figure .credit{position:absolute;left:24px;bottom:18px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#fff;font-weight:500;mix-blend-mode:difference;}
   /* ── Mobile TOC (replaces sidebar on phones) ── */
