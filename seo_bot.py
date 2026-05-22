@@ -1574,7 +1574,17 @@ def build_de_html(post: dict, cover_url: str) -> str:
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
         '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">'
     )
-    return f"{font_link}\n<style>{ARTICLE_CSS}</style>\n{body}"
+    # Inject canonical pointing to the root (non-locale) URL — strips /nl/, /fr/ etc. prefixes
+    canonical_js = (
+        '<script>'
+        '(function(){'
+        'var l=document.createElement("link");l.rel="canonical";'
+        'l.href="https://velluto-shop.com"+window.location.pathname.replace(/^\\/[a-z]{2}(-[a-z]{2,4})?\\//, "/");'
+        'document.head.appendChild(l);'
+        '})();'
+        '</script>'
+    )
+    return f"{font_link}\n{canonical_js}\n<style>{ARTICLE_CSS}</style>\n{body}"
 
 
 def graphql_with_vars(query: str, variables: dict) -> dict:
@@ -1778,6 +1788,19 @@ def publish_de_primary(kw: dict, products: list[dict]):
             for iss in issues:
                 print(f"   ⚠️  {iss}")
         break
+
+    # Guard: check if an article with this title's handle already exists (prevents -1 duplicates)
+    expected_slug = re.sub(r'[^a-z0-9]+', '-', post.get("title_de", "").lower()).strip('-')
+    if expected_slug:
+        existing_check = requests.get(
+            f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json",
+            params={"handle": expected_slug, "fields": "id,handle"},
+            headers=SHOPIFY_HEADERS, timeout=15,
+        ).json().get("articles", [])
+        if existing_check:
+            print(f"   ⚠️  Article handle '{expected_slug}' already exists (ID:{existing_check[0]['id']}) — skipping publish")
+            mark_de_keyword_used(keyword)
+            return
 
     body_html = build_de_html(post, cover_url)
     aid, handle = publish(
