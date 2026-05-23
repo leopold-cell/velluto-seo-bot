@@ -654,15 +654,15 @@ ARTICLE_CSS = """
     left:50%;
     transform:translateX(-50%);
     overflow-x:hidden;
-    background:#ffffff;
+    background:#f5f4f1;
     color:#0a0a0a;
-    font-family:Inter,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+    font-family:'Manrope','Helvetica Neue',Helvetica,Arial,sans-serif;
     font-size:16px;line-height:1.55;
     -webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility;
-    --bg:#ffffff;--bg-2:#f0efec;--ink:#0a0a0a;--ink-2:#1b1b1b;--mute:#8b8a85;
-    --hair:#0a0a0a14;--hair-strong:#0a0a0a26;--paper:#f7f6f3;
-    --sans:Inter,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+    --bg:#f5f4f1;--bg-2:#ebeae5;--ink:#0a0a0a;--ink-2:#1b1b1b;--mute:#8b8a85;
+    --hair:#0a0a0a14;--hair-strong:#0a0a0a26;--paper:#ffffff;
+    --sans:'Manrope','Helvetica Neue',Helvetica,Arial,sans-serif;
   }
   .vl *,.vl *::before,.vl *::after{box-sizing:border-box;margin:0;padding:0}
   .vl img{max-width:100%;display:block}
@@ -683,9 +683,9 @@ ARTICLE_CSS = """
   .vl .hero-meta-bottom div{display:flex;flex-direction:column;gap:6px}
   .vl .hero-meta-bottom dt{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;}
   .vl .hero-meta-bottom dd{font-size:14px;color:var(--ink);font-weight:500}
-  /* Hero figure — full bleed inside .vl */
-  .vl .hero-figure{margin:48px 0 0;aspect-ratio:21/9;max-height:260px;background:var(--bg-2);overflow:hidden;position:relative;}
-  .vl .hero-figure img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  /* Hero figure — full bleed inside .vl .wrap (negative margins cancel the 32px padding) */
+  .vl .hero-figure{margin:48px -32px 0;aspect-ratio:16/9;background:var(--bg-2);overflow:hidden;position:relative;}
+  .vl .hero-figure img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.02);}
   .vl .hero-figure .credit{position:absolute;left:24px;bottom:18px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#fff;font-weight:500;mix-blend-mode:difference;}
   /* ── Mobile TOC (replaces sidebar on phones) ── */
   .vl .toc-mobile{display:none}
@@ -706,8 +706,8 @@ ARTICLE_CSS = """
   /* ── Article body ── */
   .vl article{max-width:680px;margin:0 auto}
   .vl article > * + *{margin-top:20px}
-  .vl article p{font-size:17px;line-height:1.6;color:var(--ink-2);font-weight:300;text-wrap:pretty;}
-  .vl article p.lede{font-size:clamp(20px,1.8vw,24px);line-height:1.45;color:var(--ink);font-weight:300;margin-bottom:36px;}
+  .vl article p{font-size:17px;line-height:1.6;color:var(--ink-2);font-weight:400;text-wrap:pretty;}
+  .vl article p.lede{font-size:clamp(20px,1.8vw,24px);line-height:1.45;color:var(--ink);font-weight:400;margin-bottom:36px;}
   .vl article h2{font-family:var(--sans);font-weight:600;font-size:clamp(26px,2.8vw,34px);line-height:1.1;letter-spacing:-0.025em;color:var(--ink);margin-top:64px;margin-bottom:8px;padding-top:28px;border-top:1px solid var(--hair-strong);scroll-margin-top:140px;text-wrap:balance;}
   .vl article h2 .sec-num{display:block;font-size:11px;color:var(--mute);letter-spacing:.22em;font-weight:600;margin-bottom:14px;text-transform:uppercase;}
   .vl article h2 em{font-style:italic;font-weight:500;font-family:Georgia,'Times New Roman',serif;}
@@ -716,7 +716,7 @@ ARTICLE_CSS = """
   .vl article a.inline:hover{background-size:0% 1px;background-position:100% 100%}
   .vl article strong{color:var(--ink);font-weight:700}
   .vl article ul,.vl article ol{padding-left:0;list-style:none;border-top:1px solid var(--hair);margin-top:12px}
-  .vl article ul li,.vl article ol li{position:relative;padding:16px 0 16px 56px;border-bottom:1px solid var(--hair);font-size:16px;color:var(--ink-2);line-height:1.55;font-weight:300;}
+  .vl article ul li,.vl article ol li{position:relative;padding:16px 0 16px 56px;border-bottom:1px solid var(--hair);font-size:16px;color:var(--ink-2);line-height:1.55;}
   .vl article ul li::before{content:"";position:absolute;left:18px;top:25px;width:18px;height:1px;background:var(--ink);}
   .vl article ol{counter-reset:listcount}
   .vl article ol li{counter-increment:listcount}
@@ -729,17 +729,16 @@ ARTICLE_CSS = """
   .vl .inline-figure .cap span:last-child{text-transform:none;letter-spacing:0;font-style:italic;color:var(--ink-2);font-family:Georgia,serif;font-weight:400;font-size:13px}
   @media(max-width:1080px){.vl .inline-figure{margin:40px 0}}
   /* ── Pull quote ── */
-  .vl .pullquote{margin:56px 0;padding:40px 0 40px 32px;border-left:3px solid var(--ink);text-align:left;}
-  .vl .pullquote q{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;font-size:clamp(22px,2.6vw,32px);line-height:1.3;color:var(--ink);display:block;letter-spacing:-0.01em;quotes:"\\201C" "\\201D";max-width:28ch;}
-  .vl .pullquote cite{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-style:normal;font-weight:600;display:block;margin-top:20px;}
+  .vl .pullquote{margin:56px 0;padding:48px 0;border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);text-align:center;}
+  .vl .pullquote q{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;font-size:clamp(24px,2.8vw,36px);line-height:1.25;color:var(--ink);text-wrap:balance;display:block;letter-spacing:-0.01em;quotes:"\\201C" "\\201D";max-width:24ch;margin:0 auto;}
+  .vl .pullquote cite{font-family:var(--sans);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-style:normal;font-weight:600;display:block;margin-top:24px;}
   /* ── Criteria grid ── */
-  .vl .criteria{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:40px 0;}
-  .vl .crit{background:var(--paper);padding:28px 24px;display:flex;flex-direction:column;gap:10px;min-height:160px;border:1px solid var(--hair);border-radius:6px;transition:border-color .2s,box-shadow .2s;}
-  .vl .crit:hover{border-color:var(--hair-strong);box-shadow:0 4px 20px rgba(0,0,0,0.07);}
-  .vl .crit .num{font-size:10px;color:var(--mute);letter-spacing:.22em;font-weight:600;text-transform:uppercase;margin-bottom:2px;}
-  .vl .crit h4{font-weight:600;font-size:18px;line-height:1.2;letter-spacing:-0.015em;color:var(--ink);}
-  .vl .crit p{font-size:13.5px;color:var(--ink-2);line-height:1.55;margin-top:auto;font-weight:300;}
-  @media(max-width:520px){.vl .criteria{grid-template-columns:1fr;gap:8px}}
+  .vl .criteria{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--hair-strong);border:1px solid var(--hair-strong);margin:32px 0;}
+  .vl .crit{background:var(--paper);padding:28px 24px;display:flex;flex-direction:column;gap:10px;min-height:180px;}
+  .vl .crit .num{font-size:10.5px;color:var(--mute);letter-spacing:.22em;font-weight:700;text-transform:uppercase;}
+  .vl .crit h4{font-weight:600;font-size:19px;line-height:1.2;letter-spacing:-0.015em;color:var(--ink);}
+  .vl .crit p{font-size:14px;color:var(--ink-2);line-height:1.5;margin-top:auto;}
+  @media(max-width:520px){.vl .criteria{grid-template-columns:1fr}}
   /* ── Product card ── */
   .vl .product{margin:64px 0;background:var(--paper);display:grid;grid-template-columns:1fr 1fr;overflow:hidden;border:1px solid var(--hair-strong);box-shadow:0 2px 12px rgba(0,0,0,0.07);}
   .vl .product-media{background:var(--paper);position:relative;aspect-ratio:4/3;overflow:hidden;border-right:1px solid var(--hair-strong);}
@@ -766,13 +765,13 @@ ARTICLE_CSS = """
   .vl .product.compact .product-name{font-size:24px}
   .vl .product.compact .product-media{aspect-ratio:1/1}
   /* ── Spec strip ── */
-  .vl .spec-strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--ink);margin:48px 0;}
-  .vl .spec-strip > div{padding:28px 20px;border-right:1px solid var(--hair);display:flex;flex-direction:column;gap:6px;}
-  .vl .spec-strip > div:last-child{border-right:none}
-  .vl .spec-strip .big{font-size:44px;line-height:1;letter-spacing:-0.04em;color:var(--ink);display:flex;align-items:baseline;gap:3px;font-weight:700;}
-  .vl .spec-strip .big sup{font-size:15px;color:var(--ink);font-weight:500;letter-spacing:0;opacity:.55}
-  .vl .spec-strip .lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-top:6px;font-weight:500;}
-  @media(max-width:680px){.vl .spec-strip{grid-template-columns:repeat(2,1fr)}.vl .spec-strip > div:nth-child(even){border-right:none}.vl .spec-strip > div:nth-child(n+3){border-top:1px solid var(--hair)}}
+  .vl .spec-strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);margin:48px 0;}
+  .vl .spec-strip > div{padding:28px 20px;border-left:1px solid var(--hair);display:flex;flex-direction:column;gap:6px;}
+  .vl .spec-strip > div:first-child{border-left:none}
+  .vl .spec-strip .big{font-size:46px;line-height:1;letter-spacing:-0.04em;color:var(--ink);display:flex;align-items:baseline;gap:3px;font-weight:600;}
+  .vl .spec-strip .big sup{font-size:16px;color:var(--ink);font-weight:500;letter-spacing:0;opacity:.6}
+  .vl .spec-strip .lbl{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);margin-top:8px;font-weight:600;}
+  @media(max-width:680px){.vl .spec-strip{grid-template-columns:repeat(2,1fr)}.vl .spec-strip > div:nth-child(3){border-left:none}.vl .spec-strip > div{border-top:1px solid var(--hair)}.vl .spec-strip > div:nth-child(-n+2){border-top:none}}
   /* ── Variants ── */
   .vl .variants{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair-strong);margin:40px 0;border:1px solid var(--hair-strong);}
   .vl .variants a{background:var(--paper);display:flex;flex-direction:column;gap:0;text-decoration:none;color:var(--ink);transition:background .2s;}
@@ -789,7 +788,7 @@ ARTICLE_CSS = """
   .vl .faq summary::-webkit-details-marker{display:none}
   .vl .faq summary::after{content:"";display:inline-block;width:14px;height:14px;flex-shrink:0;margin-top:6px;background-image:linear-gradient(var(--ink),var(--ink)),linear-gradient(var(--ink),var(--ink));background-size:14px 1.4px,1.4px 14px;background-position:center;background-repeat:no-repeat;transition:transform .25s;}
   .vl .faq details[open] summary::after{background-size:14px 1.4px,0 0;transform:rotate(180deg);}
-  .vl .faq .answer{padding:0 36px 28px 0;font-size:15.5px;line-height:1.6;color:var(--ink-2);font-weight:300;animation:vl-fadein .25s ease;}
+  .vl .faq .answer{padding:0 36px 28px 0;font-size:15.5px;line-height:1.6;color:var(--ink-2);animation:vl-fadein .25s ease;}
   @keyframes vl-fadein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
   /* ── Mobile share strip (visible only ≤760px, below article) ── */
   .vl .mobile-share{display:none}
@@ -823,6 +822,7 @@ ARTICLE_CSS = """
   /* ── Responsive — 1080px ── */
   @media(max-width:1080px){
     .vl .hero{padding-top:48px}
+    .vl .hero-figure{margin-left:-24px;margin-right:-24px}
     .vl .ride{padding-left:24px;padding-right:24px}
   }
   /* ── Responsive — 720px ── */
@@ -833,7 +833,7 @@ ARTICLE_CSS = """
     .vl .hero-sub{margin-top:20px;font-size:16.5px}
     .vl .hero-meta-bottom{margin-top:36px;padding:18px 0;grid-template-columns:repeat(2,1fr);gap:16px 18px;}
     .vl .hero-meta-bottom dd{font-size:13px}
-    .vl .hero-figure{margin-top:32px;aspect-ratio:3/2}
+    .vl .hero-figure{margin:36px -18px 0}
     .vl .hero-figure .credit{left:14px;bottom:12px;font-size:9.5px}
     /* show mobile TOC */
     .vl .toc-mobile{
@@ -871,8 +871,7 @@ ARTICLE_CSS = """
     .vl .pullquote cite{margin-top:18px;font-size:10px}
     .vl .criteria{margin:24px 0;grid-template-columns:1fr}
     .vl .crit{min-height:0;padding:22px 20px}
-    .vl .crit h4{font-size:18px}
-    .vl .spec-strip{margin:32px 0;border-top-width:2px}
+    .vl .spec-strip{margin:32px 0}
     .vl .spec-strip > div{padding:22px 16px}
     .vl .spec-strip .big{font-size:34px}
     .vl .product{margin:44px 0}
@@ -1572,7 +1571,7 @@ def build_de_html(post: dict, cover_url: str) -> str:
     font_link = (
         '<link rel="preconnect" href="https://fonts.googleapis.com">'
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-        '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">'
+        '<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">'
     )
     # Inject canonical pointing to the root (non-locale) URL — strips /nl/, /fr/ etc. prefixes
     canonical_js = (
