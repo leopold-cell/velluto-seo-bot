@@ -44,12 +44,14 @@ QUALITY_LOG    = os.path.join(os.path.dirname(os.path.abspath(__file__)), "quali
 NL_KW_LOG      = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nl_keywords_used.json")
 ARTICLE_NUM_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "article_num.json")
 
-# All shop locales that receive market adaptations (DE is primary content language, not in list)
-# EN is the Shopify primary locale — content is published there directly; translation call is no-op
-SHOP_LOCALES = ["nl", "en", "fr", "es", "it", "da", "nb", "pl", "pt-PT", "sv"]
+# All shop locales that receive T&A market adaptations.
+# EN is the Shopify primary locale — the primary article is published in English directly.
+# DE and all other markets get locale-specific adaptations via Shopify Translate & Adapt.
+SHOP_LOCALES = ["de", "nl", "fr", "es", "it", "da", "nb", "pl", "pt-PT", "sv"]
 
 # Human-readable language name per locale (for Haiku prompts)
 LOCALE_LANG_NAMES = {
+    "de":    "German",
     "nl":    "Dutch",
     "en":    "English",
     "fr":    "French",
@@ -65,6 +67,9 @@ LOCALE_LANG_NAMES = {
 # Local cycling context hints per locale (improves adaptation quality)
 # Includes verified local competitor brands for "alternative to X" content angles
 LOCALE_CYCLING_CONTEXT = {
+    "de":    "German cycling culture, Rennradszene, Alpenpass-Touren, Radklassiker, ISPO-Neuheiten; "
+             "local competitors: Uvex (DE market leader, sportstyle.de), Alpina (mid-range DE brand); "
+             "retailers: Bike24 (Leipzig), Rose Bikes, Fahrrad.de; media: Rennrad-News.de, Tour-Magazin.de",
     "nl":    "Dutch cycling culture, polderroutes, wielrennen; local brands: AGU, Shimano NL; "
              "retailers: Cyclingworld, Fietsportaal",
     "en":    "UK/international cycling context, sportives, British cycling; "
@@ -1279,12 +1284,14 @@ def research_market_keywords(kw_de: str) -> dict:
 @retry(max_attempts=3, delay=10, label="generate_de_primary")
 def generate_de_primary(kw: dict, products: list[dict], quality: dict) -> dict:
     """
-    Generate a full German magazine article using the Velluto HTML template structure.
+    Generate a full English magazine article using the Velluto HTML template structure.
+    Publishes in English (Shopify primary locale). DE/NL/FR etc. are registered via T&A.
     kw must include 'art_num' key (e.g. '014').
     """
-    keyword    = kw.get("keyword_de") or kw["keyword"]  # German keyword preferred
+    keyword_en = kw.get("keyword_en") or kw["keyword"]  # EN keyword is primary
+    keyword_de = kw.get("keyword_de") or kw["keyword"]  # DE keyword for context only
     keyword_nl = kw.get("keyword_nl", kw["keyword"])
-    keyword_en = kw.get("keyword_en", kw["keyword"])
+    keyword    = keyword_en  # primary keyword driving the article
     title_hint = kw.get("title_nl", keyword)
     angle      = kw.get("angle", "")
     art_num    = kw.get("art_num", "001")
@@ -1318,114 +1325,115 @@ def generate_de_primary(kw: dict, products: list[dict], quality: dict) -> dict:
     season = get_season_year()
     cycling_ctx = get_cycling_context()
 
-    system = f"""Du bist der leitende SEO-Redakteur und Texter für Velluto (velluto-shop.com), \
-eine premium deutsche Rennrad-Brillenmarke mit italienischem Design.
+    system = f"""You are the lead SEO editor and copywriter for Velluto (velluto-shop.com), \
+a premium road cycling eyewear brand with Italian design, sold across Europe.
 
 {BRAND_FACTS}
 
 {COPY_PRINCIPLES}
 {(chr(10) + seo_ctx + chr(10)) if seo_ctx else ""}
-SCHREIBREGELN:
-1. Ausschließlich Deutsch. Markennamen (Velluto, StradaPro, VellutoPuro, VellutoVisione) sind OK.
-2. Keine <img>-Tags im Fließtext — nur das Cover-Bild wird separat gesetzt. \
-   Produktbilder NUR in .product-media-Divs mit den GENEHMIGTEN CDN-URLs.
-3. Verwende NUR die angegebenen Produkt-URLs — erfinde keine URLs.
-4. Prüfe jeden Velluto-Claim gegen BRAND_FACTS — kein fotochromatisch, polarisiert oder auf Stärke.
-5. Das Ergebnis muss sich anfühlen wie Rat von einem schnelleren, erfahreneren Radsportfreund — kein Verkaufsgespräch.
-6. Verwende die exakten CSS-Klassennamen aus dem Template (hero, article, .toc, .faq usw.)."""
+WRITING RULES:
+1. Write exclusively in English. Brand names (Velluto, StradaPro, VellutoPuro, VellutoVisione) are unchanged.
+2. No <img> tags in flowing text — the cover image is set separately. \
+   Product images ONLY in .product-media divs using the APPROVED CDN URLs.
+3. Use ONLY the provided product URLs — do not invent URLs.
+4. Check every Velluto claim against BRAND_FACTS — no photochromic, polarized, or prescription claims.
+5. The result should feel like advice from a faster, more experienced cycling friend — not a sales pitch.
+6. Use the exact CSS class names from the template (hero, article, .toc, .faq, etc.)."""
 
-    user = f"""Datum: {datetime.date.today().strftime('%d. %B %Y')} | Saison: {season} | Radkontext: {cycling_ctx}
-Ziel-Keyword (DE): {keyword}
-Inhaltswinkel: {angle if angle else title_hint}
-Artikelnummer: {art_num}
-Qualitätsstufe {quality['day']} — Zielumfang: {word_count} Wörter, {faq_count} FAQ-Fragen
+    user = f"""Date: {datetime.date.today().strftime('%B %d, %Y')} | Season: {season} | Cycling context: {cycling_ctx}
+Primary Keyword (EN): {keyword}
+DE Keyword (for context): {keyword_de}
+Content angle: {angle if angle else title_hint}
+Article number: {art_num}
+Quality level {quality['day']} — target: {word_count} words, {faq_count} FAQ questions
 
 {cdn_images_hint}
-PRODUKTE (ausschließlich diese exakten URLs):
+PRODUCTS (use only these exact URLs):
 {product_json}
 
-Schreibe einen vollständigen deutschen Magazinartikel im Velluto-HTML-Template-Format.
+Write a complete English magazine article in the Velluto HTML template format.
 
-PFLICHTSTRUKTUR des ===BODY=== (nur Artikelinhalt — Hero, Autor, Ride und Related werden vom Shopify-Liquid-Template gerendert):
+REQUIRED STRUCTURE for ===BODY=== (article content only — Hero, Author, Ride and Related are rendered by the Shopify Liquid template):
 
-<p class="lede">[Starker Einstieg — konkrete Szene aus dem Radsportleben, 2-3 Sätze]</p>
-<p>[Fließtext-Absätze]</p>
+<p class="lede">[Strong opening — a concrete scene from road cycling life, 2-3 sentences]</p>
+<p>[Body paragraphs]</p>
 
-[Pro Abschnitt:
-<h2 id="sN"><span class="sec-num">0N · Oberthema</span>[Abschnittstitel mit optionalem <em>Kursiv</em>]</h2>
+[Per section:
+<h2 id="sN"><span class="sec-num">0N · Topic area</span>[Section title with optional <em>italics</em>]</h2>
 <p>...</p>]
 
-[Füge mindestens ein ein:
-- <div class="spec-strip">...</div> mit <span data-count="N"> für animierte Zahlen (25g, UV400, 30 Tage, etc.)
-- <div class="criteria">...</div> mit 2x2 .crit-Kacheln für Auswahlkriterien
-- <div class="pullquote"><q>Zitat</q><cite>— Quelle</cite></div>
-- <figure class="inline-figure"><img src="[CDN URL]" alt="..."><div class="cap"><span>FIG. 0N — Label</span><span>Bildunterschrift</span></div></figure>]
+[Include at least one of:
+- <div class="spec-strip">...</div> with <span data-count="N"> for animated numbers (25g, UV400, 30 days, etc.)
+- <div class="criteria">...</div> with 2x2 .crit tiles for selection criteria
+- <div class="pullquote"><q>Quote</q><cite>— Source</cite></div>
+- <figure class="inline-figure"><img src="[CDN URL]" alt="..."><div class="cap"><span>FIG. 0N — Label</span><span>Caption</span></div></figure>]
 
-[Produktkarte — verwende EXAKT diese Struktur:
+[Product card — use EXACTLY this structure:
 <div class="product">
   <div class="product-media">
     <span class="product-tag">Editor's Pick</span>
-    <img src="[GENEHMIGTER CDN URL]" alt="[Produktname]">
+    <img src="[APPROVED CDN URL]" alt="[Product name]">
   </div>
   <div class="product-info">
-    <div class="product-eyebrow">Rennradbrille · Road &amp; Gravel</div>
-    <h3 class="product-name">Velluto StradaPro<br>Brille <em>— [Farbe]</em></h3>
+    <div class="product-eyebrow">Road Cycling Glasses · Road &amp; Gravel</div>
+    <h3 class="product-name">Velluto StradaPro<br>Glasses <em>— [Colour]</em></h3>
     <dl class="product-specs">
-      <div class="spec"><dt>Gewicht</dt><dd>25 g</dd></div>
-      <div class="spec"><dt>Schutz</dt><dd>UV400</dd></div>
-      <div class="spec"><dt>Nasensteg</dt><dd>Verstellbar</dd></div>
-      <div class="spec"><dt>Linsen</dt><dd>Wechselbar</dd></div>
+      <div class="spec"><dt>Weight</dt><dd>25 g</dd></div>
+      <div class="spec"><dt>Protection</dt><dd>UV400</dd></div>
+      <div class="spec"><dt>Nose pad</dt><dd>Adjustable</dd></div>
+      <div class="spec"><dt>Lenses</dt><dd>Interchangeable</dd></div>
     </dl>
-    <div class="product-price">€ 149,00 <small>· Kostenloser EU-Versand</small></div>
+    <div class="product-price">€ 149.00 <small>· Free EU shipping</small></div>
     <div class="product-cta-row">
-      <a class="product-cta" href="[PRODUKT URL]">Jetzt kaufen <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a>
-      <a class="product-cta secondary" href="[PRODUKT URL]">Details</a>
+      <a class="product-cta" href="[PRODUCT URL]">Buy now <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a>
+      <a class="product-cta secondary" href="[PRODUCT URL]">Details</a>
     </div>
   </div>
 </div>]
 
-[Farbvarianten-Strip:
+[Colour variants strip:
 <div class="variants">
-  [4x <a href="[PRODUKT URL]"><img src="[CDN URL]" alt="..."><div class="v-info"><span class="v-name">[Farbe]</span><span class="v-price">€ 149</span></div></a>]
+  [4x <a href="[PRODUCT URL]"><img src="[CDN URL]" alt="..."><div class="v-info"><span class="v-name">[Colour]</span><span class="v-price">€ 149</span></div></a>]
 </div>]
 
-[PFLICHT: FAQ als letzten Abschnitt:
-<h2 id="sfaq"><span class="sec-num">0{faq_count} · FAQ</span>Häufig gestellte Fragen</h2>
+[REQUIRED: FAQ as the last section:
+<h2 id="sfaq"><span class="sec-num">0{faq_count} · FAQ</span>Frequently Asked Questions</h2>
 <div class="faq">
-  [Exakt {faq_count} <details>-Elemente:
+  [Exactly {faq_count} <details> elements:
   <details open>
-    <summary>[Frage 1?]</summary>
-    <div class="answer">[Antwort 1]</div>
+    <summary>[Question 1?]</summary>
+    <div class="answer">[Answer 1]</div>
   </details>]
 </div>]
 
-<p>[Abschluss-CTA → <a class="inline" href="https://velluto-shop.com">velluto-shop.com</a>]</p>
+<p>[Closing CTA → <a class="inline" href="https://velluto-shop.com">velluto-shop.com</a>]</p>
 
-WICHTIG: Kein <h1>, kein Hero, keine Sidebar, keine Ride-Sektion — das Shopify-Template rendert diese Elemente automatisch.
+IMPORTANT: No <h1>, no Hero, no Sidebar, no Ride section — the Shopify template renders these automatically.
 
-Verwende GENAU dieses Ausgabeformat — Trennzeichen auf eigenen Zeilen, kein Extra-Text außerhalb:
+Use EXACTLY this output format — delimiters on their own lines, no extra text outside them:
 
 ===META===
-title_de: <max 65 Zeichen, 100% DEUTSCH, enthält das DE-Keyword "{keyword}">
-meta_description_de: <max 155 Zeichen, 100% Deutsch, enthält Keyword>
-keyword_de: {keyword}
-keyword_nl: <natürliches NL-Äquivalent>
-keyword_en: <natürliches EN-Äquivalent>
-tags: rennradbrille,fahrradbrille,radsport,Velluto StradaPro,{keyword}
-eyebrow: <Themenbereich-Label>
-category: <Kategorie>
-hero_sub: <Untertitel>
-read_time: <Zahl>
+title: <max 65 chars, 100% English, contains the keyword "{keyword}">
+meta_description: <max 155 chars, English, contains keyword>
+keyword_de: {keyword_de}
+keyword_nl: {keyword_nl}
+keyword_en: {keyword}
+tags: cycling glasses,road cycling,velluto,StradaPro,{keyword}
+eyebrow: <topic area label>
+category: <category>
+hero_sub: <subtitle>
+read_time: <number>
 ===FAQ_JSON===
 [
-  {{"question": "Frage 1?", "answer": "Antwort 1."}},
-  {{"question": "Frage 2?", "answer": "Antwort 2."}}
+  {{"question": "Question 1?", "answer": "Answer 1."}},
+  {{"question": "Question 2?", "answer": "Answer 2."}}
 ]
 ===BODY===
-[Nur Artikelinhalt: lede-Absatz, h2-Sektionen, Komponenten (spec-strip, criteria, pullquote, product, variants, faq)]
+[Article content only: lede paragraph, h2 sections, components (spec-strip, criteria, pullquote, product, variants, faq)]
 ===END===
 
-QUALITÄTSMASSSTAB: {word_count} Wörter, {faq_count} FAQ-Fragen, mindestens 2 interne Links zu Produktseiten."""
+QUALITY STANDARD: {word_count} words, {faq_count} FAQ questions, at least 2 internal links to product pages."""
 
     GENERATE_MODEL = "claude-sonnet-4-6"
     response = client.messages.create(
@@ -1438,11 +1446,11 @@ QUALITÄTSMASSSTAB: {word_count} Wörter, {faq_count} FAQ-Fragen, mindestens 2 i
     print(f"   Tokens in:{response.usage.input_tokens} out:{response.usage.output_tokens} | ${cost:.4f}")
 
     raw = response.content[0].text
-    return _parse_de_response(raw, kw)
+    return _parse_primary_response(raw, kw)
 
 
-def _parse_de_response(raw: str, kw: dict) -> dict:
-    """Parse DE primary article response with delimiters ===META===, ===FAQ_JSON===, ===BODY===, ===END===."""
+def _parse_primary_response(raw: str, kw: dict) -> dict:
+    """Parse primary (EN) article response with delimiters ===META===, ===FAQ_JSON===, ===BODY===, ===END===."""
     def extract(tag_start, tag_end):
         m = re.search(rf'{re.escape(tag_start)}\n(.*?)\n{re.escape(tag_end)}', raw, re.DOTALL)
         return m.group(1).strip() if m else ""
@@ -1487,14 +1495,14 @@ def _parse_de_response(raw: str, kw: dict) -> dict:
     else:
         post["faq_schema"] = ""
 
-    required = {"title_de", "meta_description_de", "tags", "body_html"}
+    required = {"title", "meta_description", "tags", "body_html"}
     missing  = required - set(post.keys())
     if missing or not post.get("body_html"):
-        raise ValueError(f"DE response missing fields: {missing}. Raw snippet: {raw[:300]}")
+        raise ValueError(f"Primary response missing fields: {missing}. Raw snippet: {raw[:300]}")
     return post
 
 
-def build_de_html(post: dict, cover_url: str) -> str:
+def build_body_html(post: dict, cover_url: str) -> str:
     """Inject CSS, replace COVER_URL placeholder, append FAQ schema + JS."""
     body = post["body_html"]
     # Replace cover placeholder
@@ -1594,7 +1602,7 @@ def register_shopify_translation(article_id: int, locale: str, title: str,
 @retry(max_attempts=2, delay=10, label="generate_market_adaptation")
 def generate_market_adaptation(de_post: dict, target_locale: str, market: dict) -> dict:
     """
-    Adapt a DE article for a target market (NL or EN).
+    Adapt the primary EN article for a target market locale (DE, NL, FR, etc.).
     Uses Claude Haiku for cost efficiency (~$0.025 vs $0.145 with Sonnet).
     market = {"keyword": "...", "intent": "..."}
     """
@@ -1634,8 +1642,8 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict) 
         system="Return ONLY valid JSON, no extra text.",
         messages=[{"role": "user", "content":
             f"Adapt these for the {lang_name} market. Keyword: '{target_kw}'.\n"
-            f"DE title: {de_post.get('title_de', '')}\n"
-            f"DE meta: {de_post.get('meta_description_de', '')}\n\n"
+            f"EN title: {de_post.get('title', '')}\n"
+            f"EN meta: {de_post.get('meta_description', '')}\n\n"
             f"Return: {{\"title\": \"<max 65 chars, written in {lang_name}, contains the keyword>\", "
             f"\"meta\": \"<max 155 chars, written in {lang_name}, contains the keyword>\"}}"
         }]
@@ -1660,12 +1668,12 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict) 
 
 
 def publish_de_primary(kw: dict, products: list[dict]):
-    """Orchestrate: generate DE article → publish → register NL + EN market adaptations."""
+    """Orchestrate: generate EN article → publish (EN primary) → register DE/NL/FR/… via T&A."""
     from de_keyword_queue import mark_de_keyword_used
 
     keyword = kw["keyword"]
-    print(f"\n── DE Primary Article ───────────────────────────────")
-    print(f"   Keyword: {keyword} (vol: {kw.get('volume','?')}, phase: {kw.get('phase','?')})")
+    print(f"\n── Primary Article (EN) ─────────────────────────────")
+    print(f"   DE Keyword seed: {keyword} (vol: {kw.get('volume','?')}, phase: {kw.get('phase','?')})")
 
     art_num = get_article_number()
 
@@ -1725,7 +1733,7 @@ def publish_de_primary(kw: dict, products: list[dict]):
         break
 
     # Guard: check if an article with this title's handle already exists (prevents -1 duplicates)
-    expected_slug = re.sub(r'[^a-z0-9]+', '-', post.get("title_de", "").lower()).strip('-')
+    expected_slug = re.sub(r'[^a-z0-9]+', '-', post.get("title", "").lower()).strip('-')
     if expected_slug:
         existing_check = requests.get(
             f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json",
@@ -1737,12 +1745,12 @@ def publish_de_primary(kw: dict, products: list[dict]):
             mark_de_keyword_used(keyword)
             return
 
-    body_html = build_de_html(post, cover_url)
+    body_html = build_body_html(post, cover_url)
     aid, handle = publish(
-        title=post["title_de"],
+        title=post["title"],
         body_html=body_html,
-        meta_desc=post.get("meta_description_de", "")[:155],
-        tags=post.get("tags", f"rennradbrille,fahrradbrille,{keyword}"),
+        meta_desc=post.get("meta_description", "")[:155],
+        tags=post.get("tags", f"cycling glasses,road cycling,velluto,{keyword}"),
         featured_url=cover_url,
     )
 
@@ -1778,17 +1786,17 @@ def publish_de_primary(kw: dict, products: list[dict]):
     blog_handle = "velluto-the-magazine"
     published = json.load(open(PUBLISHED_LOG)) if os.path.exists(PUBLISHED_LOG) else []
     published.append({
-        "title":    post["title_de"],
+        "title":    post["title"],
         "url":      f"https://velluto-shop.com/blogs/{blog_handle}/{handle}",
         "topic":    keyword,
         "keyword":  keyword,
-        "lang":     "de",
+        "lang":     "en",
         "phase":    kw.get("phase"),
         "tags":     post.get("tags", ""),
         "translations": {loc: mkt_kws.get(loc, {}) for loc in SHOP_LOCALES},
     })
     json.dump(published, open(PUBLISHED_LOG, "w"), indent=2)
-    print(f"   DE published: {post['title_de']}")
+    print(f"   EN published: {post['title']}")
     print(f"   https://velluto-shop.com/blogs/{blog_handle}/{handle}")
 
 
