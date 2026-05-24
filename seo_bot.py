@@ -1174,6 +1174,7 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
         "title":           title,
         "body_html":       body_html,
         "published":       True,
+        "author":          "Velluto Redaktion",
         "tags":            tags,
         "template_suffix": "velluto-magazine",
         "metafields": [{"key": "description_tag", "value": meta_desc[:155],
