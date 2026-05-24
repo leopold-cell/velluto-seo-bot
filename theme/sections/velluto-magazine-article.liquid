@@ -74,7 +74,7 @@
         <div class="avatar" role="img" aria-label="{{ article.author }}"
           style="background-image:url('{{ section.settings.author_image | image_url: width: 104 }}')"></div>
       {%- else -%}
-        <div class="avatar" role="img" aria-label="{{ article.author }}"></div>
+        <div class="avatar avatar--initials" role="img" aria-label="{{ article.author }}">VR</div>
       {%- endif -%}
       <div>
         <div class="role">Autor</div>

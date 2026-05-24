@@ -338,6 +338,11 @@
   background-size:cover;background-position:center;flex-shrink:0;
   filter:grayscale(1) contrast(1.02);background-color:var(--hair-strong);
 }
+.vmag .author-strip .avatar--initials{
+  background-color:#e8ddd4;filter:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;letter-spacing:.08em;color:#1a1a1a;
+}
 .vmag .author-strip .role{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:700}
 .vmag .author-strip .name{font-size:16px;color:var(--ink);font-weight:700;letter-spacing:-0.01em;margin-top:2px}
 .vmag .author-strip .bio{font-size:13px;color:var(--ink-2);margin-top:2px;line-height:1.4}
