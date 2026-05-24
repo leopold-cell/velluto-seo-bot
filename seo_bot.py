@@ -1162,10 +1162,11 @@ def validate(post: dict, products: list[dict]) -> list[str]:
 @retry(max_attempts=3, delay=5, label="publish")
 def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url: str) -> int | None:
     payload = {"article": {
-        "title":     title,
-        "body_html": body_html,
-        "published": True,
-        "tags":      tags,
+        "title":           title,
+        "body_html":       body_html,
+        "published":       True,
+        "tags":            tags,
+        "template_suffix": "velluto-magazine",
         "metafields": [{"key": "description_tag", "value": meta_desc[:155],
                         "type": "single_line_text_field", "namespace": "global"}]
     }}
@@ -1335,135 +1336,62 @@ PRODUKTE (ausschließlich diese exakten URLs):
 
 Schreibe einen vollständigen deutschen Magazinartikel im Velluto-HTML-Template-Format.
 
-PFLICHTSTRUKTUR des ===BODY===:
+PFLICHTSTRUKTUR des ===BODY=== (nur Artikelinhalt — Hero, Autor, Ride und Related werden vom Shopify-Liquid-Template gerendert):
 
-<section class="hero wrap">
-  <div class="hero-eyebrow">[THEMENBEREICH, z.B. Gläser &amp; Technologie]</div>
-  <h1 class="hero-title">[Haupttitel mit Keyword — 1-2 Zeilen, mit <em>Kursivakzent</em> möglich]</h1>
-  <p class="hero-sub">[Untertitel — 1-2 Sätze, Mehrwert-Versprechen]</p>
-  <dl class="hero-meta-bottom">
-    <div><dt>Autor</dt><dd>Velluto Redaktion</dd></div>
-    <div><dt>Kategorie</dt><dd>[Kategorie]</dd></div>
-    <div><dt>Lesezeit</dt><dd>[N] Minuten</dd></div>
-    <div><dt>Ausgabe</dt><dd>{season}</dd></div>
-  </dl>
-  <figure class="hero-figure">
-    <img src="COVER_URL" alt="[Bildbeschreibung]">
-    <span class="credit">Photo · Velluto Studio</span>
-  </figure>
+<p class="lede">[Starker Einstieg — konkrete Szene aus dem Radsportleben, 2-3 Sätze]</p>
+<p>[Fließtext-Absätze]</p>
 
-  <!-- Mobile TOC — sichtbar nur auf Smartphones (≤720px) -->
-  <details class="toc-mobile" id="tocMobile">
-    <summary>Inhalt <span class="count">[N] Abschnitte</span></summary>
-    <ol>
-      [Gleiche TOC-Einträge wie Sidebar: <li><a href="#sN"><span class="n">0N</span>[Titel]</a></li>]
-    </ol>
-  </details>
-</section>
+[Pro Abschnitt:
+<h2 id="sN"><span class="sec-num">0N · Oberthema</span>[Abschnittstitel mit optionalem <em>Kursiv</em>]</h2>
+<p>...</p>]
 
-<section class="wrap article">
-  <aside class="left">
-    <div class="toc-head">Inhalt</div>
-    <ul class="toc" id="toc">
-      [4-6 TOC-Einträge: <li><a href="#sN"><span class="num">0N</span> Abschnittstitel</a></li>]
-    </ul>
-  </aside>
+[Füge mindestens ein ein:
+- <div class="spec-strip">...</div> mit <span data-count="N"> für animierte Zahlen (25g, UV400, 30 Tage, etc.)
+- <div class="criteria">...</div> mit 2x2 .crit-Kacheln für Auswahlkriterien
+- <div class="pullquote"><q>Zitat</q><cite>— Quelle</cite></div>
+- <figure class="inline-figure"><img src="[CDN URL]" alt="..."><div class="cap"><span>FIG. 0N — Label</span><span>Bildunterschrift</span></div></figure>]
 
-  <article>
-    <p class="lede">[Starker Einstieg — konkrete Szene aus dem Radsportleben, 2-3 Sätze]</p>
-    [Fließtext-Absätze]
-
-    [Pro Abschnitt:
-    <h2 id="sN"><span class="sec-num">§ 0N — Oberthema</span>[Abschnittstitel mit optionalem <em>Kursiv</em>]</h2>
-    <p>...</p>]
-
-    [Füge mindestens ein ein:
-    - <div class="spec-strip">...</div> mit <span data-count="N"> für animierte Zahlen (25g, UV400, 30 Tage, etc.)
-    - <div class="criteria">...</div> mit 2x2 .crit-Kacheln für Auswahlkriterien
-    - <div class="pullquote"><q>Zitat</q><cite>— Quelle</cite></div>]
-
-    [Produktkarte — verwende EXAKT diese Struktur:
-    <div class="product">
-      <div class="product-media">
-        <span class="product-tag">Editor's Pick</span>
-        <img src="[GENEHMIGTER CDN URL]" alt="[Produktname]">
-      </div>
-      <div class="product-info">
-        <div class="product-eyebrow">Rennradbrille · Road &amp; Gravel</div>
-        <h3 class="product-name">Velluto StradaPro<br>Brille <em>— [Farbe]</em></h3>
-        <dl class="product-specs">
-          <div class="spec"><dt>Gewicht</dt><dd>25 g</dd></div>
-          <div class="spec"><dt>Schutz</dt><dd>UV400</dd></div>
-          <div class="spec"><dt>Nasensteg</dt><dd>Verstellbar</dd></div>
-          <div class="spec"><dt>Linsen</dt><dd>Wechselbar</dd></div>
-        </dl>
-        <div class="product-price">€ 149,00 <small>· Kostenloser EU-Versand</small></div>
-        <div class="product-cta-row">
-          <a class="product-cta" href="[PRODUKT URL]">Jetzt kaufen <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a>
-          <a class="product-cta secondary" href="[PRODUKT URL]">Details</a>
-        </div>
-      </div>
-    </div>]
-
-    [Farbvarianten-Strip:
-    <div class="variants">
-      [4x <a href="[PRODUKT URL]"><img src="[CDN URL]" alt="..."><div class="v-info"><span class="v-name">[Farbe]</span><span class="v-price">€ 149</span></div></a>]
-    </div>]
-
-    [PFLICHT: FAQ als letzten Abschnitt vor CTA:
-    <h2 id="sfaq"><span class="sec-num">§ 0{faq_count} — FAQ</span>Häufig gestellte Fragen</h2>
-    <div class="faq">
-      [Exakt {faq_count} <details>-Elemente:
-      <details open>
-        <summary>[Frage 1?]</summary>
-        <div class="answer">[Antwort 1]</div>
-      </details>]
-    </div>]
-
-    <p>[Abschluss-CTA → <a class="inline" href="https://velluto-shop.com">velluto-shop.com</a>]</p>
-  </article>
-
-  <aside class="right">
-    <div class="author-card">
-      <div class="avatar"></div>
-      <div class="role">Autor</div>
-      <div class="name">Velluto Redaktion</div>
-      <div class="bio">Gear-Redaktion bei Velluto Magazine. Rennrad &amp; Gravel, obsessiv beim Thema Optik.</div>
-    </div>
-    <div class="share">
-      <div class="share-head">Artikel teilen</div>
-      <div class="share-list">
-        <a href="#">Link kopieren <span>↗</span></a>
-        <a href="#">Strava <span>↗</span></a>
-        <a href="#">Instagram <span>↗</span></a>
-        <a href="#">E-Mail <span>↗</span></a>
-      </div>
-    </div>
-    <div class="italian-note">
-      <small>Velluto · Italienisch: Samt</small>
-      Gegründet im Sommer 2023 am Ostufer des Gardasees. Inspiriert von langen Ausfahrten, kühlem Weißwein und sonnendurchfluteten Nachmittagen.
-    </div>
-  </aside>
-</section>
-
-<!-- Mobile Share Strip — nur auf Smartphones sichtbar (≤720px) -->
-<div class="mobile-share">
-  <span>Teilen</span>
-  <a href="https://twitter.com/intent/tweet?url=[ARTICLE_URL]&text=[TITLE]" rel="noopener">Twitter / X</a>
-  <a href="https://wa.me/?text=[TITLE]%20[ARTICLE_URL]" rel="noopener">WhatsApp</a>
-</div>
-
-<section class="ride">
-  <div class="ride-inner">
-    <div><h2>Ride Fast.<br><em>Live Slow.</em></h2></div>
-    <div>
-      <p>[2-3 Sätze über Velluto StradaPro — konkrete Specs, 30 Tage Testgarantie]</p>
-      <a class="ride-cta" href="https://velluto-shop.com">Zur Kollektion <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a>
+[Produktkarte — verwende EXAKT diese Struktur:
+<div class="product">
+  <div class="product-media">
+    <span class="product-tag">Editor's Pick</span>
+    <img src="[GENEHMIGTER CDN URL]" alt="[Produktname]">
+  </div>
+  <div class="product-info">
+    <div class="product-eyebrow">Rennradbrille · Road &amp; Gravel</div>
+    <h3 class="product-name">Velluto StradaPro<br>Brille <em>— [Farbe]</em></h3>
+    <dl class="product-specs">
+      <div class="spec"><dt>Gewicht</dt><dd>25 g</dd></div>
+      <div class="spec"><dt>Schutz</dt><dd>UV400</dd></div>
+      <div class="spec"><dt>Nasensteg</dt><dd>Verstellbar</dd></div>
+      <div class="spec"><dt>Linsen</dt><dd>Wechselbar</dd></div>
+    </dl>
+    <div class="product-price">€ 149,00 <small>· Kostenloser EU-Versand</small></div>
+    <div class="product-cta-row">
+      <a class="product-cta" href="[PRODUKT URL]">Jetzt kaufen <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a>
+      <a class="product-cta secondary" href="[PRODUKT URL]">Details</a>
     </div>
   </div>
-</section>
+</div>]
 
-WICHTIG: COVER_URL ist ein Platzhalter — ersetze ihn NICHT. Das Python-Skript setzt die echte URL ein.
+[Farbvarianten-Strip:
+<div class="variants">
+  [4x <a href="[PRODUKT URL]"><img src="[CDN URL]" alt="..."><div class="v-info"><span class="v-name">[Farbe]</span><span class="v-price">€ 149</span></div></a>]
+</div>]
+
+[PFLICHT: FAQ als letzten Abschnitt:
+<h2 id="sfaq"><span class="sec-num">0{faq_count} · FAQ</span>Häufig gestellte Fragen</h2>
+<div class="faq">
+  [Exakt {faq_count} <details>-Elemente:
+  <details open>
+    <summary>[Frage 1?]</summary>
+    <div class="answer">[Antwort 1]</div>
+  </details>]
+</div>]
+
+<p>[Abschluss-CTA → <a class="inline" href="https://velluto-shop.com">velluto-shop.com</a>]</p>
+
+WICHTIG: Kein <h1>, kein Hero, keine Sidebar, keine Ride-Sektion — das Shopify-Template rendert diese Elemente automatisch.
 
 Verwende GENAU dieses Ausgabeformat — Trennzeichen auf eigenen Zeilen, kein Extra-Text außerhalb:
 
@@ -1484,9 +1412,7 @@ read_time: <Zahl>
   {{"question": "Frage 2?", "answer": "Antwort 2."}}
 ]
 ===BODY===
-<div class="vl">
-[Hero-Sektion mit hero-figure + toc-mobile details#tocMobile + Article-Grid (aside.left mit ul#toc | article | aside.right mit avatar + share + italian-note) + Ride-Sektion]
-</div>
+[Nur Artikelinhalt: lede-Absatz, h2-Sektionen, Komponenten (spec-strip, criteria, pullquote, product, variants, faq)]
 ===END===
 
 QUALITÄTSMASSSTAB: {word_count} Wörter, {faq_count} FAQ-Fragen, mindestens 2 interne Links zu Produktseiten."""
@@ -1583,7 +1509,7 @@ def build_de_html(post: dict, cover_url: str) -> str:
         '})();'
         '</script>'
     )
-    return f"{font_link}\n{canonical_js}\n<style>{ARTICLE_CSS}</style>\n{body}"
+    return f"{canonical_js}\n{body}"
 
 
 def graphql_with_vars(query: str, variables: dict) -> dict:
@@ -1771,8 +1697,8 @@ def publish_de_primary(kw: dict, products: list[dict]):
     for attempt in range(3):
         issues      = [i for pat, msg in FORBIDDEN_CLAIMS
                        for i in ([f"[FACT] {msg}"] if re.search(pat, post.get("body_html",""), re.IGNORECASE) else [])]
-        if not post.get("body_html") or "<h1" not in post["body_html"].lower():
-            issues.append("[FACT] Missing H1 in body")
+        if not post.get("body_html"):
+            issues.append("[FACT] Missing body_html")
         fact_issues = [i for i in issues if i.startswith("[FACT]")]
         if fact_issues:
             if attempt < 2:
