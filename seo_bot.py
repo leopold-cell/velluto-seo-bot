@@ -1245,9 +1245,11 @@ def research_market_keywords(kw_de: str) -> dict:
     for ALL shop markets (DE + SHOP_LOCALES) via a single Claude Haiku call.
     Returns: {"de": {"keyword": ..., "intent": ...}, "nl": {...}, "en": {...}, "fr": {...}, ...}
     """
+    # Always include "en" for the primary article keyword, regardless of SHOP_LOCALES
+    research_locales = ["en"] + [loc for loc in SHOP_LOCALES if loc != "en"]
     locale_list = "\n".join(
         f'  "{loc}": {{"keyword": "...", "intent": "..."}}'
-        for loc in ["de"] + SHOP_LOCALES
+        for loc in ["de"] + research_locales
     )
     r = client.messages.create(
         model="claude-haiku-4-5-20251001",
@@ -1272,7 +1274,7 @@ def research_market_keywords(kw_de: str) -> dict:
     # Normalise: ensure every locale has keyword + intent, fallback to DE keyword
     fallback = {"keyword": kw_de, "intent": ""}
     normalised = {"de": result.get("de", {"keyword": kw_de, "intent": ""})}
-    for loc in SHOP_LOCALES:
+    for loc in research_locales:
         normalised[loc] = result.get(loc, fallback)
     return normalised
 
