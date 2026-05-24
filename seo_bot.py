@@ -198,6 +198,12 @@ WHAT VELLUTO DOES NOT OFFER — NEVER WRITE THESE:
 ✗ Prescription lenses / optical inserts
 ✗ Mirrored lenses (not mentioned in product range)
 ✗ Multiple lens tints beyond Puro (clear) and Visione (high contrast)
+
+CRITICAL — NEVER CLAIM THIS:
+✗ The StradaPro is NOT suitable to wear over normal prescription glasses (Over-Glasses use).
+  Do NOT write: "fits over", "passt über", "over your glasses", "über der Brille",
+  "Brillenträger können", "for glasses wearers", or any similar phrasing.
+  The StradaPro is designed to be worn on its own, not as an over-glasses frame.
 """
 
 # ── Ogilvy & Schwartz copywriting principles ─────────────────────────────────
@@ -1118,6 +1124,9 @@ FORBIDDEN_CLAIMS = [
     (r'prescription|op(tic|tisch)', "claims prescription lenses — not in range"),
     (r'mirror(ed)?(\s+lens)?', "claims mirrored lenses — not in range"),
     (r'tinted?\s+lens', "claims tinted lens beyond Puro/Visione — verify"),
+    # StradaPro is NOT an over-glasses frame
+    (r'fits?\s+over|passt\s+(über|uber)|over[\s-]glasses|über\s+der\s+Brille|über\s+(deine|ihre|normale)\s+Brille|Brillenträger\s+können|for\s+(prescription\s+)?glasses\s+wear',
+     "claims StradaPro fits over prescription glasses — it does not"),
 ]
 
 def validate(post: dict, products: list[dict]) -> list[str]:
