@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "velluto-magazine-article",
+      "settings": {
+        "ride_cta_url": "\/collections\/all",
+        "ride_cta_label": "Zur Kollektion",
+        "ride_text": "Die Velluto StradaPro wiegt 25 Gramm, passt über die meisten Gestelle und hat verstellbare Nasenpads für druckfreien Sitz. Mit der 30-tägigen risikofreien Testphase hast du nichts zu verlieren — außer den Druckpunkten hinter den Ohren.",
+        "author_bio": "Gear-Redaktion bei Velluto. Leidenschaftliche Radfahrer, ehrliche Einschätzungen."
+      }
+    }
+  },
+  "order": ["main"]
+}

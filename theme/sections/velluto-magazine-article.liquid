@@ -1,0 +1,351 @@
+{{ 'velluto-magazine.css' | asset_url | stylesheet_tag }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+{%- assign article_category = article.tags | first | default: 'Velluto Magazin' -%}
+{%- assign reading_minutes = article.content | strip_html | split: ' ' | size | divided_by: 200 | at_least: 1 -%}
+{%- assign article_url = shop.url | append: article.url -%}
+
+<div class="vmag-progress"><div class="vmag-progress-bar" id="vmagProgress"></div></div>
+
+<main class="vmag-main vmag">
+
+  <article class="post vmag-wrap">
+
+    <header class="hero">
+      <div class="hero-kicker">
+        <span class="cat">{{ article_category }}</span>
+        {%- if section.settings.edition_label != blank -%}
+          <span class="edition">{{ section.settings.edition_label }}</span>
+        {%- endif -%}
+      </div>
+
+      <h1 class="hero-title">{{ article.title }}</h1>
+
+      {%- if article.excerpt != blank -%}
+        <p class="hero-sub">{{ article.excerpt }}</p>
+      {%- endif -%}
+
+      <dl class="hero-meta-bottom">
+        <div><dt>Autor</dt><dd>{{ article.author }}</dd></div>
+        <div><dt>Kategorie</dt><dd>{{ article_category }}</dd></div>
+        <div><dt>Lesezeit</dt><dd>{{ reading_minutes }} Minuten</dd></div>
+        <div><dt>Datum</dt><dd>{{ article.published_at | date: "%B %Y" }}</dd></div>
+      </dl>
+
+      {%- if article.image -%}
+        <figure class="hero-figure">
+          <img
+            src="{{ article.image | image_url: width: 1200 }}"
+            srcset="{{ article.image | image_url: width: 800 }} 800w, {{ article.image | image_url: width: 1200 }} 1200w"
+            sizes="(min-width: 640px) 100vw, 100vw"
+            alt="{{ article.image.alt | escape }}"
+            loading="eager"
+            width="{{ article.image.width }}"
+            height="{{ article.image.height }}"
+          >
+          {%- if section.settings.image_credit != blank -%}
+            <span class="credit">{{ section.settings.image_credit }}</span>
+          {%- endif -%}
+        </figure>
+      {%- endif -%}
+
+      <details class="toc" id="vmagToc">
+        <summary>
+          <span class="toc-label">
+            <span class="ic" aria-hidden="true"></span>
+            <span class="txt">Inhalt<small id="vmagTocMeta">{{ reading_minutes }} Min Lesezeit</small></span>
+          </span>
+          <span class="chev" aria-hidden="true">
+            <svg viewBox="0 0 14 14"><path d="m3.5 5 3.5 4 3.5-4"/></svg>
+          </span>
+        </summary>
+        <ol id="vmagTocList"></ol>
+      </details>
+    </header>
+
+    <section class="vmag-content">
+      {{ article.content }}
+    </section>
+
+    <div class="author-strip">
+      {%- if section.settings.author_image != blank -%}
+        <div class="avatar" role="img" aria-label="{{ article.author }}"
+          style="background-image:url('{{ section.settings.author_image | image_url: width: 104 }}')"></div>
+      {%- else -%}
+        <div class="avatar" role="img" aria-label="{{ article.author }}"></div>
+      {%- endif -%}
+      <div>
+        <div class="role">Autor</div>
+        <div class="name">{{ article.author }}</div>
+        {%- if section.settings.author_bio != blank -%}
+          <div class="bio">{{ section.settings.author_bio }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="share-row">
+      <span class="label">Artikel teilen</span>
+      <div class="links">
+        <a href="#" class="vmag-copy-link">Link kopieren <span>↗</span></a>
+        <a href="https://wa.me/?text={{ article.title | url_encode }}%20{{ article_url | url_encode }}" target="_blank" rel="noopener">WhatsApp <span>↗</span></a>
+        <a href="mailto:?subject={{ article.title | url_encode }}&body={{ article_url | url_encode }}">E-Mail <span>↗</span></a>
+      </div>
+    </div>
+
+  </article>
+
+  <section class="ride">
+    <div class="ride-inner">
+      <div>
+        <h2>Ride Fast.<br><em>Live Slow.</em></h2>
+      </div>
+      <div>
+        <p>{{ section.settings.ride_text | default: 'Die Velluto StradaPro wiegt 25 Gramm, passt über die meisten Gestelle und hat verstellbare Nasenpads für druckfreien Sitz. Mit der 30-tägigen risikofreien Testphase hast du nichts zu verlieren — außer den Druckpunkten hinter den Ohren.' }}</p>
+        <a class="ride-cta" href="{{ section.settings.ride_cta_url | default: shop.url }}">
+          {{ section.settings.ride_cta_label | default: 'Zur Kollektion' }}
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {%- if blog.articles_count > 1 -%}
+    <section class="vmag-wrap related">
+      <div class="related-head">
+        <h3>Weiterlesen · Velluto Magazin</h3>
+        <a href="{{ blog.url }}">Alle Artikel →</a>
+      </div>
+      <div class="related-grid">
+        {%- assign related_count = 0 -%}
+        {%- for related in blog.articles -%}
+          {%- if related.id != article.id and related_count < 3 -%}
+            {%- assign related_count = related_count | plus: 1 -%}
+            {%- assign rel_minutes = related.content | strip_html | split: ' ' | size | divided_by: 200 | at_least: 1 -%}
+            <a class="rel-card" href="{{ related.url }}">
+              <div class="rel-img">
+                {%- if related.image -%}
+                  <img
+                    src="{{ related.image | image_url: width: 600 }}"
+                    alt="{{ related.image.alt | escape }}"
+                    loading="lazy"
+                    width="600"
+                    height="450"
+                  >
+                {%- endif -%}
+              </div>
+              <div class="rel-meta">
+                <span>{{ related.tags | first | default: 'Magazin' }}</span>
+                <span class="dot">·</span>
+                <span>{{ rel_minutes }} Min</span>
+              </div>
+              <h4>{{ related.title }}</h4>
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </section>
+  {%- endif -%}
+
+</main>
+
+{%- if section.settings.sticky_product != blank -%}
+  {%- assign cta_product = all_products[section.settings.sticky_product] -%}
+  <a class="vmag-mobile-cta" id="vmagMobileCta" href="{{ cta_product.url }}">
+    {%- if cta_product.featured_image -%}
+      <div class="mc-thumb">
+        <img src="{{ cta_product.featured_image | image_url: width: 96 }}" alt="" loading="lazy">
+      </div>
+    {%- endif -%}
+    <div class="mc-text">
+      <div class="mc-name">{{ cta_product.title }}</div>
+      <div class="mc-meta">{{ cta_product.price | money }} · Versandkostenfrei</div>
+    </div>
+    <span class="mc-btn">Shop →</span>
+  </a>
+{%- else -%}
+  <a class="vmag-mobile-cta" id="vmagMobileCta" href="{{ shop.url }}/collections/all">
+    <div class="mc-text">
+      <div class="mc-name">Velluto Kollektion</div>
+      <div class="mc-meta">Jetzt entdecken</div>
+    </div>
+    <span class="mc-btn">Shop →</span>
+  </a>
+{%- endif -%}
+
+<script>
+(function(){
+  // reading progress
+  var bar = document.getElementById('vmagProgress');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // build TOC from article h2s
+  var content = document.querySelector('.vmag-content');
+  var tocList = document.getElementById('vmagTocList');
+  var headings = content ? content.querySelectorAll('h2') : [];
+  var tocLinks = [];
+  headings.forEach(function(h, i){
+    if(!h.id) h.id = 's' + (i+1);
+    var li = document.createElement('li');
+    var label = h.querySelector('.sec-num');
+    var num = label ? label.textContent.split('·')[0].trim() : String(i+1).padStart(2,'0');
+    var text = h.textContent.replace(label ? label.textContent : '', '').trim();
+    li.innerHTML = '<a href="#'+h.id+'"><span class="n">'+num+'</span><span>'+text+'</span><span class="arr"><svg viewBox="0 0 14 14"><path d="M3 7h8M7 3l4 4-4 4"/></svg></span></a>';
+    tocList.appendChild(li);
+    tocLinks.push(li.querySelector('a'));
+  });
+  document.getElementById('vmagTocMeta').textContent = headings.length + ' Abschnitte · ' + document.getElementById('vmagTocMeta').textContent;
+
+  // TOC active state
+  var sections = Array.from(headings);
+  function setActive(){
+    var y = window.scrollY + 80;
+    var active = sections[0] ? sections[0].id : null;
+    for(var s of sections){ if(s.offsetTop <= y) active = s.id; }
+    tocLinks.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + active); });
+  }
+  document.addEventListener('scroll', setActive, {passive:true});
+  setActive();
+
+  // close TOC on link tap (mobile)
+  tocLinks.forEach(function(a){
+    a.addEventListener('click', function(){
+      var t = document.getElementById('vmagToc');
+      if(t && window.matchMedia('(max-width:639px)').matches) t.open = false;
+    });
+  });
+
+  // count-up animation
+  function animateCount(el){
+    var target = parseInt(el.dataset.count, 10);
+    var dur = 1100, start = performance.now();
+    function step(t){
+      var p = Math.min(1, (t - start) / dur);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased).toString();
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // reveal on scroll
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        e.target.querySelectorAll('[data-count]').forEach(animateCount);
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.18});
+  document.querySelectorAll('.vmag .spec-strip,.vmag .criteria,.vmag .product,.vmag .pullquote,.vmag .inline-figure,.vmag .variants,.vmag .related-grid,.vmag .hero-figure').forEach(function(el){
+    el.classList.add('reveal'); io.observe(el);
+  });
+
+  // FAQ accordion (single open)
+  document.querySelectorAll('.vmag .faq details').forEach(function(d){
+    d.addEventListener('toggle', function(){
+      if(d.open) document.querySelectorAll('.vmag .faq details').forEach(function(o){ if(o !== d) o.open = false; });
+    });
+  });
+
+  // sticky mobile CTA
+  var mobileCta = document.getElementById('vmagMobileCta');
+  var heroFig = document.querySelector('.vmag .hero-figure');
+  var rideSec = document.querySelector('.vmag .ride');
+  function updateCta(){
+    if(!window.matchMedia('(max-width:639px)').matches){
+      mobileCta.classList.remove('show');
+      document.body.classList.remove('vmag-cta-active');
+      return;
+    }
+    var past = heroFig ? heroFig.getBoundingClientRect().bottom < 0 : true;
+    var near = rideSec ? rideSec.getBoundingClientRect().top < window.innerHeight * 0.8 : false;
+    var show = past && !near;
+    mobileCta.classList.toggle('show', show);
+    document.body.classList.toggle('vmag-cta-active', show);
+  }
+  document.addEventListener('scroll', updateCta, {passive:true});
+  window.addEventListener('resize', updateCta);
+  updateCta();
+
+  // copy link
+  var copyLink = document.querySelector('.vmag-copy-link');
+  if(copyLink){
+    copyLink.addEventListener('click', function(e){
+      e.preventDefault();
+      navigator.clipboard.writeText(window.location.href).then(function(){
+        copyLink.querySelector('span:first-child') && (copyLink.textContent = 'Kopiert! ');
+        copyLink.appendChild(Object.assign(document.createElement('span'), {textContent: '✓'}));
+        setTimeout(function(){
+          copyLink.innerHTML = 'Link kopieren <span>↗</span>';
+        }, 2000);
+      });
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Velluto Magazin Artikel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "edition_label",
+      "label": "Ausgaben-Label (z.B. № 014)",
+      "placeholder": "№ 014"
+    },
+    {
+      "type": "text",
+      "id": "image_credit",
+      "label": "Bildnachweis Hero",
+      "placeholder": "Foto · Velluto Studio"
+    },
+    {
+      "type": "image_picker",
+      "id": "author_image",
+      "label": "Autor Profilfoto"
+    },
+    {
+      "type": "text",
+      "id": "author_bio",
+      "label": "Autor Bio",
+      "placeholder": "Gear-Editor bei Velluto."
+    },
+    {
+      "type": "text",
+      "id": "ride_text",
+      "label": "Ride-Abschnitt Text"
+    },
+    {
+      "type": "url",
+      "id": "ride_cta_url",
+      "label": "Ride CTA URL"
+    },
+    {
+      "type": "text",
+      "id": "ride_cta_label",
+      "label": "Ride CTA Button-Text",
+      "default": "Zur Kollektion"
+    },
+    {
+      "type": "product",
+      "id": "sticky_product",
+      "label": "Sticky Bottom CTA — Produkt"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Velluto Magazin Artikel"
+    }
+  ]
+}
+{% endschema %}

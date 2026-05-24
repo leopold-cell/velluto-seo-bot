@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Preview – Velluto Magazin</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="velluto-magazine.css">
+<style>
+  /* Minimal Shopify-like reset (Dawn theme uses a normalize) */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; font-family: sans-serif; }
+  p { margin: 0; }
+  h1,h2,h3,h4 { margin: 0; }
+  ul,ol { margin: 0; padding: 0; }
+  figure { margin: 0; }
+  dl,dt,dd { margin: 0; }
+  details,summary { list-style: none; }
+</style>
+</head>
+<body>
+
+<!-- Simulates Shopify's reading-progress bar + article section render -->
+<div class="vmag-progress"><div class="vmag-progress-bar" id="vmagProgress"></div></div>
+
+<main class="vmag-main vmag">
+
+  <article class="post vmag-wrap">
+
+    <header class="hero">
+      <div class="hero-kicker">
+        <span class="cat">Radsport &amp; Gear</span>
+        <span class="edition">№ 014</span>
+      </div>
+
+      <h1 class="hero-title">Fahrradbrille über normaler Brille — <em>was wirklich funktioniert</em></h1>
+
+      <p class="hero-sub">Brillenträger auf dem Rad haben ein Druckpunkte-Problem. Wir zeigen, wie du es löst — ohne Kompromisse bei UV-Schutz oder Passform.</p>
+
+      <dl class="hero-meta-bottom">
+        <div><dt>Autor</dt><dd>Velluto Redaktion</dd></div>
+        <div><dt>Kategorie</dt><dd>Radsport &amp; Gear</dd></div>
+        <div><dt>Lesezeit</dt><dd>7 Minuten</dd></div>
+        <div><dt>Datum</dt><dd>Mai 2026</dd></div>
+      </dl>
+
+      <figure class="hero-figure">
+        <img
+          src="assets/hero-motion.webp"
+          srcset="assets/hero-motion.webp 800w, assets/hero-motion.webp 1200w"
+          sizes="100vw"
+          alt="Velluto Radfahrer mit Rennradbrille"
+          loading="eager"
+          width="1200" height="800"
+        >
+        <span class="credit">Foto · Velluto Studio</span>
+      </figure>
+
+      <details class="toc" id="vmagToc">
+        <summary>
+          <span class="toc-label">
+            <span class="ic" aria-hidden="true"></span>
+            <span class="txt">Inhalt<small id="vmagTocMeta">7 Min Lesezeit</small></span>
+          </span>
+          <span class="chev" aria-hidden="true">
+            <svg viewBox="0 0 14 14"><path d="m3.5 5 3.5 4 3.5-4"/></svg>
+          </span>
+        </summary>
+        <ol id="vmagTocList"></ol>
+      </details>
+    </header>
+
+    <section class="vmag-content">
+
+      <p class="lede">Du kennst das Gefühl: Du setzt die Sonnenbrille über deine normale Brille, fährst zehn Minuten — und spürst die Druckpunkte. An der Nase. Hinter den Ohren. Nach einer Stunde im Sattel ist es keine Ablenkung mehr, es ist Schmerz.</p>
+
+      <p>Und Schmerz kostet Tempo, Fokus und Spaß. Die gute Nachricht: Das Problem ist lösbar. Brillenträger, die mit echtem Schutz fahren wollen, haben heute ernstzunehmende Optionen. Dieser Artikel legt sie ehrlich nebeneinander.</p>
+
+      <h2 id="s1"><span class="sec-num">01 · Problem</span>Warum eine normale Sonnenbrille über einer Brille nicht funktioniert</h2>
+      <p>Eine normale Sonnenbrille ist nicht dafür gemacht, über einem anderen Gestell zu sitzen. Der Steg ist zu schmal, die Bügel liegen zu eng — und nach dreißig Minuten spürst du genau, wo die Druckpunkte sitzen. Vergiss auch den Schutz: Standard-Sonnenbrillen haben kein Wraparound-Design, Wind und Staub dringen seitlich ein.</p>
+
+      <p>Es gibt drei Lösungsrichtungen:</p>
+      <ul>
+        <li><strong>Over-Glasses-Frames.</strong> Sportbrillen, speziell konstruiert, um über einem Gestell zu sitzen — mit extra Innenmaß.</li>
+        <li><strong>Clip-On-Visiere.</strong> Ein getöntes Glas, das du auf deine normale Brille clipst. Günstig, aber kaum Seitenschutz.</li>
+        <li><strong>Sport-Wraparounds mit großzügiger Passform.</strong> Rennradbrillen mit verstellbaren Nasenpads und Platz für eine Unterbrille — wie die Velluto StradaPro.</li>
+      </ul>
+
+      <figure class="inline-figure">
+        <img src="assets/lifestyle-mountains.webp" alt="Radfahrer im Anstieg in den Bergen" loading="lazy" width="800" height="600">
+        <div class="cap">
+          <span>FIG. 01 — Praxistest</span>
+          <span>Nicht die Sonne stört. Es sind die Druckpunkte.</span>
+        </div>
+      </figure>
+
+      <h2 id="s2"><span class="sec-num">02 · Kriterien</span>Was macht eine Fahrradbrille für Brillenträger geeignet?</h2>
+      <p>Vier Kriterien machen den eigentlichen Unterschied:</p>
+
+      <div class="criteria">
+        <div class="crit">
+          <span class="num">01 — Passform</span>
+          <h4>Innenmaß &amp; Rahmentiefe</h4>
+          <p>Genug Platz, damit dein Gestell nicht das Glas der Fahrradbrille berührt. Kratzer entstehen innen, nicht außen.</p>
+        </div>
+        <div class="crit">
+          <span class="num">02 — Druck</span>
+          <h4>Verstellbare Nasenpads</h4>
+          <p>Ohne sie drücken zwei Nasenstege auf dieselbe Stelle. Das hält niemand eine Stunde lang aus.</p>
+        </div>
+        <div class="crit">
+          <span class="num">03 — Gewicht</span>
+          <h4>Weniger als 30 g</h4>
+          <p>Je leichter, desto weniger zieht die Konstruktion nach unten. Jedes Gramm zählt — buchstäblich.</p>
+        </div>
+        <div class="crit">
+          <span class="num">04 — Klima</span>
+          <h4>Anti-Beschlag-System</h4>
+          <p>Brillenträger leiden doppelt: Sowohl Fahrradbrille als auch die darunterliegende kann beschlagen.</p>
+        </div>
+      </div>
+
+      <div class="pullquote">
+        <q>Es ist nicht die Sonne. Es sind die Druckpunkte hinter den Ohren, ab Stunde drei.</q>
+        <cite>— Notiz · Gravel-Test Schwarzwald</cite>
+      </div>
+
+      <h2 id="s3"><span class="sec-num">03 · Produkt</span>Die Velluto StradaPro: Wie schlägt sie sich für <em>Brillenträger?</em></h2>
+      <p>Die Velluto StradaPro wird nicht ausdrücklich als Over-Glasses-Brille vermarktet — schneidet aber besser ab als dedizierte Over-Glasses-Frames. Aus einem einfachen Grund: Sie wiegt 25 Gramm.</p>
+
+      <div class="spec-strip">
+        <div>
+          <div class="big"><span data-count="25">0</span><sup>&nbsp;g</sup></div>
+          <div class="lbl">Gesamtgewicht</div>
+        </div>
+        <div>
+          <div class="big">UV<sup>400</sup></div>
+          <div class="lbl">UVA + UVB geblockt</div>
+        </div>
+        <div>
+          <div class="big"><span data-count="30">0</span><sup>&nbsp;T</sup></div>
+          <div class="lbl">Risikofrei testen</div>
+        </div>
+        <div>
+          <div class="big"><span data-count="12">0</span><sup>&nbsp;%</sup></div>
+          <div class="lbl">Mehr Kontrast</div>
+        </div>
+      </div>
+
+      <div class="product">
+        <div class="product-media">
+          <span class="product-tag">Editor's Pick</span>
+          <img src="assets/stradapro-nero.webp" alt="Velluto StradaPro Nero" loading="lazy" width="600" height="600">
+        </div>
+        <div class="product-info">
+          <div class="product-eyebrow">Rennradbrille · Road &amp; Gravel</div>
+          <h3 class="product-name">Velluto StradaPro<br>Brille <em>— Nero</em></h3>
+          <dl class="product-specs">
+            <div class="spec"><dt>Gewicht</dt><dd>25 g</dd></div>
+            <div class="spec"><dt>Schutz</dt><dd>UV400</dd></div>
+            <div class="spec"><dt>Nasensteg</dt><dd>Verstellbar</dd></div>
+            <div class="spec"><dt>Linsen</dt><dd>Wechselbar</dd></div>
+          </dl>
+          <div class="product-price">€ 149,00 <small>· Kostenloser EU-Versand</small></div>
+          <div class="product-cta-row">
+            <a class="product-cta" href="#">Jetzt kaufen <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a>
+            <a class="product-cta secondary" href="#">Details</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="variants">
+        <a href="#">
+          <img src="assets/stradapro-nero.webp" alt="Nero" loading="lazy" width="400" height="400">
+          <div class="v-info"><span class="v-name">Nero</span><span class="v-price">€ 149</span></div>
+        </a>
+        <a href="#">
+          <img src="assets/stradapro-espresso.webp" alt="Espresso" loading="lazy" width="400" height="400">
+          <div class="v-info"><span class="v-name">Espresso</span><span class="v-price">€ 149</span></div>
+        </a>
+        <a href="#">
+          <img src="assets/stradapro-arancia.webp" alt="Arancia" loading="lazy" width="400" height="400">
+          <div class="v-info"><span class="v-name">Arancia</span><span class="v-price">€ 149</span></div>
+        </a>
+        <a href="#">
+          <img src="assets/stradapro-viola.webp" alt="Viola" loading="lazy" width="400" height="400">
+          <div class="v-info"><span class="v-name">Viola</span><span class="v-price">€ 149</span></div>
+        </a>
+      </div>
+
+      <h2 id="sfaq"><span class="sec-num">04 · FAQ</span>Häufig gestellte Fragen</h2>
+      <div class="faq">
+        <details open>
+          <summary>Passt die Velluto StradaPro über meine normale Brille?</summary>
+          <div class="answer">Die StradaPro hat ein großzügiges Innenmaß und verstellbare Nasenpads — sie passt über die meisten Korrekturbrillen bis zu einer Gestellbreite von ca. 135 mm. Bei Zweifeln empfehlen wir unsere 30-tägige risikofreie Testphase.</div>
+        </details>
+        <details>
+          <summary>Wie schütze ich mich vor Beschlag?</summary>
+          <div class="answer">Die StradaPro hat ein optimiertes Belüftungssystem. Für maximalen Schutz empfehlen wir, die Unterbrille ebenfalls mit Anti-Fog-Spray zu behandeln.</div>
+        </details>
+        <details>
+          <summary>Welche Linsen eignen sich für Brillenträger?</summary>
+          <div class="answer">Unsere Photochromatic-Linse (selbsttönend) ist ideal für Brillenträger, da sie bei wechselnden Lichtverhältnissen keinen manuellen Wechsel erfordert.</div>
+        </details>
+      </div>
+
+      <p>Mehr Infos und alle Farbvarianten findest du auf <a class="inline" href="#">velluto-shop.com</a>. Mit der 30-tägigen risikofreien Testphase riskierst du nichts — außer den Druckpunkten hinter den Ohren.</p>
+
+    </section>
+
+    <div class="author-strip">
+      <div class="avatar" role="img" aria-label="Velluto Redaktion"></div>
+      <div>
+        <div class="role">Autor</div>
+        <div class="name">Velluto Redaktion</div>
+        <div class="bio">Gear-Redaktion bei Velluto. Leidenschaftliche Radfahrer, ehrliche Einschätzungen.</div>
+      </div>
+    </div>
+
+    <div class="share-row">
+      <span class="label">Artikel teilen</span>
+      <div class="links">
+        <a href="#" class="vmag-copy-link">Link kopieren <span>↗</span></a>
+        <a href="#" target="_blank" rel="noopener">WhatsApp <span>↗</span></a>
+        <a href="#">E-Mail <span>↗</span></a>
+      </div>
+    </div>
+
+  </article>
+
+  <section class="ride">
+    <div class="ride-inner">
+      <div>
+        <h2>Ride Fast.<br><em>Live Slow.</em></h2>
+      </div>
+      <div>
+        <p>Die Velluto StradaPro wiegt 25 Gramm, passt über die meisten Gestelle und hat verstellbare Nasenpads für druckfreien Sitz. Mit der 30-tägigen risikofreien Testphase hast du nichts zu verlieren — außer den Druckpunkten hinter den Ohren.</p>
+        <a class="ride-cta" href="#">
+          Zur Kollektion
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="vmag-wrap related">
+    <div class="related-head">
+      <h3>Weiterlesen · Velluto Magazin</h3>
+      <a href="#">Alle Artikel →</a>
+    </div>
+    <div class="related-grid">
+      <a class="rel-card" href="#">
+        <div class="rel-img">
+          <img src="assets/hero-motion.webp" alt="Artikel 1" loading="lazy" width="600" height="450">
+        </div>
+        <div class="rel-meta">
+          <span>Gear &amp; Fit</span><span class="dot">·</span><span>5 Min</span>
+        </div>
+        <h4>Rennradbrille reinigen: So bleibt die Sicht klar</h4>
+      </a>
+      <a class="rel-card" href="#">
+        <div class="rel-img">
+          <img src="assets/lifestyle-orange.webp" alt="Artikel 2" loading="lazy" width="600" height="450">
+        </div>
+        <div class="rel-meta">
+          <span>Training</span><span class="dot">·</span><span>6 Min</span>
+        </div>
+        <h4>UV-Schutz beim Radsport: Was UV400 wirklich bedeutet</h4>
+      </a>
+      <a class="rel-card" href="#">
+        <div class="rel-img">
+          <img src="assets/stradapro-rain.webp" alt="Artikel 3" loading="lazy" width="600" height="450">
+        </div>
+        <div class="rel-meta">
+          <span>Produkt</span><span class="dot">·</span><span>4 Min</span>
+        </div>
+        <h4>Velluto StradaPro im Langzeit-Test: Nach 3.000 km</h4>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<a class="vmag-mobile-cta" id="vmagMobileCta" href="#">
+  <div class="mc-thumb">
+    <img src="assets/stradapro-nero.webp" alt="" loading="lazy">
+  </div>
+  <div class="mc-text">
+    <div class="mc-name">Velluto StradaPro</div>
+    <div class="mc-meta">€ 149,00 · Versandkostenfrei</div>
+  </div>
+  <span class="mc-btn">Shop →</span>
+</a>
+
+<script>
+(function(){
+  var bar = document.getElementById('vmagProgress');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  var content = document.querySelector('.vmag-content');
+  var tocList = document.getElementById('vmagTocList');
+  var headings = content ? content.querySelectorAll('h2') : [];
+  var tocLinks = [];
+  headings.forEach(function(h, i){
+    if(!h.id) h.id = 's' + (i+1);
+    var li = document.createElement('li');
+    var label = h.querySelector('.sec-num');
+    var num = label ? label.textContent.split('·')[0].trim() : String(i+1).padStart(2,'0');
+    var text = h.textContent.replace(label ? label.textContent : '', '').trim();
+    li.innerHTML = '<a href="#'+h.id+'"><span class="n">'+num+'</span><span>'+text+'</span><span class="arr"><svg viewBox="0 0 14 14"><path d="M3 7h8M7 3l4 4-4 4"/></svg></span></a>';
+    tocList.appendChild(li);
+    tocLinks.push(li.querySelector('a'));
+  });
+  document.getElementById('vmagTocMeta').textContent = headings.length + ' Abschnitte · ' + document.getElementById('vmagTocMeta').textContent;
+
+  var sections = Array.from(headings);
+  function setActive(){
+    var y = window.scrollY + 80;
+    var active = sections[0] ? sections[0].id : null;
+    for(var s of sections){ if(s.offsetTop <= y) active = s.id; }
+    tocLinks.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + active); });
+  }
+  document.addEventListener('scroll', setActive, {passive:true});
+  setActive();
+
+  tocLinks.forEach(function(a){
+    a.addEventListener('click', function(){
+      var t = document.getElementById('vmagToc');
+      if(t && window.matchMedia('(max-width:639px)').matches) t.open = false;
+    });
+  });
+
+  function animateCount(el){
+    var target = parseInt(el.dataset.count, 10);
+    var dur = 1100, start = performance.now();
+    function step(t){
+      var p = Math.min(1, (t - start) / dur);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased).toString();
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        e.target.querySelectorAll('[data-count]').forEach(animateCount);
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.18});
+  document.querySelectorAll('.vmag .spec-strip,.vmag .criteria,.vmag .product,.vmag .pullquote,.vmag .inline-figure,.vmag .variants,.vmag .related-grid,.vmag .hero-figure').forEach(function(el){
+    el.classList.add('reveal'); io.observe(el);
+  });
+
+  document.querySelectorAll('.vmag .faq details').forEach(function(d){
+    d.addEventListener('toggle', function(){
+      if(d.open) document.querySelectorAll('.vmag .faq details').forEach(function(o){ if(o !== d) o.open = false; });
+    });
+  });
+
+  var mobileCta = document.getElementById('vmagMobileCta');
+  var heroFig = document.querySelector('.vmag .hero-figure');
+  var rideSec = document.querySelector('.vmag .ride');
+  function updateCta(){
+    if(!window.matchMedia('(max-width:639px)').matches){
+      mobileCta.classList.remove('show');
+      document.body.classList.remove('vmag-cta-active');
+      return;
+    }
+    var past = heroFig ? heroFig.getBoundingClientRect().bottom < 0 : true;
+    var near = rideSec ? rideSec.getBoundingClientRect().top < window.innerHeight * 0.8 : false;
+    var show = past && !near;
+    mobileCta.classList.toggle('show', show);
+    document.body.classList.toggle('vmag-cta-active', show);
+  }
+  document.addEventListener('scroll', updateCta, {passive:true});
+  window.addEventListener('resize', updateCta);
+  updateCta();
+
+  var copyLink = document.querySelector('.vmag-copy-link');
+  if(copyLink){
+    copyLink.addEventListener('click', function(e){
+      e.preventDefault();
+      navigator.clipboard.writeText(window.location.href).then(function(){
+        copyLink.textContent = 'Kopiert! ✓';
+        setTimeout(function(){ copyLink.innerHTML = 'Link kopieren <span>↗</span>'; }, 2000);
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
