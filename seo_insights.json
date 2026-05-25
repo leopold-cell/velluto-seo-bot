@@ -1,0 +1,54 @@
+{
+  "analysis_date": "2026-05-25",
+  "competitor_patterns": [
+    "Top-ranking content is extremely long-form (16,000\u201324,000 words), covering multiple products, use cases, and buyer profiles in a single comprehensive roundup \u2014 far exceeding our current 2,000\u20133,100 word posts",
+    "Competitors consistently use comparison tables (has_table: true) to allow scannable side-by-side evaluation of weight, lens type, price, and fit \u2014 a format completely absent from all our recent posts",
+    "Every top-3 result combines FAQs, expert reviews, and structured H2s organized by rider type (MTB, road, women, budget) rather than by product feature \u2014 they answer intent segments, not specs",
+    "Bikerumor and OutdoorGearLab lead with 'Tested' or 'Ranked' credibility signals in their meta titles and H1s, establishing hands-on authority immediately \u2014 our titles lead with product name or feature",
+    "Competitors update content frequently (Bikerumor: '3 days ago', OutdoorGearLab: 'Jan 2026', Rouvy: 'Apr 2026') and signal freshness explicitly in snippets \u2014 our posts lack visible date signals in titles or snippets"
+  ],
+  "our_gaps": [
+    "Zero comparison tables across all recent posts \u2014 competitors use tables as a core UX and SEO element to target 'best X for Y' queries and improve dwell time; we have none",
+    "Our posts are feature-centric (UV protection, anti-fog, weight) rather than rider-persona-centric \u2014 top competitors structure content around 'best for road', 'best for MTB', 'best for women', 'best budget', which maps directly to how searchers query",
+    "Word counts are 2,000\u20133,100 words vs competitor benchmarks of 8,600\u201324,000 words \u2014 we are not comprehensive enough to compete for head or mid-tail keywords on topical authority alone",
+    "No product comparison content exists \u2014 we never directly benchmark StradaPro against Oakley Sutro Lite, Tifosi Rail, or Julbo Density, which are the named products searchers encounter in top results and then search to compare",
+    "Our meta titles lead with product name + feature (e.g. 'UV Protection Cycling Glasses 2026 | Velluto StradaPro') rather than benefit-first or test-credibility framing \u2014 this reduces CTR against competitors who use 'Tested', 'Ranked', 'How to Choose' signals"
+  ],
+  "keyword_opportunities": [
+    "interchangeable lens cycling glasses \u2014 Demonsun ranks #1, we have the exact feature (VellutoPuro + VellutoVisione click-in system) but no dedicated page targeting this query",
+    "lightweight cycling sunglasses 25g \u2014 no competitor owns this ultra-specific weight query; our 25g frame is a concrete differentiator that maps to a real purchase decision trigger",
+    "best road cycling glasses anti fog \u2014 combines two high-intent modifiers (road + anti-fog) that align directly with StradaPro's built-in system; not covered as a standalone topic",
+    "cycling glasses 30 day trial \u2014 a near-zero competition long-tail query where our unique risk-free trial policy could rank uncontested and convert high-intent hesitant buyers",
+    "best cycling sunglasses for small faces \u2014 OutdoorGearLab and Rouvy reference fit for different face sizes; our adjustable nose pads solve this directly and we have a German-language post about women's fit but no English equivalent targeting this query"
+  ],
+  "next_post_guidelines": [
+    "Write at minimum 5,000 words for any post targeting a head or mid-tail keyword ('best cycling glasses', 'road cycling glasses review', 'interchangeable lens cycling glasses') \u2014 include multiple H2 sections organized by rider persona (road, gravel, MTB, commute, women, budget) not just by feature",
+    "Include at least one HTML comparison table per post \u2014 minimum columns: Product, Weight, Lens System, Anti-Fog, Price, Trial Policy \u2014 always position StradaPro as the benchmark row at the top",
+    "Frame every meta title with a credibility or benefit signal first: use formats like 'Best Cycling Glasses for [Persona] 2026 \u2014 Tested' or '[Feature] Cycling Glasses: [Specific Claim]' \u2014 keep under 60 characters and never lead with brand name",
+    "Add a 'How We Tested' or 'Real Ride Notes' section to every review-style post \u2014 even a 150-word first-person trail/road test section dramatically increases E-E-A-T signals that Google's algorithm and AI overviews weight heavily",
+    "Target the 'interchangeable lens cycling glasses' keyword cluster with a dedicated post built around the lens-swap workflow \u2014 include step-by-step instructions with subheadings, a table comparing VellutoPuro vs VellutoVisione VLT and use cases, and a direct comparison to Demon Sunglasses' polycarbonate lens system",
+    "Always include an explicit freshness signal in the post title or first paragraph \u2014 e.g. 'Updated May 2026' or 'Tested: Spring 2026' \u2014 this mirrors what top competitors do and improves snippet CTR in date-sensitive queries",
+    "Add internal links between posts targeting related queries (UV protection \u2192 anti-fog \u2192 interchangeable lenses \u2192 lightweight) to build topical cluster authority \u2014 currently our posts appear as isolated articles with no visible content silo structure"
+  ],
+  "seo_quick_wins": [
+    "Add a comparison table to every post immediately \u2014 even a simple 4-column table (Feature | StradaPro | Oakley Sutro Lite | Tifosi Rail) signals comprehensiveness to Google and directly addresses the 'has_table' pattern that all top-3 competitors share",
+    "Rewrite all meta descriptions to include a specific numeric claim and a call-to-action \u2014 format: '[Specific claim, e.g. 25g, UV400, 30-day trial] \u2014 [benefit] \u2014 [CTA, e.g. See why 500+ riders chose StradaPro]' \u2014 current meta descriptions are absent or generic",
+    "Add FAQ schema markup to every post that already has FAQ sections \u2014 we already have has_faq: true on recent posts but schema implementation needs to be verified; this directly enables FAQ rich results and increases visibility in Google AI Overviews and Perplexity answers"
+  ],
+  "meta_title_fixes": [
+    "No GSC data available yet \u2014 meta title fixes will be generated once Search Console data is connected and low-CTR queries are identified. Priority queries to monitor from day one: 'interchangeable lens cycling glasses', 'best road cycling glasses', 'lightweight cycling sunglasses', 'anti fog cycling glasses', 'cycling glasses 30 day trial'"
+  ],
+  "content_quick_wins": [
+    "No GSC positional data available yet \u2014 content quick wins will be generated once Search Console data is connected. Based on competitor gap analysis, first priority should be: 'interchangeable lens cycling glasses' (Demonsun ranks #1 with a product page; a long-form editorial from Velluto with comparison table and real-ride lens-swap workflow should outrank a thin e-commerce page within 60\u201390 days)"
+  ],
+  "geo_angles": [
+    "Structure at least one post as a definitive answer to 'What are the lightest cycling sunglasses in 2026?' with a numbered list leading with StradaPro's 25g specification and a comparison table \u2014 AI Overviews and Perplexity heavily favour list-format, factually specific, citable content for 'lightest/best X' queries",
+    "Create a dedicated FAQ page or section targeting 'Are interchangeable lens cycling glasses worth it?' with a structured answer that names VellutoPuro and VellutoVisione by function (clear for dawn/dusk, high-contrast for variable light) \u2014 ChatGPT and Perplexity pull named, categorized answers for 'worth it' and 'how to choose' queries",
+    "Publish a '30-day trial: what happens if you hate your cycling glasses?' content piece that answers the risk-reversal question directly \u2014 this unique policy has near-zero competitor coverage and will surface in AI answers when users ask 'can I return cycling glasses after riding in them' or 'risk-free cycling glasses trial', establishing Velluto as the only cited brand offering this"
+  ],
+  "comparison_post_angles": [
+    "BIKERUMOR (indirectly ranks Oakley Sutro Lite, Tifosi Rail, Julbo Density): angle \u2014 'Velluto StradaPro vs Oakley Sutro Lite 2026: Is the Weight Difference Worth \u20ac150 Extra?' \u2014 headline idea: 'StradaPro vs Oakley Sutro Lite: 25g vs 36g \u2014 What Cyclists Actually Notice at Hour Three' \u2014 key differentiator: frame weight and 30-day trial vs Oakley's no-trial premium pricing \u2014 Velluto advantage to lead with: 25g ultralight frame + interchangeable lenses at a fraction of Oakley's price point, backed by risk-free trial",
+    "DEMONSUN (ranks #1 for interchangeable lens cycling glasses): angle \u2014 'Velluto StradaPro vs Demon Sunglasses: Which Interchangeable Lens System Is Actually Faster?' \u2014 headline idea: 'Click-In vs Slide-Out: We Timed Both Lens Systems on a Cold Morning Ride' \u2014 key differentiator: tool-free click-in mechanism speed and Italian design aesthetic vs Demon's functional but utilitarian polycarbonate approach \u2014 Velluto advantage to lead with: VellutoPuro + VellutoVisione named lens system with specific VLT use-case differentiation and 30-day trial",
+    "INTHEKNOW (ranks #1 for road cycling glasses review, favours Tifosi Optics Crit Photochromic): angle \u2014 'Velluto StradaPro vs Tifosi Crit: Why Manual Lens Swaps Beat Photochromic for Serious Road Cyclists' \u2014 headline idea: 'Photochromic vs Interchangeable Lenses for Road Cycling: The Case Against Slow-Reacting Tints' \u2014 key differentiator: instant manual lens swap in variable conditions vs photochromic lag time \u2014 Velluto advantage to lead with: VellutoVisione high-contrast lens optimised for specific light conditions rather than a compromise auto-tint, plus 25g weight advantage over Tifosi's heavier photochromic frames"
+  ]
+}
