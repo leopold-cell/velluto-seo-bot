@@ -209,6 +209,12 @@ CRITICAL — NEVER CLAIM THIS:
   Do NOT write: "fits over", "passt über", "over your glasses", "über der Brille",
   "Brillenträger können", "for glasses wearers", or any similar phrasing.
   The StradaPro is designed to be worn on its own, not as an over-glasses frame.
+
+✗ Do NOT discuss prescription glasses as an alternative or mention that Velluto lacks a
+  prescription option. Avoid the topic entirely — do not reference it even negatively.
+  If glasses-wearers come up naturally, redirect to fit and lens versatility:
+  "The StradaPro fits a wide range of face shapes and comes with interchangeable
+   clear and high-contrast lenses for varying light conditions."
 """
 
 # ── Ogilvy & Schwartz copywriting principles ─────────────────────────────────
@@ -1126,7 +1132,10 @@ def _parse_response(raw: str) -> dict:
 FORBIDDEN_CLAIMS = [
     (r'photochrom', "claims photochromic lenses — Velluto doesn't offer these"),
     (r'polari[sz]', "claims polarized lenses — Velluto doesn't offer these"),
-    (r'prescription|op(tic|tisch)', "claims prescription lenses — not in range"),
+    # Only block when prescription is directly linked to Velluto/StradaPro or claimed as a product feature
+    (r'(velluto|stradapro).{0,60}prescription'
+     r'|prescription.{0,30}(lens|lenses|version|option|frame|insert)',
+     "claims prescription lenses — not in range"),
     (r'mirror(ed)?(\s+lens)?', "claims mirrored lenses — not in range"),
     (r'tinted?\s+lens', "claims tinted lens beyond Puro/Visione — verify"),
     # StradaPro is NOT an over-glasses frame
@@ -1671,11 +1680,11 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict) 
 
 def publish_de_primary(kw: dict, products: list[dict]):
     """Orchestrate: generate EN article → publish (EN primary) → register DE/NL/FR/… via T&A."""
-    from de_keyword_queue import mark_de_keyword_used
+    from en_keyword_queue import mark_en_keyword_used
 
     keyword = kw["keyword"]
     print(f"\n── Primary Article (EN) ─────────────────────────────")
-    print(f"   DE Keyword seed: {keyword} (vol: {kw.get('volume','?')}, phase: {kw.get('phase','?')})")
+    print(f"   EN Keyword: {keyword} (vol: {kw.get('volume','?')}, phase: {kw.get('phase','?')})")
 
     art_num = get_article_number()
 
@@ -1701,18 +1710,18 @@ def publish_de_primary(kw: dict, products: list[dict]):
         for loc in SHOP_LOCALES:
             mkt_kws[loc] = {"keyword": keyword, "intent": ""}
 
-    # Pass DE keyword and article number into the generation context
+    # EN keyword is the primary keyword; other locales come from market research
     kw_ctx = {**kw, "art_num": art_num,
+              "keyword_en": keyword,   # EN queue keyword is always the primary
               "keyword_de": mkt_kws["de"]["keyword"],
-              "keyword_nl": mkt_kws.get("nl", {}).get("keyword", keyword),
-              "keyword_en": mkt_kws.get("en", {}).get("keyword", keyword)}
+              "keyword_nl": mkt_kws.get("nl", {}).get("keyword", keyword)}
 
     quality = get_quality_targets()
     print(f"   Quality Day {quality['day']} — target: {quality['word_count']} words, {quality['faq_count']} FAQ")
 
     cover_url = pick_image()
 
-    # Generate DE article — up to 3 attempts on fact violations
+    # Generate EN article — up to 3 attempts on fact violations
     post = generate_de_primary(kw_ctx, products, quality)
     for attempt in range(3):
         issues      = [i for pat, msg in FORBIDDEN_CLAIMS
@@ -1728,7 +1737,7 @@ def publish_de_primary(kw: dict, products: list[dict]):
             else:
                 raise RuntimeError(f"Brand fact violation after 3 attempts: {fact_issues}")
         if not issues:
-            print("   ✅ DE quality check passed")
+            print("   ✅ EN quality check passed")
         else:
             for iss in issues:
                 print(f"   ⚠️  {iss}")
@@ -1744,7 +1753,7 @@ def publish_de_primary(kw: dict, products: list[dict]):
         ).json().get("articles", [])
         if existing_check:
             print(f"   ⚠️  Article handle '{expected_slug}' already exists (ID:{existing_check[0]['id']}) — skipping publish")
-            mark_de_keyword_used(keyword)
+            mark_en_keyword_used(keyword)
             return
 
     body_html = build_body_html(post, cover_url)
@@ -1756,7 +1765,7 @@ def publish_de_primary(kw: dict, products: list[dict]):
         featured_url=cover_url,
     )
 
-    mark_de_keyword_used(keyword)
+    mark_en_keyword_used(keyword)
     increment_quality_day()
 
     # Register market adaptations
@@ -1825,14 +1834,29 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
             print("   ✅ Quality check passed")
         break
 
-    body_html = build_article_html(post["en_html"], post["nl_html"], post["de_html"])
+    # Publish EN as primary; no tab switcher — T&A handles other locales
     aid, handle = publish(
         title=post["title_en"],
-        body_html=body_html,
+        body_html=post["en_html"],
         meta_desc=post["meta_description"],
         tags=post["tags"],
         featured_url=cover_url
     )
+    # Register NL and DE translations via Shopify T&A
+    try:
+        digests = get_translatable_digests(aid)
+        for locale, html_key in [("nl", "nl_html"), ("de", "de_html")]:
+            adapted = post.get(html_key, "")
+            if adapted:
+                register_shopify_translation(
+                    article_id=aid, locale=locale,
+                    title=post["title_en"],  # fallback: same title
+                    body_html=adapted,
+                    meta_desc=post.get("meta_description", ""),
+                    digests=digests,
+                )
+    except Exception as e:
+        print(f"   ⚠️  Fallback T&A registration failed: {e}")
     # Record for link_builder.py
     published = json.load(open(PUBLISHED_LOG)) if os.path.exists(PUBLISHED_LOG) else []
     published.append({
@@ -1846,7 +1870,7 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
 
 
 def main():
-    print(f"\n🚴 Velluto SEO Bot — {datetime.date.today()} (DE-first, quality-compounding, multilingual via Shopify Translate & Adapt)")
+    print(f"\n🚴 Velluto SEO Bot — {datetime.date.today()} (EN-primary, quality-compounding, multilingual via Shopify Translate & Adapt)")
     print("=" * 55)
 
     json.dump([], open(PUBLISHED_LOG, "w"))  # reset daily publish log
@@ -1857,12 +1881,12 @@ def main():
 
     published = 0
 
-    # ── Primary path: DE magazine article from DE keyword queue ─────────────
+    # ── Primary path: EN magazine article from EN keyword queue ─────────────
     try:
-        from de_keyword_queue import get_next_de_keyword, get_de_queue_status
-        kw = get_next_de_keyword()
+        from en_keyword_queue import get_next_en_keyword, get_en_queue_status
+        kw = get_next_en_keyword()
         if kw:
-            status = get_de_queue_status()
+            status = get_en_queue_status()
             by_p  = status.get("by_phase", {})
             remaining = status["total"] - status["used"]
             print(f"   Keyword queue: {remaining} remaining "
@@ -1872,9 +1896,9 @@ def main():
             publish_de_primary(kw, products)
             published += 1
         else:
-            print("   ⚠️  Keyword queue exhausted — falling back to multi-lang post")
+            print("   ⚠️  EN keyword queue exhausted — falling back to multi-lang post")
     except Exception as e:
-        print(f"   ❌ DE primary post failed: {e}")
+        print(f"   ❌ EN primary post failed: {e}")
         import traceback; traceback.print_exc()
 
     # ── Fallback: classic multi-language post ────────────────────────────────

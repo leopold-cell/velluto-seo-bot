@@ -4,3 +4,5 @@ topics_used.json
 cron.log
 __pycache__/
 *.pyc
+venv/
+.venv/
