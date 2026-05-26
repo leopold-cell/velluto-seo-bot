@@ -1,15 +1,18 @@
 """
 DataForSEO keyword volume lookup for research_market_keywords().
 =====================================
-Endpoint: keywords_data/google_ads/keywords_for_keywords/live
-Batches all locales in a single HTTP call — no extra pip dependency (uses requests).
+Endpoint used: keywords_data/google_ads/search_volume/live
+Strategy: Claude Haiku picks the best local keyword per market; DataForSEO then
+validates the exact monthly search volume for each selected keyword in one batch call.
+
+Why search_volume/live (not keywords_for_keywords/live):
+  keywords_for_keywords returns ideas in the seed keyword's language — passing an
+  English seed to the DE endpoint returns almost no German results. search_volume/live
+  takes any keyword in any language and returns its real volume for that locale.
 
 Cost: ~$0.0005 per keyword per locale → ~€1/month for daily 11-locale lookups.
 Credentials: DATAFORSEO_LOGIN (email) + DATAFORSEO_PASSWORD (API password)
 Register: https://app.dataforseo.com/
-
-Graceful degradation: returns {} if credentials missing or API call fails.
-Caller (research_market_keywords) falls back to Haiku-only in that case.
 """
 import os
 import requests
@@ -25,8 +28,6 @@ DATAFORSEO_PASS  = os.getenv("DATAFORSEO_PASSWORD", "")
 BASE             = "https://api.dataforseo.com/v3"
 
 # locale → (location_code, language_code) for Google Ads API
-# location_codes: https://api.dataforseo.com/v3/keywords_data/google_ads/locations
-# language_codes: https://api.dataforseo.com/v3/keywords_data/google_ads/languages
 LOCALE_GEO: dict[str, tuple[int, str]] = {
     "en":    (2840, "en"),   # United States
     "de":    (2276, "de"),   # Germany
@@ -35,87 +36,80 @@ LOCALE_GEO: dict[str, tuple[int, str]] = {
     "es":    (2724, "es"),   # Spain
     "it":    (2380, "it"),   # Italy
     "da":    (2208, "da"),   # Denmark
-    "nb":    (2578, "no"),   # Norway (language code "no" for Norwegian)
+    "nb":    (2578, "no"),   # Norway
     "pl":    (2616, "pl"),   # Poland
     "pt-PT": (2620, "pt"),   # Portugal
     "sv":    (2752, "sv"),   # Sweden
 }
 
 
-def get_keyword_ideas(
-    seed_keyword: str,
-    locales: list[str],
-    n: int = 5,
-) -> dict[str, list[dict]]:
+def get_search_volumes(locale_keywords: dict[str, str]) -> dict[str, int]:
     """
-    Fetch keyword ideas + search volumes from DataForSEO for all requested locales.
-    All locales are batched into a single HTTP call.
+    Look up the exact monthly search volume for a specific keyword in each locale.
+    Makes one request per locale (search_volume/live does not support multi-locale batching).
+
+    Args:
+        locale_keywords: {"de": "beste Fahrradbrillen", "nl": "beste fietsbrillen", ...}
 
     Returns:
-        {
-            "de": [{"keyword": "beste Fahrradbrillen", "volume": 1200}, ...],
-            "nl": [...],
-            ...
-        }
-    Returns {} on missing credentials or API failure — caller handles gracefully.
+        {"de": 170, "nl": 480, "fr": 260, ...}
+        Returns {} if credentials missing or API call fails (caller handles gracefully).
     """
     if not DATAFORSEO_LOGIN or not DATAFORSEO_PASS:
         return {}
 
-    tasks: list[dict] = []
-    locale_order: list[str] = []
+    out: dict[str, int] = {}
 
-    for loc in locales:
-        if loc not in LOCALE_GEO:
+    for loc, kw in locale_keywords.items():
+        if loc not in LOCALE_GEO or not kw:
             continue
         loc_code, lang_code = LOCALE_GEO[loc]
-        tasks.append({
-            "keywords":      [seed_keyword],
-            "location_code": loc_code,
-            "language_code": lang_code,
-            "limit":         n,
-            "order_by":      ["search_volume,desc"],
-        })
-        locale_order.append(loc)
+        try:
+            r = requests.post(
+                f"{BASE}/keywords_data/google_ads/search_volume/live",
+                json=[{
+                    "keywords":      [kw.lower()],   # lowercase → more reliable match
+                    "location_code": loc_code,
+                    "language_code": lang_code,
+                }],
+                auth=(DATAFORSEO_LOGIN, DATAFORSEO_PASS),
+                timeout=30,
+            )
+            r.raise_for_status()
+            task    = r.json().get("tasks", [{}])[0]
+            results = task.get("result") or []
+            vol     = results[0].get("search_volume") or 0 if results else 0
+            out[loc] = vol
+        except Exception:
+            out[loc] = 0   # non-fatal: log nothing, caller prints summary
 
-    if not tasks:
-        return {}
-
-    try:
-        r = requests.post(
-            f"{BASE}/keywords_data/google_ads/keywords_for_keywords/live",
-            json=tasks,
-            auth=(DATAFORSEO_LOGIN, DATAFORSEO_PASS),
-            timeout=60,
-        )
-        r.raise_for_status()
-    except requests.RequestException as exc:
-        raise RuntimeError(f"DataForSEO request failed: {exc}") from exc
-
-    out: dict[str, list[dict]] = {}
-    for i, task in enumerate(r.json().get("tasks", [])):
-        if i >= len(locale_order):
-            break
-        locale  = locale_order[i]
-        results = task.get("result") or []
-        items   = results[0].get("items") or [] if results else []
-        out[locale] = [
-            {
-                "keyword": item["keyword"],
-                "volume":  item.get("search_volume") or 0,
-            }
-            for item in items
-        ]
     return out
 
 
 if __name__ == "__main__":
     import json
-    test_locales = ["en", "de", "nl", "fr", "es"]
-    print(f"Testing DataForSEO with seed: 'best cycling glasses'")
+    print("Testing DataForSEO search_volume/live")
     print(f"Credentials set: {bool(DATAFORSEO_LOGIN and DATAFORSEO_PASS)}\n")
+
+    # Simulate what research_market_keywords() would pass after Haiku runs
+    test_keywords = {
+        "en": "best cycling glasses",
+        "de": "beste Fahrradbrillen",
+        "nl": "beste fietsbrillen",
+        "fr": "meilleurs lunettes vélo",
+        "es": "mejores gafas ciclismo",
+        "it": "migliori occhiali ciclismo",
+        "da": "bedste cykelbriller",
+        "nb": "beste sykkelbriller",
+        "pl": "najlepsze okulary rowerowe",
+        "pt-PT": "melhores óculos de ciclismo",
+        "sv": "bästa cykelglasögon",
+    }
+
     try:
-        result = get_keyword_ideas("best cycling glasses", test_locales, n=3)
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        volumes = get_search_volumes(test_keywords)
+        print(json.dumps(volumes, indent=2, ensure_ascii=False))
+        total = sum(volumes.values())
+        print(f"\nTotal monthly searches across all markets: {total:,}")
     except Exception as e:
         print(f"Error: {e}")

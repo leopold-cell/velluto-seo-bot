@@ -1254,11 +1254,11 @@ def research_market_keywords(en_keyword: str) -> dict:
     for ALL shop markets (DE + SHOP_LOCALES).
 
     Flow:
-    1. DataForSEO — fetch volume-ranked keyword ideas per locale in one batch call.
-       Results are injected as hints into the Haiku prompt.
-    2. Claude Haiku — selects the best keyword per locale (preferring DataForSEO
-       candidates) and writes a one-line search intent.
-    3. Volume is attached to each locale entry from DataForSEO data.
+    1. Claude Haiku — picks the best local keyword per market + writes search intent.
+       (Language-native selection: Haiku knows what cyclists actually search per country.)
+    2. DataForSEO search_volume/live — validates exact monthly volume for each
+       Haiku-selected keyword in one batch HTTP call.
+    3. Volume attached to each locale entry in the return dict.
 
     Returns: {"de": {"keyword": ..., "intent": ..., "volume": int}, "nl": {...}, ...}
     Graceful fallback: if DataForSEO is unavailable, falls back to Haiku-only (volume=0).
@@ -1267,34 +1267,7 @@ def research_market_keywords(en_keyword: str) -> dict:
     research_locales = ["en"] + [loc for loc in SHOP_LOCALES if loc != "en"]
     all_locales = ["de"] + research_locales
 
-    # ── Step 1: DataForSEO volume-ranked keyword ideas ────────────────────────
-    dfs_results: dict = {}
-    candidate_hint = ""
-    try:
-        from keyword_research import get_keyword_ideas
-        dfs_results = get_keyword_ideas(en_keyword, all_locales, n=5)
-        if dfs_results:
-            lines = []
-            for loc, ideas in dfs_results.items():
-                if ideas:
-                    top = ", ".join(
-                        f'"{k["keyword"]}" ({k["volume"]:,}/mo)' for k in ideas[:3]
-                    )
-                    lines.append(f'  "{loc}": {top}')
-            if lines:
-                candidate_hint = (
-                    "DataForSEO volume data — prefer keywords from this list "
-                    "(highest real search volume):\n"
-                    + "\n".join(lines)
-                    + "\n\nPick from these candidates where possible. "
-                    "Only suggest a different keyword if none of the candidates "
-                    "are a natural fit for cycling eyewear.\n\n"
-                )
-                print(f"   DataForSEO: {len(dfs_results)} locales returned")
-    except Exception as e:
-        print(f"   ⚠️  DataForSEO lookup failed: {e} — Haiku will self-select keywords")
-
-    # ── Step 2: Claude Haiku picks best keyword + writes intent ───────────────
+    # ── Step 1: Claude Haiku — locale-native keyword selection + intent ────────
     locale_list = "\n".join(
         f'  "{loc}": {{"keyword": "...", "intent": "..."}}'
         for loc in all_locales
@@ -1306,10 +1279,9 @@ def research_market_keywords(en_keyword: str) -> dict:
         system="You are an SEO keyword researcher for cycling eyewear. Return ONLY valid JSON, no extra text.",
         messages=[{"role": "user", "content":
             f"Primary EN keyword: {en_keyword}\n\n"
-            f"{candidate_hint}"
-            "For EACH market locale below, select the BEST local search keyword a cyclist would actually type "
-            "(use natural local search behaviour and terminology — not a literal translation) "
-            "and describe the search intent in one sentence.\n\n"
+            "For EACH market locale below, find the BEST local search keyword a cyclist would "
+            "actually type (NOT a literal translation — use natural local search behaviour and "
+            "terminology for that country) and describe the search intent in one sentence.\n\n"
             "Return exactly this JSON structure:\n"
             "{{\n"
             f"{locale_list}\n"
@@ -1322,18 +1294,25 @@ def research_market_keywords(en_keyword: str) -> dict:
         raw = raw.split("```")[1].lstrip("json").strip()
     result = json.loads(raw)
 
-    # ── Step 3: Normalise + attach DataForSEO volumes ─────────────────────────
+    # ── Step 2: Normalise Haiku results ───────────────────────────────────────
     fallback = {"keyword": en_keyword, "intent": "", "volume": 0}
     normalised: dict = {"de": result.get("de", {"keyword": en_keyword, "intent": ""})}
     for loc in research_locales:
         normalised[loc] = result.get(loc, fallback)
+    for entry in normalised.values():
+        entry.setdefault("volume", 0)
 
-    # Attach volume from DataForSEO to each locale entry
-    for loc, entry in normalised.items():
-        loc_ideas = dfs_results.get(loc, [])
-        kw_lower  = entry.get("keyword", "").lower()
-        match     = next((k for k in loc_ideas if k["keyword"].lower() == kw_lower), None)
-        entry["volume"] = match["volume"] if match else 0
+    # ── Step 3: DataForSEO search_volume/live — attach real volumes ───────────
+    try:
+        from keyword_research import get_search_volumes
+        kw_map   = {loc: entry["keyword"] for loc, entry in normalised.items()}
+        volumes  = get_search_volumes(kw_map)
+        for loc, entry in normalised.items():
+            entry["volume"] = volumes.get(loc, 0)
+        if volumes:
+            print(f"   DataForSEO: volumes attached for {len(volumes)} locales")
+    except Exception as e:
+        print(f"   ⚠️  DataForSEO volume lookup failed: {e} — continuing without volumes")
 
     return normalised
 
