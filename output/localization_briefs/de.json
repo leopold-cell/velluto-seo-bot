@@ -1,0 +1,38 @@
+{
+  "brief_type": "localization_brief",
+  "date": "2026-05-26",
+  "locale": "de-DE",
+  "locale_short": "de",
+  "market_code": "DE",
+  "master_topic": "are expensive cycling sunglasses worth it",
+  "local_primary_keyword": "are expensive cycling sunglasses worth it",
+  "local_secondary_keywords": [
+    "What are the best sunglasses for cycling?",
+    "What are the best Oakley sunglasses for cycling?",
+    "Are photochromic glasses good for cycling?",
+    "What are the disadvantages of photochromic glasses?",
+    "Do photochromic lenses help with migraines?"
+  ],
+  "local_search_intent": "commercial investigation",
+  "rewrite_level": "high",
+  "local_adaptation_notes": [
+    "Cycling culture context: Rennrad-Touren in Alpen, Mittelgebirge und auf Norddeutschen Routen; Schwerpunkt auf Schutz und Performance",
+    "Use local cycling terminology naturally (e.g. Rennrad, fietsbril, vélo, ciclismo)",
+    "Avoid literal translations of brand-y phrases like 'cycling sunglasses' — use what locals search for",
+    "Mention price as 149 EUR"
+  ],
+  "cta_url": "https://velluto-shop.com/de/products/strada-pro",
+  "commercial": {
+    "market": "DE",
+    "currency": "EUR",
+    "current_price": 149,
+    "uvp": 149,
+    "offer_status": "standard",
+    "free_shipping_threshold": null,
+    "guarantee": null,
+    "delivery_claim": null,
+    "last_updated": "2026-05-26",
+    "in_stock": true,
+    "product_handle": "strada-pro"
+  }
+}

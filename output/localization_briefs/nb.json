@@ -1,0 +1,32 @@
+{
+  "brief_type": "localization_brief",
+  "date": "2026-05-26",
+  "locale": "nb-NO",
+  "locale_short": "nb",
+  "market_code": "NB",
+  "master_topic": "are expensive cycling sunglasses worth it",
+  "local_primary_keyword": "are expensive cycling sunglasses worth it",
+  "local_secondary_keywords": [],
+  "local_search_intent": "commercial investigation",
+  "rewrite_level": "high",
+  "local_adaptation_notes": [
+    "Cycling culture context: landeveissykling i Norge — fjell, kjølig klima, kort sommer",
+    "Use local cycling terminology naturally (e.g. Rennrad, fietsbril, vélo, ciclismo)",
+    "Avoid literal translations of brand-y phrases like 'cycling sunglasses' — use what locals search for",
+    "Mention price as 1499 NOK"
+  ],
+  "cta_url": "https://velluto-shop.com/nb/products/strada-pro",
+  "commercial": {
+    "market": "NB",
+    "currency": "NOK",
+    "current_price": 1499,
+    "uvp": 1499,
+    "offer_status": "standard",
+    "free_shipping_threshold": null,
+    "guarantee": null,
+    "delivery_claim": null,
+    "last_updated": "2026-05-26",
+    "in_stock": true,
+    "product_handle": "strada-pro"
+  }
+}
