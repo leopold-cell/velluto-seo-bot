@@ -14,5 +14,21 @@
       "reason": "no_credentials",
       "timestamp": "2026-05-25T04:10:55.330084"
     }
+  ],
+  "2026-05-26": [
+    {
+      "channel": "sitemap_ping",
+      "results": {
+        "Google": "http_404",
+        "Bing": "http_410"
+      },
+      "timestamp": "2026-05-26T04:05:28.397439"
+    },
+    {
+      "channel": "reddit",
+      "status": "skipped",
+      "reason": "no_credentials",
+      "timestamp": "2026-05-26T04:05:28.398558"
+    }
   ]
 }
