@@ -1329,7 +1329,8 @@ def research_market_keywords(en_keyword: str) -> dict:
 @retry(max_attempts=3, delay=10, label="generate_de_primary")
 def generate_de_primary(kw: dict, products: list[dict], quality: dict,
                         commercial: dict | None = None,
-                        brief: dict | None = None) -> dict:
+                        brief: dict | None = None,
+                        retry_feedback: str | None = None) -> dict:
     """
     Generate a full English magazine article using the Velluto HTML template structure.
     Publishes in English (Shopify primary locale). DE/NL/FR etc. are registered via T&A.
@@ -1386,6 +1387,28 @@ def generate_de_primary(kw: dict, products: list[dict], quality: dict,
     season = get_season_year()
     cycling_ctx = get_cycling_context()
 
+    # Phase 4.1: bake quality-gate hard rules into the system prompt so they're
+    # enforced during generation, not (only) caught after. Saves the $0.10 retry cost.
+    forbidden_competitor_domains = ", ".join(sorted(
+        list(__import__("config_loader").forbidden_outbound_domains())[:10]
+    )) + ", …"
+    publish_rules = f"""
+
+PUBLISH RULES (HARD — articles violating these get blocked and discarded):
+1. PRICING — The ONLY Velluto price you may quote is "{primary_price_str}" (USD for the EN-primary US article).
+   - Do NOT write "€ 149", "149 EUR", "230 EUR", or any other currency/amount as Velluto's price.
+   - When discussing the cycling-sunglasses MARKET, use RANGES, not specific competitor prices.
+     ✓ "Premium cycling sunglasses range from $150 to $350"
+     ✗ "Oakley Sutro costs $280, Rudy Project costs $230"
+   - Mention "{primary_price_str}" at most ONCE, near a CTA/product card. Not in body copy.
+2. NO OUTBOUND COMPETITOR LINKS — Never use <a href="..."> to link to: {forbidden_competitor_domains}
+   Competitor brand names may appear as plain text only.
+3. HOMEPAGE LINK — Include exactly one <a href="https://velluto-shop.com">…</a> link with descriptive
+   anchor text (e.g., "Velluto", "Velluto cycling eyewear", "premium Velluto glasses").
+4. INTERNAL LINKS — At least 3 <a> elements pointing to velluto-shop.com paths total.
+5. PRIMARY KEYWORD — The exact primary keyword (or its tokens) MUST appear in <title>, the <h1>, and at least one <h2>.
+"""
+
     system = f"""You are the lead SEO editor and copywriter for Velluto (velluto-shop.com), \
 a premium road cycling eyewear brand with Italian design, sold across Europe.
 
@@ -1400,7 +1423,8 @@ WRITING RULES:
 3. Use ONLY the provided product URLs — do not invent URLs.
 4. Check every Velluto claim against BRAND_FACTS — no photochromic, polarized, or prescription claims.
 5. The result should feel like advice from a faster, more experienced cycling friend — not a sales pitch.
-6. Use the exact CSS class names from the template (hero, article, .toc, .faq, etc.)."""
+6. Use the exact CSS class names from the template (hero, article, .toc, .faq, etc.).
+{publish_rules}"""
 
     # Phase 4: weave the master brief into the prompt when provided
     brief_block = ""
@@ -1429,13 +1453,23 @@ WRITING RULES:
             + "=== END BRIEF ===\n\n"
         )
 
+    # Phase 4.1: prepend gate-fail feedback so the retry attempt knows what to fix
+    retry_block = ""
+    if retry_feedback:
+        retry_block = (
+            "\n=== PREVIOUS ATTEMPT FAILED THE QUALITY GATE ===\n"
+            "Fix EVERY one of these issues in this regeneration:\n"
+            f"{retry_feedback}\n"
+            "=== END FAILURES ===\n\n"
+        )
+
     user = f"""Date: {datetime.date.today().strftime('%B %d, %Y')} | Season: {season} | Cycling context: {cycling_ctx}
 Primary Keyword (EN): {keyword}
 DE Keyword (for context): {keyword_de}
 Content angle: {angle if angle else title_hint}
 Article number: {art_num}
 Quality level {quality['day']} — target: {word_count} words, {faq_count} FAQ questions
-{brief_block}
+{retry_block}{brief_block}
 {cdn_images_hint}
 PRODUCTS (use only these exact URLs):
 {product_json}
@@ -1840,23 +1874,47 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
 
     cover_url = pick_image()
 
-    # Generate EN article — up to 3 attempts on fact violations
+    # Generate EN article — up to 3 attempts; retries inject specific failures as feedback
+    from briefs.quality_gate import gate as _quality_gate
     post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief)
+    qa = None
     for attempt in range(3):
-        issues      = [i for pat, msg in FORBIDDEN_CLAIMS
-                       for i in ([f"[FACT] {msg}"] if re.search(pat, post.get("body_html",""), re.IGNORECASE) else [])]
+        # ── 1. Brand FACT check (legacy) ──────────────────────────────────
+        issues = [i for pat, msg in FORBIDDEN_CLAIMS
+                  for i in ([f"[FACT] {msg}"] if re.search(pat, post.get("body_html",""), re.IGNORECASE) else [])]
         if not post.get("body_html"):
             issues.append("[FACT] Missing body_html")
         fact_issues = [i for i in issues if i.startswith("[FACT]")]
         if fact_issues:
             if attempt < 2:
                 print(f"   ✗ Brand fact violation (attempt {attempt+1}/3) — regenerating: {fact_issues[0]}")
-                post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief)
+                post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief,
+                                            retry_feedback="\n".join(f"- {i}" for i in fact_issues))
                 continue
             else:
                 raise RuntimeError(f"Brand fact violation after 3 attempts: {fact_issues}")
+        # ── 2. Phase 4 Quality Gate (price / keyword / links / PAA / etc.) ─
+        qa = _quality_gate(post, brief, market_code="US", commercial=commercial)
+        if qa["auto_fixes"]:
+            for af in qa["auto_fixes"]:
+                print(f"   🛠  QA auto-fix: {af}")
+        if not qa["passed"]:
+            if attempt < 2:
+                print(f"   ✗ Quality gate FAILED (attempt {attempt+1}/3) — regenerating with feedback:")
+                for issue in qa["hard_issues"]:
+                    print(f"      {issue}")
+                post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief,
+                                            retry_feedback="\n".join(f"- {i}" for i in qa["hard_issues"]))
+                continue
+            else:
+                print(f"   ❌ Quality gate FAILED after 3 attempts — publish blocked.")
+                for issue in qa["hard_issues"]:
+                    print(f"      {issue}")
+                print(f"   (logged to output/quality_gate_failures.json)")
+                return  # Hard-stop: no publish, no T&A
+        # All checks passed
         if not issues:
-            print("   ✅ EN quality check passed")
+            print(f"   ✅ EN quality check passed (attempt {attempt+1}, gate auto_fixes={len(qa['auto_fixes'])})")
         else:
             for iss in issues:
                 print(f"   ⚠️  {iss}")
@@ -1875,23 +1933,8 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
             mark_en_keyword_used(keyword)
             return
 
-    # ── Phase 4: Quality Gate (runs AFTER generation, BEFORE publish) ─────
-    # Auto-fixes (silent): strip competitor outbound links, inject homepage link.
-    # Hard checks (block publish): keyword in title/H1, word_count, internal links,
-    # meta lengths, PAA coverage, commercial config price match.
-    # On hard-fail → log to output/quality_gate_failures.json, return without publishing.
-    from briefs.quality_gate import gate as _quality_gate
-    qa = _quality_gate(post, brief, market_code="US", commercial=commercial)
-    if qa["auto_fixes"]:
-        for af in qa["auto_fixes"]:
-            print(f"   🛠  QA auto-fix: {af}")
-    if not qa["passed"]:
-        print(f"   ❌ Quality gate FAILED — publish blocked.")
-        for issue in qa["hard_issues"]:
-            print(f"      {issue}")
-        print(f"   (logged to output/quality_gate_failures.json)")
-        return  # Hard-stop: no publish, no T&A registration
-
+    # Phase 4.1: quality gate already ran inside the retry loop above.
+    # If we reach here, post passed both FACT and gate checks.
     body_html = build_body_html(post, cover_url)
     aid, handle = publish(
         title=post["title"],

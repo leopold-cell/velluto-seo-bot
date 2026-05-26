@@ -133,8 +133,83 @@ def check_word_count(post: dict) -> list[str]:
     return []
 
 
+VELLUTO_CONTEXT_TOKENS = (
+    "velluto", "strada", "vellutopuro", "vellutovisione",
+)
+VELLUTO_CSS_TOKENS = ("product-price",)  # CSS class on product-card price div
+
+
+def _is_velluto_price_context(body: str, match_start: int, match_end: int,
+                              window: int = 80) -> bool:
+    """
+    Determines whether a price token is being attributed to Velluto.
+
+    Logic: "same sentence wins."
+      1. If the price is inside a class="product-price" element → Velluto.
+      2. Otherwise find the SENTENCE containing the price.
+         - If sentence mentions Velluto AND no competitor → Velluto.
+         - If sentence mentions a competitor brand → skip (competitor's price).
+         - If sentence has neither → check neighbouring sentence (within ±window).
+         - If no brand anywhere nearby → market context, skip.
+    """
+    # 1. Inside a product-price CSS class → clearly Velluto
+    snippet_wide = body[max(0, match_start - 60): match_end + 60].lower()
+    if any(css in snippet_wide for css in VELLUTO_CSS_TOKENS):
+        return True
+
+    # Build competitor brand tokens
+    competitors = config_loader.forbidden_outbound_domains()
+    competitor_tokens = set()
+    for d in competitors:
+        brand = d.split(".")[0].lower()
+        if len(brand) >= 3:
+            competitor_tokens.add(brand)
+    competitor_tokens.update({"oakley", "poc", "uvex", "rudy", "tifosi",
+                              "scicon", "alba", "rapha", "evil eye", "100%"})
+
+    def _sentence_bounds(text: str, pos: int) -> tuple[int, int]:
+        """Find the sentence boundaries (period, ?, !, or <p> tag) around pos."""
+        # Scan backwards for sentence start
+        start = 0
+        for end_token in [". ", "? ", "! ", "<p>", "</p>", "<br>", "<h1>", "<h2>"]:
+            i = text.rfind(end_token, 0, pos)
+            if i > start:
+                start = i + len(end_token)
+        # Scan forwards for sentence end
+        end = len(text)
+        for end_token in [". ", "? ", "! ", "</p>", "<br>", "</h1>", "</h2>"]:
+            i = text.find(end_token, pos)
+            if i != -1 and i < end:
+                end = i
+        return start, end
+
+    body_lower = body.lower()
+    s_start, s_end = _sentence_bounds(body_lower, match_start)
+    sentence = body_lower[s_start:s_end]
+
+    has_velluto_in_sentence    = any(t in sentence for t in VELLUTO_CONTEXT_TOKENS)
+    has_competitor_in_sentence = any(t in sentence for t in competitor_tokens)
+
+    if has_competitor_in_sentence:
+        return False  # the sentence is about a competitor — their price
+    if has_velluto_in_sentence:
+        return True   # same sentence as Velluto and no competitor — Velluto's price
+
+    # Neither brand in this sentence — fall back to small-window check
+    snippet = body_lower[max(0, match_start - 40): match_end + 40]
+    if any(t in snippet for t in competitor_tokens):
+        return False
+    if any(t in snippet for t in VELLUTO_CONTEXT_TOKENS):
+        return True
+    return False  # market context
+
+
 def check_commercial_config(post: dict, market_code: str, commercial: dict | None) -> list[str]:
-    """Flag prices in the body that don't match the current commercial config for this market."""
+    """
+    Flag VELLUTO-CONTEXT prices in the body that don't match the current
+    commercial config. Prices presented as competitor/market context are
+    intentionally NOT flagged — those are legitimate comparison content.
+    """
     if not commercial:
         return []
     cfg = commercial.get(market_code) or {}
@@ -144,8 +219,7 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
         return []
 
     body = post.get("body_html", "")
-    issues = []
-    # Find all numeric currency-adjacent tokens
+    issues: list[str] = []
     money_patterns = [
         (r"€\s*(\d{2,4})(?:[.,]\d{2})?",         "EUR"),
         (r"\$\s*(\d{2,4})(?:[.,]\d{2})?",         "USD"),
@@ -156,25 +230,26 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
         (r"(\d{2,4})\s*PLN\b",                    "PLN"),
         (r"(\d{2,4})\s*SEK\b",                    "SEK"),
     ]
-    found_prices: list[tuple[int, str]] = []
     for pat, curr in money_patterns:
         for m in re.finditer(pat, body):
             try:
                 amt = int(m.group(1))
-                if 30 <= amt <= 5000:  # reasonable price range only
-                    found_prices.append((amt, curr))
             except Exception:
-                pass
-
-    # If a price doesn't match the expected (price, currency) → flag
-    for amt, curr in found_prices:
-        # Tolerate the expected price + plausible older variants (149 → 69 transition)
-        if curr == expected_curr and amt == expected:
-            continue
-        # Tolerate the UVP if it's set and we're showing it as the strikethrough
-        if cfg.get("uvp") and curr == expected_curr and amt == cfg["uvp"]:
-            continue
-        issues.append(f"[PRICE] body contains '{amt} {curr}' but config expects '{expected} {expected_curr}' for {market_code}")
+                continue
+            if not (30 <= amt <= 5000):
+                continue
+            # ── Only flag if this price is attributed to Velluto ──
+            if not _is_velluto_price_context(body, m.start(), m.end()):
+                continue
+            # Tolerate exact match + UVP strikethrough
+            if curr == expected_curr and amt == expected:
+                continue
+            if cfg.get("uvp") and curr == expected_curr and amt == cfg["uvp"]:
+                continue
+            issues.append(
+                f"[PRICE] Velluto-context price '{amt} {curr}' but config expects "
+                f"'{expected} {expected_curr}' for {market_code}"
+            )
     return list(dict.fromkeys(issues))  # dedupe preserving order
 
 
