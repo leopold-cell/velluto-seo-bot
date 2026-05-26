@@ -1248,26 +1248,67 @@ def get_article_number() -> str:
 
 # TODO: replace Claude lookup with Google Keyword Planner API for real volume data
 @retry(max_attempts=2, delay=5, label="research_market_keywords")
-def research_market_keywords(kw_de: str) -> dict:
+def research_market_keywords(en_keyword: str) -> dict:
     """
-    Given a German primary keyword, return the best keyword + search intent
-    for ALL shop markets (DE + SHOP_LOCALES) via a single Claude Haiku call.
-    Returns: {"de": {"keyword": ..., "intent": ...}, "nl": {...}, "en": {...}, "fr": {...}, ...}
+    Given the primary EN keyword, return the best keyword + search intent + volume
+    for ALL shop markets (DE + SHOP_LOCALES).
+
+    Flow:
+    1. DataForSEO — fetch volume-ranked keyword ideas per locale in one batch call.
+       Results are injected as hints into the Haiku prompt.
+    2. Claude Haiku — selects the best keyword per locale (preferring DataForSEO
+       candidates) and writes a one-line search intent.
+    3. Volume is attached to each locale entry from DataForSEO data.
+
+    Returns: {"de": {"keyword": ..., "intent": ..., "volume": int}, "nl": {...}, ...}
+    Graceful fallback: if DataForSEO is unavailable, falls back to Haiku-only (volume=0).
     """
     # Always include "en" for the primary article keyword, regardless of SHOP_LOCALES
     research_locales = ["en"] + [loc for loc in SHOP_LOCALES if loc != "en"]
+    all_locales = ["de"] + research_locales
+
+    # ── Step 1: DataForSEO volume-ranked keyword ideas ────────────────────────
+    dfs_results: dict = {}
+    candidate_hint = ""
+    try:
+        from keyword_research import get_keyword_ideas
+        dfs_results = get_keyword_ideas(en_keyword, all_locales, n=5)
+        if dfs_results:
+            lines = []
+            for loc, ideas in dfs_results.items():
+                if ideas:
+                    top = ", ".join(
+                        f'"{k["keyword"]}" ({k["volume"]:,}/mo)' for k in ideas[:3]
+                    )
+                    lines.append(f'  "{loc}": {top}')
+            if lines:
+                candidate_hint = (
+                    "DataForSEO volume data — prefer keywords from this list "
+                    "(highest real search volume):\n"
+                    + "\n".join(lines)
+                    + "\n\nPick from these candidates where possible. "
+                    "Only suggest a different keyword if none of the candidates "
+                    "are a natural fit for cycling eyewear.\n\n"
+                )
+                print(f"   DataForSEO: {len(dfs_results)} locales returned")
+    except Exception as e:
+        print(f"   ⚠️  DataForSEO lookup failed: {e} — Haiku will self-select keywords")
+
+    # ── Step 2: Claude Haiku picks best keyword + writes intent ───────────────
     locale_list = "\n".join(
         f'  "{loc}": {{"keyword": "...", "intent": "..."}}'
-        for loc in ["de"] + research_locales
+        for loc in all_locales
     )
+    HAIKU = "claude-haiku-4-5-20251001"
     r = client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=900,
+        model=HAIKU,
+        max_tokens=1000,
         system="You are an SEO keyword researcher for cycling eyewear. Return ONLY valid JSON, no extra text.",
         messages=[{"role": "user", "content":
-            f"German primary keyword: {kw_de}\n\n"
-            "For EACH market locale below, find the BEST local search keyword a cyclist would actually type "
-            "(NOT a literal translation — use natural local search behaviour and terminology for that country) "
+            f"Primary EN keyword: {en_keyword}\n\n"
+            f"{candidate_hint}"
+            "For EACH market locale below, select the BEST local search keyword a cyclist would actually type "
+            "(use natural local search behaviour and terminology — not a literal translation) "
             "and describe the search intent in one sentence.\n\n"
             "Return exactly this JSON structure:\n"
             "{{\n"
@@ -1275,16 +1316,25 @@ def research_market_keywords(kw_de: str) -> dict:
             "}}"
         }]
     )
-    log_usage(r.usage.input_tokens, r.usage.output_tokens, model="claude-haiku-4-5-20251001")
+    log_usage(r.usage.input_tokens, r.usage.output_tokens, model=HAIKU)
     raw = r.content[0].text.strip()
     if raw.startswith("```"):
         raw = raw.split("```")[1].lstrip("json").strip()
     result = json.loads(raw)
-    # Normalise: ensure every locale has keyword + intent, fallback to DE keyword
-    fallback = {"keyword": kw_de, "intent": ""}
-    normalised = {"de": result.get("de", {"keyword": kw_de, "intent": ""})}
+
+    # ── Step 3: Normalise + attach DataForSEO volumes ─────────────────────────
+    fallback = {"keyword": en_keyword, "intent": "", "volume": 0}
+    normalised: dict = {"de": result.get("de", {"keyword": en_keyword, "intent": ""})}
     for loc in research_locales:
         normalised[loc] = result.get(loc, fallback)
+
+    # Attach volume from DataForSEO to each locale entry
+    for loc, entry in normalised.items():
+        loc_ideas = dfs_results.get(loc, [])
+        kw_lower  = entry.get("keyword", "").lower()
+        match     = next((k for k in loc_ideas if k["keyword"].lower() == kw_lower), None)
+        entry["volume"] = match["volume"] if match else 0
+
     return normalised
 
 
@@ -1691,14 +1741,19 @@ def publish_de_primary(kw: dict, products: list[dict]):
     print(f"   Researching market keywords...")
     try:
         mkt_kws = research_market_keywords(keyword)
+        def _kw_label(loc):
+            entry = mkt_kws[loc]
+            vol   = entry.get("volume", 0)
+            vol_s = f" ({vol:,}/mo)" if vol else ""
+            return f"{loc.upper()}: {entry['keyword']}{vol_s}"
         kw_summary = " | ".join(
-            f"{loc.upper()}: {mkt_kws[loc]['keyword']}"
+            _kw_label(loc)
             for loc in ["de", "nl", "en", "fr", "es", "it"]
             if loc in mkt_kws
         )
         print(f"   {kw_summary}")
         extra = " | ".join(
-            f"{loc.upper()}: {mkt_kws[loc]['keyword']}"
+            _kw_label(loc)
             for loc in ["da", "nb", "pl", "pt-PT", "sv"]
             if loc in mkt_kws
         )
@@ -1706,9 +1761,9 @@ def publish_de_primary(kw: dict, products: list[dict]):
             print(f"   {extra}")
     except Exception as e:
         print(f"   ⚠️  Keyword research failed: {e} — using fallback")
-        mkt_kws = {"de": {"keyword": keyword, "intent": ""}}
+        mkt_kws = {"de": {"keyword": keyword, "intent": "", "volume": 0}}
         for loc in SHOP_LOCALES:
-            mkt_kws[loc] = {"keyword": keyword, "intent": ""}
+            mkt_kws[loc] = {"keyword": keyword, "intent": "", "volume": 0}
 
     # EN keyword is the primary keyword; other locales come from market research
     kw_ctx = {**kw, "art_num": art_num,
