@@ -1,0 +1,77 @@
+# Velluto competitor registry.
+# Used by research/competitor_monitor.py for daily sitemap diffs.
+# Used by briefs/quality_gate.py to block outbound competitor links.
+
+core_competitors:
+  - name: Oakley
+    domain: oakley.com
+    category: premium_performance
+    priority: 10
+    sitemap: https://www.oakley.com/sitemap.xml
+
+  - name: POC
+    domain: poc.com
+    category: premium_performance
+    priority: 9
+    sitemap: https://www.poc.com/sitemap.xml
+
+  - name: Uvex
+    domain: uvex-group.shop
+    category: mid_price_technical
+    priority: 8
+    sitemap: https://www.uvex-group.shop/sitemap.xml
+
+  - name: Rudy Project
+    domain: rudyproject.com
+    category: premium_cycling_specific
+    priority: 8
+    sitemap: https://www.rudyproject.com/sitemap.xml
+
+  - name: Evil Eye
+    domain: evileye.com
+    category: technical_sports_eyewear
+    priority: 8
+    sitemap: https://www.evileye.com/sitemap.xml
+
+  - name: Scicon Sports
+    domain: sciconsports.com
+    category: cycling_performance
+    priority: 8
+    sitemap: https://sciconsports.com/sitemap.xml
+
+  - name: Tifosi Optics
+    domain: tifosioptics.com
+    category: value_performance
+    priority: 7
+    sitemap: https://tifosioptics.com/sitemap.xml
+
+  - name: 100%
+    domain: 100percent.eu
+    category: cycling_mtb_performance
+    priority: 7
+    sitemap: https://www.100percent.eu/sitemap.xml
+
+  - name: Alba Optics
+    domain: albaoptics.cc
+    category: style_performance
+    priority: 7
+    sitemap: https://albaoptics.cc/sitemap.xml
+
+  - name: Rapha
+    domain: rapha.cc
+    category: cycling_lifestyle_premium
+    priority: 6
+    sitemap: https://www.rapha.cc/sitemap.xml
+
+watchlist:
+  - out-of.com
+  - gloryfy.com
+  - pop-eyes.net
+  - kooworld.cc
+  - mellerbrand.com
+  - raidenvision.com
+  - ileve-district.com
+
+# Domains that quality_gate must NEVER allow as outbound links in Velluto content.
+# Auto-built from core_competitors + watchlist at runtime.
+forbidden_outbound_domains_auto: true

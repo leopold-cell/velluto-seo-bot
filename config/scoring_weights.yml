@@ -1,0 +1,44 @@
+# Opportunity scoring weights (spec line 1093-1101).
+# Used by decision/opportunity_scorer.py.
+#
+# Final formula:
+#   opportunity_score =
+#     buyer_intent_score        * 0.30 +
+#     product_fit_score         * 0.25 +
+#     competitor_velocity_score * 0.15 +
+#     keyword_demand_score      * 0.10 +
+#     serp_weakness_score       * 0.10 +
+#     localization_potential    * 0.05 +
+#     internal_link_value       * 0.05
+
+weights:
+  buyer_intent:           0.30
+  product_fit:            0.25
+  competitor_velocity:    0.15
+  keyword_demand:         0.10
+  serp_weakness:          0.10
+  localization_potential: 0.05
+  internal_link_value:    0.05
+
+# Competitor velocity sub-scoring (spec line 714-725).
+competitor_velocity_score:
+  plus:
+    new_competitor_page_last_7_days: 30
+    multiple_competitors_publish_similar_topic: 20
+    competitor_page_is_commercial_collection_or_comparison: 20
+    topic_appears_in_paid_ads_or_sale_page: 15
+    topic_has_seasonal_timing: 10
+  minus:
+    pure_brand_or_news_topic: -20
+    weak_velluto_product_fit: -20
+    legally_risky_or_claim_heavy_topic: -30
+
+# AI Overview sub-scoring (spec line 980-988).
+ai_overview_score:
+  factors:
+    ai_overview_present: 25
+    cited_sources_are_weak: 20
+    question_has_high_buyer_intent: 20
+    velluto_has_unique_answer: 20
+    product_data_relevant: 10
+    competitor_cited: 5

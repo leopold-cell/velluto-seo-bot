@@ -1,0 +1,83 @@
+# Publishing decision thresholds (spec line 1118-1138).
+# Used by decision/topic_selector.py to gate the daily action choice.
+
+publishing_rules:
+  new_article:
+    min_opportunity_score: 72
+    min_buyer_intent_score: 65
+    min_product_fit_score: 70
+
+  update_existing_article:
+    min_opportunity_score: 55
+
+  ignore:
+    if_buyer_intent_below: 45
+
+  never_publish:
+    - purely informational with no product bridge
+    - generic cycling tips
+    - news without evergreen potential
+    - competitor topic with no Velluto advantage
+    - duplicated search intent
+    - weak local keyword validation
+
+# Daily action options. Topic selector picks exactly ONE per run (spec line 1296-1308).
+daily_action_options:
+  - create_new_article
+  - update_existing_article
+  - improve_paa_blocks
+  - improve_ai_overview_blocks
+  - improve_product_page
+  - improve_collection_page
+  - add_internal_links
+  - rewrite_metadata
+  - create_localization_briefs
+  - monitor_only
+
+# Quality gate (spec line 1610-1643). Used by briefs/quality_gate.py.
+quality_gate:
+  required:
+    - primary_keyword_in_title
+    - primary_keyword_in_h1
+    - primary_keyword_in_intro
+    - primary_keyword_in_one_h2
+    - search_intent_matched
+    - buyer_intent_visible_in_first_150_words
+    - product_bridge_present
+    - no_invented_claims
+    - no_fake_reviews
+    - no_unsupported_scientific_statements
+    - at_least_3_internal_links
+    - mandatory_homepage_link
+    - no_outbound_competitor_links
+    - commercial_config_used_not_hardcoded
+    - cta_to_product_or_collection
+    - localized_search_terms_checked
+    - no_cannibalization
+    - meta_title_under_60_chars
+    - meta_description_under_155_chars
+    - clear_sourceable_answer_blocks
+    - paa_questions_answered_directly
+    - page_indexable_and_crawlable
+
+  fail_if:
+    - article_is_generic
+    - article_could_fit_any_cycling_brand
+    - no_reason_to_buy_velluto
+    - keyword_only_translated_not_localized
+    - competitor_mentioned_without_useful_comparison
+    - title_promises_comparison_but_only_sells_velluto
+    - content_duplicates_another_velluto_intent
+    - page_links_to_competitor_domain
+    - page_hardcodes_commercial_values_without_config_check
+    - page_lacks_homepage_link
+
+# Optimization timeline — do not aggressively rewrite pages (spec line 1370-1392).
+optimization_timeline:
+  day_0:  Publish or update page.
+  day_1:  Check sitemap, internal links, indexability, canonical, hreflang, snippet settings.
+  day_3_to_7:  Check indexing status. Do not rewrite page unless technical issue exists.
+  day_14: Check early GSC impressions. Add internal links if needed.
+  day_28: Optimize title/meta/PAA blocks if impressions exist but CTR/ranking is weak.
+  day_60: Expand content based on actual queries and SERP movement.
+  day_90: Decide whether to expand, consolidate, internally link more, or leave stable.

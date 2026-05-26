@@ -1,0 +1,85 @@
+# Buyer-intent classification rules.
+# Used by decision/opportunity_scorer.py to assign buyer_intent_score 0-100 to every candidate keyword.
+
+buyer_intent_classes:
+  very_high:
+    min_score: 80
+    keyword_patterns:
+      - "best * sunglasses"
+      - "best * cycling"
+      - "* alternative"
+      - "* review"
+      - "* vs *"
+      - "buy *"
+      - "* with interchangeable lenses"
+      - "anti fog *"
+    examples:
+      - best cycling sunglasses
+      - best road cycling sunglasses
+      - Oakley Sutro alternative
+      - Oakley alternative cycling sunglasses
+      - cycling sunglasses review
+      - cycling sunglasses vs
+      - buy cycling sunglasses
+      - cycling glasses with interchangeable lenses
+      - anti fog cycling sunglasses
+    content_type:
+      - buying_guide
+      - comparison
+      - alternative_page
+      - product_led_guide
+
+  high:
+    min_score: 65
+    keyword_patterns:
+      - "cycling glasses for *"
+      - "UV400 *"
+      - "photochromic vs *"
+      - "* changing light"
+      - "* for road bike"
+    examples:
+      - cycling glasses for wind protection
+      - cycling glasses for watery eyes
+      - UV400 cycling sunglasses
+      - photochromic vs interchangeable cycling glasses
+      - best cycling glasses for changing light
+      - cycling sunglasses for road bike
+    content_type:
+      - problem_solution
+      - product_led_guide
+      - comparison
+
+  medium:
+    min_score: 50
+    keyword_patterns:
+      - "what * cycling"
+      - "how * cycling glasses"
+      - "why do cycling *"
+      - "are * cycling"
+    examples:
+      - what color lens is best for cycling
+      - are polarized sunglasses good for cycling
+      - why do cycling glasses fog up
+      - how should cycling glasses fit
+    content_type:
+      - educational_guide
+      - faq
+
+  low:
+    min_score: 0
+    keyword_patterns:
+      - "cycling style"
+      - "cycling tips"
+      - "tour de france *"
+    examples:
+      - cycling style
+      - road cycling tips
+      - tour de france sunglasses
+    content_type:
+      - lifestyle
+      - awareness
+
+# Publishing thresholds (also referenced in publishing_rules.yml).
+publishing_thresholds:
+  new_article_min_buyer_intent: 65
+  preferred_new_article_min_buyer_intent: 75

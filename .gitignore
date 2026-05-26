@@ -6,3 +6,19 @@ __pycache__/
 *.pyc
 venv/
 .venv/
+
+# Phase 1+ research artifacts — large, ephemeral, not source-of-truth.
+data/raw/
+data/snapshots/
+data/processed/*
+!data/raw/.gitkeep
+!data/snapshots/.gitkeep
+!data/processed/.gitkeep
+
+# Phase 3+ daily output — regenerated every cron run on the VPS.
+output/*
+!output/.gitkeep
+!output/localization_briefs/
+
+# Local-only logs
+manual_test.log

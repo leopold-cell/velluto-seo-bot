@@ -1,0 +1,21 @@
+# Phase 2 seed keywords (top 10 highest-intent).
+# Used by:
+#   research/serp_fetcher.py    — SERP × market lookups
+#   research/paa_extractor.py   — PAA question extraction
+#   research/ai_overview_monitor.py — AI Overview presence check
+#   (Phase 3+) decision/opportunity_scorer.py
+#
+# Budget: 10 keywords × 3 priority markets daily = ~$1.80/mo
+#         + every-3-days and weekly markets = ~$3/mo total.
+
+phase2_seed_keywords:
+  - best cycling sunglasses
+  - best road cycling sunglasses
+  - cycling sunglasses
+  - Oakley alternative cycling sunglasses
+  - photochromic vs interchangeable cycling glasses
+  - anti fog cycling sunglasses
+  - cycling glasses for wind protection
+  - UV400 cycling sunglasses
+  - cycling glasses with interchangeable lenses
+  - are expensive cycling sunglasses worth it

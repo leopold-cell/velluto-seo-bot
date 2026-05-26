@@ -8,6 +8,11 @@ import os, json, datetime, random, re, requests, time, traceback
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
+# Phase 1: dynamic commercial config (prices, UVP, offers per market).
+# See ~/velluto-seo-bot/commercial_config.py — pulls live data from Shopify and
+# overrides per market (NL is currently testing 69 EUR).
+from commercial_config import load_commercial_config, for_market, safe_price_str  # noqa: E402
+
 
 def retry(max_attempts=3, delay=8, label=""):
     """Exponential-backoff retry decorator for flaky API calls."""
@@ -1322,12 +1327,28 @@ def research_market_keywords(en_keyword: str) -> dict:
 # ── DE-primary magazine article generation ───────────────────────────────────
 
 @retry(max_attempts=3, delay=10, label="generate_de_primary")
-def generate_de_primary(kw: dict, products: list[dict], quality: dict) -> dict:
+def generate_de_primary(kw: dict, products: list[dict], quality: dict,
+                        commercial: dict | None = None,
+                        brief: dict | None = None) -> dict:
     """
     Generate a full English magazine article using the Velluto HTML template structure.
     Publishes in English (Shopify primary locale). DE/NL/FR etc. are registered via T&A.
     kw must include 'art_num' key (e.g. '014').
+
+    commercial: optional commercial config from load_commercial_config(). When
+                provided, the EN-primary template price interpolates the US
+                price string (e.g. "$149"). When None, falls back to "$149".
+    brief:      optional Phase 4 master brief. When present, augments the prompt
+                with must_answer_questions (PAA), claims_to_avoid, and the
+                Velluto positioning angle. When None, legacy behaviour.
     """
+    # Phase 1: dynamic price for the EN-primary article (US is the EN market).
+    primary_market = (commercial or {}).get("US") or {}
+    primary_price_str = (
+        f"${primary_market.get('current_price')}"
+        if primary_market.get("currency") == "USD" and primary_market.get("current_price")
+        else "$149"
+    )
     keyword_en = kw.get("keyword_en") or kw["keyword"]  # EN keyword is primary
     keyword_de = kw.get("keyword_de") or kw["keyword"]  # DE keyword for context only
     keyword_nl = kw.get("keyword_nl", kw["keyword"])
@@ -1381,13 +1402,40 @@ WRITING RULES:
 5. The result should feel like advice from a faster, more experienced cycling friend — not a sales pitch.
 6. Use the exact CSS class names from the template (hero, article, .toc, .faq, etc.)."""
 
+    # Phase 4: weave the master brief into the prompt when provided
+    brief_block = ""
+    if brief:
+        must_answer = brief.get("must_answer_questions") or []
+        do_not_claim = brief.get("do_not_claim") or []
+        velluto_angle = (brief.get("velluto_position") or {}).get("main_angle", "")
+        supporting   = (brief.get("velluto_position") or {}).get("supporting_angles", [])
+        reader       = brief.get("target_reader", "")
+        problem      = brief.get("reader_problem", "")
+        sections_hint = brief.get("required_sections", [])
+
+        brief_block = (
+            "\n=== MASTER BRIEF (must follow) ===\n"
+            + (f"Target reader: {reader}\n" if reader else "")
+            + (f"Reader problem: {problem}\n" if problem else "")
+            + (f"Velluto angle (main): {velluto_angle}\n" if velluto_angle else "")
+            + (f"Supporting angles: {' | '.join(supporting)}\n" if supporting else "")
+            + (f"Required sections (use as H2 outline): {' | '.join(sections_hint)}\n"
+                if sections_hint else "")
+            + (f"\nMust-answer questions (use the exact phrasing as H2, then directly "
+               f"answer in the first sentence in 40-70 words):\n  - "
+               + "\n  - ".join(must_answer) + "\n" if must_answer else "")
+            + (f"\nClaims to avoid in this article:\n  - "
+               + "\n  - ".join(do_not_claim) + "\n" if do_not_claim else "")
+            + "=== END BRIEF ===\n\n"
+        )
+
     user = f"""Date: {datetime.date.today().strftime('%B %d, %Y')} | Season: {season} | Cycling context: {cycling_ctx}
 Primary Keyword (EN): {keyword}
 DE Keyword (for context): {keyword_de}
 Content angle: {angle if angle else title_hint}
 Article number: {art_num}
 Quality level {quality['day']} — target: {word_count} words, {faq_count} FAQ questions
-
+{brief_block}
 {cdn_images_hint}
 PRODUCTS (use only these exact URLs):
 {product_json}
@@ -1424,7 +1472,7 @@ REQUIRED STRUCTURE for ===BODY=== (article content only — Hero, Author, Ride a
       <div class="spec"><dt>Nose pad</dt><dd>Adjustable</dd></div>
       <div class="spec"><dt>Lenses</dt><dd>Interchangeable</dd></div>
     </dl>
-    <div class="product-price">€ 149.00 <small>· Free EU shipping</small></div>
+    <div class="product-price">{primary_price_str} <small>· Free shipping</small></div>
     <div class="product-cta-row">
       <a class="product-cta" href="[PRODUCT URL]">Buy now <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7h10M8 3l4 4-4 4"/></svg></a>
       <a class="product-cta secondary" href="[PRODUCT URL]">Details</a>
@@ -1434,7 +1482,7 @@ REQUIRED STRUCTURE for ===BODY=== (article content only — Hero, Author, Ride a
 
 [Colour variants strip:
 <div class="variants">
-  [4x <a href="[PRODUCT URL]"><img src="[CDN URL]" alt="..."><div class="v-info"><span class="v-name">[Colour]</span><span class="v-price">€ 149</span></div></a>]
+  [4x <a href="[PRODUCT URL]"><img src="[CDN URL]" alt="..."><div class="v-info"><span class="v-name">[Colour]</span><span class="v-price">{primary_price_str}</span></div></a>]
 </div>]
 
 [REQUIRED: FAQ as the last section:
@@ -1640,16 +1688,40 @@ def register_shopify_translation(article_id: int, locale: str, title: str,
 
 
 @retry(max_attempts=2, delay=10, label="generate_market_adaptation")
-def generate_market_adaptation(de_post: dict, target_locale: str, market: dict) -> dict:
+def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
+                               commercial: dict | None = None) -> dict:
     """
     Adapt the primary EN article for a target market locale (DE, NL, FR, etc.).
     Uses Claude Haiku for cost efficiency (~$0.025 vs $0.145 with Sonnet).
     market = {"keyword": "...", "intent": "..."}
+    commercial: optional commercial config from load_commercial_config(). When
+                provided, Haiku is instructed to replace ALL price strings in
+                the body with the target market's current price (e.g. NL = 69 EUR).
     """
     lang_name  = LOCALE_LANG_NAMES.get(target_locale, target_locale)
     cycling_ctx = LOCALE_CYCLING_CONTEXT.get(target_locale, "local cycling culture and routes")
     target_kw  = market.get("keyword", "")
     intent     = market.get("intent", "")
+
+    # Phase 1: per-market price rule. Maps target_locale short ("de", "nl", …)
+    # to the right entry in the commercial config and builds the rule string.
+    price_rule = ""
+    if commercial:
+        from commercial_config import for_locale_short as _cc_for_locale
+        mcfg = _cc_for_locale(target_locale)
+        if mcfg and mcfg.get("current_price"):
+            cur, price = mcfg["currency"], mcfg["current_price"]
+            price_token = (
+                f"{price} EUR" if cur == "EUR" else
+                f"${price}"   if cur == "USD" else
+                f"{price} {cur}"
+            )
+            offer_note = " (current test offer — frame as the current price, not as a permanent discount)" \
+                         if mcfg.get("offer_status") == "test" else ""
+            price_rule = (
+                f"8. Pricing for this market: when the article references a Velluto price, use exactly "
+                f"'{price_token}'{offer_note}. Replace any other currency or amount you see in the source HTML.\n"
+            )
 
     ADAPT_MODEL = "claude-haiku-4-5-20251001"
 
@@ -1667,7 +1739,8 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict) 
             "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
             "5. All URLs (href, src) stay unchanged.\n"
             f"6. Adapt local references to reflect: {cycling_ctx}.\n"
-            "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML."
+            "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
+            f"{price_rule}"
         ),
         messages=[{"role": "user", "content": de_post["body_html"]}]
     )
@@ -1707,9 +1780,21 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict) 
     }
 
 
-def publish_de_primary(kw: dict, products: list[dict]):
-    """Orchestrate: generate EN article → publish (EN primary) → register DE/NL/FR/… via T&A."""
+def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None = None,
+                       brief: dict | None = None):
+    """Orchestrate: generate EN article → publish (EN primary) → register DE/NL/FR/… via T&A.
+
+    commercial: optional commercial config (dict of per-market price/UVP/offer).
+                When None, a fresh one is loaded lazily — but the caller should
+                pass it in to avoid duplicate Shopify calls.
+    brief:      optional Phase 4 master brief. When provided:
+                  - generate_de_primary uses brief.must_answer_questions, claims_to_avoid
+                  - quality_gate runs after generation and HARD-BLOCKS publish if it fails
+                When None, falls back to legacy keyword-only flow.
+    """
     from en_keyword_queue import mark_en_keyword_used
+    if commercial is None:
+        commercial = load_commercial_config()
 
     keyword = kw["keyword"]
     print(f"\n── Primary Article (EN) ─────────────────────────────")
@@ -1756,7 +1841,7 @@ def publish_de_primary(kw: dict, products: list[dict]):
     cover_url = pick_image()
 
     # Generate EN article — up to 3 attempts on fact violations
-    post = generate_de_primary(kw_ctx, products, quality)
+    post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief)
     for attempt in range(3):
         issues      = [i for pat, msg in FORBIDDEN_CLAIMS
                        for i in ([f"[FACT] {msg}"] if re.search(pat, post.get("body_html",""), re.IGNORECASE) else [])]
@@ -1766,7 +1851,7 @@ def publish_de_primary(kw: dict, products: list[dict]):
         if fact_issues:
             if attempt < 2:
                 print(f"   ✗ Brand fact violation (attempt {attempt+1}/3) — regenerating: {fact_issues[0]}")
-                post = generate_de_primary(kw_ctx, products, quality)
+                post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief)
                 continue
             else:
                 raise RuntimeError(f"Brand fact violation after 3 attempts: {fact_issues}")
@@ -1789,6 +1874,23 @@ def publish_de_primary(kw: dict, products: list[dict]):
             print(f"   ⚠️  Article handle '{expected_slug}' already exists (ID:{existing_check[0]['id']}) — skipping publish")
             mark_en_keyword_used(keyword)
             return
+
+    # ── Phase 4: Quality Gate (runs AFTER generation, BEFORE publish) ─────
+    # Auto-fixes (silent): strip competitor outbound links, inject homepage link.
+    # Hard checks (block publish): keyword in title/H1, word_count, internal links,
+    # meta lengths, PAA coverage, commercial config price match.
+    # On hard-fail → log to output/quality_gate_failures.json, return without publishing.
+    from briefs.quality_gate import gate as _quality_gate
+    qa = _quality_gate(post, brief, market_code="US", commercial=commercial)
+    if qa["auto_fixes"]:
+        for af in qa["auto_fixes"]:
+            print(f"   🛠  QA auto-fix: {af}")
+    if not qa["passed"]:
+        print(f"   ❌ Quality gate FAILED — publish blocked.")
+        for issue in qa["hard_issues"]:
+            print(f"      {issue}")
+        print(f"   (logged to output/quality_gate_failures.json)")
+        return  # Hard-stop: no publish, no T&A registration
 
     body_html = build_body_html(post, cover_url)
     aid, handle = publish(
@@ -1815,7 +1917,7 @@ def publish_de_primary(kw: dict, products: list[dict]):
         market = mkt_kws.get(locale, {"keyword": keyword, "intent": ""})
         print(f"   Generating {locale.upper()} adaptation (kw: {market['keyword']})...")
         try:
-            adaptation = generate_market_adaptation(post, locale, market)
+            adaptation = generate_market_adaptation(post, locale, market, commercial=commercial)
             ok = register_shopify_translation(
                 aid, locale,
                 adaptation["title"],
@@ -1909,31 +2011,126 @@ def main():
 
     json.dump([], open(PUBLISHED_LOG, "w"))  # reset daily publish log
 
+    # Phase 1: load commercial config (price/UVP/offer per market) ONCE per run.
+    # Threaded into generate_de_primary + generate_market_adaptation so prices
+    # are never hard-coded. NL currently runs a 69 EUR test offer.
+    print("💶 Loading commercial config (per-market pricing)...")
+    commercial = load_commercial_config()
+    test_markets = [m for m, c in commercial.items() if c.get("offer_status") == "test"]
+    print(f"   {len(commercial)} markets loaded"
+          + (f" | test-offer markets: {', '.join(test_markets)}" if test_markets else ""))
+
+    # Phase 2: research bundle (competitor sitemaps + SERP + PAA + AIO + GSC).
+    # Best-effort — any failure here logs a warning but never blocks publishing.
+    # Outputs land in data/processed/*.json for Phase 3+ to consume.
+    research = {}
+    try:
+        print("🔬 Running research bundle (competitors + SERP + PAA + AIO + GSC)...")
+        from research.runner import run_research_bundle
+        research = run_research_bundle()
+        print(f"   {research.get('summary_line', '(no summary)')}")
+    except Exception as e:
+        print(f"   ⚠️  Research bundle failed: {e} — continuing without it")
+
     print("🛍️  Fetching active products...")
     products = get_products()
     print(f"   {len(products)} active products")
 
+    # Phase 3: strategic decision layer — pick ONE of 10 actions for today.
+    # Gates publishing on opportunity score. Falls back to EN keyword queue
+    # if decision layer fails OR returns an action not yet implemented.
+    decision = None
+    decision_keyword = None
+    try:
+        print("\n🧠 Building content inventory + scoring opportunities...")
+        from decision.content_inventory  import build as build_inventory
+        from decision.opportunity_scorer import score as score_opportunities
+        from decision.topic_selector     import choose as choose_topic
+        from decision.topic_selector     import write_daily_research_report
+
+        inventory = build_inventory()
+        scored    = score_opportunities(research, inventory)
+        decision  = choose_topic(scored, research, inventory)
+        write_daily_research_report(decision, scored, research)
+        print(f"   ✓ Decision: {decision['chosen_action']} "
+              f"(topic='{decision.get('chosen_topic')}', score={decision.get('opportunity_score')})")
+        if decision.get("why_this_topic"):
+            print(f"     Why: {decision['why_this_topic']}")
+    except Exception as e:
+        print(f"   ⚠️  Decision layer failed: {e} — falling back to EN keyword queue")
+        import traceback; traceback.print_exc()
+        decision = None
+
     published = 0
 
-    # ── Primary path: EN magazine article from EN keyword queue ─────────────
-    try:
-        from en_keyword_queue import get_next_en_keyword, get_en_queue_status
-        kw = get_next_en_keyword()
-        if kw:
-            status = get_en_queue_status()
-            by_p  = status.get("by_phase", {})
-            remaining = status["total"] - status["used"]
-            print(f"   Keyword queue: {remaining} remaining "
-                  f"(P1:{by_p.get('1',{}).get('total',0)-by_p.get('1',{}).get('done',0)} "
-                  f"P2:{by_p.get('2',{}).get('total',0)-by_p.get('2',{}).get('done',0)} "
-                  f"P3:{by_p.get('3',{}).get('total',0)-by_p.get('3',{}).get('done',0)})")
-            publish_de_primary(kw, products)
+    # ── Phase 3 action handlers ────────────────────────────────────────────
+    if decision and decision.get("chosen_action") == "monitor_only":
+        print("\n📊 Monitor-only day: no publish, no update. Strategic decision logged.")
+        # Skip publish; still let downstream optimizer scripts run via run.sh.
+
+    elif decision and decision.get("chosen_action") == "create_new_article":
+        kw_decision = {
+            "keyword":   decision["chosen_keyword"],
+            "keyword_en": decision["chosen_keyword"],
+            "phase":     "decision",
+            "angle":     decision.get("required_content_type", "buying_guide"),
+            "art_num":   None,  # generated inside publish_de_primary
+        }
+
+        # Phase 4: build US master brief + localization briefs
+        master_brief = None
+        try:
+            from briefs.us_master_brief    import build_brief
+            from briefs.localization_brief import build_all_localization_briefs
+            print(f"\n── Building US master brief + localization briefs ──")
+            master_brief = build_brief(decision, research, inventory)
+            build_all_localization_briefs(master_brief, research, commercial)
+        except Exception as e:
+            print(f"   ⚠️  Brief building failed: {e} — falling back to brief-less generation")
+            import traceback; traceback.print_exc()
+            master_brief = None  # Safe fallback: existing path
+
+        try:
+            print(f"\n── Publishing decision-driven article ──")
+            publish_de_primary(kw_decision, products, commercial=commercial, brief=master_brief)
             published += 1
-        else:
-            print("   ⚠️  EN keyword queue exhausted — falling back to multi-lang post")
-    except Exception as e:
-        print(f"   ❌ EN primary post failed: {e}")
-        import traceback; traceback.print_exc()
+        except Exception as e:
+            print(f"   ❌ Decision-driven publish failed: {e}")
+            import traceback; traceback.print_exc()
+
+    elif decision and decision.get("chosen_action") in (
+            "update_existing_article", "improve_paa_blocks", "improve_ai_overview_blocks",
+            "improve_product_page", "improve_collection_page", "add_internal_links",
+            "rewrite_metadata", "create_localization_briefs"):
+        print(f"\n⏸  Action '{decision['chosen_action']}' not yet implemented (Phase 4+). "
+              f"Logging decision, skipping publish today.")
+
+    # ── Fallback: EN keyword queue (used when decision layer failed/None) ──
+    if published == 0 and (decision is None
+                            or decision.get("chosen_action") not in (
+                                "monitor_only",
+                                "update_existing_article", "improve_paa_blocks",
+                                "improve_ai_overview_blocks", "improve_product_page",
+                                "improve_collection_page", "add_internal_links",
+                                "rewrite_metadata", "create_localization_briefs")):
+        try:
+            from en_keyword_queue import get_next_en_keyword, get_en_queue_status
+            kw = get_next_en_keyword()
+            if kw:
+                status = get_en_queue_status()
+                by_p  = status.get("by_phase", {})
+                remaining = status["total"] - status["used"]
+                print(f"\n── Fallback: EN keyword queue ({remaining} remaining "
+                      f"P1:{by_p.get('1',{}).get('total',0)-by_p.get('1',{}).get('done',0)} "
+                      f"P2:{by_p.get('2',{}).get('total',0)-by_p.get('2',{}).get('done',0)} "
+                      f"P3:{by_p.get('3',{}).get('total',0)-by_p.get('3',{}).get('done',0)})")
+                publish_de_primary(kw, products, commercial=commercial)
+                published += 1
+            else:
+                print("   ⚠️  EN keyword queue exhausted — falling back to multi-lang post")
+        except Exception as e:
+            print(f"   ❌ EN primary post failed: {e}")
+            import traceback; traceback.print_exc()
 
     # ── Fallback: classic multi-language post ────────────────────────────────
     if published == 0:

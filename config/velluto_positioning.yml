@@ -1,0 +1,109 @@
+# Velluto product-fit matrix.
+# Used by decision/opportunity_scorer.py to score product_fit 0-100 for every candidate keyword.
+# Brand: Velluto Strada Pro / premium road cycling glasses.
+# Slogan: Ride Fast. Live Slow.
+
+brand:
+  name: Velluto
+  slogan: Ride Fast. Live Slow.
+  core_idea: Where performance meets la dolce vita.
+  homepage: https://velluto-shop.com
+  primary_product: Velluto Strada Pro
+  primary_product_url: /products/strada-pro
+  primary_collection_url: /collections/cycling-sunglasses
+
+product_fit:
+  high_contrast:
+    priority: 10
+    keywords:
+      - contrast
+      - high contrast
+      - changing light
+      - shadows
+      - lens color
+      - visibility
+      - road surface
+      - gravel
+      - descent
+    velluto_angle: "High-contrast lens technology (VellutoVisione™) for clearer vision in changing light."
+
+  uv400:
+    priority: 10
+    keywords:
+      - UV400
+      - UV protection
+      - eye protection
+      - sun protection
+      - cycling sunglasses UV
+    velluto_angle: "UV400 protection for serious eye safety on long rides."
+
+  anti_fog:
+    priority: 9
+    keywords:
+      - fogging
+      - anti fog
+      - sweaty climbs
+      - rain
+      - ventilation
+    velluto_angle: "Anti-fog design and oleophobic lens coating."
+
+  wind_protection:
+    priority: 9
+    keywords:
+      - wind protection
+      - watery eyes
+      - bugs
+      - dust
+      - debris
+      - gravel
+    velluto_angle: "Protection from wind, insects, dust, and road debris."
+
+  helmet_fit:
+    priority: 8
+    keywords:
+      - helmet compatible
+      - fit under helmet
+      - nosepad
+      - pressure points
+      - comfort
+    velluto_angle: "Adjustable nosepad, lightweight frame, and long-ride comfort."
+
+  premium_value:
+    priority: 9
+    keywords:
+      - Oakley alternative
+      - expensive
+      - premium
+      - price
+      - value
+      - worth it
+    velluto_angle: "Premium features without the legacy-brand premium."
+
+  style:
+    priority: 7
+    keywords:
+      - stylish
+      - Italian
+      - cafe ride
+      - look good
+      - cycling lifestyle
+    velluto_angle: "Performance meets la dolce vita."
+
+# Primary buyer motives (used to enrich briefs).
+buyer_motives:
+  - Safety and eye protection
+  - Control and clear vision at speed
+  - Performance confidence
+  - Avoiding fogging, watery eyes, pressure points, and cheap glasses
+  - Looking stylish on and off the bike
+  - Premium quality without overpaying for legacy brands
+
+# Common customer objections (must-answer in briefs).
+buyer_objections:
+  - Why not just buy Oakley?
+  - Is Velluto worth the price as a newer brand?
+  - Do I really need high-contrast lenses?
+  - Will it fit under my helmet?
+  - Are interchangeable lenses annoying?
+  - Are photochromic lenses better?
+  - Is UV400 actually important?

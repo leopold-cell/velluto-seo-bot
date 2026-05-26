@@ -1,0 +1,125 @@
+# Velluto market configuration.
+# Single source of truth for all locale codes, Google domains, and DataForSEO location codes.
+# Replaces the duplicated LOCALE_GEO constant in keyword_research.py.
+
+markets:
+  US:
+    locale: en-US
+    locale_short: en
+    country: US
+    language: English
+    language_code: en
+    google_domain: google.com
+    dataforseo_location_code: 2840
+    priority: 10
+    serp_cadence: daily
+
+  DE:
+    locale: de-DE
+    locale_short: de
+    country: DE
+    language: German
+    language_code: de
+    google_domain: google.de
+    dataforseo_location_code: 2276
+    priority: 9
+    serp_cadence: daily
+
+  NL:
+    locale: nl-NL
+    locale_short: nl
+    country: NL
+    language: Dutch
+    language_code: nl
+    google_domain: google.nl
+    dataforseo_location_code: 2528
+    priority: 9
+    serp_cadence: daily
+
+  FR:
+    locale: fr-FR
+    locale_short: fr
+    country: FR
+    language: French
+    language_code: fr
+    google_domain: google.fr
+    dataforseo_location_code: 2250
+    priority: 7
+    serp_cadence: every_3_days
+
+  ES:
+    locale: es-ES
+    locale_short: es
+    country: ES
+    language: Spanish
+    language_code: es
+    google_domain: google.es
+    dataforseo_location_code: 2724
+    priority: 7
+    serp_cadence: every_3_days
+
+  IT:
+    locale: it-IT
+    locale_short: it
+    country: IT
+    language: Italian
+    language_code: it
+    google_domain: google.it
+    dataforseo_location_code: 2380
+    priority: 8
+    serp_cadence: every_3_days
+
+  DA:
+    locale: da-DK
+    locale_short: da
+    country: DK
+    language: Danish
+    language_code: da
+    google_domain: google.dk
+    dataforseo_location_code: 2208
+    priority: 5
+    serp_cadence: weekly
+
+  NB:
+    locale: nb-NO
+    locale_short: nb
+    country: NO
+    language: Norwegian Bokmal
+    language_code: "no"
+    google_domain: google.no
+    dataforseo_location_code: 2578
+    priority: 5
+    serp_cadence: weekly
+
+  PL:
+    locale: pl-PL
+    locale_short: pl
+    country: PL
+    language: Polish
+    language_code: pl
+    google_domain: google.pl
+    dataforseo_location_code: 2616
+    priority: 6
+    serp_cadence: weekly
+
+  PT:
+    locale: pt-PT
+    locale_short: pt-PT
+    country: PT
+    language: Portuguese
+    language_code: pt
+    google_domain: google.pt
+    dataforseo_location_code: 2620
+    priority: 5
+    serp_cadence: weekly
+
+  SV:
+    locale: sv-SE
+    locale_short: sv
+    country: SE
+    language: Swedish
+    language_code: sv
+    google_domain: google.se
+    dataforseo_location_code: 2752
+    priority: 5
+    serp_cadence: weekly
