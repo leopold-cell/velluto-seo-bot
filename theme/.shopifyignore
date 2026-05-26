@@ -1,0 +1,6 @@
+# Files in /theme/ that are dev-only — NEVER push these to the live Shopify theme.
+# This local theme/ directory is a PARTIAL backup of bot-relevant files only,
+# NOT a complete theme. ALWAYS push with `--nodelete` and `--only` flags.
+
+preview/*
+.DS_Store
