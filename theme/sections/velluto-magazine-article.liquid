@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-{%- assign article_category = article.tags | first | default: 'Velluto Magazin' -%}
+{%- assign article_category = article.tags | first | default: 'Velluto Magazine' -%}
 {%- assign reading_minutes = article.content | strip_html | split: ' ' | size | divided_by: 200 | at_least: 1 -%}
 {%- assign article_url = shop.url | append: article.url -%}
 
@@ -28,10 +28,10 @@
       {%- endif -%}
 
       <dl class="hero-meta-bottom">
-        <div><dt>Autor</dt><dd>{{ article.author }}</dd></div>
-        <div><dt>Kategorie</dt><dd>{{ article_category }}</dd></div>
-        <div><dt>Lesezeit</dt><dd>{{ reading_minutes }} Minuten</dd></div>
-        <div><dt>Datum</dt><dd>{{ article.published_at | date: "%B %Y" }}</dd></div>
+        <div><dt>Author</dt><dd>{{ article.author }}</dd></div>
+        <div><dt>Category</dt><dd>{{ article_category }}</dd></div>
+        <div><dt>Reading time</dt><dd>{{ reading_minutes }} min</dd></div>
+        <div><dt>Date</dt><dd>{{ article.published_at | date: "%B %Y" }}</dd></div>
       </dl>
 
       {%- if article.image -%}
@@ -55,7 +55,7 @@
         <summary>
           <span class="toc-label">
             <span class="ic" aria-hidden="true"></span>
-            <span class="txt">Inhalt<small id="vmagTocMeta">{{ reading_minutes }} Min Lesezeit</small></span>
+            <span class="txt">Contents<small id="vmagTocMeta">{{ reading_minutes }} min read</small></span>
           </span>
           <span class="chev" aria-hidden="true">
             <svg viewBox="0 0 14 14"><path d="m3.5 5 3.5 4 3.5-4"/></svg>
@@ -77,7 +77,7 @@
         <div class="avatar avatar--initials" role="img" aria-label="{{ article.author }}">VR</div>
       {%- endif -%}
       <div>
-        <div class="role">Autor</div>
+        <div class="role">Author</div>
         <div class="name">{{ article.author }}</div>
         {%- if section.settings.author_bio != blank -%}
           <div class="bio">{{ section.settings.author_bio }}</div>
@@ -86,11 +86,11 @@
     </div>
 
     <div class="share-row">
-      <span class="label">Artikel teilen</span>
+      <span class="label">Share article</span>
       <div class="links">
-        <a href="#" class="vmag-copy-link">Link kopieren <span>↗</span></a>
+        <a href="#" class="vmag-copy-link">Copy link <span>↗</span></a>
         <a href="https://wa.me/?text={{ article.title | url_encode }}%20{{ article_url | url_encode }}" target="_blank" rel="noopener">WhatsApp <span>↗</span></a>
-        <a href="mailto:?subject={{ article.title | url_encode }}&body={{ article_url | url_encode }}">E-Mail <span>↗</span></a>
+        <a href="mailto:?subject={{ article.title | url_encode }}&body={{ article_url | url_encode }}">Email <span>↗</span></a>
       </div>
     </div>
 
@@ -102,9 +102,9 @@
         <h2>Ride Fast.<br><em>Live Slow.</em></h2>
       </div>
       <div>
-        <p>{{ section.settings.ride_text | default: 'Die Velluto StradaPro wiegt 25 Gramm, passt über die meisten Gestelle und hat verstellbare Nasenpads für druckfreien Sitz. Mit der 30-tägigen risikofreien Testphase hast du nichts zu verlieren — außer den Druckpunkten hinter den Ohren.' }}</p>
+        <p>{{ section.settings.ride_text | default: 'The Velluto Strada Pro weighs 25 grams, fits over most frames, with adjustable nose pads for pressure-free comfort. With our 30-day risk-free trial, you have nothing to lose — except the pressure points behind your ears.' }}</p>
         <a class="ride-cta" href="{{ section.settings.ride_cta_url | default: shop.url }}">
-          {{ section.settings.ride_cta_label | default: 'Zur Kollektion' }}
+          {{ section.settings.ride_cta_label | default: 'Explore the collection' }}
           <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
         </a>
       </div>
@@ -114,8 +114,8 @@
   {%- if blog.articles_count > 1 -%}
     <section class="vmag-wrap related">
       <div class="related-head">
-        <h3>Weiterlesen · Velluto Magazin</h3>
-        <a href="{{ blog.url }}">Alle Artikel →</a>
+        <h3>Keep reading · Velluto Magazine</h3>
+        <a href="{{ blog.url }}">All articles →</a>
       </div>
       <div class="related-grid">
         {%- assign related_count = 0 -%}
@@ -136,7 +136,7 @@
                 {%- endif -%}
               </div>
               <div class="rel-meta">
-                <span>{{ related.tags | first | default: 'Magazin' }}</span>
+                <span>{{ related.tags | first | default: 'Magazine' }}</span>
                 <span class="dot">·</span>
                 <span>{{ rel_minutes }} Min</span>
               </div>
@@ -167,7 +167,7 @@
 {%- else -%}
   <a class="vmag-mobile-cta" id="vmagMobileCta" href="{{ shop.url }}/collections/all">
     <div class="mc-text">
-      <div class="mc-name">Velluto Kollektion</div>
+      <div class="mc-name">Velluto Collection</div>
       <div class="mc-meta">Jetzt entdecken</div>
     </div>
     <span class="mc-btn">Shop →</span>
@@ -285,7 +285,7 @@
         copyLink.querySelector('span:first-child') && (copyLink.textContent = 'Kopiert! ');
         copyLink.appendChild(Object.assign(document.createElement('span'), {textContent: '✓'}));
         setTimeout(function(){
-          copyLink.innerHTML = 'Link kopieren <span>↗</span>';
+          copyLink.innerHTML = 'Copy link <span>↗</span>';
         }, 2000);
       });
     });
@@ -295,7 +295,7 @@
 
 {% schema %}
 {
-  "name": "Velluto Magazin Artikel",
+  "name": "Velluto Magazine Article",
   "settings": [
     {
       "type": "text",
@@ -312,12 +312,12 @@
     {
       "type": "image_picker",
       "id": "author_image",
-      "label": "Autor Profilfoto"
+      "label": "Author profile photo"
     },
     {
       "type": "text",
       "id": "author_bio",
-      "label": "Autor Bio",
+      "label": "Author bio",
       "placeholder": "Gear-Editor bei Velluto."
     },
     {
@@ -334,7 +334,7 @@
       "type": "text",
       "id": "ride_cta_label",
       "label": "Ride CTA Button-Text",
-      "default": "Zur Kollektion"
+      "default": "Explore the collection"
     },
     {
       "type": "product",
@@ -344,7 +344,7 @@
   ],
   "presets": [
     {
-      "name": "Velluto Magazin Artikel"
+      "name": "Velluto Magazine Article"
     }
   ]
 }
