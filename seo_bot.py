@@ -338,6 +338,17 @@ WHITELIST = {
     "LifestyleSection_Transparent": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Transparent.webp?v=1774975640",
     "LifestyleSection_Orange":   "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Orange.webp?v=1774975205",
     "Velluto_BuilttoPerform_Violet": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Velluto_BuilttoPerform_Mobile_Violet.webp?v=1774970814",
+    # Phase 4.6 — May 2026 outdoor shoot (10 lifestyle photos, _5 intentionally omitted)
+    "Shooting_Outdoors_May_2026_1":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_1.png?v=1779885436",
+    "Shooting_Outdoors_May_2026_2":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_2.png?v=1779885435",
+    "Shooting_Outdoors_May_2026_3":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_3.png?v=1779885435",
+    "Shooting_Outdoors_May_2026_4":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_4.png?v=1779885436",
+    "Shooting_Outdoors_May_2026_6":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_6.png?v=1779885435",
+    "Shooting_Outdoors_May_2026_7":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_7.png?v=1779885435",
+    "Shooting_Outdoors_May_2026_8":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_8.png?v=1779885435",
+    "Shooting_Outdoors_May_2026_9":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_9.png?v=1779885436",
+    "Shooting_Outdoors_May_2026_10": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_10.png?v=1779885436",
+    "Shooting_Outdoors_May_2026_11": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_11.png?v=1779885436",
 }
 
 # Images that should NOT be used as blog hero (stats, offers, UI graphics)
@@ -358,7 +369,13 @@ IMAGE_CATEGORIES = {
     "lifestyle": ["TransparentMale","VellutoModelMale002","FooterExportsPeople",
                   "FooterExports_Female","Lifestylestudiomobile","Lifestyle_mobileUGC",
                   "Lifestyle_1x1","LifestyleSection_Transparent","LifestyleSection_Orange",
-                  "Velluto_BuilttoPerform_Violet","Hero-mobile-v2","Hero-mobile","brown1"],
+                  "Velluto_BuilttoPerform_Violet","Hero-mobile-v2","Hero-mobile","brown1",
+                  # Phase 4.6 — May 2026 outdoor shoot
+                  "Shooting_Outdoors_May_2026_1","Shooting_Outdoors_May_2026_2",
+                  "Shooting_Outdoors_May_2026_3","Shooting_Outdoors_May_2026_4",
+                  "Shooting_Outdoors_May_2026_6","Shooting_Outdoors_May_2026_7",
+                  "Shooting_Outdoors_May_2026_8","Shooting_Outdoors_May_2026_9",
+                  "Shooting_Outdoors_May_2026_10","Shooting_Outdoors_May_2026_11"],
     "product":   ["productblack","productblackmale","productorange","productorangemale",
                   "productbrown","productbrownfemale","AllGlasses","BuildtoPerform",
                   "VellutoAboutUs","002","003","004"],
