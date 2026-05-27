@@ -388,7 +388,7 @@
 .vmag .ride-cta svg{width:14px;height:14px}
 
 /* related */
-.vmag .related{padding:48px 0}
+.vmag .related{padding-top:48px;padding-bottom:48px}
 .vmag .related-head{
   display:flex;flex-direction:column;align-items:flex-start;
   gap:6px;padding-bottom:16px;margin-bottom:24px;
@@ -467,7 +467,7 @@ body.vmag-cta-active{padding-bottom:80px}
   .vmag .ride h2{font-size:clamp(56px,9vw,88px)}
   .vmag .ride-inner{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:end}
   .vmag .ride-cta{width:auto}
-  .vmag .related{padding:64px 0}
+  .vmag .related{padding-top:64px;padding-bottom:64px}
   .vmag .related-head{flex-direction:row;justify-content:space-between;align-items:baseline}
   .vmag .related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 }
