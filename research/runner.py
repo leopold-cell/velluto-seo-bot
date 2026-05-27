@@ -20,6 +20,7 @@ def run_research_bundle() -> dict:
         paa_extractor,
         ai_overview_monitor,
         gsc_fetcher,
+        meta_ads_fetcher,  # Phase 4.5
     )
 
     # Order matters: SERP first → PAA and AIO parse its output.
@@ -29,6 +30,7 @@ def run_research_bundle() -> dict:
         ("ai_overviews", ai_overview_monitor),
         ("competitors",  competitor_monitor),
         ("gsc",          gsc_fetcher),
+        ("meta_ads",     meta_ads_fetcher),  # Phase 4.5 — READ-ONLY Meta Ads inspiration
     ]:
         try:
             out[name] = mod.run()
@@ -44,10 +46,12 @@ def run_research_bundle() -> dict:
     aio_n       =     (out.get("ai_overviews") or {}).get("total_with_aio", 0)
     comp_new    =     (out.get("competitors")  or {}).get("total_new_urls", 0)
     gsc_strike  = len((out.get("gsc")          or {}).get("striking_distance_queries", []))
+    meta_ads_n  =     (out.get("meta_ads")     or {}).get("active_ads_count", 0)
 
     out["summary_line"] = (
         f"{serps_n} SERPs | {paa_total} PAA ({paa_high} high) | "
-        f"{aio_n} AIO | {comp_new} new comp URLs | {gsc_strike} striking-distance"
+        f"{aio_n} AIO | {comp_new} new comp URLs | {gsc_strike} striking-distance | "
+        f"{meta_ads_n} active Meta ads"
     )
     return out
 

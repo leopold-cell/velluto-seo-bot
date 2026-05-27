@@ -84,6 +84,22 @@ def _gather_competitor_context(competitors_bundle: dict, keyword: str, top_n: in
     return hits
 
 
+def _match_problem_solution(keyword: str) -> dict | None:
+    """
+    Phase 4.5: if the keyword matches one of the problem→solution patterns in
+    config/problem_solution_map.yml, return the matching entry (with USP +
+    guarantee). Used by build_brief() to auto-inject the right value prop.
+    """
+    cfg = config_loader.get("problem_solution_map") or {}
+    entries = cfg.get("problem_solution_map", []) or []
+    kw = keyword.lower()
+    for entry in entries:
+        for pattern in entry.get("patterns", []):
+            if pattern.lower() in kw:
+                return entry
+    return None
+
+
 def _product_fit_angle(keyword: str) -> tuple[str, list[str]]:
     """Pick the strongest product_fit angle + supporting angles for this keyword."""
     pf = config_loader.velluto_positioning().get("product_fit", {})
@@ -135,19 +151,46 @@ def _content_type_for(keyword: str) -> str:
 
 # ── Haiku enrichment ──────────────────────────────────────────────────────
 
-def _haiku_enrich(keyword: str, mechanical_brief: dict) -> dict:
-    """ONE Haiku call to enrich with Velluto angle + claims-to-avoid + tone."""
+def _haiku_enrich(keyword: str, mechanical_brief: dict,
+                  meta_ads_themes: str = "") -> dict:
+    """ONE Haiku call to enrich with Velluto angle + claims-to-avoid + tone.
+
+    Phase 4.5: extra context — if the topic matches a problem framing, we
+    surface the guarantee. Optional meta_ads_themes line carries current
+    paid-messaging vocabulary into the brief.
+    """
     system = (
         "You are a brand strategist for Velluto (premium D2C road cycling eyewear).\n"
         "Brand voice: confident, performance-focused, Italian premium without overbranding.\n"
         "Slogan: 'Ride Fast. Live Slow.' Where performance meets la dolce vita.\n\n"
         "Return ONLY valid JSON, no markdown, no prose."
     )
+
+    # Phase 4.5: problem-solution context block (when matched)
+    problem_block = ""
+    ps = mechanical_brief.get("problem_solution")
+    if ps:
+        problem_block = (
+            f"\nProblem framing: this topic addresses a real cyclist pain point.\n"
+            f"  Matched USP: {ps['matched_usp']}\n"
+            f"  Guarantee:   {ps['guarantee_name']} — {ps['guarantee_text']}\n"
+            f"  → Your CTA + tone must center the guarantee as the risk-reversal.\n"
+        )
+
+    # Phase 4.5: Meta Ads inspiration (when available)
+    ads_block = ""
+    if meta_ads_themes:
+        ads_block = (
+            f"\nCurrent paid-ad themes (alignment for organic tone):\n"
+            f"  {meta_ads_themes}\n"
+        )
+
     user = (
         f"Topic: {keyword}\n"
         f"Article type: {mechanical_brief['article_type']}\n"
         f"Existing product fit angle: {mechanical_brief['velluto_position']['main_angle']}\n"
-        f"Competitor pages observed: {len(mechanical_brief['competitor_context'])}\n\n"
+        f"Competitor pages observed: {len(mechanical_brief['competitor_context'])}\n"
+        f"{problem_block}{ads_block}\n"
         "Return JSON with these keys:\n"
         '{"target_reader": "<1 sentence describing the reader for this exact topic>", '
         '"reader_problem": "<1 sentence on the problem they face>", '
@@ -157,7 +200,7 @@ def _haiku_enrich(keyword: str, mechanical_brief: dict) -> dict:
         '"claims_to_avoid": ["<3-5 specific claims this article must NOT make, '
         'e.g. \'no photochromic claims\', \'no fake test data\', \'no \\"best for X\\" without criteria\'>"], '
         '"tone_notes": "<1 sentence — specific tone guidance>", '
-        '"cta_text": "<5-10 word CTA line>"}'
+        '"cta_text": "<5-10 word CTA line — if a guarantee was mentioned, weave it in>"}'
     )
     try:
         r = _client_lazy().messages.create(
@@ -209,6 +252,19 @@ def build_brief(decision: dict, research: dict, inventory: dict) -> dict:
     internal_links = _build_internal_links(inventory, keyword)
     art_type = _content_type_for(keyword)
 
+    # Phase 4.5: if the keyword is a problem framing, inject the matched USP + guarantee
+    problem_match = _match_problem_solution(keyword)
+    problem_solution_block = None
+    if problem_match:
+        # Promote the matched USP as the FIRST supporting angle
+        supporting_angles = [problem_match["usp"]] + supporting_angles
+        problem_solution_block = {
+            "problem_id":     problem_match["id"],
+            "matched_usp":    problem_match["usp"],
+            "guarantee_name": problem_match["guarantee_name"],
+            "guarantee_text": problem_match["guarantee_text"],
+        }
+
     # Mechanical skeleton
     mechanical = {
         "brief_type":      "us_master_article",
@@ -238,10 +294,14 @@ def build_brief(decision: dict, research: dict, inventory: dict) -> dict:
         "commercial_config_required": True,
         "competitor_outbound_links_allowed": False,
         "target_market": "US",
+        # Phase 4.5: present when keyword maps to a problem framing
+        "problem_solution": problem_solution_block,
     }
 
-    # Haiku enrichment — adds the Velluto-specific creative judgement
-    enrich = _haiku_enrich(keyword, mechanical)
+    # Haiku enrichment — adds the Velluto-specific creative judgement.
+    # Phase 4.5: surface current Meta-ad themes so organic tone aligns with paid messaging.
+    meta_ads_themes = ((research.get("meta_ads") or {}).get("themes_summary") or "")
+    enrich = _haiku_enrich(keyword, mechanical, meta_ads_themes=meta_ads_themes)
     mechanical.update({
         "target_reader":   enrich.get("target_reader"),
         "reader_problem": enrich.get("reader_problem"),

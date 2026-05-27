@@ -19,3 +19,34 @@ phase2_seed_keywords:
   - UV400 cycling sunglasses
   - cycling glasses with interchangeable lenses
   - are expensive cycling sunglasses worth it
+
+# Phase 4.5: PROBLEM-framed BOFU keywords.
+# Hypothesis (from beahater.de pattern + user research): ~10× more people search
+# for the underlying problem than for the solution. Get in front of demand earlier
+# in the funnel, then bridge to product via on-page USPs + 30-day guarantees.
+#
+# These get the SAME treatment as solution keywords (SERP fetched, PAA extracted,
+# scored, picked by topic_selector). DataForSEO + the scorer are the filter —
+# low-volume / hyper-competitive problem keywords naturally fall off the candidate
+# list. No special handling required; the existing pipeline does the work.
+#
+# Pattern matching against briefs/us_master_brief.py:_match_problem_solution()
+# auto-injects the matched USP + 30-day guarantee into the brief.
+
+phase4_5_problem_keywords:
+  # Visibility / comfort problems (high BOFU intent — they're already feeling the pain)
+  - burning eyes when cycling
+  - wind in eyes while cycling
+  - cycling glasses keep fogging up
+  - vision distorted on road bike
+  - blurry vision at high speed cycling
+  # Fit / helmet problems (huge — every cyclist hits these)
+  - cycling glasses don't fit with helmet
+  - cycling glasses press into helmet
+  - sunglasses uncomfortable under helmet
+  # Protection problems
+  - uv protection while cycling
+  - cycling sunglasses for bugs and insects
+  - wind protection cycling glasses
+  # Value / decision-friction problems
+  - are cheap sport sunglasses good

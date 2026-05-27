@@ -63,8 +63,20 @@ def markets_due_today() -> list[str]:
 
 
 def _seed_keywords() -> list[str]:
+    """
+    Merged keyword pool: solution-framed (Phase 2) + problem-framed (Phase 4.5).
+    DataForSEO + the opportunity scorer filter for what's worth pursuing.
+    """
     cfg = config_loader.get("seed_keywords")
-    return cfg.get("phase2_seed_keywords", [])
+    solution = cfg.get("phase2_seed_keywords", []) or []
+    problem  = cfg.get("phase4_5_problem_keywords", []) or []
+    # Dedupe preserving order — solution keywords first (existing priority)
+    seen, merged = set(), []
+    for kw in solution + problem:
+        if kw and kw.lower() not in seen:
+            seen.add(kw.lower())
+            merged.append(kw)
+    return merged
 
 
 def fetch_one(keyword: str, market_code: str) -> dict | None:

@@ -1,0 +1,90 @@
+# Phase 4.5: Problem → Solution mapping.
+# Used by briefs/us_master_brief.py:_match_problem_solution(keyword)
+# When a chosen topic matches one of these problem patterns, the brief
+# auto-injects the matched USP + 30-day guarantee.
+#
+# Pattern matching is substring-based (case-insensitive) — each problem
+# pattern list is OR'd. First map entry that matches wins.
+
+problem_solution_map:
+
+  - id: helmet_fit
+    patterns:
+      - fit helmet
+      - "fit with helmet"
+      - press helmet
+      - "press into helmet"
+      - uncomfortable helmet
+      - uncomfortable under helmet
+      - drückt helm
+      - "drückt im fahrradhelm"
+      - "passt nicht zu helm"
+    usp: "Adjustable nosepad + 25g lightweight frame — designed for under-helmet fit"
+    guarantee_name: "30-day Testride Guarantee"
+    guarantee_text: "Try the Strada Pro with YOUR helmet. If they don't fit perfectly, full refund within 30 days."
+
+  - id: wind_eyes
+    patterns:
+      - burning eyes
+      - wind in eyes
+      - watery eyes
+      - tears cycling
+      - tränende augen
+      - brennende augen
+    usp: "Wraparound coverage + ventilated frame redirects airflow away from your eyes"
+    guarantee_name: "30-day risk-free trial"
+    guarantee_text: "Ride a full month. If your eyes still water, we refund you."
+
+  - id: fogging
+    patterns:
+      - fog
+      - fogging
+      - beschlägt
+      - beslaat
+      - condens
+    usp: "Anti-fog ventilation channels + oleophobic lens coating keep vision clear on climbs"
+    guarantee_name: "30-day risk-free trial"
+    guarantee_text: "30 days to test in real conditions. Refund if they fog."
+
+  - id: vision_distorted
+    patterns:
+      - vision distorted
+      - blurry
+      - blurry vision
+      - sicht verzerrt
+      - "sicht schlecht"
+      - bad vision speed
+    usp: "VellutoVisione™ high-contrast lens technology — true-to-life optics, no edge distortion"
+    guarantee_name: "30-day Vision Guarantee"
+    guarantee_text: "See the difference or money back. 30 days, no questions asked."
+
+  - id: uv_protection
+    patterns:
+      - uv protection
+      - sun protection
+      - uv sonnenschutz
+      - sonnenschutz fahrrad
+    usp: "UV400 protection across all interchangeable Puro and Visione lenses"
+    guarantee_name: "30-day risk-free trial"
+    guarantee_text: "Wear them for a month. Refund if you're not protected."
+
+  - id: insects_bugs
+    patterns:
+      - bugs
+      - insects
+      - insekten
+      - fliegen
+      - debris cycling
+    usp: "Wraparound coverage blocks insects, dust and road debris from reaching your eyes"
+    guarantee_name: "30-day risk-free trial"
+    guarantee_text: "30 days to confirm zero bugs in your eyes. Refund if not."
+
+  - id: cheap_alternative
+    patterns:
+      - cheap sport sunglasses
+      - billige sportbrille
+      - cheap cycling glasses worth
+      - are cheap cycling glasses
+    usp: "Premium-tier lens optics + Italian design at $149 — the value sweet spot between Decathlon and Oakley"
+    guarantee_name: "30-day risk-free trial"
+    guarantee_text: "Compare to your last cheap pair. 30 days to feel the difference."
