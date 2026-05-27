@@ -253,6 +253,40 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
     return list(dict.fromkeys(issues))  # dedupe preserving order
 
 
+# Phase 4.4: Velluto doesn't offer photochromic, polarized, or prescription lenses.
+# Articles may discuss these features in competitor or informational context, but
+# must NEVER attribute them to Velluto products. Sentence-based attribution
+# (reusing _is_velluto_price_context) distinguishes the two cases.
+FORBIDDEN_FEATURE_TOKENS = [
+    ("photochrom", "claims photochromic lenses — Velluto doesn't offer these"),
+    ("polari",     "claims polarized lenses — Velluto doesn't offer these"),
+    # 'polari' prefix matches both 'polarized' (US) and 'polarised' (UK)
+]
+
+
+def check_brand_facts(post: dict) -> list[str]:
+    """
+    Flag VELLUTO-attributed claims about features Velluto doesn't offer.
+    Competitor-attributed and market-context mentions are NOT flagged.
+
+    Examples:
+      "Velluto's polarized lenses..."                          → FLAGGED
+      "Oakley uses polarized lenses; Velluto chose UV400"      → NOT flagged
+      "Photochromic vs interchangeable: which for cycling?"    → NOT flagged
+      "Velluto doesn't offer polarized; Oakley does."          → NOT flagged
+         (sentence has both brands → competitor wins per the helper logic)
+    """
+    body = (post.get("body_html") or "").lower()
+    issues: list[str] = []
+    for token, msg in FORBIDDEN_FEATURE_TOKENS:
+        # one flag per token type is enough — break after first hit
+        for m in re.finditer(token, body):
+            if _is_velluto_price_context(body, m.start(), m.end()):
+                issues.append(f"[FACT] {msg}")
+                break
+    return issues
+
+
 def check_paa_coverage(post: dict, brief: dict | None) -> list[str]:
     """If brief has must_answer_questions, ensure at least 50% appear as H2s in the body."""
     if not brief or not brief.get("must_answer_questions"):
@@ -329,6 +363,7 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     hard += check_meta_lengths(post)
     hard += check_paa_coverage(post, brief)
     hard += check_commercial_config(post, market_code, commercial)
+    hard += check_brand_facts(post)  # Phase 4.4 sentence-aware FACT check
 
     passed = not hard
 

@@ -1044,8 +1044,12 @@ WRITING RULES:
 3. Only link to products using the EXACT URLs provided — never invent URLs.
 4. Use ONLY the image URLs provided — never invent image URLs.
 5. Before writing a single claim about Velluto products, verify it against BRAND_FACTS above.
-6. If a topic implies a feature Velluto doesn't have (e.g. photochromic, polarized), \
-   reframe honestly: explain the category, then show how Velluto's actual lenses (Puro/Visione) solve the need."""
+6. Velluto does NOT offer photochromic, polarized, or prescription lenses.
+   You MAY discuss these features when comparing to competitors OR in informational/FAQ sections.
+   You MUST NOT attribute them to Velluto products.
+   ✓ "Oakley's Prizm lenses are polarized; Velluto's interchangeable system gives you control without lock-in to one tint."
+   ✗ "The Velluto StradaPro's polarized lenses cut glare..."
+7. If a topic implies a feature Velluto doesn't have, reframe honestly: explain the category, then show how Velluto's actual lenses (Puro/Visione) solve the need."""
 
     user = f"""Date: {datetime.date.today().strftime('%d %B %Y')} | {get_cycling_context()}
 Topic: {topic}
@@ -1135,8 +1139,10 @@ def _parse_response(raw: str) -> dict:
 # ── Quality validation ───────────────────────────────────────────────────────
 
 FORBIDDEN_CLAIMS = [
-    (r'photochrom', "claims photochromic lenses — Velluto doesn't offer these"),
-    (r'polari[sz]', "claims polarized lenses — Velluto doesn't offer these"),
+    # Phase 4.4: photochrom + polari[sz] moved to briefs.quality_gate.check_brand_facts
+    # for sentence-aware attribution (only flag VELLUTO-attributed claims, not
+    # competitor mentions or informational FAQ content).
+    #
     # Only block when prescription is directly linked to Velluto/StradaPro or claimed as a product feature
     (r'(velluto|stradapro).{0,60}prescription'
      r'|prescription.{0,30}(lens|lenses|version|option|frame|insert)',
@@ -1421,7 +1427,11 @@ WRITING RULES:
 2. No <img> tags in flowing text — the cover image is set separately. \
    Product images ONLY in .product-media divs using the APPROVED CDN URLs.
 3. Use ONLY the provided product URLs — do not invent URLs.
-4. Check every Velluto claim against BRAND_FACTS — no photochromic, polarized, or prescription claims.
+4. Velluto does NOT offer photochromic, polarized, or prescription lenses.
+   You MAY discuss these features when comparing to competitors OR in informational/FAQ sections.
+   You MUST NOT attribute them to Velluto products.
+   ✓ "Oakley's Prizm lenses are polarized; Velluto's interchangeable system gives you the same control without the lock-in to one tint."
+   ✗ "The Velluto Strada Pro's polarized lenses cut glare..."
 5. The result should feel like advice from a faster, more experienced cycling friend — not a sales pitch.
 6. Use the exact CSS class names from the template (hero, article, .toc, .faq, etc.).
 {publish_rules}"""
