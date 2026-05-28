@@ -264,6 +264,14 @@ FORBIDDEN_FEATURE_TOKENS = [
 ]
 
 
+def check_no_markdown_fence(post: dict) -> list[str]:
+    """Phase 4.7: catch a leaked ```html / ``` markdown fence in the body."""
+    body = post.get("body_html", "")
+    if re.search(r'```', body):
+        return ["[FENCE] body contains a markdown code fence (```), strip before publish"]
+    return []
+
+
 def check_brand_facts(post: dict) -> list[str]:
     """
     Flag VELLUTO-attributed claims about features Velluto doesn't offer.
@@ -363,7 +371,8 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     hard += check_meta_lengths(post)
     hard += check_paa_coverage(post, brief)
     hard += check_commercial_config(post, market_code, commercial)
-    hard += check_brand_facts(post)  # Phase 4.4 sentence-aware FACT check
+    hard += check_brand_facts(post)        # Phase 4.4 sentence-aware FACT check
+    hard += check_no_markdown_fence(post)  # Phase 4.7 leaked ```html fence
 
     passed = not hard
 

@@ -1598,6 +1598,18 @@ QUALITY STANDARD: {word_count} words, {faq_count} FAQ questions, at least 2 inte
     return _parse_primary_response(raw, kw)
 
 
+def _strip_md_fence(html: str) -> str:
+    """
+    Remove a leading ```html / ``` and trailing ``` markdown fence that Sonnet
+    sometimes wraps the ===BODY=== output in. Leaving it in publishes the literal
+    text '```html' at the top of the article (and propagates into T&A translations).
+    """
+    s = (html or "").strip()
+    s = re.sub(r'^```[a-zA-Z0-9]*\s*\n?', '', s)   # leading fence (optional lang tag)
+    s = re.sub(r'\n?```\s*$', '', s)               # trailing fence
+    return s.strip()
+
+
 def _parse_primary_response(raw: str, kw: dict) -> dict:
     """Parse primary (EN) article response with delimiters ===META===, ===FAQ_JSON===, ===BODY===, ===END===."""
     def extract(tag_start, tag_end):
@@ -1606,7 +1618,7 @@ def _parse_primary_response(raw: str, kw: dict) -> dict:
 
     meta_block = extract("===META===",     "===FAQ_JSON===")
     faq_raw    = extract("===FAQ_JSON===", "===BODY===")
-    body_html  = extract("===BODY===",     "===END===")
+    body_html  = _strip_md_fence(extract("===BODY===", "===END==="))
 
     post: dict = {"keyword": kw.get("keyword", ""), "body_html": body_html}
 
@@ -1807,7 +1819,7 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     )
     cost = log_usage(body_r.usage.input_tokens, body_r.usage.output_tokens, model=ADAPT_MODEL)
     print(f"   [{target_locale}] Adaptation tokens in:{body_r.usage.input_tokens} out:{body_r.usage.output_tokens} | ${cost:.4f}")
-    adapted_body = body_r.content[0].text.strip()
+    adapted_body = _strip_md_fence(body_r.content[0].text)
 
     # Title + meta in a single Haiku call to save one round-trip
     meta_r = client.messages.create(

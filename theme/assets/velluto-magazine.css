@@ -140,6 +140,26 @@
 .vmag article{margin-top:36px}
 .vmag article > * + *{margin-top:16px}
 .vmag .vmag-content > * + *{margin-top:16px}
+
+/* tables (comparison / spec) — Phase 4.7 */
+.vmag .vmag-content table{
+  width:100%;border-collapse:collapse;font-size:14px;margin:8px 0;
+}
+.vmag .vmag-content th,
+.vmag .vmag-content td{
+  padding:10px 12px;text-align:left;vertical-align:top;
+  border-bottom:1px solid var(--hair-strong);
+}
+.vmag .vmag-content th{font-weight:700}
+@media (max-width:640px){
+  /* scroll the whole table sideways instead of cramming columns to 1 char wide */
+  .vmag .vmag-content table{
+    display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;font-size:13px;
+  }
+  .vmag .vmag-content th,
+  .vmag .vmag-content td{min-width:110px}
+}
+
 .vmag article p{font-size:16.5px;line-height:1.65;color:var(--ink-2);font-weight:400;text-wrap:pretty}
 .vmag article p.lede{
   font-size:19px;line-height:1.45;color:var(--ink);
