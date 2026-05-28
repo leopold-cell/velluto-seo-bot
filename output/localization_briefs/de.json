@@ -1,18 +1,12 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-05-28",
+  "date": "2026-05-27",
   "locale": "de-DE",
   "locale_short": "de",
   "market_code": "DE",
-  "master_topic": "anti fog cycling sunglasses",
-  "local_primary_keyword": "anti fog cycling sunglasses",
-  "local_secondary_keywords": [
-    "What are the best Oakley sunglasses for road cycling?",
-    "What are the best sunglasses for cycling?",
-    "Are photochromic glasses good for cycling?",
-    "What are the disadvantages of photochromic glasses?",
-    "Do photochromic lenses help with migraines?"
-  ],
+  "master_topic": "best cycling sunglasses",
+  "local_primary_keyword": "best cycling sunglasses",
+  "local_secondary_keywords": [],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
   "local_adaptation_notes": [
@@ -23,16 +17,8 @@
   ],
   "cta_url": "https://velluto-shop.com/de/products/strada-pro",
   "commercial": {
-    "market": "DE",
-    "currency": "EUR",
     "current_price": 149,
-    "uvp": 149,
-    "offer_status": "standard",
-    "free_shipping_threshold": null,
-    "guarantee": null,
-    "delivery_claim": null,
-    "last_updated": "2026-05-28",
-    "in_stock": true,
-    "product_handle": "strada-pro"
+    "currency": "EUR",
+    "offer_status": "standard"
   }
 }
