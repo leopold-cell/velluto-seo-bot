@@ -1,11 +1,11 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-05-27",
+  "date": "2026-05-29",
   "locale": "es-ES",
   "locale_short": "es",
   "market_code": "ES",
-  "master_topic": "best cycling sunglasses",
-  "local_primary_keyword": "best cycling sunglasses",
+  "master_topic": "are expensive cycling sunglasses worth it",
+  "local_primary_keyword": "are expensive cycling sunglasses worth it",
   "local_secondary_keywords": [],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -13,8 +13,20 @@
     "Cycling culture context: ciclismo de carretera en España — Pirineos, Sierra Nevada, rutas costeras",
     "Use local cycling terminology naturally (e.g. Rennrad, fietsbril, vélo, ciclismo)",
     "Avoid literal translations of brand-y phrases like 'cycling sunglasses' — use what locals search for",
-    "Pricing: use current commercial config (no hard-coded values)"
+    "Mention price as 149 EUR"
   ],
   "cta_url": "https://velluto-shop.com/es/products/strada-pro",
-  "commercial": null
+  "commercial": {
+    "market": "ES",
+    "currency": "EUR",
+    "current_price": 149,
+    "uvp": 149,
+    "offer_status": "standard",
+    "free_shipping_threshold": null,
+    "guarantee": null,
+    "delivery_claim": null,
+    "last_updated": "2026-05-29",
+    "in_stock": true,
+    "product_handle": "strada-pro"
+  }
 }

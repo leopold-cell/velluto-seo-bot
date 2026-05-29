@@ -1,12 +1,18 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-05-27",
+  "date": "2026-05-29",
   "locale": "nl-NL",
   "locale_short": "nl",
   "market_code": "NL",
-  "master_topic": "best cycling sunglasses",
-  "local_primary_keyword": "best cycling sunglasses",
-  "local_secondary_keywords": [],
+  "master_topic": "are expensive cycling sunglasses worth it",
+  "local_primary_keyword": "are expensive cycling sunglasses worth it",
+  "local_secondary_keywords": [
+    "What are the best sunglasses for road cycling?",
+    "What color lenses are best for road cycling?",
+    "What are the best Oakley sunglasses for road cycling?",
+    "What are the best sunglasses for cycling?",
+    "Are photochromic cycling glasses worth it?"
+  ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
   "local_adaptation_notes": [
@@ -17,8 +23,16 @@
   ],
   "cta_url": "https://velluto-shop.com/nl/products/strada-pro",
   "commercial": {
-    "current_price": 69,
+    "market": "NL",
     "currency": "EUR",
-    "offer_status": "test"
+    "current_price": 69,
+    "uvp": 149,
+    "offer_status": "test",
+    "free_shipping_threshold": null,
+    "guarantee": null,
+    "delivery_claim": null,
+    "last_updated": "2026-05-29",
+    "in_stock": true,
+    "product_handle": "strada-pro"
   }
 }
