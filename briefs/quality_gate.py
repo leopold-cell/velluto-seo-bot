@@ -264,6 +264,20 @@ FORBIDDEN_FEATURE_TOKENS = [
 ]
 
 
+def check_image_alt_text(post: dict) -> list[str]:
+    """Phase 4.9b: flag <img> tags with missing, empty, or placeholder alt text."""
+    body = post.get("body_html", "")
+    issues: list[str] = []
+    for m in re.finditer(r'<img\b[^>]*>', body, re.IGNORECASE):
+        tag = m.group(0)
+        alt = re.search(r'\balt\s*=\s*"([^"]*)"', tag, re.IGNORECASE)
+        val = (alt.group(1).strip() if alt else "")
+        if not alt or not val or val in ("...", "[Product name]") or val.startswith("["):
+            issues.append(f"[ALT] <img> missing/placeholder alt text: {tag[:80]}")
+    # one issue line is enough to trigger a regen; cap noise
+    return issues[:1]
+
+
 def check_no_markdown_fence(post: dict) -> list[str]:
     """Phase 4.7: catch a leaked ```html / ``` markdown fence in the body."""
     body = post.get("body_html", "")
@@ -373,6 +387,7 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     hard += check_commercial_config(post, market_code, commercial)
     hard += check_brand_facts(post)        # Phase 4.4 sentence-aware FACT check
     hard += check_no_markdown_fence(post)  # Phase 4.7 leaked ```html fence
+    hard += check_image_alt_text(post)     # Phase 4.9b blank/placeholder img alt
 
     passed = not hard
 

@@ -1451,6 +1451,7 @@ WRITING RULES:
    ✗ "The Velluto Strada Pro's polarized lenses cut glare..."
 5. The result should feel like advice from a faster, more experienced cycling friend — not a sales pitch.
 6. Use the exact CSS class names from the template (hero, article, .toc, .faq, etc.).
+7. EVERY <img> MUST have descriptive alt text (product name + colour + context). NEVER output alt="" or alt="...". This is an accessibility + SEO requirement.
 {publish_rules}"""
 
     # Phase 4: weave the master brief into the prompt when provided
@@ -1516,13 +1517,13 @@ REQUIRED STRUCTURE for ===BODY=== (article content only — Hero, Author, Ride a
 - <div class="spec-strip">...</div> with <span data-count="N"> for animated numbers (25g, UV400, 30 days, etc.)
 - <div class="criteria">...</div> with 2x2 .crit tiles for selection criteria
 - <div class="pullquote"><q>Quote</q><cite>— Source</cite></div>
-- <figure class="inline-figure"><img src="[CDN URL]" alt="..."><div class="cap"><span>FIG. 0N — Label</span><span>Caption</span></div></figure>]
+- <figure class="inline-figure"><img src="[CDN URL]" alt="[REQUIRED descriptive alt — describe the scene + glasses, e.g. 'Road cyclist wearing Velluto StradaPro glasses on a mountain descent'. Never leave blank or '...']"><div class="cap"><span>FIG. 0N — Label</span><span>Caption</span></div></figure>]
 
 [Product card — use EXACTLY this structure:
 <div class="product">
   <div class="product-media">
     <span class="product-tag">Editor's Pick</span>
-    <img src="[APPROVED CDN URL]" alt="[Product name]">
+    <img src="[APPROVED CDN URL]" alt="[REQUIRED descriptive alt — product name + colour + context, e.g. 'Velluto StradaPro cycling glasses in Nero with high-contrast lens']">
   </div>
   <div class="product-info">
     <div class="product-eyebrow">Road Cycling Glasses · Road &amp; Gravel</div>
@@ -1543,7 +1544,7 @@ REQUIRED STRUCTURE for ===BODY=== (article content only — Hero, Author, Ride a
 
 [Colour variants strip:
 <div class="variants">
-  [4x <a href="[PRODUCT URL]"><img src="[CDN URL]" alt="..."><div class="v-info"><span class="v-name">[Colour]</span><span class="v-price">{primary_price_str}</span></div></a>]
+  [4x <a href="[PRODUCT URL]"><img src="[CDN URL]" alt="[REQUIRED: 'Velluto StradaPro cycling glasses in [Colour]' — never blank or '...']"><div class="v-info"><span class="v-name">[Colour]</span><span class="v-price">{primary_price_str}</span></div></a>]
 </div>]
 
 [REQUIRED: FAQ as the last section:
