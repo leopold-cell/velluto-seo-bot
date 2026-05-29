@@ -30,7 +30,7 @@ Returned per-market dict (spec line 80-92):
     "delivery_claim": null | str,
     "last_updated": "YYYY-MM-DD",
     "in_stock": bool,
-    "product_handle": "strada-pro",
+    "product_handle": "velluto-stradapro-cycling-glasses-nero",
   }
 """
 from __future__ import annotations
@@ -51,7 +51,7 @@ load_dotenv(
 
 SHOPIFY_TOKEN = os.getenv("SHOPIFY_TOKEN", "")
 SHOPIFY_STORE = os.getenv("SHOPIFY_STORE", "")
-PRIMARY_PRODUCT_HANDLE = "strada-pro"
+PRIMARY_PRODUCT_HANDLE = "velluto-stradapro-cycling-glasses-nero"
 
 
 # Static fallback / override layer.

@@ -2079,7 +2079,7 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
     published = json.load(open(PUBLISHED_LOG)) if os.path.exists(PUBLISHED_LOG) else []
     published.append({
         "title":   post["title_en"],
-        "url":     f"https://velluto-shop.com/blogs/news/{handle}",
+        "url":     f"https://velluto-shop.com/blogs/velluto-the-magazine/{handle}",
         "topic":   topic,
         "keyword": post.get("keyword", ""),
         "tags":    post.get("tags", ""),

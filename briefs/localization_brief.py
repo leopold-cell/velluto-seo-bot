@@ -114,7 +114,7 @@ def build_localization_brief(locale_short: str, master_brief: dict,
             if commercial_for_market and commercial_for_market.get("current_price")
             else "Pricing: use current commercial config (no hard-coded values)",
         ],
-        "cta_url":            f"https://velluto-shop.com/{locale_short.split('-')[0]}/products/strada-pro",
+        "cta_url":            f"https://velluto-shop.com/{locale_short.split('-')[0]}/collections/velluto-stradapro-cycling-glasses",
         "commercial":         commercial_for_market,
     }
 
