@@ -1,18 +1,12 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-05-30",
+  "date": "2026-05-31",
   "locale": "fr-FR",
   "locale_short": "fr",
   "market_code": "FR",
-  "master_topic": "Oakley alternative cycling sunglasses",
-  "local_primary_keyword": "Oakley alternative cycling sunglasses",
-  "local_secondary_keywords": [
-    "Are photochromic glasses good for cycling?",
-    "What are the disadvantages of photochromic lenses?",
-    "Do photochromic lenses help with migraines?",
-    "Is photochromic or polarized better?",
-    "How to keep cycling glasses from fogging?"
-  ],
+  "master_topic": "are expensive cycling sunglasses worth it",
+  "local_primary_keyword": "are expensive cycling sunglasses worth it",
+  "local_secondary_keywords": [],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
   "local_adaptation_notes": [
@@ -31,7 +25,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-05-30",
+    "last_updated": "2026-05-31",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }

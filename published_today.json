@@ -1,61 +1,61 @@
 [
   {
-    "title": "Oakley Alternative Cycling Sunglasses: Why Riders Switch",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch",
-    "topic": "Oakley alternative cycling sunglasses",
-    "keyword": "Oakley alternative cycling sunglasses",
+    "title": "Road Cycling Sunglasses 2026: What You Actually Need",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/road-cycling-sunglasses-2026-what-you-actually-need",
+    "topic": "road cycling sunglasses",
+    "keyword": "road cycling sunglasses",
     "lang": "en",
-    "phase": "decision",
-    "tags": "cycling glasses,road cycling,velluto,StradaPro,Oakley alternative cycling sunglasses",
+    "phase": 1,
+    "tags": "cycling glasses,road cycling,velluto,StradaPro,road cycling sunglasses",
     "translations": {
       "de": {
-        "keyword": "Oakley Alternative Radsportbrille",
-        "intent": "Finding comparable cycling sunglasses brands to Oakley with similar performance features.",
-        "volume": 0
+        "keyword": "Rennrad Sonnenbrille",
+        "intent": "Cyclist seeking UV-protective eyewear specifically designed for road cycling performance.",
+        "volume": 720
       },
       "nl": {
-        "keyword": "Oakley vervanger fietsbril",
-        "intent": "Looking for replacement cycling sunglasses comparable to Oakley with Dutch market availability.",
-        "volume": 0
+        "keyword": "racefiets zonnebril",
+        "intent": "Dutch cyclist looking for high-performance sunglasses suited to road cycling conditions.",
+        "volume": 90
       },
       "fr": {
-        "keyword": "lunettes cyclisme alternative Oakley",
-        "intent": "Finding French-available cycling sunglasses brands that compete with Oakley's quality.",
+        "keyword": "lunettes de soleil v\u00e9lo route",
+        "intent": "French cyclist seeking sun protection eyewear designed for road cycling activities.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo alternativa Oakley",
-        "intent": "Seeking cycling sunglasses alternatives to Oakley suitable for Spanish market cyclists.",
+        "keyword": "gafas de sol ciclismo carretera",
+        "intent": "Spanish cyclist looking for specialized sunglasses for road cycling with proper UV protection.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali ciclismo alternativa Oakley",
-        "intent": "Discovering Italian cycling eyewear alternatives to Oakley with comparable performance.",
+        "keyword": "occhiali da sole ciclismo su strada",
+        "intent": "Italian cyclist searching for performance sunglasses designed for road cycling.",
         "volume": 0
       },
       "da": {
-        "keyword": "Oakley alternativ cykelbriller",
-        "intent": "Finding Danish-available cycling sunglasses as alternatives to Oakley brand.",
+        "keyword": "cykelsolbriller til landevej",
+        "intent": "Danish cyclist seeking specialized sunglasses for road cycling with outdoor performance features.",
         "volume": 0
       },
       "nb": {
-        "keyword": "Oakley alternativ sykkelbriller",
-        "intent": "Searching for Norwegian cycling sunglasses alternatives to Oakley with local availability.",
+        "keyword": "sykkelsol briller vei",
+        "intent": "Norwegian cyclist looking for road cycling specific sunglasses with protective features.",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary rowerowe alternatywa Oakley",
-        "intent": "Looking for Polish cycling sunglasses options comparable to Oakley.",
+        "keyword": "okulary przeciws\u0142oneczne kolarstwo szosowe",
+        "intent": "Polish cyclist searching for UV-protective eyewear designed for road cycling.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos ciclismo alternativa Oakley",
-        "intent": "Finding Portuguese cycling eyewear alternatives to Oakley brand.",
+        "keyword": "\u00f3culos de sol ciclismo estrada",
+        "intent": "Portuguese cyclist seeking sunglasses optimized for road cycling performance.",
         "volume": 0
       },
       "sv": {
-        "keyword": "Oakley alternativ cykelglas\u00f6gon",
-        "intent": "Seeking Swedish cycling sunglasses alternatives with similar features to Oakley.",
+        "keyword": "cykelsolglas\u00f6gon v\u00e4g",
+        "intent": "Swedish cyclist looking for road cycling sunglasses with performance and protection features.",
         "volume": 0
       }
     }
