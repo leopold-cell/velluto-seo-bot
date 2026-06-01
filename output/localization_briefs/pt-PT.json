@@ -1,12 +1,18 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-05-31",
+  "date": "2026-06-01",
   "locale": "pt-PT",
   "locale_short": "pt-PT",
   "market_code": "PT",
   "master_topic": "are expensive cycling sunglasses worth it",
   "local_primary_keyword": "are expensive cycling sunglasses worth it",
-  "local_secondary_keywords": [],
+  "local_secondary_keywords": [
+    "Is photochromic better than polarized for cycling?",
+    "Which is better, photochromic or transition lenses?",
+    "Do photochromic lenses help with migraines?",
+    "Which is better, blue cut or photochromic?",
+    "Is 100% UV the same as UV400?"
+  ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
   "local_adaptation_notes": [
@@ -25,7 +31,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-05-31",
+    "last_updated": "2026-06-01",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
