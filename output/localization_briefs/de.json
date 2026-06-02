@@ -1,17 +1,17 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-06-01",
+  "date": "2026-06-02",
   "locale": "de-DE",
   "locale_short": "de",
   "market_code": "DE",
   "master_topic": "are expensive cycling sunglasses worth it",
   "local_primary_keyword": "are expensive cycling sunglasses worth it",
   "local_secondary_keywords": [
-    "What are the best sunglasses for cycling?",
-    "What cycling glasses don t fog up?",
-    "Which sunglasses are best for bike riding?",
-    "What cycling glasses don t fog up?",
-    "Are photochromic glasses worth it for cycling?"
+    "Which sunglasses are best for cycling?",
+    "Are Oakley cycling glasses worth it?",
+    "Are photochromic glasses worth it for cycling?",
+    "What are the disadvantages of photochromic glasses?",
+    "Is photochromic better than polarized for cycling?"
   ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -31,7 +31,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-06-01",
+    "last_updated": "2026-06-02",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
