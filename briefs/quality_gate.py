@@ -101,6 +101,25 @@ def ensure_homepage_link(html: str) -> tuple[str, bool]:
     return fixed, True
 
 
+def strip_em_dashes(html: str) -> tuple[str, bool]:
+    """
+    Phase 4.11: remove the em-dash '—' (and spaced en-dash ' – ') used as a
+    sentence pause — the classic AI-writing tell. Replaced with a comma.
+
+    Preserves: hyphens in compound words (anti-fog, UV400-certified, 30-day),
+    URL slugs, and number ranges like '10–20' (en-dash WITHOUT surrounding spaces).
+    """
+    orig = html
+    html = re.sub(r'\s*—\s*', ', ', html)   # em-dash (with/without spaces) → comma
+    html = re.sub(r'\s+–\s+', ', ', html)   # ONLY spaced en-dash (pause) → comma; "10–20" stays
+    # tidy up artifacts
+    html = re.sub(r',\s*,', ', ', html)     # double comma
+    html = re.sub(r'\s+,', ',', html)       # space before comma
+    html = re.sub(r',\s*\.', '.', html)     # comma before period
+    html = re.sub(r',\s*(</)', r'\1', html) # trailing comma before closing tag
+    return html, (html != orig)
+
+
 # ── HARD checks ────────────────────────────────────────────────────────────
 
 def check_keyword_in_title_h1(post: dict, primary_keyword: str) -> list[str]:
@@ -375,6 +394,10 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     fixed_body, injected = ensure_homepage_link(fixed_body)
     if injected:
         auto_fixes.append("injected mandatory homepage link")
+    # Auto-fix 3: strip em-dashes (Phase 4.11 — the AI-writing tell)
+    fixed_body, dashed = strip_em_dashes(fixed_body)
+    if dashed:
+        auto_fixes.append("replaced em-dashes with commas")
     post["body_html"] = fixed_body
 
     # Hard checks

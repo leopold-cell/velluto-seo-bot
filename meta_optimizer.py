@@ -227,7 +227,8 @@ def generate_metas(items: list[dict], resource_type: str, kw_context: str) -> li
             "'Wielrenbril verwisselbare glazen') — NEVER lead with the brand. "
             "Mention the brand 'Velluto' AFTER the keyword. Add 1-2 differentiators "
             "(25g, UV400, interchangeable lenses, 30-day trial). End with a subtle CTA. "
-            "Pattern: '<keyword> – <differentiators>. Velluto <product>, <trust/CTA>.'"
+            "Pattern: '<keyword>: <differentiators>. Velluto <product>, <trust/CTA>.' "
+            "Never use an em-dash or en-dash; use a colon or comma."
         ),
         "page":    "For pages: match the page's purpose. Include the primary keyword. Be descriptive, not salesy.",
         "article": "For blog articles: summarize the article's value. Include the primary search keyword from the title. Make it compelling to click.",

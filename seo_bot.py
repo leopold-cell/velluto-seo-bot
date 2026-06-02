@@ -1066,7 +1066,8 @@ WRITING RULES:
    You MUST NOT attribute them to Velluto products.
    ✓ "Oakley's Prizm lenses are polarized; Velluto's interchangeable system gives you control without lock-in to one tint."
    ✗ "The Velluto StradaPro's polarized lenses cut glare..."
-7. If a topic implies a feature Velluto doesn't have, reframe honestly: explain the category, then show how Velluto's actual lenses (Puro/Visione) solve the need."""
+7. If a topic implies a feature Velluto doesn't have, reframe honestly: explain the category, then show how Velluto's actual lenses (Puro/Visione) solve the need.
+8. NEVER use the em-dash "—" or a spaced en-dash " – " anywhere. Use commas, periods or colons instead. (Normal hyphens in compound words are fine.)"""
 
     user = f"""Date: {datetime.date.today().strftime('%d %B %Y')} | {get_cycling_context()}
 Topic: {topic}
@@ -1452,6 +1453,7 @@ WRITING RULES:
 5. The result should feel like advice from a faster, more experienced cycling friend — not a sales pitch.
 6. Use the exact CSS class names from the template (hero, article, .toc, .faq, etc.).
 7. EVERY <img> MUST have descriptive alt text (product name + colour + context). NEVER output alt="" or alt="...". This is an accessibility + SEO requirement.
+8. NEVER use the em-dash "—" or a spaced en-dash " – " anywhere (body, headings, captions, FAQ). Use commas, periods, colons or parentheses instead. Normal hyphens in compound words (anti-fog, UV400) are fine.
 {publish_rules}"""
 
     # Phase 4: weave the master brief into the prompt when provided
@@ -1516,8 +1518,8 @@ REQUIRED STRUCTURE for ===BODY=== (article content only — Hero, Author, Ride a
 [Include at least one of:
 - <div class="spec-strip">...</div> with <span data-count="N"> for animated numbers (25g, UV400, 30 days, etc.)
 - <div class="criteria">...</div> with 2x2 .crit tiles for selection criteria
-- <div class="pullquote"><q>Quote</q><cite>— Source</cite></div>
-- <figure class="inline-figure"><img src="[CDN URL]" alt="[REQUIRED descriptive alt — describe the scene + glasses, e.g. 'Road cyclist wearing Velluto StradaPro glasses on a mountain descent'. Never leave blank or '...']"><div class="cap"><span>FIG. 0N — Label</span><span>Caption</span></div></figure>]
+- <div class="pullquote"><q>Quote</q><cite>Source</cite></div>
+- <figure class="inline-figure"><img src="[CDN URL]" alt="[REQUIRED descriptive alt — describe the scene + glasses, e.g. 'Road cyclist wearing Velluto StradaPro glasses on a mountain descent'. Never leave blank or '...']"><div class="cap"><span>FIG. 0N: Label</span><span>Caption</span></div></figure>]
 
 [Product card — use EXACTLY this structure:
 <div class="product">
@@ -1814,6 +1816,7 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
             "5. All URLs (href, src) stay unchanged.\n"
             f"6. Adapt local references to reflect: {cycling_ctx}.\n"
             "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
+            "8. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. (Normal hyphens in words are fine.)\n"
             f"{price_rule}"
         ),
         messages=[{"role": "user", "content": de_post["body_html"]}]
