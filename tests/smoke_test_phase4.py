@@ -55,7 +55,7 @@ print(f"   ✓ Competitor link stripped, anchor text preserved")
 # Homepage link injection
 html_no_hp = '<p>Premium cycling sunglasses.</p>'
 fixed2, injected = ensure_homepage_link(html_no_hp)
-assert injected and "velluto-shop.com" in fixed2
+assert injected and 'href="/"' in fixed2
 print(f"   ✓ Homepage link injection working")
 
 # Hard-fail on bad article

@@ -1043,7 +1043,7 @@ def generate(topic: str, trends: str, cover_url: str, products: list[dict]) -> t
     featured_products = [p for p in [featured_glasses] + accessories if p][:2]
 
     product_json = json.dumps([{
-        "title": p["title"], "url": p["url"], "image": p["image"]
+        "title": p["title"], "url": f"/products/{p['handle']}", "image": p["image"]
     } for p in featured_products], indent=2)
 
     seo_insights = load_seo_insights(topic=topic)
@@ -1097,7 +1097,7 @@ Write 3 language versions (800-1000 words each — quality over quantity, go dee
   <a href="PRODUCT_URL" style="display:inline-block;margin-top:12px;padding:9px 20px;background:#111;color:#fff;text-decoration:none;border-radius:4px;font-weight:700;">CTA</a>
 </div>]
 <h2>[FAQ — 3 questions]</h2>
-<p>[CTA → https://velluto-shop.com]</p>
+<p>[CTA → / (root-relative Velluto homepage)]</p>
 
 Use EXACTLY this output format — delimiters on their own lines, no extra text outside them:
 
@@ -1175,7 +1175,10 @@ FORBIDDEN_CLAIMS = [
 def validate(post: dict, products: list[dict]) -> list[str]:
     """Return list of quality issues found."""
     issues = []
-    allowed_urls = {p["url"] for p in products} | {"https://velluto-shop.com"}
+    # Internal links are root-relative (/products/...); these absolute forms stay
+    # allowed for back-compat. Anything else absolute (competitors) is rejected.
+    allowed_abs = {p["url"] for p in products} | {"https://velluto-shop.com"}
+    allowed_rel_prefixes = ("/products/", "/collections/", "/blogs/", "/pages/")
     all_html = " ".join(post.get(f"{l}_html", "") for l in ["en", "nl", "de"])
 
     # ── Brand fact-check ──────────────────────────────────────────────────────
@@ -1192,11 +1195,21 @@ def validate(post: dict, products: list[dict]) -> list[str]:
         if lang == "de" and re.search(r'\b(the|and|for|with)\b', html):
             issues.append(f"[{lang}] May contain English words in German version")
 
-        # Check all hrefs are in allowed list
-        hrefs = re.findall(r'href="(https?://[^"]+)"', html)
+        # Check all hrefs are allowed: root-relative internal OR allowed absolute.
+        # (Broadened from https?:// so relative hrefs are captured at all.)
+        hrefs = re.findall(r'href="([^"]+)"', html)
         for href in hrefs:
-            if not any(href.startswith(base) for base in allowed_urls):
-                issues.append(f"[{lang}] Unrecognised link: {href}")
+            if href.startswith("#") or href.startswith("mailto:"):
+                continue
+            if href.startswith("/"):
+                if not (href == "/" or href.startswith(allowed_rel_prefixes)):
+                    issues.append(f"[{lang}] Unrecognised relative link: {href}")
+                continue
+            if href.startswith(("http://", "https://")):
+                if not any(href.startswith(base) for base in allowed_abs):
+                    issues.append(f"[{lang}] Unrecognised link: {href}")
+                continue
+            issues.append(f"[{lang}] Unrecognised link: {href}")
 
         # No inline images allowed in body — cover only
         if re.search(r'<img\b', html):
@@ -1388,7 +1401,7 @@ def generate_de_primary(kw: dict, products: list[dict], quality: dict,
     accessories = [p for p in products if "stradapro" not in p["handle"]][:1]
     featured = [p for p in [glasses] + accessories if p][:2]
     product_json = json.dumps([{
-        "title": p["title"], "url": p["url"], "image": p["image"]
+        "title": p["title"], "url": f"/products/{p['handle']}", "image": p["image"]
     } for p in featured], indent=2)
 
     seo_ctx = load_seo_insights(topic=keyword)
@@ -1427,9 +1440,11 @@ PUBLISH RULES (HARD — articles violating these get blocked and discarded):
    - Mention "{primary_price_str}" at most ONCE, near a CTA/product card. Not in body copy.
 2. NO OUTBOUND COMPETITOR LINKS — Never use <a href="..."> to link to: {forbidden_competitor_domains}
    Competitor brand names may appear as plain text only.
-3. HOMEPAGE LINK — Include exactly one <a href="https://velluto-shop.com">…</a> link with descriptive
+3. HOMEPAGE LINK — Include exactly one <a href="/">…</a> link (root-relative homepage) with descriptive
    anchor text (e.g., "Velluto", "Velluto cycling eyewear", "premium Velluto glasses").
-4. INTERNAL LINKS — At least 3 <a> elements pointing to velluto-shop.com paths total.
+4. INTERNAL LINKS — At least 3 <a> elements pointing to root-relative Velluto paths total. All internal
+   links MUST be root-relative (start with "/", e.g. /, /products/..., /collections/...), NEVER absolute
+   https://velluto-shop.com URLs.
 5. PRIMARY KEYWORD — The exact primary keyword (or its tokens) MUST appear in <title>, the <h1>, and at least one <h2>.
 """
 
@@ -1559,7 +1574,7 @@ REQUIRED STRUCTURE for ===BODY=== (article content only — Hero, Author, Ride a
   </details>]
 </div>]
 
-<p>[Closing CTA → <a class="inline" href="https://velluto-shop.com">velluto-shop.com</a>]</p>
+<p>[Closing CTA → <a class="inline" href="/">Velluto</a>]</p>
 
 IMPORTANT: No <h1>, no Hero, no Sidebar, no Ride section — the Shopify template renders these automatically.
 
