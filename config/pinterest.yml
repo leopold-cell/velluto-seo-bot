@@ -1,0 +1,34 @@
+# Pinterest auto-posting configuration for Velluto.
+#
+# Credentials live in .env, NOT here:
+#   PINTEREST_ACCESS_TOKEN        (required)
+#   PINTEREST_ARTICLE_BOARD_ID    (board for blog-article pins)
+#   PINTEREST_PRODUCT_BOARD_ID    (board for product pins)
+#   PINTEREST_BOARD_ID            (fallback used for both if the two above are unset)
+# This file holds behaviour/tuning only — safe to commit.
+
+enabled: true
+
+# How many pins to publish per daily run.
+limits:
+  article_pins_per_day: 2     # newest entries from published_today.json
+  product_pins_per_day: 1     # rotated across the catalogue by date
+
+# Don't repost the same article URL / product handle within this many days.
+dedupe_days: 90
+
+# Hashtag pool appended to descriptions (Pinterest treats these as keywords).
+hashtags:
+  - "#cycling"
+  - "#cyclingglasses"
+  - "#roadcycling"
+  - "#cyclinggear"
+  - "#velluto"
+
+# Image strategy for ARTICLE pins. First source that yields a usable image wins.
+#   og_image   -> scrape og:image from the published article URL (no extra deps)
+#   higfields  -> generate via Higfields.ai HTTP API — OPTIONAL, only used when
+#                 HIGHFIELDS_API_KEY (and HIGHFIELDS_API_URL) are set in .env.
+# Product pins always use the Shopify product image.
+article_image_sources:
+  - og_image
