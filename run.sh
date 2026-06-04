@@ -6,6 +6,7 @@ source venv/bin/activate
 echo "[SEO Bot] Starting: $(date)"
 python3 seo_bot.py
 python3 link_builder.py      || true
+python3 pinterest_poster.py  || true
 python3 seo_optimizer.py     || true
 python3 dashboard.py         || true
 git config user.name "vps-bot"
