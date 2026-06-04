@@ -16,12 +16,28 @@ keyword-rich). Already-posted article URLs / product handles are remembered in
 
 ## 1. Credentials (`.env` on the VPS)
 
-The **only required** value is the access token — the target board is resolved by
-name (`config/pinterest.yml` → `boards.name`, default `"Dolce Vita"`):
+The target board is resolved by name (`config/pinterest.yml` → `boards.name`,
+default `"Dolce Vita"`), so you only need the auth values.
+
+**Recommended (stays autonomous):** Pinterest access tokens expire in ~30 days,
+so provide the OAuth refresh trio. A fresh access token is then minted at the
+start of every run (same pattern as the existing Google/GSC `GOOGLE_REFRESH_TOKEN`):
 
 ```ini
-PINTEREST_ACCESS_TOKEN=pina_...           # required
+PINTEREST_APP_ID=...
+PINTEREST_APP_SECRET=...
+PINTEREST_REFRESH_TOKEN=...
 ```
+
+**Simple (manual renewal):** a single static token. Works, but posting stops
+when it expires (~30 days) until you replace it:
+
+```ini
+PINTEREST_ACCESS_TOKEN=pina_...
+```
+
+If both are present the refresh flow wins and the static token is used only as a
+fallback when a refresh call fails.
 
 Optionally pin numeric board IDs (these win over name resolution and save one API
 call per run):
@@ -37,9 +53,14 @@ PINTEREST_PRODUCT_BOARD_ID=0987654321
 SEO bot and are reused.
 
 ### How to get the values
-- **Access token**: Pinterest Developer Portal → your approved app (`claude2`) →
-  generate an access token with scopes `boards:read`, `pins:read`, `pins:write`,
-  `user_accounts:read`. (Trial access is enough to post to your own boards.)
+- **App ID / secret**: Pinterest Developer Portal → your approved app (`claude2`)
+  → app settings.
+- **Refresh token**: run the one-time OAuth flow with scopes `boards:read`,
+  `pins:read`, `pins:write`, `user_accounts:read` (authorize the app → exchange
+  the returned `code` at `POST /v5/oauth/token` for `access_token` +
+  `refresh_token`). Store the `refresh_token`. (Trial access is enough to post to
+  your own boards.)
+- **Static access token** (simple path): generate one directly in the portal.
 - **Board**: not needed if the name in `config/pinterest.yml` matches your board.
   To see all boards + their numeric IDs:
   ```bash

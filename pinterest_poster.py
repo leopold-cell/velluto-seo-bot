@@ -53,12 +53,22 @@ PINTEREST_BOARD_ID     = os.getenv("PINTEREST_BOARD_ID", "")
 ARTICLE_BOARD_ID       = os.getenv("PINTEREST_ARTICLE_BOARD_ID", "") or PINTEREST_BOARD_ID
 PRODUCT_BOARD_ID       = os.getenv("PINTEREST_PRODUCT_BOARD_ID", "") or PINTEREST_BOARD_ID
 
+# OAuth refresh (recommended for autonomy — access tokens expire in ~30 days).
+# When all three are set, a fresh access token is minted at the start of each run.
+PINTEREST_APP_ID       = os.getenv("PINTEREST_APP_ID", "")
+PINTEREST_APP_SECRET   = os.getenv("PINTEREST_APP_SECRET", "")
+PINTEREST_REFRESH_TOKEN = os.getenv("PINTEREST_REFRESH_TOKEN", "")
+
+# Effective bearer token used for all API calls; set in main() (refreshed or static).
+ACCESS_TOKEN           = PINTEREST_TOKEN
+
 # Optional Higfields.ai HTTP image generation (only used if both are set).
 HIGHFIELDS_API_KEY     = os.getenv("HIGHFIELDS_API_KEY", "")
 HIGHFIELDS_API_URL     = os.getenv("HIGHFIELDS_API_URL", "")
 
 PINS_ENDPOINT   = "https://api.pinterest.com/v5/pins"
 BOARDS_ENDPOINT = "https://api.pinterest.com/v5/boards"
+TOKEN_ENDPOINT  = "https://api.pinterest.com/v5/oauth/token"
 
 DRY_RUN      = "--dry-run" in sys.argv
 LIST_BOARDS  = "--list-boards" in sys.argv
@@ -71,6 +81,65 @@ def load_config() -> dict:
         return {}
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         return yaml.safe_load(f) or {}
+
+
+# ── Auth ─────────────────────────────────────────────────────────────────────────
+
+def _auth_headers(extra: dict | None = None) -> dict:
+    h = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
+    if extra:
+        h.update(extra)
+    return h
+
+
+def refresh_access_token() -> str:
+    """
+    Exchange the refresh token for a fresh access token (Pinterest OAuth v5).
+    Returns the new access token, or '' on failure. Same pattern as the existing
+    Google/GSC refresh-token flow, so the automation never depends on a token
+    that expires after ~30 days.
+    """
+    import base64
+    basic = base64.b64encode(
+        f"{PINTEREST_APP_ID}:{PINTEREST_APP_SECRET}".encode()
+    ).decode()
+    try:
+        r = requests.post(
+            TOKEN_ENDPOINT,
+            headers={"Authorization": f"Basic {basic}",
+                     "Content-Type": "application/x-www-form-urlencoded"},
+            data={"grant_type": "refresh_token",
+                  "refresh_token": PINTEREST_REFRESH_TOKEN},
+            timeout=30,
+        )
+        if r.status_code != 200:
+            print(f"   ⚠️  token refresh failed: http_{r.status_code} {r.text[:160]}")
+            return ""
+        token = r.json().get("access_token", "")
+        if token:
+            print("   ✓ Access token refreshed")
+        return token
+    except Exception as e:
+        print(f"   ⚠️  token refresh error: {e}")
+        return ""
+
+
+def ensure_access_token() -> bool:
+    """
+    Populate the module-level ACCESS_TOKEN. Prefer the OAuth refresh flow when
+    app id/secret + refresh token are present; otherwise fall back to the static
+    PINTEREST_ACCESS_TOKEN. Returns True if a usable token is available.
+    """
+    global ACCESS_TOKEN
+    if PINTEREST_APP_ID and PINTEREST_APP_SECRET and PINTEREST_REFRESH_TOKEN:
+        fresh = refresh_access_token()
+        if fresh:
+            ACCESS_TOKEN = fresh
+            return True
+        # Refresh configured but failed — fall back to static token if any.
+        print("   ⚠️  refresh failed — falling back to static PINTEREST_ACCESS_TOKEN")
+    ACCESS_TOKEN = PINTEREST_TOKEN
+    return bool(ACCESS_TOKEN)
 
 
 # ── Logging / dedupe ────────────────────────────────────────────────────────────
@@ -271,8 +340,7 @@ def create_pin(board_id: str, title: str, description: str, link: str,
     try:
         r = requests.post(
             PINS_ENDPOINT,
-            headers={"Authorization": f"Bearer {PINTEREST_TOKEN}",
-                     "Content-Type": "application/json"},
+            headers=_auth_headers({"Content-Type": "application/json"}),
             json=payload, timeout=30,
         )
         if r.status_code in (200, 201):
@@ -298,7 +366,7 @@ def get_boards() -> list[dict]:
                 params["bookmark"] = bookmark
             r = requests.get(
                 BOARDS_ENDPOINT,
-                headers={"Authorization": f"Bearer {PINTEREST_TOKEN}"},
+                headers=_auth_headers(),
                 params=params, timeout=30,
             )
             if r.status_code != 200:
@@ -410,9 +478,13 @@ def main():
 
     cfg = load_config()
 
+    # Mint/select the bearer token (OAuth refresh when configured, else static).
+    have_token = ensure_access_token()
+
     if LIST_BOARDS:
-        if not PINTEREST_TOKEN:
-            print("   ⚠️  PINTEREST_ACCESS_TOKEN missing — set it in .env first")
+        if not have_token:
+            print("   ⚠️  No Pinterest token — set PINTEREST_ACCESS_TOKEN or the "
+                  "PINTEREST_APP_ID/SECRET/REFRESH_TOKEN trio in .env first")
             return
         boards = get_boards()
         print(f"   {len(boards)} board(s):")
@@ -424,8 +496,9 @@ def main():
         print("   Pinterest posting disabled in config/pinterest.yml — exiting")
         return
 
-    if not DRY_RUN and not PINTEREST_TOKEN:
-        print("   ⚠️  PINTEREST_ACCESS_TOKEN missing — skipping (set it in .env)")
+    if not DRY_RUN and not have_token:
+        print("   ⚠️  No Pinterest token available — skipping (set PINTEREST_ACCESS_TOKEN "
+              "or PINTEREST_APP_ID/SECRET/REFRESH_TOKEN in .env)")
         return
 
     # Resolve effective board ids: explicit numeric env ids win; otherwise resolve
@@ -433,7 +506,7 @@ def main():
     article_board = ARTICLE_BOARD_ID
     product_board = PRODUCT_BOARD_ID
     boards_cache: list[dict] | None = None
-    if PINTEREST_TOKEN and not (article_board and product_board):
+    if have_token and not (article_board and product_board):
         names = cfg.get("boards") or {}
         default_name = names.get("name", "")
         article_name = names.get("article", "") or default_name
