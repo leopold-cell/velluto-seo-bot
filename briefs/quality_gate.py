@@ -31,6 +31,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FAILURES_LOG = os.path.join(ROOT, "output", "quality_gate_failures.json")
 
 HOMEPAGE_URL = "https://velluto-shop.com"
+HOMEPAGE_HREF = "/"  # root-relative homepage used for in-body links
+INTERNAL_REL_PREFIXES = ("/products/", "/collections/", "/blogs/", "/pages/")
 MIN_WORD_COUNT = 600
 
 
@@ -75,11 +77,12 @@ def strip_competitor_links(html: str) -> tuple[str, list[str]]:
 
 def ensure_homepage_link(html: str) -> tuple[str, bool]:
     """
-    If https://velluto-shop.com is not linked anywhere in the body, inject a
-    natural link near the end (before any FAQ section, falling back to body end).
+    If the homepage is not linked anywhere in the body (either as the absolute
+    URL or as a root-relative href="/"), inject a natural link near the end
+    (before any FAQ section, falling back to body end).
     Returns (fixed_html, injected_bool).
     """
-    if HOMEPAGE_URL in html:
+    if HOMEPAGE_URL in html or re.search(r'href=["\']/["\']', html):
         return html, False
 
     anchor_options = [
@@ -88,7 +91,7 @@ def ensure_homepage_link(html: str) -> tuple[str, bool]:
     ]
     # Deterministic pick — use first option that's not already an anchor elsewhere
     anchor_text = anchor_options[0]
-    injection = f'<p>Discover more about <a href="{HOMEPAGE_URL}">{anchor_text}</a>.</p>'
+    injection = f'<p>Discover more about <a href="{HOMEPAGE_HREF}">{anchor_text}</a>.</p>'
 
     # Prefer injection right before FAQ block; else right before </body> equivalent (end of html)
     if re.search(r'<h2[^>]*id=["\']sfaq', html, re.I):
@@ -351,9 +354,13 @@ def check_paa_coverage(post: dict, brief: dict | None) -> list[str]:
 def check_internal_links(post: dict) -> list[str]:
     body = post.get("body_html", "")
     links = re.findall(r'<a\s+[^>]*href=["\']([^"\']+)["\']', body, re.I)
-    velluto_links = [l for l in links if "velluto-shop.com" in l.lower()]
-    if len(velluto_links) < 1:
-        return ["[INTERNAL_LINKS] no Velluto-domain internal links present"]
+    internal_links = [
+        l for l in links
+        if "velluto-shop.com" in l.lower()
+        or l == "/" or l.startswith(INTERNAL_REL_PREFIXES)
+    ]
+    if len(internal_links) < 1:
+        return ["[INTERNAL_LINKS] no Velluto internal links present"]
     return []
 
 

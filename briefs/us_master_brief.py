@@ -124,9 +124,9 @@ def _product_fit_angle(keyword: str) -> tuple[str, list[str]]:
 def _build_internal_links(inventory: dict, keyword: str) -> list[dict]:
     """Pick 3-4 internal links from existing inventory + the mandatory homepage link."""
     links = [
-        {"anchor": "Velluto", "url": "https://velluto-shop.com"},  # MANDATORY (spec line 1620)
-        {"anchor": "Velluto Strada Pro", "url": "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses"},
-        {"anchor": "cycling glasses collection", "url": "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses"},
+        {"anchor": "Velluto", "url": "/"},  # MANDATORY (spec line 1620) — root-relative
+        {"anchor": "Velluto Strada Pro", "url": "/collections/velluto-stradapro-cycling-glasses"},
+        {"anchor": "cycling glasses collection", "url": "/collections/velluto-stradapro-cycling-glasses"},
     ]
     # Add 1-2 related articles from inventory
     kw_tokens = set(re.findall(r"\w+", keyword.lower()))
