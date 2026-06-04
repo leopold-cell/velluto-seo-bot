@@ -55,11 +55,19 @@ SEO bot and are reused.
 ### How to get the values
 - **App ID / secret**: Pinterest Developer Portal → your approved app (`claude2`)
   → app settings.
-- **Refresh token**: run the one-time OAuth flow with scopes `boards:read`,
-  `pins:read`, `pins:write`, `user_accounts:read` (authorize the app → exchange
-  the returned `code` at `POST /v5/oauth/token` for `access_token` +
-  `refresh_token`). Store the `refresh_token`. (Trial access is enough to post to
-  your own boards.)
+- **Refresh token**: run the bundled one-time bootstrap — it walks the whole
+  OAuth flow and writes the trio to `.env` for you:
+  ```bash
+  # 1. put PINTEREST_APP_ID + PINTEREST_APP_SECRET in .env first
+  # 2. register a redirect URI on the app (e.g. https://localhost/) and, if it
+  #    isn't https://localhost/, set PINTEREST_REDIRECT_URI in .env to match
+  python3 pinterest_auth.py
+  ```
+  It prints an authorize URL → open it logged into the Velluto Pinterest account
+  → "Give access" → paste the redirected URL back. Scopes requested: `boards:read`,
+  `pins:read`, `pins:write`, `user_accounts:read`. Refresh tokens last ~1 year;
+  the poster mints a fresh access token from it on every run. (Trial access is
+  enough to post to your own boards.)
 - **Static access token** (simple path): generate one directly in the portal.
 - **Board**: not needed if the name in `config/pinterest.yml` matches your board.
   To see all boards + their numeric IDs:
