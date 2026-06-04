@@ -18,8 +18,8 @@ enabled: true
 #   product  -> override board name for product pins (optional)
 boards:
   name: "Dolce Vita"        # https://de.pinterest.com/velluto22/dolce-vita/
-  article: ""
-  product: ""
+  article: ""               # falls back to `name` → "Dolce Vita"
+  product: "Products"       # dedicated product board, keeps boards on-topic
 
 # How many pins to publish per daily run.
 limits:
