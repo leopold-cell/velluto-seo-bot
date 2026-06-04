@@ -9,6 +9,18 @@
 
 enabled: true
 
+# Target board(s). If numeric board IDs are set in .env
+# (PINTEREST_BOARD_ID / PINTEREST_ARTICLE_BOARD_ID / PINTEREST_PRODUCT_BOARD_ID)
+# those win. Otherwise the poster resolves these board NAMES to IDs via the API
+# at runtime — so you only need the access token in .env.
+#   name     -> used for both article and product pins
+#   article  -> override board name for article pins (optional)
+#   product  -> override board name for product pins (optional)
+boards:
+  name: "Dolce Vita"        # https://de.pinterest.com/velluto22/dolce-vita/
+  article: ""
+  product: ""
+
 # How many pins to publish per daily run.
 limits:
   article_pins_per_day: 2     # newest entries from published_today.json

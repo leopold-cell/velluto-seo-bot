@@ -57,9 +57,11 @@ PRODUCT_BOARD_ID       = os.getenv("PINTEREST_PRODUCT_BOARD_ID", "") or PINTERES
 HIGHFIELDS_API_KEY     = os.getenv("HIGHFIELDS_API_KEY", "")
 HIGHFIELDS_API_URL     = os.getenv("HIGHFIELDS_API_URL", "")
 
-PINS_ENDPOINT = "https://api.pinterest.com/v5/pins"
+PINS_ENDPOINT   = "https://api.pinterest.com/v5/pins"
+BOARDS_ENDPOINT = "https://api.pinterest.com/v5/boards"
 
-DRY_RUN = "--dry-run" in sys.argv
+DRY_RUN      = "--dry-run" in sys.argv
+LIST_BOARDS  = "--list-boards" in sys.argv
 
 
 # ── Config ─────────────────────────────────────────────────────────────────────
@@ -284,11 +286,54 @@ def create_pin(board_id: str, title: str, description: str, link: str,
         return {"status": "error", "reason": str(e)}
 
 
+# ── Boards ───────────────────────────────────────────────────────────────────────
+
+def get_boards() -> list[dict]:
+    """Return the account's boards [{id, name}, ...] via Pinterest API v5."""
+    boards, bookmark = [], None
+    try:
+        while True:
+            params = {"page_size": 100}
+            if bookmark:
+                params["bookmark"] = bookmark
+            r = requests.get(
+                BOARDS_ENDPOINT,
+                headers={"Authorization": f"Bearer {PINTEREST_TOKEN}"},
+                params=params, timeout=30,
+            )
+            if r.status_code != 200:
+                print(f"   ⚠️  could not list boards: http_{r.status_code} {r.text[:120]}")
+                break
+            data = r.json()
+            boards.extend(data.get("items", []))
+            bookmark = data.get("bookmark")
+            if not bookmark:
+                break
+    except Exception as e:
+        print(f"   ⚠️  board listing failed: {e}")
+    return boards
+
+
+def resolve_board_id_by_name(name: str, boards: list[dict] | None = None) -> str:
+    """Match a board by name (case-insensitive). Returns '' if not found."""
+    if not name:
+        return ""
+    boards = boards if boards is not None else get_boards()
+    target = name.strip().lower()
+    for b in boards:
+        if (b.get("name") or "").strip().lower() == target:
+            return b.get("id", "")
+    return ""
+
+
 # ── Pin builders ─────────────────────────────────────────────────────────────────
 
-def post_article_pins(cfg: dict, recent: set[str]) -> int:
+def post_article_pins(cfg: dict, recent: set[str], board_id: str) -> int:
     limit = (cfg.get("limits") or {}).get("article_pins_per_day", 2)
     sources = cfg.get("article_image_sources") or ["og_image"]
+    if not board_id and not DRY_RUN:
+        print("   ⚠️  no article board id — skipping article pins")
+        return 0
     if not os.path.exists(PUBLISHED_LOG):
         print("   ⚠️  no published_today.json — no article pins")
         return 0
@@ -310,10 +355,7 @@ def post_article_pins(cfg: dict, recent: set[str]) -> int:
             print("   ⚠️  no image found — skipping")
             continue
         title, desc = generate_description("article", article, cfg)
-        if not ARTICLE_BOARD_ID:
-            print("   ⚠️  no article board id — skipping")
-            continue
-        res = create_pin(ARTICLE_BOARD_ID, title, desc, article["url"], image)
+        res = create_pin(board_id, title, desc, article["url"], image)
         res.update({"kind": "article", "dedupe_key": key, "link": article["url"]})
         log_result(res)
         if res.get("status") in ("posted", "dry_run"):
@@ -322,8 +364,11 @@ def post_article_pins(cfg: dict, recent: set[str]) -> int:
     return posted
 
 
-def post_product_pins(cfg: dict, recent: set[str]) -> int:
+def post_product_pins(cfg: dict, recent: set[str], board_id: str) -> int:
     limit = (cfg.get("limits") or {}).get("product_pins_per_day", 1)
+    if not board_id and not DRY_RUN:
+        print("   ⚠️  no product board id — skipping product pins")
+        return 0
     try:
         products = [p for p in get_products() if p.get("image")]
     except Exception as e:
@@ -346,10 +391,7 @@ def post_product_pins(cfg: dict, recent: set[str]) -> int:
             continue
         print(f"\n📌 Product pin: {product['title'][:60]}")
         title, desc = generate_description("product", product, cfg)
-        if not PRODUCT_BOARD_ID:
-            print("   ⚠️  no product board id — skipping")
-            continue
-        res = create_pin(PRODUCT_BOARD_ID, title, desc, product["url"],
+        res = create_pin(board_id, title, desc, product["url"],
                          _sized(product["image"]))
         res.update({"kind": "product", "dedupe_key": key, "link": product["url"]})
         log_result(res)
@@ -367,6 +409,17 @@ def main():
     print("=" * 50)
 
     cfg = load_config()
+
+    if LIST_BOARDS:
+        if not PINTEREST_TOKEN:
+            print("   ⚠️  PINTEREST_ACCESS_TOKEN missing — set it in .env first")
+            return
+        boards = get_boards()
+        print(f"   {len(boards)} board(s):")
+        for b in boards:
+            print(f"     {b.get('id','?'):<20} {b.get('name','')}")
+        return
+
     if not cfg.get("enabled", True):
         print("   Pinterest posting disabled in config/pinterest.yml — exiting")
         return
@@ -374,15 +427,35 @@ def main():
     if not DRY_RUN and not PINTEREST_TOKEN:
         print("   ⚠️  PINTEREST_ACCESS_TOKEN missing — skipping (set it in .env)")
         return
-    if not DRY_RUN and not (ARTICLE_BOARD_ID or PRODUCT_BOARD_ID):
-        print("   ⚠️  No board id configured — skipping "
-              "(set PINTEREST_BOARD_ID or the per-type board ids in .env)")
+
+    # Resolve effective board ids: explicit numeric env ids win; otherwise resolve
+    # the configured board name(s) via the API so no numeric id hunting is needed.
+    article_board = ARTICLE_BOARD_ID
+    product_board = PRODUCT_BOARD_ID
+    boards_cache: list[dict] | None = None
+    if PINTEREST_TOKEN and not (article_board and product_board):
+        names = cfg.get("boards") or {}
+        default_name = names.get("name", "")
+        article_name = names.get("article", "") or default_name
+        product_name = names.get("product", "") or default_name
+        if (article_name and not article_board) or (product_name and not product_board):
+            boards_cache = get_boards()
+            if not article_board and article_name:
+                article_board = resolve_board_id_by_name(article_name, boards_cache)
+                print(f"   Resolved article board '{article_name}' → {article_board or 'NOT FOUND'}")
+            if not product_board and product_name:
+                product_board = resolve_board_id_by_name(product_name, boards_cache)
+                print(f"   Resolved product board '{product_name}' → {product_board or 'NOT FOUND'}")
+
+    if not DRY_RUN and not (article_board or product_board):
+        print("   ⚠️  No board resolved — set PINTEREST_BOARD_ID or a board name in "
+              "config/pinterest.yml (boards.name) — skipping")
         return
 
     recent = _recent_keys(cfg.get("dedupe_days", 90))
 
-    n_articles = post_article_pins(cfg, recent)
-    n_products = post_product_pins(cfg, recent)
+    n_articles = post_article_pins(cfg, recent, article_board)
+    n_products = post_product_pins(cfg, recent, product_board)
 
     print("\n" + "=" * 50)
     print(f"   Done — {n_articles} article pin(s), {n_products} product pin(s)")

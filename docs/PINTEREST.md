@@ -16,11 +16,19 @@ keyword-rich). Already-posted article URLs / product handles are remembered in
 
 ## 1. Credentials (`.env` on the VPS)
 
+The **only required** value is the access token — the target board is resolved by
+name (`config/pinterest.yml` → `boards.name`, default `"Dolce Vita"`):
+
 ```ini
 PINTEREST_ACCESS_TOKEN=pina_...           # required
-# Either one shared board…
-PINTEREST_BOARD_ID=1234567890
-# …or a board per pin type (these win over PINTEREST_BOARD_ID):
+```
+
+Optionally pin numeric board IDs (these win over name resolution and save one API
+call per run):
+
+```ini
+PINTEREST_BOARD_ID=1234567890             # one shared board…
+# …or a board per pin type:
 PINTEREST_ARTICLE_BOARD_ID=1234567890
 PINTEREST_PRODUCT_BOARD_ID=0987654321
 ```
@@ -32,8 +40,11 @@ SEO bot and are reused.
 - **Access token**: Pinterest Developer Portal → your approved app (`claude2`) →
   generate an access token with scopes `boards:read`, `pins:read`, `pins:write`,
   `user_accounts:read`. (Trial access is enough to post to your own boards.)
-- **Board ID**: open the board on pinterest.com — the numeric ID is in the URL,
-  or call `GET https://api.pinterest.com/v5/boards` with your token.
+- **Board**: not needed if the name in `config/pinterest.yml` matches your board.
+  To see all boards + their numeric IDs:
+  ```bash
+  python3 pinterest_poster.py --list-boards
+  ```
 
 ## 2. Dependencies
 
@@ -44,6 +55,8 @@ already in `requirements.txt`.
 
 ```yaml
 enabled: true
+boards:
+  name: "Dolce Vita"          # resolved to a board ID via the API at runtime
 limits:
   article_pins_per_day: 2
   product_pins_per_day: 1
