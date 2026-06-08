@@ -101,8 +101,13 @@ def get_existing_translation_locales(article_id: int) -> set[str]:
     return {t["locale"] for t in translations}
 
 
-def get_all_translation_locales(article_id: int) -> set[str]:
-    """Fetch all registered translation locales for an article via REST-style GraphQL."""
+def get_translation_keys_by_locale(article_id: int) -> dict[str, set[str]]:
+    """Return {locale: {translated keys}} for an article.
+
+    A locale that has a body_html translation but no `title` translation will
+    render with a German/localized body and an English (primary) title — the
+    exact symptom we're repairing. Tracking keys per locale (not just which
+    locales exist) lets us detect and fix those partial translations."""
     r = requests.post(
         f"https://{SHOPIFY_STORE}/admin/api/2024-01/graphql.json",
         headers=SHOPIFY_HEADERS,
@@ -118,7 +123,10 @@ def get_all_translation_locales(article_id: int) -> set[str]:
     )
     data = r.json().get("data", {})
     items = ((data.get("translatableResource") or {}).get("translations") or [])
-    return {t["locale"] for t in items}
+    by_locale: dict[str, set[str]] = {}
+    for t in items:
+        by_locale.setdefault(t["locale"], set()).add(t["key"])
+    return by_locale
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
@@ -156,16 +164,28 @@ def main():
             print(f"   ⏭  Not a bot article (no .vl class) — skipping")
             continue
 
-        # Get existing translations
-        existing_locales = get_all_translation_locales(aid)
-        missing_locales = [loc for loc in SHOP_LOCALES if loc not in existing_locales]
+        # Get existing translations, keyed per locale so we can detect locales
+        # that are translated but MISSING the title (body localized, title still EN).
+        keys_by_locale = get_translation_keys_by_locale(aid)
+        existing_locales = set(keys_by_locale)
+        # A locale needs (re)processing if it has no translation at all, OR it has
+        # a body translation but no `title` translation.
+        missing_locales = [
+            loc for loc in SHOP_LOCALES
+            if "title" not in keys_by_locale.get(loc, set())
+        ]
+        title_only_repairs = [
+            loc for loc in missing_locales if loc in existing_locales
+        ]
 
         if not missing_locales:
-            print(f"   ✅ All {len(SHOP_LOCALES)} locales already translated")
+            print(f"   ✅ All {len(SHOP_LOCALES)} locales have a title translation")
             continue
 
         print(f"   Existing: {sorted(existing_locales) or 'none'}")
-        print(f"   Missing:  {missing_locales}")
+        print(f"   Needs title: {missing_locales}")
+        if title_only_repairs:
+            print(f"   ↻ Title-missing (body already localized): {title_only_repairs}")
 
         if args.dry_run:
             est = len(missing_locales) * 0.025
@@ -185,9 +205,9 @@ def main():
             mkt_kws = {loc: {"keyword": de_kw_hint, "intent": ""} for loc in SHOP_LOCALES}
             mkt_kws["de"] = {"keyword": de_kw_hint, "intent": ""}
 
-        # Fetch digests
+        # Fetch digests — wait for title so the title translation is never skipped
         try:
-            digests = get_translatable_digests(aid)
+            digests = get_translatable_digests(aid, require_keys=("title", "body_html"))
         except Exception as e:
             print(f"   ⚠️  Could not fetch digests: {e} — skipping article")
             continue

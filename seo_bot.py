@@ -1705,8 +1705,19 @@ def graphql_with_vars(query: str, variables: dict) -> dict:
     return r.json().get("data", {})
 
 
-def get_translatable_digests(article_id: int) -> dict:
-    """Fetch translatable content digests for a Shopify article."""
+def get_translatable_digests(article_id: int, require_keys: tuple = (),
+                             max_attempts: int = 5, delay: float = 3.0) -> dict:
+    """Fetch translatable content digests for a Shopify article.
+
+    Shopify populates an article's translatableContent ASYNCHRONOUSLY after the
+    REST create call, so a digest for a given key (notably ``title``) can be
+    momentarily absent in the first seconds after publish. register_shopify_translation
+    silently skips any key whose digest is missing — which is how an article ends
+    up with a translated body but an untranslated (English) title.
+
+    When ``require_keys`` is given, poll until every required key has a digest
+    (or attempts run out) so the title is never skipped due to that race.
+    """
     gid = f"gid://shopify/Article/{article_id}"
     query = """
     query($id: ID!) {
@@ -1715,9 +1726,23 @@ def get_translatable_digests(article_id: int) -> dict:
       }
     }
     """
-    data = graphql_with_vars(query, {"id": gid})
-    items = (data.get("translatableResource") or {}).get("translatableContent", [])
-    return {item["key"]: item["digest"] for item in items if item.get("digest")}
+    digests: dict = {}
+    for attempt in range(max_attempts):
+        data = graphql_with_vars(query, {"id": gid})
+        items = (data.get("translatableResource") or {}).get("translatableContent", [])
+        digests = {item["key"]: item["digest"] for item in items if item.get("digest")}
+        missing = [k for k in require_keys if k not in digests]
+        if not missing:
+            return digests
+        if attempt < max_attempts - 1:
+            print(f"   ⏳ Translatable digests {missing} not ready yet "
+                  f"(attempt {attempt+1}/{max_attempts}) — waiting {delay:.0f}s...")
+            time.sleep(delay)
+    if require_keys:
+        still_missing = [k for k in require_keys if k not in digests]
+        if still_missing:
+            print(f"   ⚠️  Digests still missing after {max_attempts} attempts: {still_missing}")
+    return digests
 
 
 @retry(max_attempts=2, delay=5, label="register_translation")
@@ -1726,9 +1751,11 @@ def register_shopify_translation(article_id: int, locale: str, title: str,
     """Register NL or EN translation for a published article via Shopify translationsRegister."""
     gid = f"gid://shopify/Article/{article_id}"
     translations = []
+    skipped = []
     for key, value in [("title", title), ("body_html", body_html), ("summary_html", meta_desc)]:
         digest = digests.get(key, "")
         if not digest:
+            skipped.append(key)
             continue
         translations.append({
             "key": key,
@@ -1739,6 +1766,11 @@ def register_shopify_translation(article_id: int, locale: str, title: str,
     if not translations:
         print(f"   ⚠️  No digests found for {locale} — skipping translation registration")
         return False
+    # The title silently staying English (while the body translates) is the classic
+    # symptom of a missing title digest — surface it loudly instead of hiding it.
+    if "title" in skipped:
+        print(f"   ⚠️  [{locale}] No `title` digest — TITLE will NOT be translated "
+              f"(stays primary/EN). Skipped keys: {skipped}")
 
     mutation = """
     mutation translationsRegister($resourceId: ID!, $translations: [TranslationInput!]!) {
@@ -1993,7 +2025,10 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
     # Register market adaptations
     print(f"   Fetching translatable digests for article {aid}...")
     try:
-        digests = get_translatable_digests(aid)
+        # Wait for title + body_html to be populated — Shopify indexes translatable
+        # content asynchronously after create, and a missing title digest is what
+        # leaves blog titles untranslated (English) while the body is localized.
+        digests = get_translatable_digests(aid, require_keys=("title", "body_html"))
         print(f"   Got {len(digests)} digests: {list(digests.keys())}")
     except Exception as e:
         print(f"   ⚠️  Could not fetch digests: {e}")
