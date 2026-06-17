@@ -31,7 +31,11 @@ GSC_LOG         = os.path.join(BASE, "gsc_data.json")
 GSC_CLIENT_ID     = os.getenv("GOOGLE_CLIENT_ID", "")
 GSC_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
 GSC_REFRESH_TOKEN = os.getenv("GOOGLE_REFRESH_TOKEN", "")
-GSC_SITE_URL      = "https://velluto-shop.com/"
+# Search Console property identifier. velluto-shop.com is verified as a DOMAIN
+# property, so the API needs the "sc-domain:" form (NOT the https:// URL-prefix
+# form, which only works for a separately-verified URL-prefix property and was
+# returning empty). Override via env if you switch property types.
+GSC_SITE_URL      = os.getenv("GSC_SITE_URL", "sc-domain:velluto-shop.com")
 
 # Multilingual keyword sets — one per shop language (EN / NL / DE)
 ANALYSIS_KEYWORDS = {

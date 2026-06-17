@@ -13,9 +13,17 @@ Final formula (weights from config/scoring_weights.yml):
 
 Each sub-score is 0-100. Final score is 0-100.
 
-Candidate sources (Phase 3 MVP):
+Candidate sources:
   1. Each seed keyword (one candidate per keyword, scored against US SERP as canonical)
   2. Each GSC striking-distance query (becomes "update_existing_article" candidate)
+  3. Performance winners (Phase 5)  → "scale_winner": create supporting cluster
+     articles around the queries a winning page already ranks for + internal links.
+  4. Performance decayers/dormant (Phase 5) → "update_existing_article": refresh
+     pages that lost clicks or have impressions but no clicks.
+
+Sources 3 & 4 read data/processed/performance_feedback.json (performance.classifier).
+Winners/decayers receive a bounded momentum boost so the bot prioritises scaling
+what already works. If the feedback file is missing, behaviour is unchanged.
 
 Output: data/processed/opportunity_scores.json
 """
@@ -32,6 +40,19 @@ from decision.content_inventory import find_matching_article
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_PATH = os.path.join(ROOT, "data", "processed", "opportunity_scores.json")
+
+# Phase 5 — performance momentum: bounded boost added AFTER the weighted aggregate
+# so winners/decayers rise without distorting the 7-factor weight math.
+MOMENTUM_BOOST = {
+    "winner":   18,   # scale what's already winning
+    "rising":   12,   # nurture near-breakouts
+    "decaying": 14,   # refreshing a slipping page is high-leverage
+    "dormant":   8,   # CTR fixes are cheaper wins
+}
+
+
+def _boost(opp: float, tier: str) -> float:
+    return round(min(100.0, opp + MOMENTUM_BOOST.get(tier, 0)), 2)
 
 
 # ── Sub-scorers ────────────────────────────────────────────────────────────
@@ -280,6 +301,80 @@ def score(research: dict, inventory: dict) -> dict:
             "sub_scores":        sub_scores,
             "ai_overview_score": 50,
             "opportunity_score": opp_score,
+        })
+
+    # ── Source 3 + 4: performance feedback (Phase 5) ──────────────────────
+    # Winners → scale_winner (create cluster article); decayers/dormant → refresh.
+    try:
+        from performance.classifier import load_feedback
+        feedback = load_feedback()
+    except Exception:
+        feedback = {}
+
+    # Source 3 — scale winners: spin up ONE supporting article per winner around
+    # a query it already ranks for but doesn't own yet. recommended_action stays
+    # "create_new_article" so the gate can promote it to a full publish.
+    for w in (feedback.get("scale_candidates") or [])[:10]:
+        scale_qs = w.get("scale_queries") or []
+        # Prefer a striking-distance query (room to grow); else the page's own keyword.
+        target_kw = scale_qs[0] if scale_qs else (w.get("primary_keyword") or "")
+        if not target_kw or target_kw in seen_keywords:
+            continue
+        seen_keywords.add(target_kw)
+        sub_scores = {
+            "buyer_intent":           score_buyer_intent(target_kw),
+            "product_fit":            score_product_fit(target_kw),
+            "competitor_velocity":    score_competitor_velocity(competitors_bundle, target_kw),
+            "keyword_demand":         60,   # proven demand — the parent page already earns clicks
+            "serp_weakness":          60,
+            "localization_potential": 50,
+            "internal_link_value":    85,   # strong: we link the new piece to a proven winner
+        }
+        opp = _boost(_aggregate(sub_scores), w.get("tier", "winner"))
+        candidates.append({
+            "candidate_id":      f"scale-{target_kw}",
+            "source":            "performance_winner",
+            "keyword":           target_kw,
+            "topic":             target_kw,
+            "target_market":     "US",
+            "recommended_action": "create_new_article",
+            "scale_parent":      {"url": w.get("url"), "title": w.get("title"),
+                                   "curr_clicks": w.get("curr_clicks")},
+            "performance_tier":  w.get("tier"),
+            "sub_scores":        sub_scores,
+            "ai_overview_score": 50,
+            "opportunity_score": opp,
+        })
+
+    # Source 4 — refresh decayers + dormant pages.
+    for rf in (feedback.get("refresh_candidates") or [])[:10]:
+        kw = rf.get("primary_keyword") or (rf.get("title") or "")
+        if not kw:
+            continue
+        cid = f"refresh-{rf.get('url','')}"
+        sub_scores = {
+            "buyer_intent":           score_buyer_intent(kw),
+            "product_fit":            score_product_fit(kw),
+            "competitor_velocity":    score_competitor_velocity(competitors_bundle, kw),
+            "keyword_demand":         55,
+            "serp_weakness":          55,
+            "localization_potential": 40,
+            "internal_link_value":    70,
+        }
+        opp = _boost(_aggregate(sub_scores), rf.get("tier", "decaying"))
+        candidates.append({
+            "candidate_id":       cid,
+            "source":             "performance_refresh",
+            "keyword":            kw,
+            "topic":              kw,
+            "target_market":      "US",
+            "recommended_action": "update_existing_article",
+            "existing_article":   {"url": rf.get("url")},
+            "performance_tier":   rf.get("tier"),
+            "refresh_reason":     rf.get("reason"),
+            "sub_scores":         sub_scores,
+            "ai_overview_score":  50,
+            "opportunity_score":  opp,
         })
 
     # Sort and persist

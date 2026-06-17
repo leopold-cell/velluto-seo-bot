@@ -2118,6 +2118,22 @@ def main():
     except Exception as e:
         print(f"   ⚠️  Research bundle failed: {e} — continuing without it")
 
+    # Phase 5: performance loop — turn GSC per-page deltas into a feedback file
+    # the scorer consumes (scale winners / refresh decayers), and write the
+    # Claude-readable 28-day audit when due. Best-effort: never blocks publishing.
+    try:
+        print("📈 Performance loop (GSC winners/losers → decisions)...")
+        from performance import classifier as _perf_classifier
+        from performance import audit as _perf_audit
+        _perf_classifier.run()                      # → data/processed/performance_feedback.json
+        _audit = _perf_audit.maybe_run()            # 28-day-gated report
+        if _audit.get("ran"):
+            print(f"   ✓ 28-day performance audit: {_audit['path']}")
+        else:
+            print(f"   · audit {_audit.get('reason', 'skipped')}")
+    except Exception as e:
+        print(f"   ⚠️  Performance loop failed: {e} — continuing")
+
     print("🛍️  Fetching active products...")
     products = get_products()
     print(f"   {len(products)} active products")
