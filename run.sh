@@ -9,6 +9,13 @@ python3 link_builder.py      || true
 python3 pinterest_poster.py  || true
 python3 seo_optimizer.py     || true
 python3 dashboard.py         || true
+
+# 28-day blog review + site SEO/GEO audit. Self-gates to every 28 days, so a
+# daily invocation is harmless (exits early when not due). Ensure Chromium for
+# the Playwright vision-UI step (idempotent; quick no-op once installed).
+python3 -c "import playwright" 2>/dev/null && playwright install --with-deps chromium >/dev/null 2>&1 || true
+python3 blog_review.py       || true
+
 git config user.name "vps-bot"
 git config user.email "leopold@velluto-brand.com"
 git add -A
