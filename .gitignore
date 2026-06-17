@@ -19,6 +19,9 @@ data/processed/*
 output/*
 !output/.gitkeep
 !output/localization_briefs/
+# 28-day blog review reports are an audit trail — keep them versioned.
+!output/blog_review/
+!output/blog_review/**
 
 # Local-only logs
 manual_test.log

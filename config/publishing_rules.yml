@@ -72,6 +72,15 @@ quality_gate:
     - page_hardcodes_commercial_values_without_config_check
     - page_lacks_homepage_link
 
+# 28-day blog review + site SEO/GEO audit (blog_review.py).
+review:
+  interval_days: 28                     # self-gate cadence (code gate, not cron)
+  ui_sample_size: 5                     # rotating sample of older posts for vision UI check
+  dead_post_impressions_threshold: 10   # ≤ this many 28d impressions → "dead"
+  weak_post_impressions_threshold: 50   # < this → "weak"
+  low_ctr_pct: 1.0                      # CTR below this flags low-CTR
+  # target_locales defaults to seo_bot.SHOP_LOCALES when omitted.
+
 # Optimization timeline — do not aggressively rewrite pages (spec line 1370-1392).
 optimization_timeline:
   day_0:  Publish or update page.
