@@ -411,6 +411,20 @@ def pick_image() -> str:
     return HERO_WHITELIST[key]
 
 
+def pick_cover(topic: str, keyword: str | None = None) -> str:
+    """Cover image for a post. Try a fresh AI-generated, topic-specific image
+    (hosted on Shopify Files); fall back to the curated rotation pool so the
+    bot never fails on image issues."""
+    try:
+        import image_generator
+        url = image_generator.generate_cover(topic, keyword or topic)
+        if url:
+            return url
+    except Exception as e:
+        print(f"   ⚠️  AI cover gen failed ({e}); using curated pool")
+    return pick_image()
+
+
 # Only active products, only cycling glasses + relevant accessories
 ALLOWED_HANDLES = {
     "velluto-stradapro-cycling-glasses-arancia",
@@ -1953,7 +1967,7 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
     quality = get_quality_targets()
     print(f"   Quality Day {quality['day']} — target: {quality['word_count']} words, {quality['faq_count']} FAQ")
 
-    cover_url = pick_image()
+    cover_url = pick_cover(keyword, keyword)
 
     # Generate EN article — up to 3 attempts; retries inject specific failures as feedback
     from briefs.quality_gate import gate as _quality_gate
@@ -2076,7 +2090,7 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
 def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
     print(f"\n── Post {post_num}/3 ─────────────────────────────")
     print(f"📝 Topic: {topic}")
-    cover_url = pick_image()
+    cover_url = pick_cover(topic, topic)
 
     post = generate(topic, trends, cover_url, products)
 

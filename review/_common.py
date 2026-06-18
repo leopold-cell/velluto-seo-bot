@@ -15,6 +15,15 @@ from typing import Any
 import requests
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Load the repo .env so standalone entry points (blog_review.py) get the same
+# environment seo_bot.py does. Imported before any review submodule reads getenv.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=os.path.join(ROOT, ".env"), override=False)
+except Exception:
+    pass
+
 REVIEW_DIR = os.path.join(ROOT, "output", "blog_review")
 STATE_PATH = os.path.join(REVIEW_DIR, "state.json")
 
