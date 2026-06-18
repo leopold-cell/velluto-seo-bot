@@ -1752,7 +1752,13 @@ def register_shopify_translation(article_id: int, locale: str, title: str,
     """Register NL or EN translation for a published article via Shopify translationsRegister."""
     gid = f"gid://shopify/Article/{article_id}"
     translations = []
-    for key, value in [("title", title), ("body_html", body_html), ("summary_html", meta_desc)]:
+    # NOTE: Shopify's translatable SEO-snippet key is `meta_description` (NOT
+    # `summary_html`). Registering only summary_html left non-EN markets with the
+    # ENGLISH meta description in their SERPs. We now target meta_description
+    # (the real SEO key) AND summary_html (blog-listing excerpt) — whichever the
+    # article actually exposes (keys without a digest are skipped automatically).
+    for key, value in [("title", title), ("body_html", body_html),
+                       ("meta_description", meta_desc), ("summary_html", meta_desc)]:
         digest = digests.get(key, "")
         if not digest:
             continue
@@ -1875,6 +1881,12 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     except Exception:
         adapted_title = target_kw
         adapted_meta  = target_kw
+
+    # Guard: if the model echoed the ENGLISH title verbatim (a known Haiku slip),
+    # fall back to the localized keyword so non-EN markets never show an EN headline.
+    en_title = (de_post.get("title", "") or "").strip().lower()
+    if en_title and adapted_title.strip().lower() == en_title and target_kw:
+        adapted_title = target_kw[:65]
 
     return {
         "title":     adapted_title,
