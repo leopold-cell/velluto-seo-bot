@@ -77,14 +77,16 @@ Section-CSS selbst ist korrekt.
 **Ursache:** Das Blog-Listing-Template rendert die Karten-Bilder im **natürlichen
 Seitenverhältnis** ohne fixes `aspect-ratio` / `object-fit`, daher unterschiedliche Höhen.
 
+**Gewünschtes Format: quadratisch (1:1).** Alle Übersichts-Kacheln sollen **1:1** sein.
+
 **Fix im Live-Theme** (Blog-Listing-Section bzw. Article-Card-Snippet, z. B.
 `sections/main-blog.liquid` / `snippets/article-card.liquid`):
 
 ```css
-/* Karten-Thumbnail auf einheitliches Format zwingen */
+/* Karten-Thumbnail auf einheitliches 1:1-Format zwingen */
 .blog-card__image,
 .article-card img {
-  aspect-ratio: 4 / 3;   /* einheitliches Verhältnis für alle Kacheln */
+  aspect-ratio: 1 / 1;   /* quadratische Kacheln, alle gleich groß */
   width: 100%;
   height: 100%;
   object-fit: cover;     /* schneidet zu, statt zu verzerren/zu stauchen */
@@ -101,7 +103,7 @@ Seitenverhältnis** ohne fixes `aspect-ratio` / `object-fit`, daher unterschiedl
 ## Acceptance Criteria
 
 - [ ] Artikel auf Desktop **zentriert** (mehrere Beiträge, Breite ≥ 960 px)
-- [ ] Alle Listing-Kacheln **gleich groß** (einheitliches Bild-Seitenverhältnis)
+- [ ] Alle Listing-Kacheln **quadratisch (1:1) und gleich groß**
 - [ ] Responsiv geprüft bei **640 / 960 / 1440 px** — kein Links-Versatz, gleichmäßiges Grid
 - [ ] Änderungen im **Live-Theme deployed** (`shopify theme push`)
 
