@@ -1,0 +1,223 @@
+{
+  "review_date": "2026-06-17",
+  "inventory": {
+    "total_articles": 0,
+    "bot_articles": 0
+  },
+  "quality": {
+    "articles_checked": 0,
+    "avg_llm_score": null,
+    "with_issues": 0,
+    "weak": 0,
+    "results": []
+  },
+  "performance": {
+    "window": null,
+    "totals": {},
+    "buckets": {
+      "dead": 0,
+      "weak": 0,
+      "low_ctr": 0,
+      "performing": 0,
+      "no_data": 0
+    },
+    "articles_checked": 0,
+    "has_gsc_data": false,
+    "results": []
+  },
+  "translations": {
+    "target_locales": [
+      "de",
+      "nl",
+      "fr",
+      "es",
+      "it",
+      "da",
+      "nb",
+      "pl",
+      "pt-PT",
+      "sv"
+    ],
+    "articles_checked": 0,
+    "fully_complete": 0,
+    "avg_completeness_pct": 0,
+    "missing_by_locale": {},
+    "articles_needing_fix": [],
+    "results": []
+  },
+  "ui": {
+    "skipped": false,
+    "targets": 0,
+    "broken": 0,
+    "minor": 0,
+    "results": []
+  },
+  "seo_geo": {
+    "technical": {
+      "pages": {
+        "home": {
+          "url": "https://velluto-shop.com/",
+          "ok": true,
+          "status": 200,
+          "title": "Velluto StradaPro | Ultra High Contrast Road Cycling Glasses",
+          "title_len": 60,
+          "meta_description_len": 153,
+          "h1_count": 1,
+          "canonical": true,
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "Answer",
+            "BreadcrumbList",
+            "FAQPage",
+            "ListItem",
+            "Organization",
+            "Question",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 61,
+            "missing_alt": 0
+          },
+          "internal_links": 72,
+          "issues": [
+            "hreflang missing for: pt-PT"
+          ]
+        },
+        "collection": {
+          "url": "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses",
+          "ok": true,
+          "status": 200,
+          "title": "Velluto StradaPro Cycling Glasses",
+          "title_len": 33,
+          "meta_description_len": 93,
+          "h1_count": 1,
+          "canonical": true,
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "BreadcrumbList",
+            "ListItem",
+            "Organization",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 27,
+            "missing_alt": 0
+          },
+          "internal_links": 50,
+          "issues": [
+            "hreflang missing for: pt-PT"
+          ]
+        },
+        "blog": {
+          "url": "https://velluto-shop.com/blogs/velluto-the-magazine",
+          "ok": true,
+          "status": 200,
+          "title": "Velluto - The Magazine",
+          "title_len": 22,
+          "meta_description_len": 0,
+          "h1_count": 1,
+          "canonical": true,
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "BreadcrumbList",
+            "ListItem",
+            "Organization",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 28,
+            "missing_alt": 0
+          },
+          "internal_links": 82,
+          "issues": [
+            "meta description missing (want ≤160)",
+            "hreflang missing for: pt-PT"
+          ]
+        }
+      },
+      "robots_txt": true,
+      "sitemap_xml": true,
+      "sitemap_references_articles": true
+    },
+    "technical_issues": [
+      "home: hreflang missing for: pt-PT",
+      "collection: hreflang missing for: pt-PT",
+      "blog: meta description missing (want ≤160)",
+      "blog: hreflang missing for: pt-PT"
+    ],
+    "geo": {
+      "geo_score": 42,
+      "seo_score": 61,
+      "top_geo_gaps": [
+        "No Article/BlogPosting structured data on blog posts — AI engines cannot extract author, date, or article entity signals for citation",
+        "Blog index page has zero meta description, eliminating the concise summary snippet AI answer engines pull for sourcing",
+        "No FAQ/Q&A schema on collection or blog article pages — definitional Q&A blocks are a primary citation trigger for AI overviews",
+        "Sample article HTML was empty/truncated — likely missing sourceable answer blocks (e.g. 'What are the best road cycling glasses?') with direct, citable one-paragraph answers",
+        "No comparison tables detected — AI engines heavily favour structured feature/spec comparisons when answering product research queries",
+        "Entity clarity is weak: brand 'Velluto' and product 'StradaPro' lack linked entity definitions (e.g. no schema 'brand', 'manufacturer', or sameAs URIs to Wikidata/Google KG)",
+        "No visible freshness signals (datePublished / dateModified) on articles — AI engines deprioritise uncdated content as potentially stale",
+        "No external citations or authoritative references within content — AI engines favour content that itself cites credible sources (studies, standards, athlete endorsements)"
+      ],
+      "top_seo_fixes": [
+        "Add meta description to blog index page (currently 0 chars) — this blocks snippet generation across the entire magazine section",
+        "Fix missing hreflang pt-PT on all three audited pages — current pt tag without region qualifier can cause hreflang validation errors and cannibalize Portuguese-region rankings",
+        "Expand collection page meta description from 93 chars to 140-155 chars with primary keyword + differentiating value proposition",
+        "Add Product or ItemList structured data to the collection page — currently only BreadcrumbList/Org schema present, missing price, availability, and review signals",
+        "Collection page title (33 chars) is under-optimised — expand to ~55 chars incorporating intent keywords e.g. 'Best Road Cycling Glasses | Velluto StradaPro'",
+        "Implement Article/BlogPosting schema on every blog post with author (Person), datePublished, dateModified, image, and publisher fields",
+        "Audit the 61 homepage images for descriptive (not just non-empty) alt text — keyword-relevant alt text improves image search and entity association"
+      ],
+      "quick_wins": [
+        "Add a 2-3 sentence 'TL;DR answer block' at the top of each blog article (e.g. 'StradaPro glasses use high-contrast lens technology to...') — this single change most directly increases AI citation probability",
+        "Write and publish the missing blog index meta description (~150 chars) in Shopify theme settings — 5-minute fix that restores snippet eligibility for the entire magazine",
+        "Add FAQPage schema to the homepage (schema types already include Answer/Question/FAQPage — verify these are rendering correctly and expand to 5+ Q&A pairs targeting cyclist purchase-intent queries)",
+        "Insert a lens comparison table (contrast level, light conditions, VLT%) into at least one cornerstone blog article — tables are parsed and quoted directly by Perplexity and ChatGPT",
+        "Add datePublished and dateModified meta tags + Article schema to blog posts to signal freshness to Google AI Overviews",
+        "Add sameAs property to Organization schema pointing to brand social profiles and any Wikidata entry to strengthen entity disambiguation"
+      ]
+    }
+  },
+  "autofix": {}
+}
