@@ -31,8 +31,35 @@
 /* shell */
 .vmag-main{position:relative;background:var(--bg);font-family:var(--sans);font-size:16px;line-height:1.6;color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .vmag-wrap{
-  max-width:680px;margin:0 auto;
+  max-width:680px;
+  margin-left:auto;margin-right:auto;   /* always centered */
   padding:0 clamp(20px, 6vw, 28px);
+}
+
+/* ============ Bulletproof centering (mobile-first) ============
+   The article must ALWAYS be centered, responsive, and independent of whatever
+   global Shopify theme wrapper sits around the section. Two layers:
+   1) the section root spans its container full-width and centers itself;
+   2) if a parent theme wrapper imposes a max-width / left constraint, neutralise
+      it — but ONLY on pages that actually contain the magazine article. */
+.vmag-main{width:100%;max-width:100%;margin-left:auto;margin-right:auto;}
+
+@supports selector(:has(*)){
+  /* Common Shopify content wrappers — unconstrain them on magazine pages so the
+     centered .vmag-wrap is centered against the full viewport, not a left box. */
+  body:has(.vmag-main) #MainContent,
+  body:has(.vmag-main) .content-for-layout,
+  body:has(.vmag-main) main[role="main"],
+  body:has(.vmag-main) .shopify-section:has(> .vmag-main),
+  body:has(.vmag-main) .shopify-section:has(> * > .vmag-main){
+    max-width:none !important;
+    width:100% !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+    float:none !important;
+  }
 }
 
 /* ============ hero ============ */
