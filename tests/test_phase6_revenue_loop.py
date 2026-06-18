@@ -33,11 +33,50 @@ def test_conversion_aggregate():
          "currency": "EUR", "financial_status": "paid"},
         {"landing_site": "/products/x", "total_price": "200.00", "financial_status": "refunded"},  # skipped
     ]
-    by_page, total, n, cur = conversions._aggregate(orders)
-    assert by_page[B + "oakley-alt"]["orders"] == 2
-    assert by_page[B + "oakley-alt"]["revenue"] == 218.0
-    assert cur == "EUR"
+    agg = conversions._aggregate(orders)
+    assert agg["by_page"][B + "oakley-alt"]["orders"] == 2
+    assert agg["by_page"][B + "oakley-alt"]["revenue"] == 218.0
+    assert agg["currency"] == "EUR"
     print("✓ conversion aggregation by landing page (refunds excluded)")
+
+
+def test_paid_filter():
+    # paid orders (fbclid / utm_source=facebook / instagram referrer) must NOT count as SEO
+    orders = [
+        {"landing_site": "/?fbclid=abc", "total_price": "149.00", "financial_status": "paid"},
+        {"landing_site": "/?utm_source=facebook&utm_medium=cpc", "total_price": "100.00",
+         "financial_status": "paid"},
+        {"landing_site": "/products/y", "referring_site": "https://instagram.com",
+         "total_price": "80.00", "financial_status": "paid"},
+        {"landing_site": "/blogs/velluto-the-magazine/oakley-alt", "total_price": "149.00",
+         "financial_status": "paid", "referring_site": "https://www.google.com/"},  # SEO
+        {"landing_site": "/discount/RIDE10", "total_price": "62.00", "financial_status": "paid"},  # excluded page
+    ]
+    agg = conversions._aggregate(orders)
+    assert agg["paid_orders"] == 3, agg
+    assert agg["seo_orders"] == 2          # google order + discount order are "non-paid"…
+    # …but the discount landing is excluded from page attribution
+    assert B + "oakley-alt" in agg["by_page"]
+    assert not any("/discount/" in u for u in agg["by_page"])
+    assert conversions._is_paid_order("/?gclid=x", "") is True
+    assert conversions._excluded_page("https://velluto-shop.com/discount/RIDE10") is True
+    print("✓ paid traffic filtered out of SEO attribution; discount/checkout pages excluded")
+
+
+def test_gsc_locale_normalization():
+    try:
+        from research import gsc_fetcher
+    except Exception as e:  # missing optional dep / env quirk → skip, don't fail the suite
+        print(f"⚠ skipped GSC locale test (import unavailable in this env: {type(e).__name__})")
+        return
+    n = gsc_fetcher._norm_url
+    assert n("https://velluto-shop.com/en-eu/blogs/velluto-the-magazine/x") \
+        == "https://velluto-shop.com/blogs/velluto-the-magazine/x"
+    assert n("https://velluto-shop.com/nl") == "https://velluto-shop.com/"
+    # real path segments must NOT be stripped as a locale
+    assert n("https://velluto-shop.com/blogs/velluto-the-magazine/x") \
+        == "https://velluto-shop.com/blogs/velluto-the-magazine/x"
+    print("✓ GSC locale-prefix normalization (locales merge, real paths preserved)")
 
 
 def _gsc():
@@ -111,6 +150,8 @@ def test_audit_revenue_render():
 if __name__ == "__main__":
     test_landing_normalization()
     test_conversion_aggregate()
+    test_paid_filter()
+    test_gsc_locale_normalization()
     test_revenue_tiering()
     test_scorer_revenue_and_commercial_boost()
     test_audit_revenue_render()

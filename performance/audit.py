@@ -89,9 +89,12 @@ def build_report(feedback: dict) -> str:
     L.append(f"- Clicks: **{t.get('curr_clicks', 0)}** ({_fmt_pct(t.get('clicks_delta_pct'))} vs prev)")
     L.append(f"- Impressions: **{t.get('curr_impressions', 0)}** ({_fmt_pct(t.get('impr_delta_pct'))} vs prev)")
     if conv:
-        L.append(f"- **Revenue (28d): {conv.get('revenue', 0)} {conv.get('currency','EUR')}** "
+        cur = conv.get('currency', 'EUR')
+        L.append(f"- **SEO/organic revenue (28d): {conv.get('revenue', 0)} {cur}** "
                  f"from {conv.get('orders', 0)} orders "
                  f"(prev {conv.get('prev_revenue', 0)} / {conv.get('prev_orders', 0)})")
+        L.append(f"  - _Paid (Meta/Google ads) excluded from SEO scaling: "
+                 f"{conv.get('paid_revenue', 0)} {cur} / {conv.get('paid_orders', 0)} orders_")
     else:
         L.append("- Revenue: _no Shopify conversion data this run_")
     L.append(f"- Pages evaluated: {c.get('pages_evaluated', 0)} — "

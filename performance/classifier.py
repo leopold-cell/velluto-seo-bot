@@ -41,6 +41,7 @@ CONV_PATH      = os.path.join(ROOT, "data", "processed", "conversion_performance
 OUTPUT_PATH    = os.path.join(ROOT, "data", "processed", "performance_feedback.json")
 
 BLOG_PREFIX = "https://velluto-shop.com/blogs/velluto-the-magazine/"
+HOMEPAGE    = "https://velluto-shop.com"   # brand/direct/ads baseline — not a scale target
 
 # ── Tier thresholds (clicks + growth). Tweak here to tune aggressiveness. ────
 WINNER_MIN_CLICKS        = 10    # meaningful traffic …
@@ -181,6 +182,9 @@ def classify(gsc: dict | None = None, inventory: dict | None = None,
     # expand the cluster around the queries the page already ranks for + internal links.
     scale_candidates: list[dict] = []
     for r in tiers["revenue_winner"] + tiers["winner"] + tiers["rising"]:
+        # Homepage revenue is mostly brand/direct/ads — never scale it as a content cluster.
+        if r["url"].rstrip("/") == HOMEPAGE:
+            continue
         scale_queries = [q["query"] for q in r["top_queries"] if q.get("query")]
         scale_candidates.append({
             "url":             r["url"],

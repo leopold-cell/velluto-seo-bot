@@ -55,6 +55,30 @@ def _diff_metric(curr: float, prev: float) -> float:
     return round((curr - prev) / prev * 100.0, 1)
 
 
+# Real content paths that must NOT be mistaken for a locale prefix.
+_NON_LOCALE_SEG = {"blogs", "products", "pages", "collections", "cdn", "discount",
+                   "cart", "checkout", "account", "tools", "apps", "a"}
+
+
+def _norm_url(url: str) -> str:
+    """Strip a leading locale prefix (/nl/, /en-eu/, /de/) so the same article on
+    different language paths aggregates into ONE row. Phase 6.1 data-quality fix."""
+    try:
+        p = urllib.parse.urlparse(url)
+        parts = p.path.split("/")
+        if (len(parts) > 1 and 2 <= len(parts[1]) <= 5
+                and parts[1].replace("-", "").isalpha()
+                and parts[1].lower() == parts[1]
+                and parts[1] not in _NON_LOCALE_SEG):
+            path = "/" + "/".join(parts[2:])
+        else:
+            path = p.path
+        path = path.rstrip("/") or "/"
+        return f"{p.scheme}://{p.netloc}{path}"
+    except Exception:
+        return url
+
+
 def run() -> dict:
     today = _dt.date.today()
     today_iso = today.isoformat()
@@ -96,7 +120,7 @@ def run() -> dict:
     striking_distance: list[dict] = []
     low_ctr_pages:     list[dict] = []
     for row in curr_qp:
-        kw, page = row["keys"][0], row["keys"][1]
+        kw, page = row["keys"][0], _norm_url(row["keys"][1])
         impr = row.get("impressions", 0) or 0
         clks = row.get("clicks", 0) or 0
         ctr  = row.get("ctr", 0) or 0
@@ -126,7 +150,7 @@ def run() -> dict:
     # --- Cannibalization: same query, multiple Velluto pages ---
     by_query: dict[str, list[dict]] = defaultdict(list)
     for row in curr_qp:
-        kw, page = row["keys"][0], row["keys"][1]
+        kw, page = row["keys"][0], _norm_url(row["keys"][1])
         impr = row.get("impressions", 0) or 0
         if impr >= 10:
             by_query[kw].append({"page": page, "impressions": int(impr),
@@ -139,16 +163,24 @@ def run() -> dict:
     cannibalization.sort(key=lambda x: sum(p["impressions"] for p in x["pages"]), reverse=True)
     cannibalization = cannibalization[:20]
 
-    # --- Per-page deltas ---
-    prev_p_map = {r["keys"][0]: r for r in prev_p}
+    # --- Per-page deltas (aggregated by locale-normalized URL) ---
+    def _agg_pages(rows: list[dict]) -> dict[str, dict]:
+        agg: dict[str, dict] = defaultdict(lambda: {"impressions": 0.0, "clicks": 0.0})
+        for r in rows:
+            u = _norm_url(r["keys"][0])
+            agg[u]["impressions"] += r.get("impressions", 0) or 0
+            agg[u]["clicks"]      += r.get("clicks", 0) or 0
+        return agg
+
+    curr_agg = _agg_pages(curr_p)
+    prev_agg = _agg_pages(prev_p)
     per_page_deltas: list[dict] = []
-    for r in curr_p:
-        page = r["keys"][0]
-        curr_impr = r.get("impressions", 0) or 0
-        curr_clks = r.get("clicks", 0) or 0
-        prev_r = prev_p_map.get(page) or {}
-        prev_impr = prev_r.get("impressions", 0) or 0
-        prev_clks = prev_r.get("clicks", 0) or 0
+    for page, cv in curr_agg.items():
+        curr_impr = cv["impressions"]
+        curr_clks = cv["clicks"]
+        pv = prev_agg.get(page, {"impressions": 0, "clicks": 0})
+        prev_impr = pv["impressions"]
+        prev_clks = pv["clicks"]
         if curr_impr < 5 and prev_impr < 5:
             continue
         per_page_deltas.append({

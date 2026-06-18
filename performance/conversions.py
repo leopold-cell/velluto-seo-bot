@@ -39,6 +39,45 @@ OUTPUT_PATH   = os.path.join(ROOT, "data", "processed", "conversion_performance.
 SITE = "https://velluto-shop.com"
 HEADERS = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 
+# ── Channel attribution (Phase 6.1) ─────────────────────────────────────────
+# Orders from PAID traffic (Meta/Google ads etc.) must NOT count as SEO revenue —
+# otherwise the loop "optimises" the homepage that ads land on. We detect paid via
+# click-IDs and UTM markers on landing_site, plus social referrers, and exclude them.
+PAID_CLICK_IDS   = ("fbclid", "gclid", "ttclid", "msclkid", "twclid", "li_fat_id", "igshid")
+PAID_UTM_SOURCES = {"facebook", "instagram", "ig", "fb", "meta", "tiktok", "snapchat",
+                    "pinterest", "youtube", "adwords", "googleads", "google_ads"}
+PAID_UTM_MEDIUMS = {"cpc", "ppc", "paid", "paid_social", "paidsocial", "paid-social",
+                    "display", "social_paid", "retargeting", "remarketing", "ads"}
+PAID_REFERRERS   = ("facebook.", "instagram.", "fb.", "l.facebook", "lm.facebook",
+                    "fb.me", "ig.me", "tiktok.", "snapchat.")
+# Landing paths that are never SEO content/money pages (coupon links, funnel pages).
+EXCLUDED_PATH_PREFIXES = ("/discount/", "/cart", "/checkout", "/account", "/tools",
+                          "/apps", "/cdn", "/a/", "/wpm@")
+
+
+def _is_paid_order(landing: str, referring: str) -> bool:
+    s = (landing or "").lower()
+    if any(cid in s for cid in PAID_CLICK_IDS):
+        return True
+    try:
+        q = urllib.parse.urlparse(s if s.startswith("http") else "https://x/" + s.lstrip("/")).query
+        params = urllib.parse.parse_qs(q)
+        if (params.get("utm_source", [""])[0] or "").lower() in PAID_UTM_SOURCES:
+            return True
+        if (params.get("utm_medium", [""])[0] or "").lower() in PAID_UTM_MEDIUMS:
+            return True
+    except Exception:
+        pass
+    ref = (referring or "").lower()
+    return any(r in ref for r in PAID_REFERRERS)
+
+
+def _excluded_page(url: str) -> bool:
+    if not url:
+        return True
+    path = url.replace(SITE, "") or "/"
+    return any(path.startswith(p) for p in EXCLUDED_PATH_PREFIXES)
+
 
 def _normalize_landing(landing: str) -> str | None:
     """Turn a Shopify landing_site value into a canonical https://velluto-shop.com/<path> URL.
@@ -89,12 +128,14 @@ def _fetch_orders(start: str, end: str) -> list[dict]:
     return orders
 
 
-def _aggregate(orders: list[dict]) -> tuple[dict, float, int, str]:
+def _aggregate(orders: list[dict]) -> dict:
+    """Split orders into SEO (organic/direct/referral) vs PAID, attribute SEO ones by page."""
     by_page: dict[str, dict] = defaultdict(lambda: {"orders": 0, "revenue": 0.0})
-    total_rev = 0.0
+    seo_rev = paid_rev = 0.0
+    seo_n = paid_n = 0
     currency = "EUR"
     for o in orders:
-        # Count only orders that represent real money (paid / partially paid).
+        # Count only orders that represent real money (skip voided / refunded).
         if (o.get("financial_status") or "") in ("voided", "refunded"):
             continue
         try:
@@ -102,12 +143,27 @@ def _aggregate(orders: list[dict]) -> tuple[dict, float, int, str]:
         except (TypeError, ValueError):
             rev = 0.0
         currency = o.get("currency") or currency
-        url = _normalize_landing(o.get("landing_site") or "")
-        total_rev += rev
-        if url:
+        landing   = o.get("landing_site") or ""
+        referring = o.get("referring_site") or ""
+        if _is_paid_order(landing, referring):
+            paid_rev += rev
+            paid_n += 1
+            continue
+        # SEO/organic/direct bucket
+        seo_rev += rev
+        seo_n += 1
+        url = _normalize_landing(landing)
+        if url and not _excluded_page(url):
             by_page[url]["orders"] += 1
             by_page[url]["revenue"] = round(by_page[url]["revenue"] + rev, 2)
-    return by_page, round(total_rev, 2), len(orders), currency
+    return {
+        "by_page":      dict(by_page),
+        "seo_revenue":  round(seo_rev, 2),
+        "seo_orders":   seo_n,
+        "paid_revenue": round(paid_rev, 2),
+        "paid_orders":  paid_n,
+        "currency":     currency,
+    }
 
 
 def classify(today: _dt.date | None = None) -> dict:
@@ -120,8 +176,9 @@ def classify(today: _dt.date | None = None) -> dict:
     curr_orders = _fetch_orders(curr_start, curr_end)
     prev_orders = _fetch_orders(prev_start, prev_end)
 
-    curr_by, curr_rev, curr_n, currency = _aggregate(curr_orders)
-    prev_by, prev_rev, prev_n, _        = _aggregate(prev_orders)
+    cur = _aggregate(curr_orders)
+    prv = _aggregate(prev_orders)
+    curr_by, prev_by = cur["by_page"], prv["by_page"]
 
     by_page: dict[str, dict] = {}
     for url in set(curr_by) | set(prev_by):
@@ -137,11 +194,15 @@ def classify(today: _dt.date | None = None) -> dict:
     return {
         "date": today.isoformat(),
         "windows": {"current": [curr_start, curr_end], "previous": [prev_start, prev_end]},
-        "by_page": by_page,
+        "by_page": by_page,   # SEO/organic only — paid (Meta/Google ads) excluded
         "totals": {
-            "orders": curr_n, "revenue": curr_rev,
-            "prev_orders": prev_n, "prev_revenue": prev_rev,
-            "currency": currency,
+            # `revenue`/`orders` = SEO/organic only (what the loop optimises for)
+            "orders": cur["seo_orders"], "revenue": cur["seo_revenue"],
+            "prev_orders": prv["seo_orders"], "prev_revenue": prv["seo_revenue"],
+            # paid shown for context, never fed into scaling decisions
+            "paid_orders": cur["paid_orders"], "paid_revenue": cur["paid_revenue"],
+            "prev_paid_orders": prv["paid_orders"], "prev_paid_revenue": prv["paid_revenue"],
+            "currency": cur["currency"],
         },
         "available": bool(curr_orders or prev_orders),
     }
@@ -160,8 +221,9 @@ def run() -> dict:
     if not result["available"]:
         print("   ⚠️  Conversions: no Shopify orders read (check SHOPIFY_TOKEN) — loop uses clicks only.")
     else:
-        print(f"   ✓ Conversions: {t['orders']} orders / {t['revenue']} {t['currency']} (28d), "
-              f"{len(result['by_page'])} landing pages with sales")
+        print(f"   ✓ Conversions: SEO/organic {t['orders']} orders / {t['revenue']} {t['currency']} "
+              f"(paid excluded: {t.get('paid_orders',0)} orders / {t.get('paid_revenue',0)}) — "
+              f"{len(result['by_page'])} SEO pages with sales")
     return result
 
 
