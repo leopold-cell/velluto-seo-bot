@@ -45,30 +45,21 @@ Full-Width-Sections links aus bzw. verengt sie (z. B. Wrapper auf `display:flex`
 ohne Zentrierung, oder ein `page-width`-Container ohne `margin-inline:auto`). Die
 Section-CSS selbst ist korrekt.
 
-**Fix im Live-Theme:**
+**✅ Fix ist bereits implementiert** in `theme/assets/velluto-magazine.css` (parent-unabhängige,
+mobile-first Bulletproof-Zentrierung): `.vmag-main` nimmt volle Breite + zentriert, und per
+`@supports selector(:has(*))` werden gängige Shopify-Content-Wrapper
+(`#MainContent`, `.content-for-layout`, `main[role="main"]`, `.shopify-section:has(>.vmag-main)`)
+**nur auf Magazine-Seiten** von ihrer Links-/Max-Width-Zwängung befreit. `.vmag-wrap` bleibt
+`max-width` + `margin:auto`.
 
-1. **CSS-Versionsabgleich:** Live `assets/velluto-magazine.css` gegen die Repo-Version
-   diffen. Falls die deployte Datei älter/abweichend ist → Repo-Version (zentriert)
-   redeployen:
-   ```bash
-   shopify theme push --only assets/velluto-magazine.css
-   ```
-2. **Globalen Wrapper prüfen & zentrieren:** In `layout/theme.liquid` den Content-Container
-   (`#MainContent` / `.content-for-layout`) bzw. den Template-/Section-Wrapper auf eine
-   kürzliche Änderung prüfen, die Full-Width-Sections links ausrichtet. Zentrierung
-   wiederherstellen (`margin-inline:auto`, bzw. `justify-content`/`align-items` so, dass
-   Sektionen volle Breite einnehmen).
-3. **Defensiver Safeguard** (robust, unabhängig vom Parent) — in `velluto-magazine.css`
-   ergänzen:
-   ```css
-   .vmag-main{ width:100%; margin-inline:auto; }
+**Es fehlt nur noch der Deploy** dieser Datei ins Live-Theme:
+```bash
+shopify theme push --only assets/velluto-magazine.css --nodelete
+```
 
-   /* Falls ein Parent die Section schrumpft: Full-Bleed-Re-Center ab Desktop.
-      .vmag-main hat bereits overflow-x:hidden → kein horizontaler Scroll. */
-   @media (min-width:960px){
-     .vmag-main{ width:100vw; margin-left:calc(50% - 50vw); }
-   }
-   ```
+Falls nach dem Deploy noch immer links: Der globale Wrapper nutzt einen **anderen**
+Klassen-/ID-Namen als die oben abgedeckten — dann diesen Selektor in der `:has()`-Liste in
+`velluto-magazine.css` ergänzen (Name per DevTools am `<main>`/Wrapper-Element ablesen).
 
 ---
 
@@ -77,14 +68,16 @@ Section-CSS selbst ist korrekt.
 **Ursache:** Das Blog-Listing-Template rendert die Karten-Bilder im **natürlichen
 Seitenverhältnis** ohne fixes `aspect-ratio` / `object-fit`, daher unterschiedliche Höhen.
 
+**Gewünschtes Format: quadratisch (1:1).** Alle Übersichts-Kacheln sollen **1:1** sein.
+
 **Fix im Live-Theme** (Blog-Listing-Section bzw. Article-Card-Snippet, z. B.
 `sections/main-blog.liquid` / `snippets/article-card.liquid`):
 
 ```css
-/* Karten-Thumbnail auf einheitliches Format zwingen */
+/* Karten-Thumbnail auf einheitliches 1:1-Format zwingen */
 .blog-card__image,
 .article-card img {
-  aspect-ratio: 4 / 3;   /* einheitliches Verhältnis für alle Kacheln */
+  aspect-ratio: 1 / 1;   /* quadratische Kacheln, alle gleich groß */
   width: 100%;
   height: 100%;
   object-fit: cover;     /* schneidet zu, statt zu verzerren/zu stauchen */
@@ -101,7 +94,7 @@ Seitenverhältnis** ohne fixes `aspect-ratio` / `object-fit`, daher unterschiedl
 ## Acceptance Criteria
 
 - [ ] Artikel auf Desktop **zentriert** (mehrere Beiträge, Breite ≥ 960 px)
-- [ ] Alle Listing-Kacheln **gleich groß** (einheitliches Bild-Seitenverhältnis)
+- [ ] Alle Listing-Kacheln **quadratisch (1:1) und gleich groß**
 - [ ] Responsiv geprüft bei **640 / 960 / 1440 px** — kein Links-Versatz, gleichmäßiges Grid
 - [ ] Änderungen im **Live-Theme deployed** (`shopify theme push`)
 

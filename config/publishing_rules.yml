@@ -84,8 +84,8 @@ review:
 # AI cover-image generation (image_generator.py). Fresh, topic-specific cover per
 # post via OpenAI Images, hosted on Shopify Files — falls back to the curated pool.
 images:
-  generate: true               # set false to use only the curated WHITELIST pool
-  model: gpt-image-1
+  generate: false              # false → use the curated pool (Shopify-CDN photos + Higgsfield lifestyle images); true → OpenAI per-post
+  model: dall-e-3              # OpenAI fallback model (gpt-image-1 needs a verified org)
   size: "1536x1024"            # landscape ~16/9 for the hero figure
   cost_per_image_usd: 0.17     # used for the monthly budget guard
   monthly_budget_usd: 30.0     # stop generating (fall back to pool) past this
