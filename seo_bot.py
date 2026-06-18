@@ -2257,8 +2257,19 @@ def main():
         # Phase 6 — throughput: on a STRONG signal (high-scoring commercial /
         # revenue-winner candidates), publish up to a couple more articles the same
         # day. Opted in by the operator. Fully guarded; extra cost only on strong days.
-        STRONG_SIGNAL_SCORE = 85
-        MAX_EXTRA_ACTIONS    = 2
+        # Season-aware aggression: road-cycling-eyewear demand peaks May–Sept.
+        # In-season we FRONT-LOAD content hard (SEO has lag — anything published now
+        # only ripens in late season); off-season we ease off to bank rankings and
+        # save spend rather than flood low-demand content.
+        _peak_season = datetime.date.today().month in (5, 6, 7, 8, 9)
+        if _peak_season:
+            STRONG_SIGNAL_SCORE = 78       # publish more readily
+            MAX_EXTRA_ACTIONS   = 3        # up to 4 articles/day on strong days
+        else:
+            STRONG_SIGNAL_SCORE = 90       # only the strongest signals off-season
+            MAX_EXTRA_ACTIONS   = 1
+        print(f"   Season mode: {'PEAK (front-load)' if _peak_season else 'off-season (conserve)'} "
+              f"— extra-article cap {MAX_EXTRA_ACTIONS}, signal ≥{STRONG_SIGNAL_SCORE}")
         try:
             extra_done = 0
             primary_kw = decision.get("chosen_keyword")
