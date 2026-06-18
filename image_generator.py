@@ -49,9 +49,10 @@ API = "https://%s/admin/api/2024-01/graphql.json" % SHOPIFY_STORE
 def config() -> dict:
     defaults = {
         "generate": True,
-        "model": "gpt-image-1",
-        "size": "1536x1024",          # landscape ~16/9 for the hero figure
-        "cost_per_image_usd": 0.17,
+        "model": "dall-e-3",          # works without org verification; gpt-image-1 needs a verified org
+        "size": "1792x1024",          # landscape ~16/9 for the hero figure
+        "quality": "standard",        # dall-e-3 only: standard | hd
+        "cost_per_image_usd": 0.08,
         "monthly_budget_usd": 30.0,
         "filename_prefix": "ai-cover",
     }
