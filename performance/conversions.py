@@ -142,6 +142,10 @@ def _aggregate(orders: list[dict]) -> dict:
             rev = float(o.get("total_price") or 0)
         except (TypeError, ValueError):
             rev = 0.0
+        # Skip 0 € orders — B2B/wholesale, free samples, fully-discounted or test
+        # orders. They carry no revenue signal and would pollute order counts.
+        if rev <= 0:
+            continue
         currency = o.get("currency") or currency
         landing   = o.get("landing_site") or ""
         referring = o.get("referring_site") or ""

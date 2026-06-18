@@ -51,6 +51,7 @@ def test_paid_filter():
         {"landing_site": "/blogs/velluto-the-magazine/oakley-alt", "total_price": "149.00",
          "financial_status": "paid", "referring_site": "https://www.google.com/"},  # SEO
         {"landing_site": "/discount/RIDE10", "total_price": "62.00", "financial_status": "paid"},  # excluded page
+        {"landing_site": "/wholesale", "total_price": "0.00", "financial_status": "paid"},  # B2B 0€ → skipped
     ]
     agg = conversions._aggregate(orders)
     assert agg["paid_orders"] == 3, agg
