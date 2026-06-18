@@ -68,11 +68,12 @@ def _seed_keywords() -> list[str]:
     DataForSEO + the opportunity scorer filter for what's worth pursuing.
     """
     cfg = config_loader.get("seed_keywords")
-    solution = cfg.get("phase2_seed_keywords", []) or []
-    problem  = cfg.get("phase4_5_problem_keywords", []) or []
-    # Dedupe preserving order — solution keywords first (existing priority)
+    solution   = cfg.get("phase2_seed_keywords", []) or []
+    problem    = cfg.get("phase4_5_problem_keywords", []) or []
+    commercial = cfg.get("phase6_commercial_keywords", []) or []   # Phase 6: BOFU comparison
+    # Dedupe preserving order — commercial first (highest sales intent), then solution, then problem
     seen, merged = set(), []
-    for kw in solution + problem:
+    for kw in commercial + solution + problem:
         if kw and kw.lower() not in seen:
             seen.add(kw.lower())
             merged.append(kw)

@@ -6,14 +6,19 @@ Reads:
     clicks/impressions deltas, striking-distance + emerging queries, low-CTR pages)
   - data/processed/existing_content_inventory.json  (decision/content_inventory.py)
 
-Classifies EVERY URL on the domain into a tier using clicks + growth (the user's
-chosen definition of "performing"):
+Classifies EVERY URL on the domain into a tier. Phase 6 makes this REVENUE-aware:
+if a page drove Shopify sales (via performance/conversions.py) it is ranked above
+pure-click winners, because the goal is sales, not traffic.
 
-  winner    real clicks AND growing            → SCALE  (cluster + internal links)
-  rising    low base but strong momentum       → NURTURE (it's about to break out)
-  decaying  used to get clicks, now dropping   → REFRESH (update the page)
-  dormant   lots of impressions, ~no clicks    → FIX CTR (meta/intent/refresh)
-  steady    stable traffic                     → leave it
+  revenue_winner  drove real sales (28d)           → SCALE HARD (top priority)
+  winner          real clicks AND growing          → SCALE  (cluster + internal links)
+  rising          low base but strong momentum     → NURTURE (about to break out)
+  decaying        used to get clicks, now dropping → REFRESH (update the page)
+  dormant         lots of impressions, ~no clicks  → FIX CTR (meta/intent/refresh)
+  steady          stable traffic                   → leave it
+
+Pages with strong clicks but ZERO sales get a `traffic_no_sales` flag — an
+intent/landing mismatch worth fixing rather than scaling.
 
 Writes: data/processed/performance_feedback.json
 
@@ -32,6 +37,7 @@ from typing import Any
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GSC_PATH       = os.path.join(ROOT, "data", "processed", "gsc_performance.json")
 INVENTORY_PATH = os.path.join(ROOT, "data", "processed", "existing_content_inventory.json")
+CONV_PATH      = os.path.join(ROOT, "data", "processed", "conversion_performance.json")
 OUTPUT_PATH    = os.path.join(ROOT, "data", "processed", "performance_feedback.json")
 
 BLOG_PREFIX = "https://velluto-shop.com/blogs/velluto-the-magazine/"
@@ -48,6 +54,7 @@ DECAY_MIN_PREV_CLICKS    = 8     # had real traffic to lose …
 DECAY_MAX_GROWTH_PCT     = -30   # … and dropped hard
 DORMANT_MIN_IMPRESSIONS  = 150   # very visible …
 DORMANT_MAX_CLICKS       = 1     # … but nobody clicks
+TRAFFIC_NO_SALES_CLICKS  = 20    # decent traffic but 0 orders → intent/landing mismatch
 
 
 def _load(path: str) -> dict:
@@ -97,13 +104,20 @@ def _classify_one(d: dict) -> str:
     return "steady"
 
 
-def classify(gsc: dict | None = None, inventory: dict | None = None) -> dict:
+def classify(gsc: dict | None = None, inventory: dict | None = None,
+             conversions: dict | None = None) -> dict:
     gsc = gsc if gsc is not None else _load(GSC_PATH)
     inventory = inventory if inventory is not None else _load(INVENTORY_PATH)
+    conversions = conversions if conversions is not None else _load(CONV_PATH)
     today = _dt.date.today().isoformat()
 
     per_page = gsc.get("per_page_deltas") or []
     striking = gsc.get("striking_distance_queries") or []
+    low_ctr  = gsc.get("low_ctr_pages") or []
+    conv_by_page = (conversions or {}).get("by_page") or {}
+
+    def _rev(url: str) -> dict:
+        return conv_by_page.get(url.rstrip("/")) or conv_by_page.get(url) or {}
 
     # Map page → its striking-distance queries (the keywords to expand a winner around)
     queries_by_page: dict[str, list[dict]] = defaultdict(list)
@@ -115,22 +129,38 @@ def classify(gsc: dict | None = None, inventory: dict | None = None) -> dict:
         })
 
     tiers: dict[str, list[dict]] = {
-        "winner": [], "rising": [], "decaying": [], "dormant": [], "steady": [],
+        "revenue_winner": [], "winner": [], "rising": [], "decaying": [],
+        "dormant": [], "steady": [],
     }
 
     for d in per_page:
         url = d.get("page", "")
-        tier = _classify_one(d)
+        rev = _rev(url)
+        revenue = rev.get("revenue", 0) or 0
+        orders  = rev.get("orders", 0) or 0
+        clicks  = d.get("curr_clicks", 0) or 0
+
+        # Revenue overrides clicks: a page that sells is the real winner.
+        if revenue > 0 or orders > 0:
+            tier = "revenue_winner"
+        else:
+            tier = _classify_one(d)
+        traffic_no_sales = (clicks >= TRAFFIC_NO_SALES_CLICKS and orders == 0)
+
         art = _article_for_url(inventory, url)
         rec = {
             "url":              url,
             "is_blog_post":     _is_blog_post(url),
             "tier":             tier,
-            "curr_clicks":      d.get("curr_clicks", 0),
+            "curr_clicks":      clicks,
             "prev_clicks":      d.get("prev_clicks", 0),
             "clicks_delta_pct": d.get("clicks_delta_pct", 0),
             "curr_impressions": d.get("curr_impressions", 0),
             "impr_delta_pct":   d.get("impr_delta_pct", 0),
+            "orders":           orders,
+            "revenue":          revenue,
+            "prev_revenue":     rev.get("prev_revenue", 0) or 0,
+            "traffic_no_sales": traffic_no_sales,
             "article_id":       (art or {}).get("id"),
             "handle":           (art or {}).get("handle"),
             "title":            (art or {}).get("title"),
@@ -140,16 +170,17 @@ def classify(gsc: dict | None = None, inventory: dict | None = None) -> dict:
         tiers[tier].append(rec)
 
     # Sort each tier by what matters for it
+    tiers["revenue_winner"].sort(key=lambda r: (r["revenue"], r["curr_clicks"]), reverse=True)
     tiers["winner"].sort(key=lambda r: r["curr_clicks"], reverse=True)
     tiers["rising"].sort(key=lambda r: r["impr_delta_pct"], reverse=True)
     tiers["decaying"].sort(key=lambda r: r["clicks_delta_pct"])           # worst first
     tiers["dormant"].sort(key=lambda r: r["curr_impressions"], reverse=True)
 
     # ── Build action candidates the scorer consumes ──────────────────────────
-    # SCALE: winners (and strong risers) → expand the cluster around the queries
-    # the page already ranks for + add internal links to it.
+    # SCALE: revenue winners first (proven to sell), then click winners + risers →
+    # expand the cluster around the queries the page already ranks for + internal links.
     scale_candidates: list[dict] = []
-    for r in tiers["winner"] + tiers["rising"]:
+    for r in tiers["revenue_winner"] + tiers["winner"] + tiers["rising"]:
         scale_queries = [q["query"] for q in r["top_queries"] if q.get("query")]
         scale_candidates.append({
             "url":             r["url"],
@@ -158,34 +189,56 @@ def classify(gsc: dict | None = None, inventory: dict | None = None) -> dict:
             "primary_keyword": r["primary_keyword"],
             "curr_clicks":     r["curr_clicks"],
             "clicks_delta_pct": r["clicks_delta_pct"],
+            "revenue":         r["revenue"],
+            "orders":          r["orders"],
             "scale_queries":   scale_queries,
             "is_blog_post":    r["is_blog_post"],
         })
 
-    # REFRESH: decayers (priority) + dormant (CTR problem)
+    # REFRESH: decayers (priority), dormant (CTR problem), and pages with traffic
+    # but no sales (intent/landing mismatch — fix the bridge to product).
     refresh_candidates: list[dict] = []
     for r in tiers["decaying"]:
         refresh_candidates.append({**_refresh_rec(r), "reason": "decaying"})
     for r in tiers["dormant"]:
         refresh_candidates.append({**_refresh_rec(r), "reason": "dormant_low_ctr"})
+    traffic_no_sales = [r for t in tiers.values() for r in t if r.get("traffic_no_sales")]
+    traffic_no_sales.sort(key=lambda r: r["curr_clicks"], reverse=True)
+    for r in traffic_no_sales:
+        if r["tier"] not in ("decaying", "dormant"):  # avoid dupes
+            refresh_candidates.append({**_refresh_rec(r), "reason": "traffic_no_sales"})
 
-    totals = gsc.get("totals") or {}
+    # Low-CTR query/page pairs straight from GSC (fast meta wins for meta_optimizer).
+    low_ctr_targets = [
+        {"query": x.get("query"), "page": x.get("page"),
+         "impressions": x.get("impressions"), "ctr_pct": x.get("ctr_pct"),
+         "avg_position": x.get("avg_position")}
+        for x in low_ctr
+    ]
+
+    gsc_totals = gsc.get("totals") or {}
+    conv_totals = (conversions or {}).get("totals") or {}
     result = {
         "date":     today,
         "windows":  gsc.get("windows") or {},
-        "totals":   totals,
+        "totals":   gsc_totals,
+        "conversion_totals": conv_totals,
         "counts": {
+            "revenue_winner": len(tiers["revenue_winner"]),
             "winner":   len(tiers["winner"]),
             "rising":   len(tiers["rising"]),
             "decaying": len(tiers["decaying"]),
             "dormant":  len(tiers["dormant"]),
             "steady":   len(tiers["steady"]),
+            "traffic_no_sales": len(traffic_no_sales),
             "pages_evaluated": len(per_page),
         },
         "tiers":              tiers,
         "scale_candidates":   scale_candidates,
         "refresh_candidates": refresh_candidates,
+        "low_ctr_targets":    low_ctr_targets,
         "gsc_available":      bool(per_page),
+        "conversions_available": bool(conv_by_page),
     }
     return result
 
@@ -200,6 +253,8 @@ def _refresh_rec(r: dict) -> dict:
         "prev_clicks":      r["prev_clicks"],
         "clicks_delta_pct": r["clicks_delta_pct"],
         "curr_impressions": r["curr_impressions"],
+        "orders":           r.get("orders", 0),
+        "revenue":          r.get("revenue", 0),
         "is_blog_post":     r["is_blog_post"],
     }
 
@@ -211,17 +266,18 @@ def _save(payload: dict) -> None:
 
 
 def run() -> dict:
-    """Load GSC + inventory from disk, classify, persist feedback json."""
+    """Load GSC + inventory + conversions from disk, classify, persist feedback json."""
     result = classify()
     _save(result)
     c = result["counts"]
     if not result["gsc_available"]:
         print("   ⚠️  Performance: gsc_performance.json empty — no feedback (check GSC creds / property).")
     else:
-        print(f"   ✓ Performance: {c['winner']} winners, {c['rising']} rising, "
-              f"{c['decaying']} decaying, {c['dormant']} dormant "
-              f"({c['pages_evaluated']} pages, total Δclicks "
-              f"{result['totals'].get('clicks_delta_pct', 0):+.0f}%)")
+        rev = result.get("conversion_totals", {}).get("revenue", 0)
+        print(f"   ✓ Performance: {c['revenue_winner']} revenue-winners, {c['winner']} click-winners, "
+              f"{c['rising']} rising, {c['decaying']} decaying, {c['dormant']} dormant, "
+              f"{c['traffic_no_sales']} traffic-no-sales "
+              f"({c['pages_evaluated']} pages, 28d revenue {rev})")
     return result
 
 

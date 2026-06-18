@@ -55,8 +55,13 @@ def _fmt_pct(v) -> str:
 
 def _row(r: dict) -> str:
     name = r.get("title") or r.get("url", "").replace(classifier.BLOG_PREFIX, ".../")
-    return (f"| {name[:60]} | {r.get('curr_clicks',0)} | "
-            f"{_fmt_pct(r.get('clicks_delta_pct'))} | {r.get('curr_impressions',0)} |")
+    return (f"| {name[:55]} | {r.get('curr_clicks',0)} | "
+            f"{_fmt_pct(r.get('clicks_delta_pct'))} | {r.get('curr_impressions',0)} | "
+            f"{r.get('revenue',0)} ({r.get('orders',0)}) |")
+
+
+_HDR = "| Page | Clicks | Δ Clicks | Impr | Revenue (orders) |"
+_SEP = "|---|---|---|---|---|"
 
 
 def build_report(feedback: dict) -> str:
@@ -78,21 +83,46 @@ def build_report(feedback: dict) -> str:
     L.append(f"_28-day window {feedback.get('windows', {}).get('current', '?')} "
              f"vs previous {feedback.get('windows', {}).get('previous', '?')}._")
     L.append("")
+    conv = feedback.get("conversion_totals", {})
     L.append("## Domain trend")
     L.append("")
     L.append(f"- Clicks: **{t.get('curr_clicks', 0)}** ({_fmt_pct(t.get('clicks_delta_pct'))} vs prev)")
     L.append(f"- Impressions: **{t.get('curr_impressions', 0)}** ({_fmt_pct(t.get('impr_delta_pct'))} vs prev)")
+    if conv:
+        L.append(f"- **Revenue (28d): {conv.get('revenue', 0)} {conv.get('currency','EUR')}** "
+                 f"from {conv.get('orders', 0)} orders "
+                 f"(prev {conv.get('prev_revenue', 0)} / {conv.get('prev_orders', 0)})")
+    else:
+        L.append("- Revenue: _no Shopify conversion data this run_")
     L.append(f"- Pages evaluated: {c.get('pages_evaluated', 0)} — "
-             f"{c.get('winner',0)} winners · {c.get('rising',0)} rising · "
-             f"{c.get('decaying',0)} decaying · {c.get('dormant',0)} dormant · {c.get('steady',0)} steady")
+             f"{c.get('revenue_winner',0)} revenue-winners · {c.get('winner',0)} click-winners · "
+             f"{c.get('rising',0)} rising · {c.get('decaying',0)} decaying · "
+             f"{c.get('dormant',0)} dormant · {c.get('traffic_no_sales',0)} traffic-no-sales")
     L.append("")
 
+    # REVENUE WINNERS → scale hardest
+    L.append("## 💰 Revenue winners — scale hardest (these actually sell)")
+    L.append("")
+    if tiers.get("revenue_winner"):
+        L.append(_HDR)
+        L.append(_SEP)
+        for r in tiers["revenue_winner"][:10]:
+            L.append(_row(r))
+        L.append("")
+        L.append("**Priority #1:** build cluster content around these and link to them. "
+                 "They convert — every extra click here is closer to a sale than anywhere else.")
+        L.append("")
+    else:
+        L.append("_No page-attributed sales this window (or Shopify data unavailable). "
+                 "Falling back to click-based winners below._")
+        L.append("")
+
     # WINNERS → scale
-    L.append("## 🏆 Winners — scale these (cluster + internal links)")
+    L.append("## 🏆 Click winners — scale these (cluster + internal links)")
     L.append("")
     if tiers.get("winner"):
-        L.append("| Page | Clicks | Δ Clicks | Impr |")
-        L.append("|---|---|---|---|")
+        L.append(_HDR)
+        L.append(_SEP)
         for r in tiers["winner"][:10]:
             L.append(_row(r))
         L.append("")
@@ -114,8 +144,8 @@ def build_report(feedback: dict) -> str:
     L.append("## 📈 Rising — nurture (about to break out)")
     L.append("")
     if tiers.get("rising"):
-        L.append("| Page | Clicks | Δ Clicks | Impr |")
-        L.append("|---|---|---|---|")
+        L.append(_HDR)
+        L.append(_SEP)
         for r in tiers["rising"][:10]:
             L.append(_row(r))
         L.append("")
@@ -127,8 +157,8 @@ def build_report(feedback: dict) -> str:
     L.append("## 📉 Decaying — refresh now")
     L.append("")
     if tiers.get("decaying"):
-        L.append("| Page | Clicks | Δ Clicks | Impr |")
-        L.append("|---|---|---|---|")
+        L.append(_HDR)
+        L.append(_SEP)
         for r in tiers["decaying"][:10]:
             L.append(_row(r))
         L.append("")
@@ -143,8 +173,8 @@ def build_report(feedback: dict) -> str:
     L.append("## 😴 Dormant — high impressions, ~no clicks (fix CTR/intent)")
     L.append("")
     if tiers.get("dormant"):
-        L.append("| Page | Clicks | Δ Clicks | Impr |")
-        L.append("|---|---|---|---|")
+        L.append(_HDR)
+        L.append(_SEP)
         for r in tiers["dormant"][:10]:
             L.append(_row(r))
         L.append("")
@@ -152,6 +182,25 @@ def build_report(feedback: dict) -> str:
         L.append("")
     else:
         L.append("_None this period._")
+        L.append("")
+
+    # TRAFFIC BUT NO SALES → fix the bridge to product
+    tns = [r for tier in tiers.values() for r in tier if r.get("traffic_no_sales")]
+    tns.sort(key=lambda r: r.get("curr_clicks", 0), reverse=True)
+    L.append("## 🛒 Traffic but no sales — fix the product bridge")
+    L.append("")
+    if tns:
+        L.append(_HDR)
+        L.append(_SEP)
+        for r in tns[:10]:
+            L.append(_row(r))
+        L.append("")
+        L.append("**Action:** these get clicks but convert nobody — tighten the CTA, add a clear "
+                 "product/collection bridge and the 30-day-trial hook. Intent or landing mismatch, "
+                 "not a traffic problem.")
+        L.append("")
+    else:
+        L.append("_None flagged — pages with traffic are converting._")
         L.append("")
 
     L.append("---")

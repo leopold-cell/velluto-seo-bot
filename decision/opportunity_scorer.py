@@ -41,18 +41,45 @@ from decision.content_inventory import find_matching_article
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_PATH = os.path.join(ROOT, "data", "processed", "opportunity_scores.json")
 
-# Phase 5 — performance momentum: bounded boost added AFTER the weighted aggregate
+# Phase 5/6 — performance momentum: bounded boost added AFTER the weighted aggregate
 # so winners/decayers rise without distorting the 7-factor weight math.
 MOMENTUM_BOOST = {
-    "winner":   18,   # scale what's already winning
+    "revenue_winner": 25,   # Phase 6: pages that actually SELL — scale hardest
+    "winner":   18,   # scale what's already winning (clicks)
     "rising":   12,   # nurture near-breakouts
     "decaying": 14,   # refreshing a slipping page is high-leverage
     "dormant":   8,   # CTR fixes are cheaper wins
+    "low_ctr":  10,   # fast meta wins on already-ranking pages
 }
+
+# Phase 6 — commercial-intent boost: comparison / "alternative" / competitor-name
+# queries are BOFU and convert best for an "affordable-luxury Oakley alternative"
+# brand, so they jump the queue.
+COMPARISON_BOOST = 12
 
 
 def _boost(opp: float, tier: str) -> float:
     return round(min(100.0, opp + MOMENTUM_BOOST.get(tier, 0)), 2)
+
+
+def _competitor_names() -> list[str]:
+    try:
+        comps = config_loader.competitors().get("core_competitors", []) or []
+        return [c.get("name", "").lower() for c in comps if c.get("name")]
+    except Exception:
+        return ["oakley", "poc", "uvex", "rudy project", "evil eye", "scicon",
+                "100%", "kapvoe", "smith", "koo", "alba optics"]
+
+
+_COMMERCIAL_TOKENS = ("alternative", " vs ", "vs ", " vs", "best ", "worth it",
+                      "cheaper than", "instead of", "review", "buy ")
+
+
+def _is_commercial_comparison(keyword: str) -> bool:
+    kw = f" {keyword.lower()} "
+    if any(tok in kw for tok in _COMMERCIAL_TOKENS):
+        return True
+    return any(name and name in kw for name in _competitor_names())
 
 
 # ── Sub-scorers ────────────────────────────────────────────────────────────
@@ -376,6 +403,46 @@ def score(research: dict, inventory: dict) -> dict:
             "ai_overview_score":  50,
             "opportunity_score":  opp,
         })
+
+    # Source 5 — low-CTR pages (Phase 6, Point 3): already ranking, just not clicked.
+    # Cheapest wins; surfaced for prioritisation + handled in-place by meta_optimizer.
+    for lc in (feedback.get("low_ctr_targets") or [])[:10]:
+        kw = lc.get("query") or ""
+        if not kw or kw in seen_keywords:
+            continue
+        seen_keywords.add(kw)
+        sub_scores = {
+            "buyer_intent":           score_buyer_intent(kw),
+            "product_fit":            score_product_fit(kw),
+            "competitor_velocity":    score_competitor_velocity(competitors_bundle, kw),
+            "keyword_demand":         min(100, 30 + int((lc.get("impressions") or 0) / 5)),
+            "serp_weakness":          60,
+            "localization_potential": 40,
+            "internal_link_value":    65,
+        }
+        opp = _boost(_aggregate(sub_scores), "low_ctr")
+        candidates.append({
+            "candidate_id":       f"lowctr-{kw}",
+            "source":             "performance_low_ctr",
+            "keyword":            kw,
+            "topic":              kw,
+            "target_market":      "US",
+            "recommended_action": "update_existing_article",
+            "existing_article":   {"url": lc.get("page")},
+            "current_position":   lc.get("avg_position"),
+            "current_impressions": lc.get("impressions"),
+            "performance_tier":   "low_ctr",
+            "sub_scores":         sub_scores,
+            "ai_overview_score":  50,
+            "opportunity_score":  opp,
+        })
+
+    # Phase 6 (Points 1+2) — commercial-comparison boost: push BOFU comparison /
+    # "alternative" / competitor-name topics up the queue (they convert best).
+    for c in candidates:
+        if _is_commercial_comparison(c.get("keyword", "")):
+            c["commercial_comparison"] = True
+            c["opportunity_score"] = round(min(100.0, c["opportunity_score"] + COMPARISON_BOOST), 2)
 
     # Sort and persist
     candidates.sort(key=lambda c: c["opportunity_score"], reverse=True)

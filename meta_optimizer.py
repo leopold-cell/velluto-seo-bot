@@ -64,6 +64,39 @@ def fetch_products() -> list[dict]:
     return [e["node"] for e in data.get("products", {}).get("edges", [])]
 
 
+def fetch_collections() -> list[dict]:
+    """Phase 6 (Point 2): collection pages are money pages — optimize their metas too."""
+    data = gql("""
+    {
+      collections(first: 50) {
+        edges { node {
+          id title handle
+          description
+          seo { title description }
+        }}
+      }
+    }""")
+    return [e["node"] for e in data.get("collections", {}).get("edges", [])]
+
+
+def update_collection_seo(gid: str, meta_desc: str, seo_title: str = None) -> bool:
+    seo_input = {"description": meta_desc[:155]}
+    if seo_title:
+        seo_input["title"] = seo_title
+    data = gql("""
+    mutation collectionUpdate($input: CollectionInput!) {
+      collectionUpdate(input: $input) {
+        collection { id seo { description } }
+        userErrors { field message }
+      }
+    }""", {"input": {"id": gid, "seo": seo_input}})
+    errors = data.get("collectionUpdate", {}).get("userErrors", [])
+    if errors:
+        print(f"   ✗ {errors}")
+        return False
+    return True
+
+
 def _rest(path: str, params: str = "") -> dict:
     r = requests.get(f"https://{SHOPIFY_STORE}/admin/api/2024-01/{path}{params}",
                      headers=HEADERS, timeout=15)
@@ -182,6 +215,18 @@ def load_keyword_context() -> str:
         if top:
             lines.append("TOP GOOGLE SEARCH QUERIES (real GSC data — use these terms):\n" +
                          ", ".join(top))
+    # Phase 6 (Point 3): prioritise low-CTR queries — pages already rank for these
+    # but don't get clicked, so the meta is the lever. Rewrite to win the click.
+    fb_path = os.path.join(BASE, "data", "processed", "performance_feedback.json")
+    if os.path.exists(fb_path):
+        try:
+            fb = json.load(open(fb_path))
+            low = [t.get("query") for t in (fb.get("low_ctr_targets") or [])[:10] if t.get("query")]
+            if low:
+                lines.append("\nPRIORITY — LOW-CTR QUERIES (we rank but get few clicks; "
+                             "make the meta irresistible for these):\n" + ", ".join(low))
+        except Exception:
+            pass
     return "\n".join(lines)
 
 
@@ -232,6 +277,12 @@ def generate_metas(items: list[dict], resource_type: str, kw_context: str) -> li
         ),
         "page":    "For pages: match the page's purpose. Include the primary keyword. Be descriptive, not salesy.",
         "article": "For blog articles: summarize the article's value. Include the primary search keyword from the title. Make it compelling to click.",
+        "collection": (
+            "For collection pages (these are money pages): LEAD with the commercial "
+            "head term (e.g. 'Road cycling glasses', 'Interchangeable lens cycling glasses'), "
+            "then 'Velluto', then 1-2 differentiators and a buy-now CTA. These pages must "
+            "rank for high-intent shopping queries and convert. Never lead with the brand."
+        ),
     }[resource_type]
 
     prompt = f"""You are an SEO specialist for Velluto (velluto-shop.com), a Dutch road cycling eyewear brand.
@@ -272,8 +323,52 @@ Return ONLY a JSON array of {len(items)} strings, one per item, in the same orde
     return [m[:155] for m in metas]
 
 
+def generate_titles(items: list[dict], resource_type: str, kw_context: str) -> list[str]:
+    """Phase 6: keyword-first SEO titles (<=60 chars). Used for collection money pages."""
+    items_text = ""
+    for i, item in enumerate(items, 1):
+        title   = item.get("title", "")
+        current = (item.get("seo") or {}).get("title", "")
+        items_text += f"\n{i}. PAGE TITLE: {title}\n   CURRENT SEO TITLE: {current or '(none)'}\n"
+
+    prompt = f"""You are an SEO specialist for Velluto (velluto-shop.com), road cycling eyewear.
+
+BRAND CONTEXT:
+{BRAND_CONTEXT}
+
+{kw_context}
+
+TASK: Write an SEO title tag for each collection page below.
+Rules:
+- Max 60 characters (count carefully) — titles longer than 60 get truncated in Google
+- LEAD with the commercial head term / shopping keyword (e.g. "Road Cycling Glasses",
+  "Interchangeable Lens Cycling Glasses"); the brand "Velluto" comes AFTER, not first
+- High purchase intent — these are shop pages, not blog posts
+- Each unique; same language as the page title (EN/NL/DE)
+- No em-dash/en-dash; use a colon or pipe "|"
+- Pattern: "<keyword> | Velluto" or "<keyword>: <1 differentiator> | Velluto"
+
+{items_text}
+
+Return ONLY a JSON array of {len(items)} strings, one per item, in order:
+["title 1", "title 2", ...]"""
+
+    r = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=600,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    cost = log_usage(r.usage.input_tokens, r.usage.output_tokens)
+    print(f"   Haiku (titles): {r.usage.input_tokens}in/{r.usage.output_tokens}out | ${cost:.4f}")
+    raw = r.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1].lstrip("json").strip()
+    titles = json.loads(raw)
+    return [t[:60] for t in titles]
+
+
 def process_batch(items: list[dict], resource_type: str, update_fn, kw_context: str,
-                  batch_size: int = 5) -> dict:
+                  batch_size: int = 5, with_title: bool = False) -> dict:
     results = {"updated": 0, "skipped": 0, "failed": 0, "items": []}
     for i in range(0, len(items), batch_size):
         batch = items[i:i + batch_size]
@@ -285,15 +380,25 @@ def process_batch(items: list[dict], resource_type: str, update_fn, kw_context: 
             results["failed"] += len(batch)
             continue
 
-        for item, meta in zip(batch, metas):
+        # Phase 6: optionally also generate keyword-first SEO titles (collections).
+        seo_titles = [None] * len(batch)
+        if with_title:
+            try:
+                seo_titles = generate_titles(batch, resource_type, kw_context)
+            except Exception as e:
+                print(f"   ⚠️  Title generation failed: {e} — keeping existing titles")
+                seo_titles = [None] * len(batch)
+
+        for item, meta, seo_title in zip(batch, metas, seo_titles):
             title = item.get("title", "")
             gid   = item["id"]
             old   = (item.get("seo") or {}).get("description", "")
-            if old and old == meta:
+            # Skip only when nothing would change (no title update requested + desc identical)
+            if old and old == meta and not seo_title:
                 results["skipped"] += 1
                 continue
             try:
-                ok = update_fn(gid, meta)
+                ok = update_fn(gid, meta, seo_title) if seo_title else update_fn(gid, meta)
                 if ok:
                     print(f"   ✓ {title[:55]}")
                     print(f"     → {meta}")
@@ -321,7 +426,8 @@ def main():
     else:
         print("   ⚠️  No GSC data found — run seo_optimizer.py first for best results")
 
-    log = {"date": str(datetime.date.today()), "products": {}, "pages": {}, "articles": {}}
+    log = {"date": str(datetime.date.today()), "products": {}, "collections": {},
+           "pages": {}, "articles": {}}
 
     # ── Products ──────────────────────────────────────────────────────────────
     print("\n🛍️  Fetching active products...")
@@ -330,6 +436,19 @@ def main():
                 or "Hard Case" in p["title"] or "Cleaning" in p["title"]]
     print(f"   {len(products)} SEO-relevant products found")
     log["products"] = process_batch(products, "product", update_product_seo, kw_context)
+
+    # ── Collections (Phase 6, Point 2: money pages) ────────────────────────────
+    print("\n🗂️  Fetching collections...")
+    try:
+        collections = [c for c in fetch_collections()
+                       if c.get("handle") not in _SKIP_PAGE_HANDLES
+                       and c.get("handle") != "related-products"]
+        print(f"   {len(collections)} collections to optimize")
+        log["collections"] = process_batch(collections, "collection", update_collection_seo,
+                                            kw_context, with_title=True)
+    except Exception as e:
+        print(f"   ⚠️  Collection optimization skipped: {e}")
+        log["collections"] = {"updated": 0, "failed": 0}
 
     # ── Pages ─────────────────────────────────────────────────────────────────
     print("\n📄 Fetching SEO pages...")
@@ -344,8 +463,9 @@ def main():
     log["articles"] = process_batch(articles, "article", update_article_seo, kw_context)
 
     # ── Summary ───────────────────────────────────────────────────────────────
-    total_updated = sum(log[k]["updated"] for k in ["products", "pages", "articles"])
-    total_failed  = sum(log[k]["failed"]  for k in ["products", "pages", "articles"])
+    _summary_keys = ["products", "collections", "pages", "articles"]
+    total_updated = sum(log[k].get("updated", 0) for k in _summary_keys)
+    total_failed  = sum(log[k].get("failed", 0)  for k in _summary_keys)
     print(f"\n✅ Done — {total_updated} updated, {total_failed} failed")
 
     existing = json.load(open(META_LOG)) if os.path.exists(META_LOG) else []

@@ -72,7 +72,7 @@ def test_audit_report():
     fb = classifier.classify(gsc=_sample_gsc(), inventory=_sample_inventory())
     md = audit.build_report(fb)
     assert "Performance Audit" in md
-    assert "Winners" in md and "Decaying" in md
+    assert "winners" in md.lower() and "Decaying" in md
     assert "+39%" in md  # domain clicks trend
     # empty-GSC path produces the credentials warning, not a normal report
     empty = audit.build_report(classifier.classify(gsc={}, inventory={}))

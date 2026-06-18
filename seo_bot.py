@@ -1674,6 +1674,32 @@ def build_body_html(post: dict, cover_url: str) -> str:
     # Append FAQ schema if present
     if post.get("faq_schema"):
         body += f'\n<script type="application/ld+json">\n{post["faq_schema"]}\n</script>\n'
+    # Phase 6 (Point 4 / GEO): Article JSON-LD — helps rich results AND makes the
+    # piece easier for AI engines (ChatGPT/Perplexity/AI Overviews) to attribute & cite.
+    try:
+        headline = (post.get("title") or post.get("keyword") or "").strip()[:110]
+        if headline:
+            article_schema = {
+                "@context": "https://schema.org",
+                "@type": "Article",
+                "headline": headline,
+                "image": cover_url or "",
+                "author":    {"@type": "Organization", "name": "Velluto"},
+                "publisher": {
+                    "@type": "Organization", "name": "Velluto",
+                    "logo": {"@type": "ImageObject",
+                              "url": "https://velluto-shop.com/cdn/shop/files/velluto-logo.png"},
+                },
+                "datePublished": datetime.date.today().isoformat(),
+                "dateModified":  datetime.date.today().isoformat(),
+            }
+            if post.get("meta_description"):
+                article_schema["description"] = post["meta_description"][:300]
+            body += ('\n<script type="application/ld+json">\n'
+                     + json.dumps(article_schema, ensure_ascii=False, indent=2)
+                     + '\n</script>\n')
+    except Exception as _e:
+        print(f"   ⚠️  Article schema injection skipped: {_e}")
     # Append JS behaviors
     body += ARTICLE_JS
     font_link = (
@@ -2122,9 +2148,11 @@ def main():
     # the scorer consumes (scale winners / refresh decayers), and write the
     # Claude-readable 28-day audit when due. Best-effort: never blocks publishing.
     try:
-        print("📈 Performance loop (GSC winners/losers → decisions)...")
+        print("📈 Performance loop (GSC + Shopify revenue → decisions)...")
         from performance import classifier as _perf_classifier
         from performance import audit as _perf_audit
+        from performance import conversions as _perf_conv
+        _perf_conv.run()                            # → data/processed/conversion_performance.json (Phase 6)
         _perf_classifier.run()                      # → data/processed/performance_feedback.json
         _audit = _perf_audit.maybe_run()            # 28-day-gated report
         if _audit.get("ran"):
@@ -2199,6 +2227,56 @@ def main():
         except Exception as e:
             print(f"   ❌ Decision-driven publish failed: {e}")
             import traceback; traceback.print_exc()
+
+        # Phase 6 — throughput: on a STRONG signal (high-scoring commercial /
+        # revenue-winner candidates), publish up to a couple more articles the same
+        # day. Opted in by the operator. Fully guarded; extra cost only on strong days.
+        STRONG_SIGNAL_SCORE = 85
+        MAX_EXTRA_ACTIONS    = 2
+        try:
+            extra_done = 0
+            primary_kw = decision.get("chosen_keyword")
+            cand_list  = scored.get("candidates", []) if isinstance(scored, dict) else []
+            for cand in cand_list:
+                if extra_done >= MAX_EXTRA_ACTIONS:
+                    break
+                if cand.get("recommended_action") != "create_new_article":
+                    continue
+                if cand.get("keyword") == primary_kw:
+                    continue
+                strong = (cand.get("opportunity_score", 0) >= STRONG_SIGNAL_SCORE
+                          and (cand.get("commercial_comparison")
+                               or cand.get("performance_tier") in ("revenue_winner", "winner")))
+                if not strong:
+                    continue
+                angle = "comparison" if cand.get("commercial_comparison") else "buying_guide"
+                extra_kw = {"keyword": cand["keyword"], "keyword_en": cand["keyword"],
+                            "phase": "decision-extra", "angle": angle, "art_num": None}
+                try:
+                    print(f"\n── Strong signal: extra article '{cand['keyword']}' "
+                          f"(score {cand.get('opportunity_score')}, tier "
+                          f"{cand.get('performance_tier','-')}) ──")
+                    eb = None
+                    try:
+                        from briefs.us_master_brief    import build_brief as _bb
+                        from briefs.localization_brief import build_all_localization_briefs as _bl
+                        edec = {**decision, "chosen_keyword": cand["keyword"],
+                                "chosen_topic": cand["keyword"],
+                                "required_content_type": angle}
+                        eb = _bb(edec, research, inventory)
+                        _bl(eb, research, commercial)
+                    except Exception as _be:
+                        print(f"   ⚠️  Extra brief failed: {_be} — brief-less")
+                        eb = None
+                    publish_de_primary(extra_kw, products, commercial=commercial, brief=eb)
+                    published += 1
+                    extra_done += 1
+                except Exception as _ee:
+                    print(f"   ⚠️  Extra publish failed: {_ee}")
+            if extra_done:
+                print(f"   ✓ Throughput: +{extra_done} extra strong-signal article(s) today")
+        except Exception as _e:
+            print(f"   ⚠️  Throughput step skipped: {_e}")
 
     elif decision and decision.get("chosen_action") in (
             "update_existing_article", "improve_paa_blocks", "improve_ai_overview_blocks",

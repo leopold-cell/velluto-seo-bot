@@ -50,3 +50,17 @@ phase4_5_problem_keywords:
   - wind protection cycling glasses
   # Value / decision-friction problems
   - are cheap sport sunglasses good
+
+# Phase 6: high-intent COMMERCIAL / comparison keywords (BOFU).
+# For an "affordable-luxury Oakley alternative" brand these convert best — the
+# searcher already wants to buy and is only choosing a brand. The opportunity
+# scorer gives these a commercial-comparison boost (decision/opportunity_scorer.py).
+phase6_commercial_keywords:
+  - Oakley alternative road cycling glasses
+  - best Oakley alternative cycling sunglasses
+  - Velluto vs Oakley cycling glasses
+  - POC alternative cycling glasses
+  - Rudy Project alternative cycling glasses
+  - best value cycling glasses
+  - affordable premium cycling sunglasses
+  - cycling glasses worth the money
