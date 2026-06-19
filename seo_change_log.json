@@ -1,0 +1,62 @@
+{
+  "_comment": "Durable history of manual SEO changes (CTR/title/meta). The weekly pulse task and any optimization routine MUST read this + the live Shopify global.title_tag before acting, and NEVER repeat a change already logged here. A page counts as 'already optimized' if it has a non-null global.title_tag.",
+  "goal": "Grow confirmed organic-search sales (Shopify customerJourneySummary firstVisit.sourceType == SEO, revenue > 0) toward 20/month during the May-September season.",
+  "changes": [
+    {
+      "date": "2026-06-18",
+      "type": "ctr_fix",
+      "resource": "Article",
+      "article_id": 616562819413,
+      "handle": "oakley-alternative-cycling-sunglasses-why-riders-switch",
+      "fields_changed": ["title_tag", "description_tag"],
+      "new_title_tag": "Oakley Alternative Cycling Glasses, Fair Price | Velluto",
+      "baseline_ctr_pct": 0.12,
+      "baseline_impressions_28d": 5812,
+      "baseline_position": 11.1,
+      "rationale": "Highest-impression commercial page on the domain; near-zero CTR. Biggest single lever.",
+      "source": "manual via Shopify connector"
+    },
+    {
+      "date": "2026-06-18",
+      "type": "ctr_fix",
+      "resource": "Article",
+      "article_id": 616525594965,
+      "handle": "best-cycling-glasses-2026-what-actually-makes-them-good",
+      "fields_changed": ["title_tag"],
+      "new_title_tag": "Best Cycling Glasses 2026, Tested for Value | Velluto",
+      "baseline_ctr_pct": 0.88,
+      "baseline_impressions_28d": 571,
+      "baseline_position": 12.4,
+      "rationale": "High-impression commercial query, page-1 border, weak CTR.",
+      "source": "manual via Shopify connector"
+    },
+    {
+      "date": "2026-06-18",
+      "type": "ctr_fix",
+      "resource": "Article",
+      "article_id": 616535359829,
+      "handle": "anti-fog-cycling-sunglasses-what-actually-works-in-2026",
+      "fields_changed": ["title_tag"],
+      "new_title_tag": "Anti-Fog Cycling Sunglasses That Actually Work | Velluto",
+      "baseline_ctr_pct": 0.39,
+      "baseline_impressions_28d": 255,
+      "baseline_position": 9.7,
+      "rationale": "Commercial 'anti fog' query, page-1, very weak CTR.",
+      "source": "manual via Shopify connector"
+    },
+    {
+      "date": "2026-06-18",
+      "type": "ctr_fix",
+      "resource": "Article",
+      "article_id": 616578580821,
+      "handle": "road-cycling-glasses-vs-regular-sunglasses-2026-velluto",
+      "fields_changed": ["title_tag", "description_tag"],
+      "new_title_tag": "Cycling Glasses vs Regular Sunglasses: Worth It? | Velluto",
+      "baseline_ctr_pct": 1.02,
+      "baseline_impressions_28d": 98,
+      "baseline_position": 15.2,
+      "rationale": "Proven converter (organic order #1255, 141.30 EUR). Strengthen snippet + product bridge.",
+      "source": "manual via Shopify connector"
+    }
+  ]
+}
