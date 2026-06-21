@@ -569,6 +569,96 @@
         "dedupe_key": "product:velluto-stradapro-cycling-glasses-viola",
         "link": "https://velluto-shop.com/products/velluto-stradapro-cycling-glasses-viola"
       }
+    ],
+    "2026-06-21": [
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "article",
+        "dedupe_key": "article:https://velluto-shop.com/blogs/velluto-the-magazine/best-alternatives-to-oakley-cycling-glasses-in-2026",
+        "link": "https://velluto-shop.com/blogs/velluto-the-magazine/best-alternatives-to-oakley-cycling-glasses-in-2026"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:vellutopuro-interchangeable-lenses",
+        "link": "https://velluto-shop.com/products/vellutopuro-interchangeable-lenses"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:velluto-visione-interchangeable-lenses",
+        "link": "https://velluto-shop.com/products/velluto-visione-interchangeable-lenses"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:velluto-cleaning-spray",
+        "link": "https://velluto-shop.com/products/velluto-cleaning-spray"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:velluto-hard-case",
+        "link": "https://velluto-shop.com/products/velluto-hard-case"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:velluto-microfiber-cleaning-cloth",
+        "link": "https://velluto-shop.com/products/velluto-microfiber-cleaning-cloth"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:velluto-stradapro-cycling-glasses-arancia",
+        "link": "https://velluto-shop.com/products/velluto-stradapro-cycling-glasses-arancia"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:velluto-stradapro-cycling-glasses-espresso",
+        "link": "https://velluto-shop.com/products/velluto-stradapro-cycling-glasses-espresso"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:velluto-stradapro-cycling-glasses-nero",
+        "link": "https://velluto-shop.com/products/velluto-stradapro-cycling-glasses-nero"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:velluto-stradapro-cycling-glasses-viola",
+        "link": "https://velluto-shop.com/products/velluto-stradapro-cycling-glasses-viola"
+      },
+      {
+        "status": "error",
+        "reason": "http_401",
+        "detail": "{\"code\":3,\"message\":\"Your token does not have sufficient permissions to perform this operation. Please ensure your token is authorized with the correct set of scopes. Missing: ['boards:write']\"}",
+        "kind": "product",
+        "dedupe_key": "product:velluto-drinking-bottle-limited-edition",
+        "link": "https://velluto-shop.com/products/velluto-drinking-bottle-limited-edition"
+      }
     ]
   }
 }
