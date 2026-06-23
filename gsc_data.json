@@ -1,14 +1,14 @@
 {
-  "date": "2026-06-22",
+  "date": "2026-06-23",
   "top_queries": [
     {
       "keys": [
         "velluto"
       ],
-      "clicks": 62,
-      "impressions": 1195,
-      "ctr": 0.05188284518828452,
-      "position": 5.373221757322176
+      "clicks": 60,
+      "impressions": 1161,
+      "ctr": 0.05167958656330749,
+      "position": 5.377260981912145
     },
     {
       "keys": [
@@ -51,9 +51,9 @@
         "vellutto"
       ],
       "clicks": 3,
-      "impressions": 37,
-      "ctr": 0.08108108108108109,
-      "position": 6.675675675675675
+      "impressions": 36,
+      "ctr": 0.08333333333333333,
+      "position": 6.833333333333333
     },
     {
       "keys": [
@@ -105,9 +105,9 @@
         "veluto"
       ],
       "clicks": 1,
-      "impressions": 329,
-      "ctr": 0.00303951367781155,
-      "position": 5.808510638297872
+      "impressions": 322,
+      "ctr": 0.003105590062111801,
+      "position": 5.763975155279503
     },
     {
       "keys": [
@@ -232,19 +232,19 @@
       "keys": [
         "https://velluto-shop.com/"
       ],
-      "clicks": 163,
-      "impressions": 2382,
-      "ctr": 0.06842989084802686,
-      "position": 5.037783375314861
+      "clicks": 158,
+      "impressions": 2308,
+      "ctr": 0.0684575389948007,
+      "position": 5.034228769497401
     },
     {
       "keys": [
         "https://velluto-shop.com/nl"
       ],
-      "clicks": 21,
-      "impressions": 111,
-      "ctr": 0.1891891891891892,
-      "position": 3.1981981981981984
+      "clicks": 19,
+      "impressions": 109,
+      "ctr": 0.1743119266055046,
+      "position": 3.238532110091743
     },
     {
       "keys": [
@@ -254,15 +254,6 @@
       "impressions": 7896,
       "ctr": 0.0008865248226950354,
       "position": 7.197315096251266
-    },
-    {
-      "keys": [
-        "https://velluto-shop.com/collections/all"
-      ],
-      "clicks": 6,
-      "impressions": 590,
-      "ctr": 0.010169491525423728,
-      "position": 4.596610169491525
     },
     {
       "keys": [
@@ -296,18 +287,27 @@
         "https://velluto-shop.com/collections"
       ],
       "clicks": 4,
-      "impressions": 162,
-      "ctr": 0.024691358024691357,
-      "position": 6.179012345679013
+      "impressions": 155,
+      "ctr": 0.025806451612903226,
+      "position": 6.174193548387096
     },
     {
       "keys": [
         "https://velluto-shop.com/pages/about-us"
       ],
       "clicks": 4,
-      "impressions": 292,
-      "ctr": 0.0136986301369863,
-      "position": 5.017123287671233
+      "impressions": 289,
+      "ctr": 0.01384083044982699,
+      "position": 5.006920415224913
+    },
+    {
+      "keys": [
+        "https://velluto-shop.com/collections/all"
+      ],
+      "clicks": 3,
+      "impressions": 572,
+      "ctr": 0.005244755244755245,
+      "position": 4.615384615384615
     },
     {
       "keys": [
@@ -320,15 +320,6 @@
     }
   ],
   "daily_trend": [
-    {
-      "keys": [
-        "2026-05-25"
-      ],
-      "clicks": 12,
-      "impressions": 168,
-      "ctr": 0.07142857142857142,
-      "position": 5.934523809523809
-    },
     {
       "keys": [
         "2026-05-26"
