@@ -101,6 +101,36 @@ def ensure_homepage_link(html: str) -> tuple[str, bool]:
     return fixed, True
 
 
+# ── Auto-fix step 2b: inject contextual money-page (StradaPro collection) link ──
+
+# The canonical money page (verified 200; see scripts/fix_internal_links.py).
+PRIMARY_COLLECTION_URL = "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses"
+
+
+def ensure_money_page_link(html: str) -> tuple[str, bool]:
+    """
+    Funnel hardening: guarantee at least one CONTEXTUAL in-body link to the
+    canonical StradaPro collection (the strongest money page). The product card
+    links to a single product, and the collection otherwise only appears in the
+    nav chrome (boilerplate Google discounts) — so ensure a real body link.
+    Returns (fixed_html, injected_bool).
+    """
+    if "/collections/velluto-stradapro-cycling-glasses" in html:
+        return html, False
+
+    injection = ('<p>Compare the full lineup in the '
+                 f'<a href="{PRIMARY_COLLECTION_URL}">Velluto StradaPro cycling glasses collection</a>.</p>')
+
+    if re.search(r'<h2[^>]*id=["\']sfaq', html, re.I):
+        fixed = re.sub(r'(<h2[^>]*id=["\']sfaq)', injection + r"\1", html, count=1, flags=re.I)
+    elif re.search(r'<details', html, re.I):
+        fixed = re.sub(r'(<details)', injection + r"\1", html, count=1, flags=re.I)
+    else:
+        fixed = html + "\n" + injection
+
+    return fixed, True
+
+
 def strip_em_dashes(html: str) -> tuple[str, bool]:
     """
     Phase 4.11: remove the em-dash '—' (and spaced en-dash ' – ') used as a
@@ -394,6 +424,10 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     fixed_body, injected = ensure_homepage_link(fixed_body)
     if injected:
         auto_fixes.append("injected mandatory homepage link")
+    # Auto-fix 2b: ensure a contextual money-page (StradaPro collection) link
+    fixed_body, money_linked = ensure_money_page_link(fixed_body)
+    if money_linked:
+        auto_fixes.append("injected StradaPro collection (money-page) link")
     # Auto-fix 3: strip em-dashes (Phase 4.11 — the AI-writing tell)
     fixed_body, dashed = strip_em_dashes(fixed_body)
     if dashed:
