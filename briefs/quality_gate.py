@@ -131,6 +131,82 @@ def ensure_money_page_link(html: str) -> tuple[str, bool]:
     return fixed, True
 
 
+# ── Auto-fix step 2c: inject contextual related-article internal links ─────────
+# GEO audit (MEDIUM): internal linking depth too shallow — deep links between
+# related articles improve crawl/retrieval depth for LLMs. Distinctive-token
+# overlap keeps links topical (generic domain words are dropped as stopwords).
+
+_REL_STOPWORDS = {
+    "the", "a", "an", "and", "or", "for", "with", "your", "you", "best", "top",
+    "2024", "2025", "2026", "velluto", "cycling", "glasses", "sunglasses",
+    "sportbrille", "sportbrillen", "bike", "bikes", "road", "ride", "riding",
+    "how", "what", "why", "guide", "review", "reviews", "vs", "of", "to", "in",
+    "on", "is", "are", "pro", "stradapro", "strada", "eyewear", "brille",
+    "brillen", "fiets", "wielren", "wielrenbril", "fietsbril", "lens", "lenses",
+}
+
+
+def _rel_tokens(*texts: str) -> set[str]:
+    toks: set[str] = set()
+    for t in texts:
+        for w in re.findall(r"[a-zA-Z]{3,}", (t or "").lower()):
+            if w not in _REL_STOPWORDS:
+                toks.add(w)
+    return toks
+
+
+def ensure_related_links(html: str, post: dict, related_articles: list | None,
+                         max_links: int = 2) -> tuple[str, int]:
+    """
+    Inject up to `max_links` contextual links to thematically related existing
+    articles (distinctive-token overlap). Each candidate must carry a ready-made
+    absolute `url` (built by the caller, which knows the blog). Self and already-
+    linked articles are skipped. Returns (fixed_html, links_injected).
+    """
+    if not related_articles:
+        return html, 0
+
+    self_handle = (post.get("handle") or "").strip().lower()
+    self_title  = (post.get("title") or "").strip().lower()
+    src = _rel_tokens(post.get("title", ""), post.get("keyword", ""), post.get("tags", ""))
+    if not src:
+        return html, 0
+
+    scored: list[tuple[int, str, str, str]] = []
+    for a in related_articles:
+        title  = (a.get("title") or "").strip()
+        url    = (a.get("url") or "").strip()
+        handle = (a.get("handle") or "").strip().lower()
+        if not title or not url:
+            continue
+        if self_handle and handle == self_handle:
+            continue
+        if self_title and title.lower() == self_title:
+            continue
+        if url in html:           # already linked in-body
+            continue
+        overlap = src & _rel_tokens(title, a.get("tags", ""))
+        if overlap:
+            scored.append((len(overlap), a.get("created_at", ""), title, url))
+
+    if not scored:
+        return html, 0
+
+    scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    picks = scored[:max_links]
+    items = "".join(f'<li><a href="{u}">{t}</a></li>' for _, _, t, u in picks)
+    block = ('<aside class="vmag-related-inline"><p><strong>Related reading:</strong></p>'
+             f'<ul>{items}</ul></aside>')
+
+    if re.search(r'<h2[^>]*id=["\']sfaq', html, re.I):
+        fixed = re.sub(r'(<h2[^>]*id=["\']sfaq)', block + r"\1", html, count=1, flags=re.I)
+    elif re.search(r'<details', html, re.I):
+        fixed = re.sub(r'(<details)', block + r"\1", html, count=1, flags=re.I)
+    else:
+        fixed = html + "\n" + block
+    return fixed, len(picks)
+
+
 def strip_em_dashes(html: str) -> tuple[str, bool]:
     """
     Phase 4.11: remove the em-dash '—' (and spaced en-dash ' – ') used as a
@@ -401,7 +477,7 @@ def check_meta_lengths(post: dict) -> list[str]:
 # ── Top-level gate ────────────────────────────────────────────────────────
 
 def gate(post: dict, brief: dict | None, market_code: str = "US",
-         commercial: dict | None = None) -> dict:
+         commercial: dict | None = None, related_articles: list | None = None) -> dict:
     """
     Run all checks. Mutates post.body_html in place for auto-fixes.
     Returns:
@@ -428,6 +504,11 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     fixed_body, money_linked = ensure_money_page_link(fixed_body)
     if money_linked:
         auto_fixes.append("injected StradaPro collection (money-page) link")
+    # Auto-fix 2c: deepen internal linking with contextual related-article links
+    post["body_html"] = fixed_body  # ensure_related_links reads post.title/keyword/tags
+    fixed_body, rel_n = ensure_related_links(fixed_body, post, related_articles)
+    if rel_n:
+        auto_fixes.append(f"injected {rel_n} related-article internal link(s)")
     # Auto-fix 3: strip em-dashes (Phase 4.11 — the AI-writing tell)
     fixed_body, dashed = strip_em_dashes(fixed_body)
     if dashed:

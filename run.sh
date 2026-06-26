@@ -8,6 +8,7 @@ python3 seo_bot.py
 python3 link_builder.py      || true
 python3 pinterest_poster.py  || true
 python3 seo_optimizer.py     || true
+python3 geo_monitor.py       || true
 python3 dashboard.py         || true
 
 # 28-day blog review + site SEO/GEO audit. Self-gates to every 28 days, so a

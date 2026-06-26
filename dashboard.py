@@ -504,7 +504,105 @@ new Chart(document.getElementById('gscTrendChart'), {{
 </script>"""
 
 
-def build_html(articles, usage, geo, ranking_history, gsc):
+def load_geo_performance() -> dict:
+    """Load geo_performance.json (written by geo_monitor.py). Best-effort."""
+    try:
+        with open(os.path.join(BASE, "geo_performance.json"), encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def build_geo_perf_html(geo_perf) -> str:
+    """GEO citation-rate section from geo_performance.json — mirrors the Scalify
+    audit metrics (AI-Overview citation rate + authority-domain share). Returns ''
+    when there's no meaningful data so the dashboard simply omits the section."""
+    if not geo_perf:
+        return ""
+    history = geo_perf.get("history") or {}
+    if not history:
+        return ""
+    latest_key = geo_perf.get("latest") or max(history)
+    rec = history.get(latest_key) or {}
+    if not rec.get("aio_serps"):
+        return ""  # no AI Overview captured yet — nothing meaningful to show
+
+    dates    = sorted(history)[-30:]
+    v_series = [history[d].get("velluto_citation_rate", 0) for d in dates]
+    c_series = [history[d].get("competitor_citation_rate", 0) for d in dates]
+
+    dom_rows = ""
+    for d in (rec.get("top_cited_domains") or [])[:8]:
+        is_v = d["domain"] == "velluto-shop.com"
+        mark = ('<span style="color:#16a34a;font-weight:700">● owned</span>' if is_v
+                else '<span style="color:#94a3b8">earned/competitor</span>')
+        dom_rows += (f'<tr><td class="td-kw">{d["domain"]}</td>'
+                     f'<td class="td-center">{d["citations"]}</td>'
+                     f'<td class="td-center">{mark}</td></tr>')
+    if not dom_rows:
+        dom_rows = '<tr><td class="td-kw" style="color:#94a3b8" colspan="3">No AI-Overview citations captured yet</td></tr>'
+
+    return f"""
+<div style="margin-top:16px" class="section-title">GEO — AI Overview Citations (audit metrics)</div>
+<div class="kpi-grid">
+  <div class="kpi accent">
+    <div class="label">Velluto Citation Rate</div>
+    <div class="val">{rec.get('velluto_citation_rate',0)}%</div>
+    <div class="sub">of {rec.get('aio_serps',0)} AI-Overview SERPs</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Competitor Citation Rate</div>
+    <div class="val">{rec.get('competitor_citation_rate',0)}%</div>
+    <div class="sub">gap to close</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Owned Citation Share</div>
+    <div class="val">{rec.get('owned_citation_share',0)}%</div>
+    <div class="sub">{rec.get('velluto_citations',0)}/{rec.get('total_citations',0)} citations</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Velluto Gaps</div>
+    <div class="val">{rec.get('velluto_gap',0)}</div>
+    <div class="sub">AIO answers citing rivals, not Velluto</div>
+  </div>
+</div>
+<div class="two-col" style="margin-top:4px">
+  <div class="chart-card" style="margin-bottom:0">
+    <h3>Citation Rate Trend (30 days)</h3>
+    <canvas id="geoCiteChart" height="150"></canvas>
+  </div>
+  <div class="table-card" style="margin-bottom:0">
+    <div class="table-header"><h3>Top Cited Authority Domains</h3></div>
+    <table>
+      <thead><tr><th>Domain</th><th class="td-center">Citations</th><th class="td-center">Bucket</th></tr></thead>
+      <tbody>{dom_rows}</tbody>
+    </table>
+  </div>
+</div>
+<script>
+new Chart(document.getElementById('geoCiteChart'), {{
+  type: 'line',
+  data: {{
+    labels: {json.dumps(dates)},
+    datasets: [
+      {{ label: 'Velluto %', data: {json.dumps(v_series)}, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0 }},
+      {{ label: 'Competitors %', data: {json.dumps(c_series)}, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.05)', fill: false, tension: 0.4, borderWidth: 2, pointRadius: 0 }}
+    ]
+  }},
+  options: {{
+    responsive: true, maintainAspectRatio: true,
+    plugins: {{ legend: {{ position: 'bottom', labels: {{ boxWidth: 10, font: {{ size: 10 }} }} }} }},
+    scales: {{
+      y: {{ min: 0, max: 100, ticks: {{ callback: v => v + '%', font: {{ size: 10 }} }}, grid: {{ color: '#f1f5f9' }} }},
+      x: {{ ticks: {{ maxTicksLimit: 10, font: {{ size: 10 }} }}, grid: {{ display: false }} }}
+    }}
+  }}
+}});
+</script>
+"""
+
+
+def build_html(articles, usage, geo, ranking_history, gsc, geo_perf=None):
     today     = datetime.date.today()
     today_str = str(today)
     now       = datetime.datetime.now().strftime("%d %b %Y %H:%M")
@@ -628,6 +726,7 @@ def build_html(articles, usage, geo, ranking_history, gsc):
     vis_arrow = "▲" if vis_delta >= 0 else "▼"
     vis_color = "#16a34a" if vis_delta >= 0 else "#dc2626"
     gsc_html  = build_gsc_html(gsc)
+    geo_perf_html = build_geo_perf_html(geo_perf)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -804,6 +903,8 @@ footer{{text-align:center;padding:24px;font-size:11px;color:#94a3b8}}
   </div>
 </div>
 
+{geo_perf_html}
+
 {gsc_html}
 
 </div><!-- /wrap -->
@@ -897,7 +998,9 @@ def main():
     print("   Fetching Google Search Console data...")
     gsc = fetch_gsc()
 
-    html = build_html(articles, usage, geo, ranking_history, gsc)
+    geo_perf = load_geo_performance()
+
+    html = build_html(articles, usage, geo, ranking_history, gsc, geo_perf)
 
     out_dir = os.path.join(BASE, "docs")
     os.makedirs(out_dir, exist_ok=True)
