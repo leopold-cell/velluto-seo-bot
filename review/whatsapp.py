@@ -1,26 +1,69 @@
 """
-WhatsApp delivery via Meta WhatsApp Cloud API (free tier), with automatic
-fallback to the existing Telegram notify() when WhatsApp isn't configured.
+Report delivery. deliver() sends the report by EMAIL (if SMTP is configured) AND
+via WhatsApp → Telegram fallback, so the 28-day audit lands in the inbox while the
+short push still goes to chat. Each channel is independent and degrades to a no-op
+when its credentials are absent.
 
 Env (set as secrets on the VPS/CI):
-  WHATSAPP_TOKEN     — permanent access token
-  WHATSAPP_PHONE_ID  — phone number ID
-  WHATSAPP_TO        — recipient MSISDN, e.g. "4915123456789"
-  WHATSAPP_TEMPLATE  — (optional) approved utility template name for sending
-                       outside the 24h customer-service window. If unset, a plain
-                       text message is attempted (works inside the 24h window).
+  Email (full report → inbox):
+    SMTP_HOST          — e.g. smtp.gmail.com / smtp.your-host.de
+    SMTP_PORT          — 587 (STARTTLS, default) or 465 (SSL)
+    SMTP_USER          — SMTP login
+    SMTP_PASS          — SMTP password / app-password
+    REPORT_EMAIL_TO    — recipient(s), comma-separated (default leopold@velluto-shop.com)
+    REPORT_EMAIL_FROM  — sender address (default = SMTP_USER)
+  WhatsApp (short push):
+    WHATSAPP_TOKEN / WHATSAPP_PHONE_ID / WHATSAPP_TO / WHATSAPP_TEMPLATE (optional)
+  Telegram fallback: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID (via seo_bot.notify)
 
 Note: Meta only allows free-form text within 24h of the recipient's last message;
 otherwise an approved template is required. The Telegram fallback guarantees the
-report is always delivered.
+short report is always delivered; email guarantees the full report is archived.
 """
 from __future__ import annotations
 
 import os
+import smtplib
+import ssl
+from email.message import EmailMessage
 
 import requests
 
 GRAPH = "https://graph.facebook.com/v21.0"
+
+
+def _send_email(text: str, subject: str) -> bool:
+    """Send the report by email via SMTP. No-op (returns False) if unconfigured."""
+    host = os.getenv("SMTP_HOST")
+    user = os.getenv("SMTP_USER")
+    pw   = os.getenv("SMTP_PASS")
+    to   = os.getenv("REPORT_EMAIL_TO", "leopold@velluto-shop.com")
+    if not (host and user and pw and to):
+        return False
+    port   = int(os.getenv("SMTP_PORT", "587"))
+    sender = os.getenv("REPORT_EMAIL_FROM", user)
+    recipients = [a.strip() for a in to.split(",") if a.strip()]
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"]    = sender
+    msg["To"]      = ", ".join(recipients)
+    msg.set_content(text)
+    try:
+        ctx = ssl.create_default_context()
+        if port == 465:
+            with smtplib.SMTP_SSL(host, port, context=ctx, timeout=20) as s:
+                s.login(user, pw)
+                s.send_message(msg)
+        else:
+            with smtplib.SMTP(host, port, timeout=20) as s:
+                s.starttls(context=ctx)
+                s.login(user, pw)
+                s.send_message(msg)
+        return True
+    except Exception as e:
+        print(f"   ⚠️  email: {e}")
+        return False
 
 
 def _send_whatsapp(text: str) -> bool:
@@ -62,10 +105,15 @@ def _send_telegram(text: str) -> bool:
         return False
 
 
-def deliver(text: str) -> str:
-    """Try WhatsApp, fall back to Telegram. Returns the channel used."""
+def deliver(text: str, subject: str = "Velluto Report", email_body: str | None = None) -> str:
+    """Deliver the report. Emails the full report (email_body or text) when SMTP is
+    configured, AND sends the short `text` to WhatsApp → Telegram. Returns the
+    channel(s) used, e.g. "email+whatsapp"."""
+    channels: list[str] = []
+    if _send_email(email_body or text, subject):
+        channels.append("email")
     if _send_whatsapp(text):
-        return "whatsapp"
-    if _send_telegram(text):
-        return "telegram(fallback)"
-    return "none"
+        channels.append("whatsapp")
+    elif _send_telegram(text):
+        channels.append("telegram(fallback)")
+    return "+".join(channels) if channels else "none"
