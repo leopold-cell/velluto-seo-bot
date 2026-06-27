@@ -1,25 +1,53 @@
 #!/bin/bash
-set -e
-cd /root/velluto/velluto-seo-bot
-git pull origin main
+# Velluto SEO bot — daily pipeline.
+# Hardened: no single step aborts the chain, persistence (commit+push) ALWAYS
+# runs, and every step is logged with a timestamp (cron appends to /var/log/seo-bot.log).
+# Note: intentionally no `set -e` — one failing step must not kill the rest.
+cd /root/velluto/velluto-seo-bot || exit 1
+
+log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
+step() { local msg="$1"; shift; log "▶ $msg"; "$@" || log "✗ step failed (continuing): $msg"; }
+
+log "[SEO Bot] Starting"
+
+# Sync latest code first. --rebase --autostash tolerates leftover local changes;
+# on any failure we abort a half-done rebase and continue on local code.
+git pull --rebase --autostash origin main \
+  || { git rebase --abort 2>/dev/null; log "✗ git pull failed — running on local code"; }
+
 source venv/bin/activate
-echo "[SEO Bot] Starting: $(date)"
-python3 seo_bot.py
-python3 link_builder.py      || true
-python3 pinterest_poster.py  || true
-python3 seo_optimizer.py     || true
-python3 geo_monitor.py       || true
-python3 dashboard.py         || true
+
+step "generate + publish article"  python3 seo_bot.py
+step "backlinks + sitemap ping"    python3 link_builder.py
+step "pinterest"                   python3 pinterest_poster.py
+step "seo optimizer"               python3 seo_optimizer.py
+step "geo monitor"                 python3 geo_monitor.py
+step "dashboard"                   python3 dashboard.py
 
 # 28-day blog review + site SEO/GEO audit. Self-gates to every 28 days, so a
 # daily invocation is harmless (exits early when not due). Ensure Chromium for
 # the Playwright vision-UI step (idempotent; quick no-op once installed).
 python3 -c "import playwright" 2>/dev/null && playwright install --with-deps chromium >/dev/null 2>&1 || true
-python3 blog_review.py       || true
+step "blog review (28d gate)"      python3 blog_review.py
 
-git config user.name "vps-bot"
+# ── Persistence: always commit + push; never abort the run ──────────────────
+git config user.name  "vps-bot"
 git config user.email "leopold@velluto-brand.com"
 git add -A
-git diff --cached --quiet || git commit -m "chore: daily update $(date -u +%Y-%m-%d)"
-git push
-echo "[SEO Bot] Done: $(date)"
+if git diff --cached --quiet; then
+  log "nothing to commit"
+else
+  git commit -m "chore: daily update $(date -u +%Y-%m-%d)" && log "committed daily update"
+fi
+
+# Push with a few retries; tolerate failure so the run still ends cleanly.
+for i in 1 2 3; do
+  if git push origin main; then log "✓ pushed to origin/main"; break; fi
+  if [ "$i" = 3 ]; then
+    log "✗ git push still failing after 3 tries — commits remain local (check auth)"
+  else
+    log "push attempt $i failed; retrying in $((i * 5))s"; sleep $((i * 5))
+  fi
+done
+
+log "[SEO Bot] Done"

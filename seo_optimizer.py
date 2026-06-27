@@ -466,6 +466,55 @@ def get_recent_posts(n=6) -> list[dict]:
 
 # ── Claude analysis ───────────────────────────────────────────────────────────
 
+def _repair_json(s: str) -> dict:
+    """Best-effort repair of a truncated JSON object: close an open string and any
+    unclosed brackets, dropping a trailing comma or dangling \"key\": with no value.
+    Lets a cut-off Claude response still yield the complete fields it did emit."""
+    stack: list[str] = []
+    in_str = esc = False
+    for ch in s:
+        if in_str:
+            if esc:            esc = False
+            elif ch == "\\":   esc = True
+            elif ch == '"':    in_str = False
+            continue
+        if   ch == '"':        in_str = True
+        elif ch in "{[":       stack.append("}" if ch == "{" else "]")
+        elif ch in "}]" and stack: stack.pop()
+    repaired = s + ('"' if in_str else "")
+    repaired = re.sub(r'[,\s]*$', '', repaired)                 # trailing comma/space
+    repaired = re.sub(r',?\s*"[^"]*"\s*:\s*$', '', repaired)    # dangling key w/o value
+    repaired = re.sub(r'[,\s]*$', '', repaired)
+    for closer in reversed(stack):
+        repaired += closer
+    return json.loads(repaired)
+
+
+def _safe_json_parse(raw: str) -> dict:
+    """Parse a Claude JSON reply resiliently: strip code fences, then try strict
+    parse, outermost-brace salvage, and finally truncation repair. Raises only if
+    nothing usable can be recovered."""
+    raw = (raw or "").strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1].lstrip("json").strip()
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        pass
+    start = raw.find("{")
+    if start == -1:
+        raise ValueError("no JSON object found in analysis response")
+    # Salvage: longest prefix ending on a '}' that parses cleanly.
+    for end in range(len(raw), start, -1):
+        if raw[end - 1] == "}":
+            try:
+                return json.loads(raw[start:end])
+            except json.JSONDecodeError:
+                continue
+    # Last resort: repair a truncated object.
+    return _repair_json(raw[start:])
+
+
 def analyse_and_generate_insights(competitor_data: dict, our_posts: list[dict],
                                    top_competitors: list[dict],
                                    gsc_opps: dict) -> dict:
@@ -479,7 +528,7 @@ def analyse_and_generate_insights(competitor_data: dict, our_posts: list[dict],
 
     response = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=3000,
+        max_tokens=8000,   # was 3000 — the structured insights JSON overran it and truncated
         system=f"""You are an expert SEO strategist analysing a cycling eyewear brand (Velluto, velluto-shop.com).
 Your job: use real Google Search Console data + competitor analysis to produce specific, data-driven
 improvements. Prioritise actions based on actual search impressions and click data.
@@ -537,10 +586,8 @@ need deeper content. Analyse and return ONLY this JSON (no extra text):
     cost = log_usage(response.usage.input_tokens, response.usage.output_tokens)
     print(f"   Claude analysis: {response.usage.input_tokens} in / {response.usage.output_tokens} out | ${cost:.4f}")
 
-    raw = response.content[0].text.strip()
-    if raw.startswith("```"):
-        raw = raw.split("```")[1].lstrip("json").strip()
-    return json.loads(raw)
+    raw = response.content[0].text
+    return _safe_json_parse(raw)
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
