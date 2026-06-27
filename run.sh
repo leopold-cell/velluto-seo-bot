@@ -5,8 +5,9 @@
 # Note: intentionally no `set -e` — one failing step must not kill the rest.
 cd /root/velluto/velluto-seo-bot || exit 1
 
+FAILED=()
 log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
-step() { local msg="$1"; shift; log "▶ $msg"; "$@" || log "✗ step failed (continuing): $msg"; }
+step() { local msg="$1"; shift; log "▶ $msg"; if "$@"; then return 0; else log "✗ step failed (continuing): $msg"; FAILED+=("$msg"); return 0; fi; }
 
 log "[SEO Bot] Starting"
 
@@ -41,13 +42,20 @@ else
 fi
 
 # Push with a few retries; tolerate failure so the run still ends cleanly.
+PUSH_OK=true
 for i in 1 2 3; do
   if git push origin main; then log "✓ pushed to origin/main"; break; fi
   if [ "$i" = 3 ]; then
-    log "✗ git push still failing after 3 tries — commits remain local (check auth)"
+    log "✗ git push still failing after 3 tries — commits remain local (check auth)"; PUSH_OK=false
   else
     log "push attempt $i failed; retrying in $((i * 5))s"; sleep $((i * 5))
   fi
 done
+
+# ── Daily email report (always) — summary + ⚠️ alert if anything needs action ─
+export RUN_FAILED=$(printf '%s\n' "${FAILED[@]}")
+export RUN_PUSH_OK="$PUSH_OK"
+log "▶ daily email report"
+python3 daily_report.py || log "✗ daily report failed"
 
 log "[SEO Bot] Done"
