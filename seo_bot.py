@@ -1252,6 +1252,58 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
     raise RuntimeError(f"Shopify publish failed {r.status_code}: {r.text[:300]}")
 
 
+_BLOG_HANDLE_CACHE: dict = {}
+
+
+def _blog_handle() -> str:
+    """Resolve (and cache) the blog handle for BLOG_ID so we can build article URLs."""
+    if "handle" not in _BLOG_HANDLE_CACHE:
+        handle = "velluto-the-magazine"  # known default; refreshed below if reachable
+        try:
+            r = requests.get(
+                f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}.json",
+                headers=SHOPIFY_HEADERS, timeout=15)
+            if r.status_code == 200:
+                handle = r.json().get("blog", {}).get("handle") or handle
+        except Exception:
+            pass
+        _BLOG_HANDLE_CACHE["handle"] = handle
+    return _BLOG_HANDLE_CACHE["handle"]
+
+
+def fetch_recent_articles(limit: int = 50) -> list[dict]:
+    """
+    Fetch recent published blog articles as related-link candidates for the
+    quality gate. Each item carries a ready-made absolute `url`. Best-effort —
+    returns [] on any failure so the pipeline never breaks.
+    """
+    try:
+        handle = _blog_handle()
+        r = requests.get(
+            f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json",
+            params={"limit": limit, "published_status": "published",
+                    "fields": "id,title,handle,tags,created_at"},
+            headers=SHOPIFY_HEADERS, timeout=20)
+        if r.status_code != 200:
+            return []
+        out = []
+        for a in r.json().get("articles", []):
+            h = a.get("handle") or ""
+            if not h:
+                continue
+            out.append({
+                "title":      a.get("title", ""),
+                "handle":     h,
+                "tags":       a.get("tags", ""),
+                "created_at": a.get("created_at", ""),
+                "url":        f"https://velluto-shop.com/blogs/{handle}/{h}",
+            })
+        return out
+    except Exception as e:
+        print(f"   ⚠️  fetch_recent_articles failed: {e}")
+        return []
+
+
 # ── NL GEO Agent — Quality Compounding ──────────────────────────────────────
 
 def get_quality_targets() -> dict:
@@ -1971,6 +2023,7 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
 
     # Generate EN article — up to 3 attempts; retries inject specific failures as feedback
     from briefs.quality_gate import gate as _quality_gate
+    recent_articles = fetch_recent_articles()   # related-link candidates (internal-linking depth)
     post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief)
     qa = None
     for attempt in range(3):
@@ -1989,7 +2042,8 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
             else:
                 raise RuntimeError(f"Brand fact violation after 3 attempts: {fact_issues}")
         # ── 2. Phase 4 Quality Gate (price / keyword / links / PAA / etc.) ─
-        qa = _quality_gate(post, brief, market_code="US", commercial=commercial)
+        qa = _quality_gate(post, brief, market_code="US", commercial=commercial,
+                           related_articles=recent_articles)
         if qa["auto_fixes"]:
             for af in qa["auto_fixes"]:
                 print(f"   🛠  QA auto-fix: {af}")

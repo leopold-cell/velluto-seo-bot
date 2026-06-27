@@ -3,6 +3,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+<style>
+  .vmag .vmag-publisher{max-width:680px;margin:8px auto 0;padding:18px 0 4px;border-top:1px solid #e7e5df;font-size:12.5px;line-height:1.55;color:#6b6b6b}
+  .vmag .vmag-publisher .vp-head{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#9a9a9a;font-weight:600;margin-bottom:6px}
+  .vmag .vmag-publisher .vp-org{font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:4px}
+  .vmag .vmag-publisher address{font-style:normal;margin:0 0 4px}
+  .vmag .vmag-publisher a{color:#1a1a1a;text-decoration:underline;text-underline-offset:2px}
+  .vmag .vmag-publisher .vp-meta{color:#8a8a8a}
+</style>
+
 {%- assign article_category = article.tags | first | default: 'Velluto Magazine' -%}
 {%- assign reading_minutes = article.content | strip_html | split: ' ' | size | divided_by: 200 | at_least: 1 -%}
 {%- assign article_url = shop.url | append: article.url -%}
@@ -85,6 +94,20 @@
       </div>
     </div>
 
+    <aside class="vmag-publisher" aria-label="Publisher information">
+      <div class="vp-head">Published by</div>
+      <div class="vp-org">Velluto Sport Marketing GmbH</div>
+      <address class="vp-addr">
+        Ludwig-Erhardstraße 18, 20459 Hamburg, Germany<br>
+        <a href="tel:+491702689881">+49 170 2689881</a> ·
+        <a href="mailto:leopold@velluto-shop.com">leopold@velluto-shop.com</a>
+      </address>
+      <div class="vp-meta">
+        Managing Director: Leopold Wagner · HRB 41657 · VAT DE456806567 ·
+        <a href="https://cal.com/leopold-wagner-ag1rg6/30min" target="_blank" rel="noopener">Book a call ↗</a>
+      </div>
+    </aside>
+
     <div class="share-row">
       <span class="label">Share article</span>
       <div class="links">
@@ -149,6 +172,37 @@
   {%- endif -%}
 
 </main>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://velluto-shop.com/#velluto-organization",
+  "name": "Velluto",
+  "legalName": "Velluto Sport Marketing GmbH",
+  "url": "https://velluto-shop.com",
+  "logo": "https://velluto-shop.com/cdn/shop/files/Velluo_Logo_Black.jpg?v=1748875124",
+  "email": "leopold@velluto-shop.com",
+  "telephone": "+49-170-2689881",
+  "vatID": "DE456806567",
+  "founder": { "@type": "Person", "name": "Leopold Wagner" },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Ludwig-Erhardstraße 18",
+    "postalCode": "20459",
+    "addressLocality": "Hamburg",
+    "addressCountry": "DE"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "telephone": "+49-170-2689881",
+    "email": "leopold@velluto-shop.com",
+    "areaServed": "EU",
+    "availableLanguage": ["en", "de", "nl"]
+  }
+}
+</script>
 
 {%- if section.settings.sticky_product != blank -%}
   {%- assign cta_product = all_products[section.settings.sticky_product] -%}
