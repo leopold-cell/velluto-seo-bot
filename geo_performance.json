@@ -1,46 +1,54 @@
 {
   "history": {
     "2026-06-27": {
-      "aio_serps": 32,
+      "aio_serps": 35,
       "velluto_cited": 0,
-      "competitor_cited": 0,
-      "velluto_gap": 1,
+      "competitor_cited": 1,
+      "velluto_gap": 3,
       "velluto_citation_rate": 0.0,
-      "competitor_citation_rate": 0.0,
-      "total_citations": 10,
+      "competitor_citation_rate": 2.9,
+      "total_citations": 41,
       "velluto_citations": 0,
       "owned_citation_share": 0.0,
       "top_cited_domains": [
         {
           "domain": "google.com",
+          "citations": 6
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 5
+        },
+        {
+          "domain": "reddit.com",
           "citations": 3
         },
         {
-          "domain": "rudyprojectna.com",
-          "citations": 1
-        },
-        {
-          "domain": "outdoorgearlab.com",
-          "citations": 1
-        },
-        {
           "domain": "cyclingweekly.com",
+          "citations": 2
+        },
+        {
+          "domain": "femmecyclist.com",
           "citations": 1
         },
         {
-          "domain": "stoggles.com",
+          "domain": "bikerumor.com",
           "citations": 1
         },
         {
-          "domain": "piketrail.com",
+          "domain": "oakley.com",
           "citations": 1
         },
         {
-          "domain": "z-clear.com",
+          "domain": "cyclingnews.com",
           "citations": 1
         },
         {
-          "domain": "daviefamilyeyecare.com",
+          "domain": "innerforce.com",
+          "citations": 1
+        },
+        {
+          "domain": "intheknowcycling.com",
           "citations": 1
         }
       ]
