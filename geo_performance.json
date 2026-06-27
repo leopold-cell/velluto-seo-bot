@@ -1,0 +1,50 @@
+{
+  "history": {
+    "2026-06-27": {
+      "aio_serps": 32,
+      "velluto_cited": 0,
+      "competitor_cited": 0,
+      "velluto_gap": 1,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 0.0,
+      "total_citations": 10,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 3
+        },
+        {
+          "domain": "rudyprojectna.com",
+          "citations": 1
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 1
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 1
+        },
+        {
+          "domain": "stoggles.com",
+          "citations": 1
+        },
+        {
+          "domain": "piketrail.com",
+          "citations": 1
+        },
+        {
+          "domain": "z-clear.com",
+          "citations": 1
+        },
+        {
+          "domain": "daviefamilyeyecare.com",
+          "citations": 1
+        }
+      ]
+    }
+  },
+  "latest": "2026-06-27"
+}
