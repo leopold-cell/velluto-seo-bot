@@ -107,7 +107,10 @@ def run(force=False, dry_run=False, skip_ui=False, autofix=True) -> dict | None:
 
     json_path, md_path = report_mod.persist(report)
     print(f"💾 Saved {json_path}")
-    channel = whatsapp.deliver(report_mod.to_whatsapp(report))
+    subject = f"Velluto · 28-Tage Blog/SEO/GEO Audit — {report['review_date']}"
+    channel = whatsapp.deliver(report_mod.to_whatsapp(report),
+                               subject=subject,
+                               email_body=report_mod.to_markdown(report))
     print(f"📨 Report delivered via: {channel}")
 
     state = _common.load_state()
