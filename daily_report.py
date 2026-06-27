@@ -42,12 +42,17 @@ def _vis(day: dict) -> float:
     return round(sum(s) / len(s), 1) if s else 0.0
 
 
-def _tail_log(n: int = 400) -> str:
+def _current_run_log() -> str:
+    """Return only the log of the CURRENT run (since the last '[SEO Bot] Starting'
+    marker). The log is cumulative/append-only, so scanning the whole tail would
+    keep re-flagging already-fixed errors from previous runs."""
     try:
         with open(LOG_PATH, encoding="utf-8", errors="ignore") as f:
-            return "".join(f.readlines()[-n:])
+            txt = "".join(f.readlines()[-3000:])
     except Exception:
         return ""
+    idx = txt.rfind("[SEO Bot] Starting")
+    return txt[idx:] if idx != -1 else txt
 
 
 def build() -> tuple[str, str]:
@@ -108,12 +113,11 @@ def build() -> tuple[str, str]:
     usage = _load("token_usage.json", {})
     cost_today = (usage.get(TODAY_S, {}) or {}).get("cost_usd", 0.0)
 
-    # ── log scan for recurring soft failures ────────────────────────────────
-    log = _tail_log()
-    if "Pinterest error 401" in log:
+    # ── log scan (CURRENT run only) for soft failures not surfaced as steps ──
+    # git-auth/push is covered reliably by RUN_PUSH_OK above, so it's not re-scanned.
+    log = _current_run_log()
+    if "Pinterest error 401" in log or "boards:write" in log:
         problems.append("Pinterest-Posting schlägt fehl (401 / Token-Scope) — Token mit boards:write erneuern.")
-    if "could not read Password" in log or "fatal: Authentication failed" in log:
-        problems.append("Git-Authentifizierung fehlgeschlagen — Deploy-Key/Token prüfen.")
     if "Analysis failed" in log and ins.get("analysis_date") != TODAY_S:
         problems.append("Claude-SEO-Analyse bricht ab (JSON/Token) — seo_insights wird nicht aktualisiert.")
 
