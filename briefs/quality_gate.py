@@ -207,6 +207,60 @@ def ensure_related_links(html: str, post: dict, related_articles: list | None,
     return fixed, len(picks)
 
 
+# ── Auto-fix step 2d: drop redundant target-brand rows in "alternatives" tables ─
+# An "alternatives to <Brand>" article must not fill its comparison table with
+# multiple <Brand> models — keep ONE <Brand> row as the reference baseline and
+# drop the rest. Rows are only removed, never added; no specs are fabricated.
+
+_ALT_TARGET_BRANDS = [
+    "Oakley", "Rudy Project", "POC", "100%", "Smith", "Julbo", "Uvex",
+    "Koo", "Tifosi", "Bliz", "Kapvoe", "Evil Eye", "Roka", "Bollé", "Bolle",
+    "Magicshine", "Scicon", "Alba Optics", "Goodr", "SunGod",
+]
+
+
+def alternatives_target_brand(title: str) -> str:
+    """If the title frames the article as alternatives to a specific competitor,
+    return that brand; else "". Only 'alternative(s)' titles qualify."""
+    t = title or ""
+    if not re.search(r"alternativ", t, re.I):
+        return ""
+    for b in _ALT_TARGET_BRANDS:
+        if re.search(re.escape(b), t, re.I):
+            return b
+    return ""
+
+
+def limit_brand_table_rows(html: str, brand: str, max_rows: int = 1) -> tuple[str, int]:
+    """Within every <table>, keep at most `max_rows` rows whose FIRST cell names
+    `brand`; drop the extras. Returns (fixed_html, rows_removed)."""
+    if not brand:
+        return html, 0
+    pat = re.compile(re.escape(brand), re.I)
+    removed = 0
+
+    def fix_table(tm):
+        nonlocal removed
+        seen = 0
+
+        def fix_row(rm):
+            nonlocal seen, removed
+            row = rm.group(0)
+            cell = re.search(r"<t[dh][^>]*>(.*?)</t[dh]>", row, re.S | re.I)
+            first = re.sub(r"<[^>]+>", "", cell.group(1)) if cell else ""
+            if pat.search(first):
+                seen += 1
+                if seen > max_rows:
+                    removed += 1
+                    return ""
+            return row
+
+        return re.sub(r"<tr\b.*?</tr>", fix_row, tm.group(0), flags=re.S | re.I)
+
+    fixed = re.sub(r"<table\b.*?</table>", fix_table, html, flags=re.S | re.I)
+    return fixed, removed
+
+
 def strip_em_dashes(html: str) -> tuple[str, bool]:
     """
     Phase 4.11: remove the em-dash '—' (and spaced en-dash ' – ') used as a
@@ -509,6 +563,12 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     fixed_body, rel_n = ensure_related_links(fixed_body, post, related_articles)
     if rel_n:
         auto_fixes.append(f"injected {rel_n} related-article internal link(s)")
+    # Auto-fix 2d: in "alternatives to X" posts, keep only one X row in the table
+    _alt_brand = alternatives_target_brand(post.get("title", ""))
+    if _alt_brand:
+        fixed_body, dropped = limit_brand_table_rows(fixed_body, _alt_brand)
+        if dropped:
+            auto_fixes.append(f"removed {dropped} redundant {_alt_brand} row(s) from comparison table")
     # Auto-fix 3: strip em-dashes (Phase 4.11 — the AI-writing tell)
     fixed_body, dashed = strip_em_dashes(fixed_body)
     if dashed:
