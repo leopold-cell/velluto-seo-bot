@@ -52,7 +52,60 @@
           "citations": 1
         }
       ]
+    },
+    "2026-06-28": {
+      "aio_serps": 34,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 3,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 2.9,
+      "total_citations": 31,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "youtube.com",
+          "citations": 5
+        },
+        {
+          "domain": "google.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 1
+        },
+        {
+          "domain": "220triathlon.com",
+          "citations": 1
+        },
+        {
+          "domain": "averagejoecyclist.com",
+          "citations": 1
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 1
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 1
+        },
+        {
+          "domain": "bikerumor.com",
+          "citations": 1
+        },
+        {
+          "domain": "oakley.com",
+          "citations": 1
+        }
+      ]
     }
   },
-  "latest": "2026-06-27"
+  "latest": "2026-06-28"
 }
