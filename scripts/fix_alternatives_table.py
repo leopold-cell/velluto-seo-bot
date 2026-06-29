@@ -23,11 +23,39 @@ import requests
 
 from seo_bot import (
     SHOPIFY_STORE, SHOPIFY_HEADERS, BLOG_ID, SHOP_LOCALES,
-    get_translatable_digests, register_shopify_translation, graphql_with_vars,
+    get_translatable_digests, graphql_with_vars,
 )
 from briefs.quality_gate import alternatives_target_brand, limit_brand_table_rows
 
 APPLY = "--apply" in sys.argv
+
+
+def _register_body_translation(aid: int, locale: str, body_html: str, digests: dict) -> bool:
+    """Register ONLY the body_html translation (we change just the table, so we must
+    not touch title/meta — sending blank values for those is what Shopify rejects)."""
+    digest = digests.get("body_html", "")
+    if not digest:
+        print(f"   ⚠️  [{locale}] no body_html digest — skipped")
+        return False
+    mutation = """
+    mutation translationsRegister($resourceId: ID!, $translations: [TranslationInput!]!) {
+      translationsRegister(resourceId: $resourceId, translations: $translations) {
+        userErrors { field message }
+        translations { key }
+      }
+    }"""
+    res = graphql_with_vars(mutation, {
+        "resourceId": f"gid://shopify/Article/{aid}",
+        "translations": [{"key": "body_html", "value": body_html,
+                          "translatableContentDigest": digest, "locale": locale}],
+    })
+    errs = (res.get("translationsRegister") or {}).get("userErrors", [])
+    if errs:
+        if any("primary locale" in e.get("message", "").lower() for e in errs):
+            return True  # this locale is the shop default — not a failure
+        print(f"   ⚠️  [{locale}] {errs}")
+        return False
+    return True
 
 
 def _list_articles() -> list[dict]:
@@ -99,13 +127,7 @@ def main():
             if APPLY:
                 if digests is None:
                     digests = get_translatable_digests(aid)
-                ok = register_shopify_translation(
-                    aid, loc,
-                    title=tx.get("title", ""),
-                    body_html=new_tx,
-                    meta_desc=tx.get("summary_html", ""),
-                    digests=digests,
-                )
+                ok = _register_body_translation(aid, loc, new_tx, digests)
                 print(f"     {'✅ re-registered' if ok else '❌ failed'}")
             fixed_tx += 1
 
