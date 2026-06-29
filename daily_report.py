@@ -175,19 +175,29 @@ def build() -> tuple[str, str]:
     L.append("— Velluto SEO/GEO-Bot · Dashboard: https://leopold-cell.github.io/velluto-seo-bot/")
 
     body = "\n".join(L)
+    is_friday = TODAY.weekday() == 4
+    kind = "Wochenreport" if is_friday else "Report"
     flag = "⚠️ AKTION NÖTIG" if problems else "✅"
-    subject = f"{flag} Velluto SEO/GEO Tagesreport — {TODAY_S}"
-    return subject, body
+    subject = f"{flag} Velluto SEO/GEO {kind} — {TODAY_S}"
+    return subject, body, bool(problems)
 
 
 def main():
+    # Cadence: a weekly SUMMARY every Friday; ALERTS whenever something needs
+    # action (any day). On a normal weekday with nothing wrong → no email.
     try:
-        subject, body = build()
+        subject, body, has_problems = build()
     except Exception as e:
         # Last-resort: even our own report failing is worth an alert.
-        subject = f"⚠️ Velluto Tagesreport konnte nicht erstellt werden — {TODAY_S}"
+        subject = f"⚠️ Velluto Report konnte nicht erstellt werden — {TODAY_S}"
         body = f"daily_report.py ist auf einen Fehler gelaufen:\n\n{e!r}\n\nBitte VPS/Logs prüfen."
-    mailer.send_email(subject, body)
+        has_problems = True
+
+    is_friday = TODAY.weekday() == 4
+    if has_problems or is_friday:
+        mailer.send_email(subject, body)
+    else:
+        print("   ✉ report skip — kein Problem & nicht Freitag (Wochenreport kommt Freitag)")
 
 
 if __name__ == "__main__":
