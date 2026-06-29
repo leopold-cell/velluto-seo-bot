@@ -44,8 +44,9 @@ APP_ID       = os.getenv("PINTEREST_APP_ID", "")
 APP_SECRET   = os.getenv("PINTEREST_APP_SECRET", "")
 REDIRECT_URI = os.getenv("PINTEREST_REDIRECT_URI", "https://localhost/")
 
-# Same scopes pinterest_poster.py needs: read boards, read+write pins.
-SCOPES = "boards:read,pins:read,pins:write,user_accounts:read"
+# Scopes pinterest_poster.py needs: read+write boards AND pins. boards:write was
+# missing before, which caused HTTP 401 "Missing: ['boards:write']" when posting.
+SCOPES = "boards:read,boards:write,pins:read,pins:write,user_accounts:read"
 
 AUTH_URL  = "https://www.pinterest.com/oauth/"
 TOKEN_URL = "https://api.pinterest.com/v5/oauth/token"
