@@ -1826,7 +1826,10 @@ def register_shopify_translation(article_id: int, locale: str, title: str,
     for key, value in [("title", title), ("body_html", body_html),
                        ("meta_description", meta_desc), ("summary_html", meta_desc)]:
         digest = digests.get(key, "")
-        if not digest:
+        # Skip keys with no digest OR a blank value — a single blank value makes
+        # Shopify reject the WHOLE batch ("Value can't be blank"), which used to
+        # leave title + body untranslated (English) for the entire article.
+        if not digest or not (value or "").strip():
             continue
         translations.append({
             "key": key,
@@ -1862,6 +1865,16 @@ def register_shopify_translation(article_id: int, locale: str, title: str,
 
 
 @retry(max_attempts=2, delay=10, label="generate_market_adaptation")
+def _clip_words(s: str, n: int) -> str:
+    """Trim to <= n chars on a WORD boundary (never mid-word). Prevents truncated
+    headlines like '... wirklich fun' cut out of 'funktioniert'."""
+    s = (s or "").strip()
+    if len(s) <= n:
+        return s
+    cut = s[:n].rsplit(" ", 1)[0].rstrip(" ,;:-–—")
+    return cut or s[:n]
+
+
 def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
                                commercial: dict | None = None) -> dict:
     """
@@ -1942,17 +1955,17 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
         raw = raw.split("```")[1].lstrip("json").strip()
     try:
         meta_data = json.loads(raw)
-        adapted_title = meta_data.get("title", target_kw)[:65]
+        adapted_title = _clip_words(meta_data.get("title", target_kw), 70)
         adapted_meta  = meta_data.get("meta",  target_kw)[:155]
     except Exception:
-        adapted_title = target_kw
+        adapted_title = _clip_words(target_kw, 70)
         adapted_meta  = target_kw
 
     # Guard: if the model echoed the ENGLISH title verbatim (a known Haiku slip),
     # fall back to the localized keyword so non-EN markets never show an EN headline.
     en_title = (de_post.get("title", "") or "").strip().lower()
     if en_title and adapted_title.strip().lower() == en_title and target_kw:
-        adapted_title = target_kw[:65]
+        adapted_title = _clip_words(target_kw, 70)
 
     return {
         "title":     adapted_title,
