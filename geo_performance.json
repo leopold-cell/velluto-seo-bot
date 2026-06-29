@@ -105,7 +105,60 @@
           "citations": 1
         }
       ]
+    },
+    "2026-06-29": {
+      "aio_serps": 73,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 4,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 1.4,
+      "total_citations": 57,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 9
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 5
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 3
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 2
+        },
+        {
+          "domain": "220triathlon.com",
+          "citations": 1
+        },
+        {
+          "domain": "road.cc",
+          "citations": 1
+        },
+        {
+          "domain": "en.brujulabike.com",
+          "citations": 1
+        },
+        {
+          "domain": "decathlon.co.uk",
+          "citations": 1
+        }
+      ]
     }
   },
-  "latest": "2026-06-28"
+  "latest": "2026-06-29"
 }
