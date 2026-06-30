@@ -18,6 +18,16 @@ git pull --rebase --autostash origin main \
 
 source venv/bin/activate
 
+# Shopify (current auth): mint a fresh ~24h Admin API token from client_id+secret
+# and export it so every downstream script inherits a valid token. No static token.
+export SHOPIFY_TOKEN="$(python3 mint_shopify_token.py 2>>/var/log/seo-bot.log)"
+if [ -n "$SHOPIFY_TOKEN" ]; then
+  log "✓ Shopify token minted (${SHOPIFY_TOKEN:0:6}…)"
+else
+  log "✗ Shopify token mint failed — check SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET in .env"
+  FAILED+=("Shopify token mint failed")
+fi
+
 step "generate + publish article"  python3 seo_bot.py
 step "backlinks + sitemap ping"    python3 link_builder.py
 # Pinterest paused: posting needs boards:write, which Pinterest only grants with
