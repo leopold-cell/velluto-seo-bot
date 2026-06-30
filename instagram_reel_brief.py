@@ -85,8 +85,10 @@ def build_brief(topic: dict) -> str:
             f"FORMAT: <{fmt}>\n"
             "BEATS: <3-5 short beats (on-screen text / action / spoken line) building to the funny payoff, one per line>\n"
             "SHOT: <how to film it on a phone in this format — simple and doable>\n"
-            "VIDEO_PROMPT: <one vivid 1-2 sentence prompt for an AI video generator: a cinematic road-cycling "
-            "visual with camera motion, no on-screen text, just the scene>\n"
+            "VIDEO_PROMPT: <a SHORT motion prompt for animating a POV road PHOTO (image-to-video). Describe "
+            "ONLY a subtle, natural camera move — e.g. 'slow steady forward dolly down the road, gentle drift, "
+            "realistic handheld'. Do NOT describe people, riders or pedalling (it morphs and looks fake). Keep "
+            "the motion minimal and grounded.>\n"
             "CAPTION: <a funny, relatable caption that BAITS comments — end with a question or 'tag the friend who…'. "
             "No sales pitch, no link, no product talk.>\n"
             "HASHTAGS: <10-12 hashtags, mix EN + DE rennrad / cycling-culture, space-separated>\n"
@@ -143,13 +145,13 @@ def main():
     if video_prompt:
         start_image = os.getenv("HIGGSFIELD_IMAGE_URL", "") or _pick_start_image()
         video_url = higgsfield_video.generate_video(
-            video_prompt, image_url=start_image, duration=8, aspect_ratio="9:16")
+            video_prompt, image_url=start_image, duration=5, aspect_ratio="9:16")
         if video_url:
             import caption_video
             hook  = _extract("HOOK", brief)
             beats = [b.strip(" -•\t") for b in _extract("BEATS", brief).splitlines() if b.strip()]
             out   = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
-            captioned = caption_video.download_and_caption(video_url, hook, beats, out, duration=8)
+            captioned = caption_video.download_and_caption(video_url, hook, beats, out, duration=5)
 
     video_line = (f"🎬 Reel-Video (Higgsfield): {video_url}" if video_url
                   else "🎬 Reel-Video: nicht erzeugt (HIGGSFIELD_API_KEY in .env setzen).")
@@ -167,7 +169,8 @@ def main():
         "sobald dein Meta-Business/App-Setup steht."
     )
     subject = f"🎬 Velluto Reel (Test) — {TODAY}"
-    mailer.send_email(subject, body)
+    attach = [captioned] if (captioned and os.path.isfile(captioned)) else None
+    mailer.send_email(subject, body, attachments=attach)
 
 
 if __name__ == "__main__":

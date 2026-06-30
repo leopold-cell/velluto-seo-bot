@@ -11,17 +11,19 @@ importing/calling this never breaks the pipeline.
 """
 from __future__ import annotations
 
+import mimetypes
 import os
 import smtplib
-from email.mime.text import MIMEText
+from email.message import EmailMessage
 
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
 
 
-def send_email(subject: str, body: str, to: str | None = None) -> bool:
-    """Send a plain-text email via Gmail SMTP. Returns True on success."""
+def send_email(subject: str, body: str, to: str | None = None,
+               attachments: list[str] | None = None) -> bool:
+    """Send an email via Gmail SMTP, optionally attaching local files. Returns True."""
     sender = os.getenv("EMAIL_FROM", "")
     # Gmail shows app passwords as "abcd efgh ijkl mnop"; SMTP rejects the spaces.
     # Strip them so a copy-pasted-with-spaces password just works.
@@ -31,11 +33,20 @@ def send_email(subject: str, body: str, to: str | None = None) -> bool:
         print("   ✉ email skip — EMAIL_FROM / EMAIL_APP_PASS not set in .env")
         return False
     try:
-        msg = MIMEText(body, _charset="utf-8")
+        msg = EmailMessage()
         msg["Subject"] = subject
         msg["From"]    = sender
         msg["To"]      = to
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as s:
+        msg.set_content(body)
+        for path in (attachments or []):
+            if not path or not os.path.isfile(path):
+                continue
+            ctype, _ = mimetypes.guess_type(path)
+            maintype, subtype = (ctype or "application/octet-stream").split("/", 1)
+            with open(path, "rb") as f:
+                msg.add_attachment(f.read(), maintype=maintype, subtype=subtype,
+                                   filename=os.path.basename(path))
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=60) as s:
             s.starttls()
             s.login(sender, app_pw)
             s.send_message(msg)
