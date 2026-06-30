@@ -23,7 +23,9 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),
 def send_email(subject: str, body: str, to: str | None = None) -> bool:
     """Send a plain-text email via Gmail SMTP. Returns True on success."""
     sender = os.getenv("EMAIL_FROM", "")
-    app_pw = os.getenv("EMAIL_APP_PASS", "")
+    # Gmail shows app passwords as "abcd efgh ijkl mnop"; SMTP rejects the spaces.
+    # Strip them so a copy-pasted-with-spaces password just works.
+    app_pw = os.getenv("EMAIL_APP_PASS", "").replace(" ", "")
     to     = to or os.getenv("EMAIL_TO", "leopold@velluto-brand.com")
     if not sender or not app_pw:
         print("   ✉ email skip — EMAIL_FROM / EMAIL_APP_PASS not set in .env")

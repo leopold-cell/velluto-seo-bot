@@ -33,7 +33,8 @@ def _cfg() -> tuple[str, str, str, str]:
         os.getenv("HIGGSFIELD_API_KEY", ""),     # key id
         os.getenv("HIGGSFIELD_API_SECRET", ""),  # secret
         os.getenv("HIGGSFIELD_API_BASE", "https://platform.higgsfield.ai/v1").rstrip("/"),
-        os.getenv("HIGGSFIELD_VIDEO_MODEL", "higgsfield_v1"),
+        # Path-style model id; override with the exact one from your Higgsfield API docs.
+        os.getenv("HIGGSFIELD_VIDEO_MODEL", "bytedance/seedance/v1/text-to-video"),
     )
 
 
@@ -71,8 +72,10 @@ def generate_video(prompt: str, duration: int = 8, aspect_ratio: str = "9:16") -
         print("   🎬 video skip — HIGGSFIELD_API_KEY / HIGGSFIELD_API_SECRET not set in .env")
         return ""
     headers = {"Authorization": f"Key {key_id}:{secret}", "Content-Type": "application/json"}
+    # Higgsfield model IDs are path-style (e.g. "bytedance/seedance/v1/text-to-video"),
+    # not a flat name — the path already encodes the task. Set the exact id for your
+    # account via HIGGSFIELD_VIDEO_MODEL (find it in the cloud.higgsfield.ai API docs).
     body = {
-        "task": "text-to-video",
         "model": model,
         "prompt": prompt,
         "duration": duration,
