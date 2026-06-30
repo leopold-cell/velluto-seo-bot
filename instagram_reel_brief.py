@@ -139,12 +139,22 @@ def main():
     # Generate the Reel video via Higgsfield (no-op + note if no API key).
     video_prompt = _extract("VIDEO_PROMPT", brief)
     video_url = ""
+    captioned = ""
     if video_prompt:
         start_image = os.getenv("HIGGSFIELD_IMAGE_URL", "") or _pick_start_image()
         video_url = higgsfield_video.generate_video(
             video_prompt, image_url=start_image, duration=8, aspect_ratio="9:16")
+        if video_url:
+            import caption_video
+            hook  = _extract("HOOK", brief)
+            beats = [b.strip(" -•\t") for b in _extract("BEATS", brief).splitlines() if b.strip()]
+            out   = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
+            captioned = caption_video.download_and_caption(video_url, hook, beats, out, duration=8)
+
     video_line = (f"🎬 Reel-Video (Higgsfield): {video_url}" if video_url
                   else "🎬 Reel-Video: nicht erzeugt (HIGGSFIELD_API_KEY in .env setzen).")
+    if captioned:
+        video_line += f"\n🎬 Mit Captions (auf VPS): {captioned}"
 
     body = (
         "TEST-MODE · Instagram Reel (noch kein Auto-Posting)\n"
