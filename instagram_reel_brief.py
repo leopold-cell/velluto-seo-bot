@@ -100,20 +100,20 @@ def _extract(label: str, text: str) -> str:
     return m.group(1).strip() if m else ""
 
 
-# Real Velluto lifestyle / people shots (Shopify CDN) — rotated as the start frame
-# for the image-to-video clip. Override any day with HIGGSFIELD_IMAGE_URL, or add
-# your own (e.g. velluto.cc Instagram) URLs here.
+# Candid / UGC rider photos (Shopify CDN) used as the start frame — chosen to look
+# ORGANIC, NOT branded: no logo banners, no marketing text, no product-on-white
+# catalog shots. Override any day with HIGGSFIELD_IMAGE_URL, or add your own
+# organic shots (e.g. from velluto.cc Instagram) here.
 _IMAGE_POOL = [
-    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestyle_1x1_fe573806-27fe-4b9d-8be3-be91c2f1aadb.webp",
     "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestyle_mobileUGC.webp",
-    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestylestudiomobile.webp",
-    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Orange.webp",
-    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Transparent.webp",
-    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/FooterExportsPeople.webp",
-    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/FooterExports_Female.webp",
-    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Hero-mobile-v2.webp",
-    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/BuildtoPerformEditedv2Mobile.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestyle_1x1_fe573806-27fe-4b9d-8be3-be91c2f1aadb.webp",
     "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Rick_Arancia.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_3.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_6.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_9.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_12.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_16.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_18.jpg",
 ]
 
 
