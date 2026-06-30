@@ -118,7 +118,13 @@ _IMAGE_POOL = [
 
 
 def _pick_start_image() -> str:
-    """Rotate through the Velluto lifestyle images by day."""
+    """Prefer generated POV cycling images (pov_images.json); else the candid pool."""
+    try:
+        pov = json.load(open(os.path.join(BASE, "pov_images.json")))
+        if isinstance(pov, list) and pov:
+            return pov[datetime.date.today().toordinal() % len(pov)]
+    except Exception:
+        pass
     return _IMAGE_POOL[datetime.date.today().toordinal() % len(_IMAGE_POOL)]
 
 

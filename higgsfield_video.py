@@ -50,9 +50,9 @@ def _dig(d, *path):
     return cur
 
 
-def _find_any_url(obj) -> str:
+def _find_any_url(obj, kind: str = "video") -> str:
     """Recursively find an http(s) URL anywhere in a nested response, preferring a
-    video/mp4 link. Robust to whatever shape the completed-status payload uses."""
+    link of the wanted kind (video or image). Robust to any payload shape."""
     found: list[str] = []
 
     def walk(o):
@@ -67,10 +67,37 @@ def _find_any_url(obj) -> str:
                 walk(v)
 
     walk(obj)
+    exts = (".jpg", ".jpeg", ".png", ".webp") if kind == "image" else (".mp4", ".webm", ".mov")
     for u in found:
-        if ".mp4" in u or "video" in u.lower() or ".webm" in u:
+        if any(e in u.lower() for e in exts) or (kind in u.lower()):
             return u
     return found[0] if found else ""
+
+
+def poll_for_url(status_url: str, headers: dict, kind: str = "video") -> str:
+    """Poll a Higgsfield status_url until the asset is rendered; return its URL."""
+    waited = 0
+    while waited < POLL_TIMEOUT:
+        time.sleep(POLL_INTERVAL)
+        waited += POLL_INTERVAL
+        try:
+            s = requests.get(status_url, headers=headers, timeout=30)
+        except Exception:
+            continue
+        if s.status_code >= 300:
+            continue
+        d = s.json() if s.content else {}
+        status = str(d.get("status") or _dig(d, "data", "status") or "").lower()
+        if status in ("completed", "succeeded", "success", "done", "finished", "ready", "complete"):
+            url = _extract_url(d) or _extract_url(d.get("data") or {}) or _find_any_url(d, kind)
+            if not url:
+                print(f"   ⚠️  higgsfield done but no URL — response: {str(d)[:400]}")
+            return url
+        if status in ("failed", "error", "cancelled", "canceled", "nsfw", "rejected"):
+            print(f"   ⚠️  higgsfield job {status}: {str(d)[:300]}")
+            return ""
+    print("   ⚠️  higgsfield poll timed out (10 min)")
+    return ""
 
 
 def _extract_url(d: dict) -> str:
@@ -136,28 +163,7 @@ def generate_video(prompt: str, image_url: str = "", duration: int = 8,
         print(f"   ⚠️  higgsfield: no status_url in response: {str(resp)[:300]}")
         return ""
     print(f"   🎬 higgsfield job {job} queued — polling…")
-    waited = 0
-    while waited < POLL_TIMEOUT:
-        time.sleep(POLL_INTERVAL)
-        waited += POLL_INTERVAL
-        try:
-            s = requests.get(status_url, headers=headers, timeout=30)
-        except Exception:
-            continue
-        if s.status_code >= 300:
-            continue
-        d = s.json() if s.content else {}
-        status = str(d.get("status") or _dig(d, "data", "status") or "").lower()
-        if status in ("completed", "succeeded", "success", "done", "finished", "ready", "complete"):
-            vid = _extract_url(d) or _extract_url(d.get("data") or {}) or _find_any_url(d)
-            if vid:
-                print(f"   ✓ higgsfield video ready: {vid[:70]}…")
-            else:
-                print(f"   ⚠️  higgsfield done but no URL — response: {str(d)[:400]}")
-            return vid
-        if status in ("failed", "error", "cancelled", "canceled", "nsfw", "rejected"):
-            print(f"   ⚠️  higgsfield job {status}: {str(d)[:300]}")
-            return ""
-        # else queued / in_progress / processing → keep waiting
-    print("   ⚠️  higgsfield poll timed out (10 min)")
-    return ""
+    vid = poll_for_url(status_url, headers, kind="video")
+    if vid:
+        print(f"   ✓ higgsfield video ready: {vid[:70]}…")
+    return vid
