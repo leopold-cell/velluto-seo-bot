@@ -5,11 +5,12 @@ Async flow: POST a generation, poll until complete, return the output video URL.
 Built configurable + defensive because the exact endpoint/field names differ by
 Higgsfield access tier (official cloud vs gateways); tune via env if needed:
 
-  HIGGSFIELD_API_KEY      # required — Bearer token
-  HIGGSFIELD_API_BASE     # default https://api.higgsfield.ai/v1
+  HIGGSFIELD_API_KEY      # required — key ID   (Authorization: Key ID:SECRET)
+  HIGGSFIELD_API_SECRET   # required — key secret
+  HIGGSFIELD_API_BASE     # default https://platform.higgsfield.ai/v1
   HIGGSFIELD_VIDEO_MODEL  # default higgsfield_v1
 
-No-op (returns "") when the key is missing, so the pipeline never breaks.
+No-op (returns "") when key/secret are missing, so the pipeline never breaks.
 """
 from __future__ import annotations
 
@@ -25,10 +26,13 @@ POLL_INTERVAL = 8       # seconds between status checks
 POLL_TIMEOUT  = 600     # give up after 10 min
 
 
-def _cfg() -> tuple[str, str, str]:
+def _cfg() -> tuple[str, str, str, str]:
+    # Higgsfield auth is a KEY-ID + SECRET pair (Authorization: Key ID:SECRET),
+    # not a single bearer token.
     return (
-        os.getenv("HIGGSFIELD_API_KEY", ""),
-        os.getenv("HIGGSFIELD_API_BASE", "https://api.higgsfield.ai/v1").rstrip("/"),
+        os.getenv("HIGGSFIELD_API_KEY", ""),     # key id
+        os.getenv("HIGGSFIELD_API_SECRET", ""),  # secret
+        os.getenv("HIGGSFIELD_API_BASE", "https://platform.higgsfield.ai/v1").rstrip("/"),
         os.getenv("HIGGSFIELD_VIDEO_MODEL", "higgsfield_v1"),
     )
 
@@ -62,11 +66,11 @@ def generate_video(prompt: str, duration: int = 8, aspect_ratio: str = "9:16") -
     """Generate a Reel-format (9:16) clip from a text prompt. Returns the video URL
     or "" on failure. Logs the raw server response on error so the field names can
     be aligned to your account's API."""
-    api_key, base, model = _cfg()
-    if not api_key:
-        print("   🎬 video skip — HIGGSFIELD_API_KEY not set in .env")
+    key_id, secret, base, model = _cfg()
+    if not (key_id and secret):
+        print("   🎬 video skip — HIGGSFIELD_API_KEY / HIGGSFIELD_API_SECRET not set in .env")
         return ""
-    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Key {key_id}:{secret}", "Content-Type": "application/json"}
     body = {
         "task": "text-to-video",
         "model": model,
