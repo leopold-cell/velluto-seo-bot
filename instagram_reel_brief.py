@@ -53,30 +53,43 @@ def _todays_topic() -> dict:
 def build_brief(topic: dict) -> str:
     from anthropic import Anthropic
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-    src = topic.get("title") or topic.get("topic") or topic.get("keyword")
+
+    # Rotate the format daily so the feed mixes faceless / POV / face content.
+    formats = [
+        "FACELESS — text/voiceover over POV or scenery footage, no person on camera",
+        "POV RIDING — helmet- or handlebar-POV, the rider's-eye view, in-the-saddle",
+        "FACE — talking/reacting to camera (piece-to-camera, skit, or duet-style)",
+    ]
+    fmt = formats[datetime.date.today().toordinal() % len(formats)]
 
     msg = client.messages.create(
         model=MODEL,
         max_tokens=900,
+        temperature=1.0,
         system=(
-            "You are the social creative for Velluto, a premium road-cycling eyewear brand "
-            "(StradaPro glasses: 25g, click-in interchangeable VellutoPuro clear + VellutoVisione "
-            "high-contrast lenses, anti-fog, UV400, 30-day risk-free trial). "
-            "You write short-form Instagram REELS for road cyclists (Rennrad). Tone: relatable, "
-            "witty, meme-leaning — like a rider who gets the inside jokes — but every reel lands a "
-            "real, useful point and a soft product tie-in. Never cringe, never hard-sell."
+            "You are a viral social creative for ROAD CYCLISTS (Rennrad). You make HUMOROUS, "
+            "relatable, lifestyle Instagram Reels — the kind a cyclist sends to the group chat or "
+            "tags a mate on, captioned 'this is literally us'. Pure cyclist culture & inside jokes: "
+            "the n+1 rule, café stops, Strava kudos & segment hunting, ridiculous tan lines, the "
+            "friend who always half-wheels, suffering on climbs, kit/sock-height debates, weather "
+            "denial, marginal-gains nonsense, 'just one more lap', pre-ride faff, etc. "
+            "This is NOT product marketing: NO feature pitches, NO 'your glasses fog up' angles, NO "
+            "sales talk, NO CTAs. The brand behind it is Velluto (road eyewear) but it stays in the "
+            "background as vibe only, never a pitch. The ONE goal: make road cyclists laugh and COMMENT."
         ),
         messages=[{"role": "user", "content": (
-            f"Today's topic: {src}\n\n"
-            "Write ONE Reel concept (a single short video, 8-15s). Output EXACTLY these labelled blocks:\n\n"
-            "HOOK: <on-screen text for the first 1.5s — must stop the scroll>\n"
-            "BEATS: <3-4 short on-screen text lines that carry the joke/arc to the payoff, one per line>\n"
-            "SHOT: <one phone-filmable visual idea: rider POV / bike computer / glasses, simple to shoot>\n"
-            "VIDEO_PROMPT: <a single vivid text-to-video prompt (1-2 sentences) describing the cycling "
-            "scene with motion and camera move, for an AI video generator. No on-screen text, no captions, "
-            "just the visual. Cinematic, real road-cycling look.>\n"
-            "CAPTION: <relatable 2-3 sentence caption, soft CTA to StradaPro, 'Link in Bio'>\n"
-            "HASHTAGS: <10-12 hashtags, mix EN + DE rennrad, space-separated>\n"
+            f"Reel format for today: {fmt}\n\n"
+            "Write ONE short Reel concept (8-15s) in that format. Make it SPECIFIC and fresh — a real, "
+            "instantly-recognisable road-cyclist moment, not generic. Output EXACTLY these labelled blocks:\n\n"
+            "HOOK: <on-screen text or spoken line for the first 1.5s — must stop the scroll>\n"
+            f"FORMAT: <{fmt}>\n"
+            "BEATS: <3-5 short beats (on-screen text / action / spoken line) building to the funny payoff, one per line>\n"
+            "SHOT: <how to film it on a phone in this format — simple and doable>\n"
+            "VIDEO_PROMPT: <one vivid 1-2 sentence prompt for an AI video generator: a cinematic road-cycling "
+            "visual with camera motion, no on-screen text, just the scene>\n"
+            "CAPTION: <a funny, relatable caption that BAITS comments — end with a question or 'tag the friend who…'. "
+            "No sales pitch, no link, no product talk.>\n"
+            "HASHTAGS: <10-12 hashtags, mix EN + DE rennrad / cycling-culture, space-separated>\n"
         )}],
     )
     return msg.content[0].text.strip()
@@ -85,6 +98,28 @@ def build_brief(topic: dict) -> str:
 def _extract(label: str, text: str) -> str:
     m = re.search(rf"{label}:\s*(.+?)(?:\n[A-Z_]+:|\Z)", text, re.S)
     return m.group(1).strip() if m else ""
+
+
+# Real Velluto lifestyle / people shots (Shopify CDN) — rotated as the start frame
+# for the image-to-video clip. Override any day with HIGGSFIELD_IMAGE_URL, or add
+# your own (e.g. velluto.cc Instagram) URLs here.
+_IMAGE_POOL = [
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestyle_1x1_fe573806-27fe-4b9d-8be3-be91c2f1aadb.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestyle_mobileUGC.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestylestudiomobile.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Orange.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Transparent.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/FooterExportsPeople.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/FooterExports_Female.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Hero-mobile-v2.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/BuildtoPerformEditedv2Mobile.webp",
+    "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Rick_Arancia.webp",
+]
+
+
+def _pick_start_image() -> str:
+    """Rotate through the Velluto lifestyle images by day."""
+    return _IMAGE_POOL[datetime.date.today().toordinal() % len(_IMAGE_POOL)]
 
 
 def main():
@@ -99,9 +134,7 @@ def main():
     video_prompt = _extract("VIDEO_PROMPT", brief)
     video_url = ""
     if video_prompt:
-        start_image = os.getenv(
-            "HIGGSFIELD_IMAGE_URL",
-            "https://velluto-shop.com/cdn/shop/files/Velluto_Thumbnail_Image.webp")
+        start_image = os.getenv("HIGGSFIELD_IMAGE_URL", "") or _pick_start_image()
         video_url = higgsfield_video.generate_video(
             video_prompt, image_url=start_image, duration=8, aspect_ratio="9:16")
     video_line = (f"🎬 Reel-Video (Higgsfield): {video_url}" if video_url
