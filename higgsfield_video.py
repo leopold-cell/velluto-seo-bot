@@ -83,7 +83,7 @@ def generate_video(prompt: str, image_url: str = "", duration: int = 8,
     url = f"{base}/{model.lstrip('/')}"
     headers = {"hf-api-key": key_id, "hf-secret": secret, "Content-Type": "application/json"}
     body = {
-        "input_image": image_url,     # DoP is image-to-video; field name may be 'image'/'image_url'
+        "image_url": image_url,       # DoP image-to-video requires this exact field
         "prompt": prompt,
         "motions": [],
         "enhance_prompt": True,
