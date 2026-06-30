@@ -19,18 +19,21 @@ import higgsfield_image
 BASE = os.path.dirname(os.path.abspath(__file__))
 OUT  = os.path.join(BASE, "pov_images.json")
 
-# Photorealistic, vertical, organic POV road-cycling scenes — no text, no branding.
+# Photorealistic POV road-cycling scenes. Framed to look like real GoPro/action-cam
+# footage looking DOWN THE ROAD AHEAD — explicitly NO hands, no phone, no rider in
+# frame, no people, to avoid the usual AI artifacts. No text, no branding.
+_NEG = "shot on a GoPro action camera, photorealistic, natural lighting, no hands, no phone, no rider visible, no people, no text, vertical 9:16"
 PROMPTS = [
-    "POV from a road cyclist's handlebars descending a sunlit alpine mountain pass, hands on the drops, slight speed blur, golden hour, photorealistic action-cam look, vertical",
-    "POV helmet-cam of a road cyclist riding a misty forest gravel road at sunrise, dappled light through trees, photorealistic, vertical",
-    "POV from the saddle on a winding coastal road at sunset, ocean on one side, warm light, realistic phone photo, vertical",
-    "POV riding inside a tight group of road cyclists, wheels close together, motion and speed, photorealistic, vertical",
-    "POV of a cyclist grinding up a steep Dolomites switchback, effort, dramatic limestone peaks, photorealistic, vertical",
-    "POV through empty city streets at dawn on a road bike, wet asphalt reflections, soft urban light, photorealistic, vertical",
-    "POV handlebar view on a rolling countryside road, green fields and blue sky, a bike computer faintly in frame, photorealistic, vertical",
-    "POV of a road cyclist in light rain on a forest road, water droplets, moody atmospheric light, photorealistic, vertical",
-    "POV gravel ride kicking up dust on a sunlit desert trail at midday, rugged landscape, photorealistic, vertical",
-    "POV descending fast through autumn trees, falling leaves, sense of speed, realistic action-cam, vertical",
+    f"First-person handlebar POV looking down an empty sunlit alpine mountain road ahead, tarmac and switchbacks dropping away, golden hour, {_NEG}",
+    f"POV looking forward along a misty forest gravel road at sunrise, dappled light through pine trees, {_NEG}",
+    f"First-person view down a winding coastal road at sunset, ocean glinting beside the road, warm light, {_NEG}",
+    f"POV on an open country road with a small group of road cyclists riding ahead in the distance, their backs and wheels in front, motion, {_NEG}",
+    f"First-person POV climbing a steep Dolomites switchback, the road rising ahead between limestone walls, dramatic, {_NEG}",
+    f"POV down quiet city streets at dawn, wet asphalt reflections, soft light, {_NEG}",
+    f"First-person POV over rolling green countryside, road ahead, blue sky and fields, {_NEG}",
+    f"POV looking ahead on a forest road in light rain, water droplets on the lens, moody atmosphere, {_NEG}",
+    f"First-person POV on a dusty sunlit gravel desert trail, the track stretching ahead, rugged landscape, {_NEG}",
+    f"POV descending fast through autumn trees, the road ahead, falling leaves, sense of speed, {_NEG}",
 ]
 
 
