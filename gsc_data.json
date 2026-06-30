@@ -1,14 +1,14 @@
 {
-  "date": "2026-06-29",
+  "date": "2026-06-30",
   "top_queries": [
     {
       "keys": [
         "velluto"
       ],
-      "clicks": 55,
-      "impressions": 1200,
-      "ctr": 0.04583333333333333,
-      "position": 5.185833333333333
+      "clicks": 53,
+      "impressions": 1149,
+      "ctr": 0.04612706701479547,
+      "position": 5.21496953872933
     },
     {
       "keys": [
@@ -42,9 +42,9 @@
         "vellutto"
       ],
       "clicks": 3,
-      "impressions": 33,
-      "ctr": 0.09090909090909091,
-      "position": 3.515151515151515
+      "impressions": 29,
+      "ctr": 0.10344827586206896,
+      "position": 3.206896551724138
     },
     {
       "keys": [
@@ -57,21 +57,12 @@
     },
     {
       "keys": [
-        "velluto glasses"
-      ],
-      "clicks": 2,
-      "impressions": 4,
-      "ctr": 0.5,
-      "position": 1
-    },
-    {
-      "keys": [
         "veluto"
       ],
       "clicks": 2,
-      "impressions": 341,
-      "ctr": 0.005865102639296188,
-      "position": 5.609970674486804
+      "impressions": 323,
+      "ctr": 0.006191950464396285,
+      "position": 5.662538699690402
     },
     {
       "keys": [
@@ -129,15 +120,6 @@
     },
     {
       "keys": [
-        "sykkelbriller best i test"
-      ],
-      "clicks": 1,
-      "impressions": 12,
-      "ctr": 0.08333333333333333,
-      "position": 11.75
-    },
-    {
-      "keys": [
         "valutto"
       ],
       "clicks": 1,
@@ -153,6 +135,15 @@
       "impressions": 2,
       "ctr": 0.5,
       "position": 2
+    },
+    {
+      "keys": [
+        "velluto glasses"
+      ],
+      "clicks": 1,
+      "impressions": 1,
+      "ctr": 1,
+      "position": 1
     },
     {
       "keys": [
@@ -225,6 +216,15 @@
       "impressions": 8,
       "ctr": 0,
       "position": 8.875
+    },
+    {
+      "keys": [
+        "alternatives to oakley"
+      ],
+      "clicks": 0,
+      "impressions": 6852,
+      "ctr": 0,
+      "position": 7.112959719789842
     }
   ],
   "top_pages": [
@@ -232,19 +232,19 @@
       "keys": [
         "https://velluto-shop.com/"
       ],
-      "clicks": 147,
-      "impressions": 2470,
-      "ctr": 0.05951417004048583,
-      "position": 5.07004048582996
+      "clicks": 142,
+      "impressions": 2377,
+      "ctr": 0.059739167017248636,
+      "position": 5.101388304585612
     },
     {
       "keys": [
         "https://velluto-shop.com/nl"
       ],
       "clicks": 12,
-      "impressions": 101,
-      "ctr": 0.1188118811881188,
-      "position": 2.8514851485148514
+      "impressions": 94,
+      "ctr": 0.1276595744680851,
+      "position": 2.8936170212765955
     },
     {
       "keys": [
@@ -269,9 +269,9 @@
         "https://velluto-shop.com/collections/all"
       ],
       "clicks": 7,
-      "impressions": 618,
-      "ctr": 0.011326860841423949,
-      "position": 4.406148867313916
+      "impressions": 583,
+      "ctr": 0.012006861063464836,
+      "position": 4.259005145797598
     },
     {
       "keys": [
@@ -320,15 +320,6 @@
     }
   ],
   "daily_trend": [
-    {
-      "keys": [
-        "2026-06-01"
-      ],
-      "clicks": 10,
-      "impressions": 246,
-      "ctr": 0.04065040650406504,
-      "position": 5.963414634146342
-    },
     {
       "keys": [
         "2026-06-02"
