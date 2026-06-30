@@ -38,7 +38,27 @@ step "blog review (28d gate)"      python3 blog_review.py
 git config user.name  "vps-bot"
 git config user.email "leopold@velluto-brand.com"
 git add -A
-if git diff --cached --quiet; then
+
+# ── SAFETY NET: never let a secret reach the public repo (see .env.save leak) ─
+# Layer 1: drop secret/backup files from the staged set even if .gitignore misses one.
+BAD_FILES=$(git diff --cached --name-only \
+  | grep -iE '(^|/)\.env([._]|$)|\.(save|bak|orig|swp|swo)$|(^|/)id_rsa|(^|/)credentials.*\.json' || true)
+if [ -n "$BAD_FILES" ]; then
+  log "⚠️ SECURITY: unstaging secret-like file(s): $(echo "$BAD_FILES" | tr '\n' ' ')"
+  echo "$BAD_FILES" | xargs -r git reset -q HEAD --
+  echo "$BAD_FILES" | xargs -r rm -f
+fi
+# Layer 2: scan staged CONTENT for secret tokens; if found, ABORT commit+push.
+SECRET_BLOCK=false
+if git diff --cached 2>/dev/null | grep -qE 'sk-ant-[A-Za-z0-9_-]{16}|sk-[A-Za-z0-9]{20}|ghp_[A-Za-z0-9]{20}|AIza[A-Za-z0-9_-]{30}|xox[baprs]-[A-Za-z0-9-]{10}'; then
+  log "✗ SECURITY: secret-looking token in staged content — commit & push SKIPPED. Inspect 'git diff --cached'."
+  SECRET_BLOCK=true
+  FAILED+=("SECURITY: secret token blocked from push")
+fi
+
+if [ "$SECRET_BLOCK" = true ]; then
+  : # leave changes uncommitted; the daily report flags this as ACTION NEEDED
+elif git diff --cached --quiet; then
   log "nothing to commit"
 else
   git commit -m "chore: daily update $(date -u +%Y-%m-%d)" && log "committed daily update"
@@ -46,14 +66,18 @@ fi
 
 # Push with a few retries; tolerate failure so the run still ends cleanly.
 PUSH_OK=true
-for i in 1 2 3; do
-  if git push origin main; then log "✓ pushed to origin/main"; break; fi
-  if [ "$i" = 3 ]; then
-    log "✗ git push still failing after 3 tries — commits remain local (check auth)"; PUSH_OK=false
-  else
-    log "push attempt $i failed; retrying in $((i * 5))s"; sleep $((i * 5))
-  fi
-done
+if [ "$SECRET_BLOCK" = true ]; then
+  PUSH_OK=false
+else
+  for i in 1 2 3; do
+    if git push origin main; then log "✓ pushed to origin/main"; break; fi
+    if [ "$i" = 3 ]; then
+      log "✗ git push still failing after 3 tries — commits remain local (check auth)"; PUSH_OK=false
+    else
+      log "push attempt $i failed; retrying in $((i * 5))s"; sleep $((i * 5))
+    fi
+  done
+fi
 
 # ── Daily email report (always) — summary + ⚠️ alert if anything needs action ─
 export RUN_FAILED=$(printf '%s\n' "${FAILED[@]}")
