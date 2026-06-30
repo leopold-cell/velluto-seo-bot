@@ -50,6 +50,29 @@ def _dig(d, *path):
     return cur
 
 
+def _find_any_url(obj) -> str:
+    """Recursively find an http(s) URL anywhere in a nested response, preferring a
+    video/mp4 link. Robust to whatever shape the completed-status payload uses."""
+    found: list[str] = []
+
+    def walk(o):
+        if isinstance(o, str):
+            if o.startswith("http"):
+                found.append(o)
+        elif isinstance(o, dict):
+            for v in o.values():
+                walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+
+    walk(obj)
+    for u in found:
+        if ".mp4" in u or "video" in u.lower() or ".webm" in u:
+            return u
+    return found[0] if found else ""
+
+
 def _extract_url(d: dict) -> str:
     """Find the finished video URL across the response shapes different tiers use."""
     candidates = [
@@ -106,9 +129,35 @@ def generate_video(prompt: str, image_url: str = "", duration: int = 8,
         print(f"   ✓ higgsfield video ready: {vid[:60]}…")
         return vid
 
-    # Async: log the response so we can wire the exact poll endpoint/field next.
-    job = (resp.get("id") or resp.get("request_id") or resp.get("job_id")
-           or _dig(resp, "data", "id"))
-    print(f"   🎬 higgsfield accepted (job={job}). Response shape: {str(resp)[:400]}")
-    print("   ℹ️  (image-to-video is async — send this response so the poll step can be finalized)")
+    # Async: poll the status_url until the clip is rendered.
+    status_url = resp.get("status_url") or _dig(resp, "data", "status_url")
+    job = resp.get("request_id") or resp.get("id")
+    if not status_url:
+        print(f"   ⚠️  higgsfield: no status_url in response: {str(resp)[:300]}")
+        return ""
+    print(f"   🎬 higgsfield job {job} queued — polling…")
+    waited = 0
+    while waited < POLL_TIMEOUT:
+        time.sleep(POLL_INTERVAL)
+        waited += POLL_INTERVAL
+        try:
+            s = requests.get(status_url, headers=headers, timeout=30)
+        except Exception:
+            continue
+        if s.status_code >= 300:
+            continue
+        d = s.json() if s.content else {}
+        status = str(d.get("status") or _dig(d, "data", "status") or "").lower()
+        if status in ("completed", "succeeded", "success", "done", "finished", "ready", "complete"):
+            vid = _extract_url(d) or _extract_url(d.get("data") or {}) or _find_any_url(d)
+            if vid:
+                print(f"   ✓ higgsfield video ready: {vid[:70]}…")
+            else:
+                print(f"   ⚠️  higgsfield done but no URL — response: {str(d)[:400]}")
+            return vid
+        if status in ("failed", "error", "cancelled", "canceled", "nsfw", "rejected"):
+            print(f"   ⚠️  higgsfield job {status}: {str(d)[:300]}")
+            return ""
+        # else queued / in_progress / processing → keep waiting
+    print("   ⚠️  higgsfield poll timed out (10 min)")
     return ""
