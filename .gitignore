@@ -25,3 +25,10 @@ output/*
 
 # Local-only logs
 manual_test.log
+
+# Secrets & editor backups (never commit — see .env.save leak 2026-06-30)
+.env
+.env.*
+*.save
+*.bak
+*~
