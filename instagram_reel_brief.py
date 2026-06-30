@@ -18,10 +18,12 @@ from __future__ import annotations
 import datetime
 import json
 import os
+import re
 
 from dotenv import load_dotenv
 
 import mailer
+import higgsfield_video
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(dotenv_path=os.path.join(BASE, ".env"), override=True)
@@ -70,11 +72,19 @@ def build_brief(topic: dict) -> str:
             "HOOK: <on-screen text for the first 1.5s — must stop the scroll>\n"
             "BEATS: <3-4 short on-screen text lines that carry the joke/arc to the payoff, one per line>\n"
             "SHOT: <one phone-filmable visual idea: rider POV / bike computer / glasses, simple to shoot>\n"
+            "VIDEO_PROMPT: <a single vivid text-to-video prompt (1-2 sentences) describing the cycling "
+            "scene with motion and camera move, for an AI video generator. No on-screen text, no captions, "
+            "just the visual. Cinematic, real road-cycling look.>\n"
             "CAPTION: <relatable 2-3 sentence caption, soft CTA to StradaPro, 'Link in Bio'>\n"
             "HASHTAGS: <10-12 hashtags, mix EN + DE rennrad, space-separated>\n"
         )}],
     )
     return msg.content[0].text.strip()
+
+
+def _extract(label: str, text: str) -> str:
+    m = re.search(rf"{label}:\s*(.+?)(?:\n[A-Z_]+:|\Z)", text, re.S)
+    return m.group(1).strip() if m else ""
 
 
 def main():
@@ -84,16 +94,26 @@ def main():
     except Exception as e:
         print(f"   ⚠️  reel brief generation failed: {e}")
         return
+
+    # Generate the Reel video via Higgsfield (no-op + note if no API key).
+    video_prompt = _extract("VIDEO_PROMPT", brief)
+    video_url = ""
+    if video_prompt:
+        video_url = higgsfield_video.generate_video(video_prompt, duration=8, aspect_ratio="9:16")
+    video_line = (f"🎬 Reel-Video (Higgsfield): {video_url}" if video_url
+                  else "🎬 Reel-Video: nicht erzeugt (HIGGSFIELD_API_KEY in .env setzen).")
+
     body = (
-        "TEST-MODE · Instagram Reel-Brief (noch kein Auto-Posting)\n"
-        f"Quelle: {topic.get('title') or topic.get('topic')}\n"
+        "TEST-MODE · Instagram Reel (noch kein Auto-Posting)\n"
+        f"Quelle: {topic.get('title') or topic.get('topic')}\n\n"
+        f"{video_line}\n"
         "────────────────────────────────────────\n\n"
         f"{brief}\n\n"
         "────────────────────────────────────────\n"
-        "Wenn dir das Format passt, sag Bescheid — dann automatisieren wir Video + Posting "
-        "(offizielle Instagram Graph API)."
+        "Video passt? Dann verdrahte ich das Reels-Posting (offizielle Instagram Graph API), "
+        "sobald dein Meta-Business/App-Setup steht."
     )
-    subject = f"🎬 Velluto Reel-Brief (Test) — {TODAY}"
+    subject = f"🎬 Velluto Reel (Test) — {TODAY}"
     mailer.send_email(subject, body)
 
 
