@@ -131,6 +131,17 @@ def run() -> dict:
     markets = markets_due_today()
     keywords = _seed_keywords()
 
+    # Daily cache guard: if today's due markets were already fetched (e.g. an earlier
+    # cron or a manual run.sh), reuse the snapshot instead of paying DataForSEO again.
+    # Set SERP_FORCE=1 to override.
+    if os.getenv("SERP_FORCE", "") != "1":
+        existing = load_latest()
+        if (existing and existing.get("date") == today
+                and set(markets).issubset(set(existing.get("markets_fetched", [])))):
+            print(f"   SERP: today's snapshot already exists "
+                  f"({len(existing.get('snapshots', []))} SERPs) — skipping fetch (cache, $0)")
+            return existing
+
     if not markets or not keywords:
         print(f"   SERP: nothing to fetch today (markets={markets}, keywords={len(keywords)})")
         result = {"date": today, "markets_fetched": markets, "keywords": keywords,
