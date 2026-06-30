@@ -5,12 +5,13 @@ Async flow: POST a generation, poll until complete, return the output video URL.
 Built configurable + defensive because the exact endpoint/field names differ by
 Higgsfield access tier (official cloud vs gateways); tune via env if needed:
 
-  HIGGSFIELD_API_KEY      # required — key ID   (Authorization: Key ID:SECRET)
-  HIGGSFIELD_API_SECRET   # required — key secret
-  HIGGSFIELD_API_BASE     # default https://platform.higgsfield.ai/v1
-  HIGGSFIELD_VIDEO_MODEL  # default higgsfield_v1
+  HIGGSFIELD_API_KEY      # required — key ID   (sent as header hf-api-key)
+  HIGGSFIELD_API_SECRET   # required — key secret (sent as header hf-secret)
+  HIGGSFIELD_API_BASE     # default https://platform.higgsfield.ai
+  HIGGSFIELD_VIDEO_MODEL  # default higgsfield-ai/dop/turbo (image-to-video)
+  HIGGSFIELD_IMAGE_URL    # start frame for image-to-video (a Velluto image)
 
-No-op (returns "") when key/secret are missing, so the pipeline never breaks.
+No-op (returns "") when key/secret/image are missing, so the pipeline never breaks.
 """
 from __future__ import annotations
 
@@ -32,9 +33,10 @@ def _cfg() -> tuple[str, str, str, str]:
     return (
         os.getenv("HIGGSFIELD_API_KEY", ""),     # key id
         os.getenv("HIGGSFIELD_API_SECRET", ""),  # secret
-        os.getenv("HIGGSFIELD_API_BASE", "https://platform.higgsfield.ai/v1").rstrip("/"),
-        # Path-style model id; override with the exact one from your Higgsfield API docs.
-        os.getenv("HIGGSFIELD_VIDEO_MODEL", "bytedance/seedance/v1/text-to-video"),
+        os.getenv("HIGGSFIELD_API_BASE", "https://platform.higgsfield.ai").rstrip("/"),
+        # Model path appended to the base as the endpoint (per Higgsfield's API).
+        # DoP Turbo = fast image-to-video. Override via HIGGSFIELD_VIDEO_MODEL.
+        os.getenv("HIGGSFIELD_VIDEO_MODEL", "higgsfield-ai/dop/turbo"),
     )
 
 
@@ -63,61 +65,50 @@ def _extract_url(d: dict) -> str:
     return ""
 
 
-def generate_video(prompt: str, duration: int = 8, aspect_ratio: str = "9:16") -> str:
-    """Generate a Reel-format (9:16) clip from a text prompt. Returns the video URL
-    or "" on failure. Logs the raw server response on error so the field names can
-    be aligned to your account's API."""
+def generate_video(prompt: str, image_url: str = "", duration: int = 8,
+                   aspect_ratio: str = "9:16") -> str:
+    """Higgsfield DoP image-to-video: animate a still (image_url) into a 9:16 clip.
+    Endpoint = base + "/" + model path (e.g. .../higgsfield-ai/dop/turbo); auth via
+    hf-api-key + hf-secret headers. Returns the video URL or "". Logs the full
+    response so the (async) result/poll shape can be finalized on the first run."""
     key_id, secret, base, model = _cfg()
     if not (key_id and secret):
         print("   🎬 video skip — HIGGSFIELD_API_KEY / HIGGSFIELD_API_SECRET not set in .env")
         return ""
-    headers = {"Authorization": f"Key {key_id}:{secret}", "Content-Type": "application/json"}
-    # Higgsfield model IDs are path-style (e.g. "bytedance/seedance/v1/text-to-video"),
-    # not a flat name — the path already encodes the task. Set the exact id for your
-    # account via HIGGSFIELD_VIDEO_MODEL (find it in the cloud.higgsfield.ai API docs).
+    image_url = image_url or os.getenv("HIGGSFIELD_IMAGE_URL", "")
+    if not image_url:
+        print("   🎬 video skip — no start image (set HIGGSFIELD_IMAGE_URL or pass image_url)")
+        return ""
+
+    url = f"{base}/{model.lstrip('/')}"
+    headers = {"hf-api-key": key_id, "hf-secret": secret, "Content-Type": "application/json"}
     body = {
-        "model": model,
+        "input_image": image_url,     # DoP is image-to-video; field name may be 'image'/'image_url'
         "prompt": prompt,
-        "duration": duration,
+        "motions": [],
+        "enhance_prompt": True,
         "aspect_ratio": aspect_ratio,
+        "duration": duration,
     }
     try:
-        r = requests.post(f"{base}/generations", headers=headers, json=body, timeout=30)
+        r = requests.post(url, headers=headers, json=body, timeout=60)
     except Exception as e:
         print(f"   ⚠️  higgsfield submit error: {e}")
         return ""
     if r.status_code >= 300:
-        print(f"   ⚠️  higgsfield submit failed {r.status_code}: {r.text[:300]}")
-        return ""
-    resp = r.json() if r.content else {}
-    gid = (resp.get("id") or resp.get("generation_id")
-           or _dig(resp, "data", "id") or _dig(resp, "generation", "id"))
-    if not gid:
-        print(f"   ⚠️  higgsfield: no generation id in response: {str(resp)[:300]}")
+        print(f"   ⚠️  higgsfield {model} submit failed {r.status_code}: {r.text[:400]}")
         return ""
 
-    print(f"   🎬 higgsfield job {gid} submitted — polling…")
-    waited = 0
-    while waited < POLL_TIMEOUT:
-        time.sleep(POLL_INTERVAL)
-        waited += POLL_INTERVAL
-        try:
-            s = requests.get(f"{base}/generations/{gid}", headers=headers, timeout=30)
-        except Exception:
-            continue
-        if s.status_code >= 300:
-            continue
-        d = s.json() if s.content else {}
-        status = str(d.get("status") or d.get("state") or _dig(d, "data", "status") or "").lower()
-        if status in ("completed", "succeeded", "success", "done", "finished"):
-            url = _extract_url(d) or _extract_url(d.get("data") or {})
-            if url:
-                print(f"   ✓ higgsfield video ready: {url[:60]}…")
-            else:
-                print(f"   ⚠️  higgsfield completed but no URL found: {str(d)[:300]}")
-            return url
-        if status in ("failed", "error", "cancelled", "canceled"):
-            print(f"   ⚠️  higgsfield job {status}: {str(d)[:300]}")
-            return ""
-    print("   ⚠️  higgsfield poll timed out (10 min)")
+    resp = r.json() if r.content else {}
+    # Sync result?
+    vid = _extract_url(resp) or _extract_url(resp.get("data") or {})
+    if vid:
+        print(f"   ✓ higgsfield video ready: {vid[:60]}…")
+        return vid
+
+    # Async: log the response so we can wire the exact poll endpoint/field next.
+    job = (resp.get("id") or resp.get("request_id") or resp.get("job_id")
+           or _dig(resp, "data", "id"))
+    print(f"   🎬 higgsfield accepted (job={job}). Response shape: {str(resp)[:400]}")
+    print("   ℹ️  (image-to-video is async — send this response so the poll step can be finalized)")
     return ""

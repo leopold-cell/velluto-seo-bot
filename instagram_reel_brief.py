@@ -99,7 +99,11 @@ def main():
     video_prompt = _extract("VIDEO_PROMPT", brief)
     video_url = ""
     if video_prompt:
-        video_url = higgsfield_video.generate_video(video_prompt, duration=8, aspect_ratio="9:16")
+        start_image = os.getenv(
+            "HIGGSFIELD_IMAGE_URL",
+            "https://velluto-shop.com/cdn/shop/files/Velluto_Thumbnail_Image.webp")
+        video_url = higgsfield_video.generate_video(
+            video_prompt, image_url=start_image, duration=8, aspect_ratio="9:16")
     video_line = (f"🎬 Reel-Video (Higgsfield): {video_url}" if video_url
                   else "🎬 Reel-Video: nicht erzeugt (HIGGSFIELD_API_KEY in .env setzen).")
 
