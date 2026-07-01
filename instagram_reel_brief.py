@@ -30,6 +30,27 @@ load_dotenv(dotenv_path=os.path.join(BASE, ".env"), override=True)
 
 TODAY = datetime.date.today().isoformat()
 MODEL = "claude-sonnet-4-6"   # creative copy — wit matters more than cost here
+STATE = os.path.join(BASE, "reel_state.json")
+
+
+def _already_posted_today() -> bool:
+    """True if a reel was already published today — keeps it to 1×/day even if
+    run.sh fires twice. Only a successful post is recorded, so dry-runs never block.
+    Override with REEL_FORCE=1 for manual re-tests."""
+    if os.getenv("REEL_FORCE", "").strip() in ("1", "true", "yes", "on"):
+        return False
+    try:
+        return json.load(open(STATE)).get("last_post_date") == TODAY
+    except Exception:
+        return False
+
+
+def _record_post(media_id: str):
+    try:
+        json.dump({"last_post_date": TODAY, "last_media_id": media_id},
+                  open(STATE, "w"), indent=2)
+    except Exception:
+        pass
 
 
 def _todays_topic() -> dict:
@@ -131,6 +152,12 @@ def _pick_start_image() -> str:
 
 
 def main():
+    # 1×/day: if we already posted today, skip the whole run (saves Higgsfield credits
+    # + Claude tokens). Dry-runs don't record, so testing stays unaffected.
+    if _already_posted_today():
+        print(f"   ▶ reel skip — already posted today ({TODAY}). REEL_FORCE=1 to override.")
+        return
+
     topic = _todays_topic()
     try:
         brief = build_brief(topic)
@@ -176,6 +203,7 @@ def main():
             public_url = public_url or video_url
             media_id = instagram_post.publish_reel(public_url, ig_caption)
             if media_id:
+                _record_post(media_id)
                 mode = "Test-Reel (nur Nicht-Follower)" if instagram_post.trial_enabled() else "Reel"
                 post_line = f"📮 Instagram: ✅ als {mode} gepostet (media id {media_id})\n   Quelle: {public_url}"
             elif instagram_post.autopost_enabled():
