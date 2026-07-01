@@ -245,6 +245,9 @@ def main():
         brief = build_brief(topic)
     except Exception as e:
         print(f"   ⚠️  reel brief generation failed: {e}")
+        mailer.send_email(f"⚠️ Velluto Reel PROBLEM — {TODAY}",
+                          f"Reel-Text-Generierung fehlgeschlagen:\n\n{e}\n\n"
+                          "(Meist ANTHROPIC_API_KEY-Problem.)")
         return
 
     # Source the footage: vetted library first (reliable), Higgsfield generation only
@@ -282,52 +285,62 @@ def main():
         video_line += ("\n⚠️  TEXT-OVERLAY FEHLT — ffmpeg ist auf dem VPS nicht installiert. "
                        "Fix: `apt install ffmpeg -y`. Ohne ffmpeg wird nur der rohe Clip verschickt.")
 
-    # ── Auto-post to Instagram (Graph API). No-op/dry-run until BOTH the IG creds
-    # (instagram_auth.py) AND IG_AUTOPOST=1 are set — i.e. TEST-MODE by default.
+    # Collect problems; we email ONLY if something actually went wrong (see bottom).
+    problems = []
+    if not video_url:
+        problems.append("Kein Clip gefunden/erzeugt (Drive-Ordner / reel_clips.json leer?).")
+    if video_url and not captions_burned:
+        problems.append("Text-Overlay konnte nicht eingebrannt werden (ffmpeg-Problem auf dem VPS).")
+
+    # ── Auto-post to Instagram (Graph API). Only posts when IG creds AND IG_AUTOPOST=1
+    # are set; DRY-RUN / missing token are intentional states, NOT problems.
     post_line = "📮 Instagram: TEST-MODE (kein Auto-Posting)."
-    # Never publish a caption-less clip — the on-screen text IS the content. Override
-    # this safety with REEL_ALLOW_NO_CAPTION=1 if you ever want raw clips posted.
-    if video_url and not captions_burned and \
-       os.getenv("REEL_ALLOW_NO_CAPTION", "").strip() not in ("1", "true", "yes", "on"):
-        post_line = ("📮 Instagram: ⛔ nicht gepostet — Text-Overlay fehlt (ffmpeg auf dem VPS "
-                     "installieren: `apt install ffmpeg -y`). Ohne Overlay kein Post.")
+    allow_no_caption = os.getenv("REEL_ALLOW_NO_CAPTION", "").strip() in ("1", "true", "yes", "on")
+    if video_url and not captions_burned and not allow_no_caption:
+        post_line = "📮 Instagram: ⛔ nicht gepostet — Text-Overlay fehlt (ffmpeg installieren)."
     elif video_url:
         import instagram_post
         if instagram_post.is_configured():
             # Always: one-line, relatable caption + the four fixed hashtags.
             line = " ".join(_extract("CAPTION", brief).split())   # collapse to a single line
             ig_caption = f"{line}\n\n{HASHTAGS}".strip()
-            # Host the CAPTIONED clip on Drive; fall back to the raw Higgsfield URL.
             public_url = ""
             if captioned and os.path.isfile(captioned):
                 import drive_upload
                 public_url = drive_upload.upload_public(captioned, name=f"velluto_reel_{TODAY}.mp4")
-            public_url = public_url or video_url
-            media_id = instagram_post.publish_reel(public_url, ig_caption)
-            if media_id:
-                _record_post(media_id)
-                mode = "Test-Reel (nur Nicht-Follower)" if instagram_post.trial_enabled() else "Reel"
-                post_line = f"📮 Instagram: ✅ als {mode} gepostet (media id {media_id})\n   Quelle: {public_url}"
-            elif instagram_post.autopost_enabled():
-                post_line = "📮 Instagram: ⚠️ Posting fehlgeschlagen — siehe VPS-Log."
+            if not public_url:
+                # Never post the caption-less source clip — flag it instead.
+                post_line = "📮 Instagram: ⛔ nicht gepostet — Drive-Upload fehlgeschlagen."
+                if instagram_post.autopost_enabled():
+                    problems.append("Drive-Upload des captionierten Reels fehlgeschlagen — nicht gepostet.")
             else:
-                post_line = ("📮 Instagram: bereit, aber DRY-RUN (IG_AUTOPOST≠1). "
-                             "Zum Scharfschalten IG_AUTOPOST=1 in .env setzen.")
+                media_id = instagram_post.publish_reel(public_url, ig_caption)
+                if media_id:
+                    _record_post(media_id)
+                    mode = "Test-Reel (nur Nicht-Follower)" if instagram_post.trial_enabled() else "Reel"
+                    post_line = f"📮 Instagram: ✅ als {mode} gepostet (media id {media_id})"
+                elif instagram_post.autopost_enabled():
+                    post_line = "📮 Instagram: ⚠️ Posting fehlgeschlagen — siehe VPS-Log."
+                    problems.append("Instagram-Posting fehlgeschlagen — siehe VPS-Log.")
+                else:
+                    post_line = "📮 Instagram: DRY-RUN (IG_AUTOPOST≠1)."
         else:
-            post_line = ("📮 Instagram: Token fehlt — einmalig `python3 instagram_auth.py` "
-                         "laufen lassen (IG_ACCESS_TOKEN + IG_USER_ID).")
+            post_line = "📮 Instagram: Token fehlt (instagram_auth.py) — nur Test-Mode."
 
-    body = (
-        f"Instagram Reel — {TODAY}\n"
-        f"Quelle: {topic.get('title') or topic.get('topic')}\n\n"
-        f"{video_line}\n"
-        f"{post_line}\n"
-        "────────────────────────────────────────\n\n"
-        f"{brief}\n"
-    )
-    subject = f"🎬 Velluto Reel — {TODAY}"
-    attach = [captioned] if (captioned and os.path.isfile(captioned)) else None
-    mailer.send_email(subject, body, attachments=attach)
+    # Email ONLY when something is broken. A clean run (incl. successful post) is silent —
+    # you asked to be notified only when something doesn't work.
+    if problems:
+        body = (
+            f"⚠️ Velluto Reel — Problem am {TODAY}:\n\n- " + "\n- ".join(problems) + "\n\n"
+            f"Quelle: {topic.get('title') or topic.get('topic')}\n"
+            f"{video_line}\n{post_line}\n"
+            "────────────────────────────────────────\n\n"
+            f"{brief}\n"
+        )
+        attach = [captioned] if (captioned and os.path.isfile(captioned)) else None
+        mailer.send_email(f"⚠️ Velluto Reel PROBLEM — {TODAY}", body, attachments=attach)
+    else:
+        print(f"   ✔ reel ok ({post_line.strip()}) — keine E-Mail (nur Probleme werden gemailt).")
 
 
 if __name__ == "__main__":
