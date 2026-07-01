@@ -188,8 +188,8 @@ def download_and_caption(video_url: str, onscreen: str, punchline: str,
         print(f"   ✓ caption overlay burned → {out_path}")
         return out_path
     except subprocess.CalledProcessError as e:
-        msg = e.stderr[-300:].decode("utf-8", "ignore") if e.stderr else str(e)
-        print(f"   ⚠️  caption ffmpeg failed: {msg}")
+        msg = e.stderr[-800:].decode("utf-8", "ignore") if e.stderr else str(e)
+        print(f"   ⚠️  caption ffmpeg FAILED (using {ffmpeg}, music={use_music}):\n{msg}")
         return raw
     except Exception as e:
         print(f"   ⚠️  caption error: {e}")
