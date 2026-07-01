@@ -124,7 +124,7 @@ def _render_overlay(onscreen: str, punchline: str, out_png: str) -> bool:
 
 
 def download_and_caption(video_url: str, onscreen: str, punchline: str,
-                         out_path: str, duration: int = 8) -> str:
+                         out_path: str, duration: int = 8, music_path: str = "") -> str:
     """Download the clip and composite a doctor.running-style text overlay onto it.
     Returns the captioned path, or the *_raw.mp4 download if the overlay can't be
     burned (so the caller can detect it via the '_raw.mp4' suffix)."""
@@ -144,10 +144,21 @@ def download_and_caption(video_url: str, onscreen: str, punchline: str,
         return raw
 
     # Scale the overlay to the clip size, then composite it over the whole clip.
-    cmd = [ffmpeg, "-y", "-i", raw, "-i", png,
-           "-filter_complex", "[1:v][0:v]scale2ref[ov][base];[base][ov]overlay=0:0",
-           "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p",
-           "-movflags", "+faststart", out_path]
+    # Optionally add a license-free music track as the audio (Instagram's own music
+    # library is NOT available via the API — audio must be baked into the file).
+    use_music = bool(music_path) and os.path.isfile(music_path)
+    # -loop 1 makes the overlay PNG an endless stream so -shortest keys off the video/
+    # music (a single-frame image is ~0s and would otherwise truncate the whole clip).
+    cmd = [ffmpeg, "-y", "-i", raw, "-loop", "1", "-i", png]
+    if use_music:
+        cmd += ["-i", music_path]
+    cmd += ["-filter_complex", "[1:v][0:v]scale2ref[ov][base];[base][ov]overlay=0:0[v]",
+            "-map", "[v]"]
+    if use_music:
+        # Music track (input 2) as the audio.
+        cmd += ["-map", "2:a", "-c:a", "aac", "-b:a", "160k"]
+    cmd += ["-shortest", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p",
+            "-movflags", "+faststart", out_path]
     try:
         subprocess.run(cmd, check=True, capture_output=True, timeout=240)
         print(f"   ✓ caption overlay burned → {out_path}")

@@ -135,6 +135,32 @@ _IMAGE_POOL = [
 ]
 
 
+def _pick_music() -> str:
+    """Download today's license-free music track and return its local path.
+
+    music_tracks.json = ["https://…mp3", …] or [{"url": "…", "desc": "…"}, …].
+    Instagram's own music library is NOT available via the API, so the track is baked
+    into the video file. Use only license-free / royalty-free music. '' if none set."""
+    try:
+        tracks = json.load(open(os.path.join(BASE, "music_tracks.json")))
+        urls = [t.get("url") if isinstance(t, dict) else t for t in (tracks or [])]
+        urls = [u for u in urls if u]
+        if not urls:
+            return ""
+        url = urls[datetime.date.today().toordinal() % len(urls)]
+        import requests
+        dest = os.path.join(BASE, "output", "reels", "music_today")
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        r = requests.get(url, timeout=120)
+        r.raise_for_status()
+        open(dest, "wb").write(r.content)
+        print(f"   ▶ music track from music_tracks.json ({len(urls)} in library)")
+        return dest
+    except Exception as e:
+        print(f"   ⚠️  music skipped: {e}")
+        return ""
+
+
 def _pick_vetted_clip() -> str:
     """Prefer a hand-vetted road-cycling clip from reel_clips.json — the reliable path.
     Same idea as doctor.running: reuse good POV footage, change only the caption daily.
@@ -202,8 +228,9 @@ def main():
         if punchline in ("-", ""):
             punchline = ""
         out = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
+        music = _pick_music()   # license-free track baked into the file (no IG music API)
         captioned = caption_video.download_and_caption(
-            video_url, onscreen, punchline, out, duration=5)
+            video_url, onscreen, punchline, out, duration=5, music_path=music)
         # captions_burned is True only if the returned file is the captioned one
         # (caption_video returns the *_raw.mp4 path on ffmpeg/font failure).
         captions_burned = bool(captioned) and not captioned.endswith("_raw.mp4")
