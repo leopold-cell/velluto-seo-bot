@@ -101,8 +101,11 @@ def build_brief(topic: dict) -> str:
             "SPECIFIC and instantly recognisable, not generic. Output EXACTLY these labelled blocks:\n\n"
             "ONSCREEN: <the ONE on-screen text line that holds the whole clip — first-person, "
             "relatable, max ~12 words. This is the whole joke/hook. e.g. 'me pretending it's a "
-            "recovery ride for the 4th day in a row'>\n"
-            "PUNCHLINE: <optional short payoff shown in the final ~2s, or '-' if none. max ~8 words>\n"
+            "recovery ride for the 4th day in a row'. Plain text only — NO meta-labels like "
+            "'narrator:', 'me:', 'pov:', 'caption:'.>\n"
+            "PUNCHLINE: <optional short payoff, or '-' if none. max ~8 words. Plain first-person "
+            "text — NO 'narrator:', NO 'me:', NO meta-commentary labels, no stage-direction "
+            "clichés. Just the punchline itself.>\n"
             "VIDEO_PROMPT: <a SHORT motion prompt for animating a POV road PHOTO (image-to-video). "
             "ONLY a subtle forward camera move — e.g. 'slow steady forward dolly down the empty "
             "road, gentle handheld drift'. Do NOT describe people, riders, hands or pedalling (it "
@@ -113,6 +116,13 @@ def build_brief(topic: dict) -> str:
         )}],
     )
     return msg.content[0].text.strip()
+
+
+def _strip_meta(s: str) -> str:
+    """Remove cheap meme meta-labels the model sometimes prepends (e.g. 'narrator:',
+    'me:', 'pov:') so the on-screen text stays clean first-person copy."""
+    return re.sub(r"^\s*(narrator|me|pov|caption|text|voiceover|vo)\s*[:\-–]\s*",
+                  "", (s or "").strip(), flags=re.IGNORECASE).strip()
 
 
 def _extract(label: str, text: str) -> str:
@@ -228,8 +238,8 @@ def main():
     captions_burned = False
     if video_url:
         import caption_video
-        onscreen  = _extract("ONSCREEN", brief)
-        punchline = _extract("PUNCHLINE", brief).strip(" -•\t")
+        onscreen  = _strip_meta(_extract("ONSCREEN", brief))
+        punchline = _strip_meta(_extract("PUNCHLINE", brief).strip(" -•\t"))
         if punchline in ("-", ""):
             punchline = ""
         out = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
