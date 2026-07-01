@@ -31,6 +31,7 @@ load_dotenv(dotenv_path=os.path.join(BASE, ".env"), override=True)
 TODAY = datetime.date.today().isoformat()
 MODEL = "claude-sonnet-4-6"   # creative copy — wit matters more than cost here
 STATE = os.path.join(BASE, "reel_state.json")
+HASHTAGS = "#cycling #rennrad #fiets #fietsen"   # fixed set on every reel
 
 
 def _already_posted_today() -> bool:
@@ -105,9 +106,9 @@ def build_brief(topic: dict) -> str:
             "ONLY a subtle forward camera move — e.g. 'slow steady forward dolly down the empty "
             "road, gentle handheld drift'. Do NOT describe people, riders, hands or pedalling (it "
             "morphs and looks fake). Minimal, grounded, realistic.>\n"
-            "CAPTION: <Instagram caption that BAITS comments — end with a question or 'tag the "
-            "friend who…'. No sales pitch, no link, no product talk.>\n"
-            "HASHTAGS: <10-12 hashtags, mix EN + DE rennrad / cycling-culture, space-separated>\n"
+            "CAPTION: <ONE single line only (no line breaks). Relatable and comment-baiting — "
+            "ideally end with a QUESTION so people reply. No sales pitch, no link, no product "
+            "talk, no hashtags (hashtags are added automatically).>\n"
         )}],
     )
     return msg.content[0].text.strip()
@@ -255,10 +256,9 @@ def main():
     elif video_url:
         import instagram_post
         if instagram_post.is_configured():
-            ig_caption = _extract("CAPTION", brief)
-            tags = _extract("HASHTAGS", brief)
-            if tags:
-                ig_caption = f"{ig_caption}\n\n{tags}".strip()
+            # Always: one-line, relatable caption + the four fixed hashtags.
+            line = " ".join(_extract("CAPTION", brief).split())   # collapse to a single line
+            ig_caption = f"{line}\n\n{HASHTAGS}".strip()
             # Host the CAPTIONED clip on Drive; fall back to the raw Higgsfield URL.
             public_url = ""
             if captioned and os.path.isfile(captioned):
