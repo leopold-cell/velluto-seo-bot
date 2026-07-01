@@ -98,28 +98,38 @@ def main():
         _die(f"token exchange failed: {r.text[:300]}")
     print("   ✓ long-lived user token obtained")
 
-    # 2) list pages → pick → long-lived page token
-    pages = requests.get(f"{GRAPH}/me/accounts", params={
-        "fields": "name,access_token,instagram_business_account",
-        "access_token": ll}, timeout=30).json().get("data", [])
-
-    # Fallback: Pages owned by a Business-Portfolio (like "Velluto Website") often do
-    # NOT surface in /me/accounts. Walk the businesses and collect their owned/client
-    # pages — each carries its own page access_token + instagram_business_account.
-    biz_pages = _pages_via_businesses(ll)
-    seen = {p.get("id") for p in pages}
-    pages += [p for p in biz_pages if p.get("id") not in seen]
-
-    if not pages:
-        _die("no Facebook Pages found for this token. In the Velluto Website portfolio, link "
-             "the Velluto page to the app (Business-Einstellungen → Konten → Apps → test-reels "
-             "→ 'Assets verknüpfen') and include the 'business_management' scope, then retry.")
-    if len(pages) == 1:
-        page = pages[0]
+    # 2) resolve the page. Preferred: FB_PAGE_ID set in .env → fetch the page token
+    # directly (bypasses /me/accounts entirely, which hides Business-Portfolio pages).
+    fixed_id = os.getenv("FB_PAGE_ID", "").strip()
+    if fixed_id:
+        p = requests.get(f"{GRAPH}/{fixed_id}", params={
+            "fields": "name,access_token,instagram_business_account",
+            "access_token": ll}, timeout=30).json()
+        if not p.get("access_token"):
+            _die(f"could not get a Page token for FB_PAGE_ID={fixed_id} — are you an admin of it "
+                 f"and did the token include 'business_management'? Response: {p}")
+        page = p
     else:
-        for i, p in enumerate(pages):
-            print(f"   [{i}] {p.get('name')}  ({p.get('id')})")
-        page = pages[int(input("Which page #? ").strip())]
+        pages = requests.get(f"{GRAPH}/me/accounts", params={
+            "fields": "name,access_token,instagram_business_account",
+            "access_token": ll}, timeout=30).json().get("data", [])
+
+        # Fallback: Pages owned by a Business-Portfolio (like "Velluto Website") often
+        # do NOT surface in /me/accounts. Walk the businesses and collect their owned/
+        # client pages — each carries its own page token + instagram_business_account.
+        biz_pages = _pages_via_businesses(ll)
+        seen = {p.get("id") for p in pages}
+        pages += [p for p in biz_pages if p.get("id") not in seen]
+
+        if not pages:
+            _die("no Facebook Pages found. Easiest fix: set FB_PAGE_ID=117453561385428 in .env "
+                 "and re-run (include the 'business_management' scope on the token).")
+        if len(pages) == 1:
+            page = pages[0]
+        else:
+            for i, p in enumerate(pages):
+                print(f"   [{i}] {p.get('name')}  ({p.get('id')})")
+            page = pages[int(input("Which page #? ").strip())]
     page_token, page_id = page["access_token"], page["id"]
     print(f"   ✓ page: {page.get('name')} ({page_id})")
 
