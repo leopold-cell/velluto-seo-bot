@@ -28,10 +28,11 @@ SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
 
 def main():
-    cid = os.getenv("GOOGLE_CLIENT_ID", "").strip()
-    csec = os.getenv("GOOGLE_CLIENT_SECRET", "").strip()
+    cid = (os.getenv("GOOGLE_DRIVE_CLIENT_ID") or os.getenv("GOOGLE_CLIENT_ID", "")).strip()
+    csec = (os.getenv("GOOGLE_DRIVE_CLIENT_SECRET") or os.getenv("GOOGLE_CLIENT_SECRET", "")).strip()
     if not cid or not csec:
-        raise SystemExit("✗ GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET missing in .env")
+        raise SystemExit("✗ no OAuth client — set GOOGLE_DRIVE_CLIENT_ID/SECRET "
+                         "(or GOOGLE_CLIENT_ID/SECRET) in .env")
 
     from google_auth_oauthlib.flow import InstalledAppFlow
     cfg = {"installed": {

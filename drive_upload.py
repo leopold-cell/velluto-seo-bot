@@ -50,8 +50,10 @@ def _service():
     """
     from googleapiclient.discovery import build
 
-    cid    = os.getenv("GOOGLE_CLIENT_ID", "").strip()
-    csec   = os.getenv("GOOGLE_CLIENT_SECRET", "").strip()
+    # Drive-specific client overrides fall back to the shared GSC OAuth client, so a
+    # separate Desktop client for Drive won't clobber the Search-Console credentials.
+    cid    = (os.getenv("GOOGLE_DRIVE_CLIENT_ID") or os.getenv("GOOGLE_CLIENT_ID", "")).strip()
+    csec   = (os.getenv("GOOGLE_DRIVE_CLIENT_SECRET") or os.getenv("GOOGLE_CLIENT_SECRET", "")).strip()
     rtoken = os.getenv("GOOGLE_DRIVE_REFRESH_TOKEN", "").strip()
     sa     = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
     oauth  = os.getenv("GOOGLE_OAUTH_TOKEN_JSON", "").strip()
