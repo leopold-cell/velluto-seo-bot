@@ -14,3 +14,4 @@ imageio-ffmpeg
 # Safe to skip; drive_upload no-ops and the reel falls back to the raw Higgsfield URL.
 google-api-python-client
 google-auth
+google-auth-oauthlib

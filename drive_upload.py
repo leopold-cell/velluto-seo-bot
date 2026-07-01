@@ -32,16 +32,36 @@ SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
 
 def is_configured() -> bool:
-    return bool(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON") or os.getenv("GOOGLE_OAUTH_TOKEN_JSON"))
+    oauth_env = (os.getenv("GOOGLE_CLIENT_ID") and os.getenv("GOOGLE_CLIENT_SECRET")
+                 and os.getenv("GOOGLE_DRIVE_REFRESH_TOKEN"))
+    return bool(oauth_env or os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+                or os.getenv("GOOGLE_OAUTH_TOKEN_JSON"))
 
 
 def _service():
-    """Build a Drive API client from whichever credential is configured."""
+    """Build a Drive API client from whichever credential is configured.
+
+    Priority:
+      1) OAuth refresh token in env (GOOGLE_CLIENT_ID/SECRET + GOOGLE_DRIVE_REFRESH_TOKEN)
+         — preferred: no service-account key needed (orgs often block SA keys), uploads
+         run as the real user with normal Drive quota (My Drive or Shared Drive).
+      2) Service-account JSON (GOOGLE_SERVICE_ACCOUNT_JSON) — Shared Drive only.
+      3) OAuth authorized-user file (GOOGLE_OAUTH_TOKEN_JSON).
+    """
     from googleapiclient.discovery import build
 
-    sa = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
-    oauth = os.getenv("GOOGLE_OAUTH_TOKEN_JSON", "").strip()
-    if sa and os.path.isfile(sa):
+    cid    = os.getenv("GOOGLE_CLIENT_ID", "").strip()
+    csec   = os.getenv("GOOGLE_CLIENT_SECRET", "").strip()
+    rtoken = os.getenv("GOOGLE_DRIVE_REFRESH_TOKEN", "").strip()
+    sa     = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
+    oauth  = os.getenv("GOOGLE_OAUTH_TOKEN_JSON", "").strip()
+
+    if cid and csec and rtoken:
+        from google.oauth2.credentials import Credentials
+        creds = Credentials(
+            token=None, refresh_token=rtoken, client_id=cid, client_secret=csec,
+            token_uri="https://oauth2.googleapis.com/token", scopes=SCOPES)
+    elif sa and os.path.isfile(sa):
         from google.oauth2 import service_account
         creds = service_account.Credentials.from_service_account_file(sa, scopes=SCOPES)
     elif oauth and os.path.isfile(oauth):
