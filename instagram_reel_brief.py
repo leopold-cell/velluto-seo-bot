@@ -158,17 +158,43 @@ def main():
     if captioned:
         video_line += f"\n🎬 Mit Captions (auf VPS): {captioned}"
 
+    # ── Auto-post to Instagram (Graph API). No-op/dry-run until BOTH the IG creds
+    # (instagram_auth.py) AND IG_AUTOPOST=1 are set — i.e. TEST-MODE by default.
+    post_line = "📮 Instagram: TEST-MODE (kein Auto-Posting)."
+    if video_url:
+        import instagram_post
+        if instagram_post.is_configured():
+            ig_caption = _extract("CAPTION", brief)
+            tags = _extract("HASHTAGS", brief)
+            if tags:
+                ig_caption = f"{ig_caption}\n\n{tags}".strip()
+            # Host the CAPTIONED clip on Drive; fall back to the raw Higgsfield URL.
+            public_url = ""
+            if captioned and os.path.isfile(captioned):
+                import drive_upload
+                public_url = drive_upload.upload_public(captioned, name=f"velluto_reel_{TODAY}.mp4")
+            public_url = public_url or video_url
+            media_id = instagram_post.publish_reel(public_url, ig_caption)
+            if media_id:
+                post_line = f"📮 Instagram: ✅ gepostet (media id {media_id})\n   Quelle: {public_url}"
+            elif instagram_post.autopost_enabled():
+                post_line = "📮 Instagram: ⚠️ Posting fehlgeschlagen — siehe VPS-Log."
+            else:
+                post_line = ("📮 Instagram: bereit, aber DRY-RUN (IG_AUTOPOST≠1). "
+                             "Zum Scharfschalten IG_AUTOPOST=1 in .env setzen.")
+        else:
+            post_line = ("📮 Instagram: Token fehlt — einmalig `python3 instagram_auth.py` "
+                         "laufen lassen (IG_ACCESS_TOKEN + IG_USER_ID).")
+
     body = (
-        "TEST-MODE · Instagram Reel (noch kein Auto-Posting)\n"
+        f"Instagram Reel — {TODAY}\n"
         f"Quelle: {topic.get('title') or topic.get('topic')}\n\n"
         f"{video_line}\n"
+        f"{post_line}\n"
         "────────────────────────────────────────\n\n"
-        f"{brief}\n\n"
-        "────────────────────────────────────────\n"
-        "Video passt? Dann verdrahte ich das Reels-Posting (offizielle Instagram Graph API), "
-        "sobald dein Meta-Business/App-Setup steht."
+        f"{brief}\n"
     )
-    subject = f"🎬 Velluto Reel (Test) — {TODAY}"
+    subject = f"🎬 Velluto Reel — {TODAY}"
     attach = [captioned] if (captioned and os.path.isfile(captioned)) else None
     mailer.send_email(subject, body, attachments=attach)
 

@@ -47,6 +47,39 @@ def upsert_env(key: str, value: str):
     open(ENV_PATH, "w", encoding="utf-8").write("\n".join(lines) + "\n")
 
 
+def _pages_via_businesses(user_token: str) -> list:
+    """Collect Pages reachable through the user's Business-Portfolios.
+
+    Portfolio-owned assets (e.g. the Velluto page inside 'Velluto Website') don't
+    appear in /me/accounts, so we enumerate businesses → owned_pages + client_pages.
+    Requires the 'business_management' scope on the token. Returns [] on any failure.
+    """
+    out, seen = [], set()
+    try:
+        biz = requests.get(f"{GRAPH}/me/businesses",
+                           params={"access_token": user_token}, timeout=30).json().get("data", [])
+    except Exception:
+        return out
+    for b in biz:
+        bid = b.get("id")
+        if not bid:
+            continue
+        for edge in ("owned_pages", "client_pages"):
+            try:
+                data = requests.get(f"{GRAPH}/{bid}/{edge}", params={
+                    "fields": "name,access_token,instagram_business_account",
+                    "access_token": user_token}, timeout=30).json().get("data", [])
+            except Exception:
+                data = []
+            for p in data:
+                if p.get("id") and p["id"] not in seen:
+                    seen.add(p["id"])
+                    out.append(p)
+    if out:
+        print(f"   ✓ {len(out)} page(s) found via Business-Portfolios")
+    return out
+
+
 def main():
     print("📸 Velluto Instagram — Graph API bootstrap\n" + "=" * 44)
     if not APP_ID or not APP_SECRET:
@@ -66,10 +99,21 @@ def main():
     print("   ✓ long-lived user token obtained")
 
     # 2) list pages → pick → long-lived page token
-    pages = requests.get(f"{GRAPH}/me/accounts",
-                         params={"access_token": ll}, timeout=30).json().get("data", [])
+    pages = requests.get(f"{GRAPH}/me/accounts", params={
+        "fields": "name,access_token,instagram_business_account",
+        "access_token": ll}, timeout=30).json().get("data", [])
+
+    # Fallback: Pages owned by a Business-Portfolio (like "Velluto Website") often do
+    # NOT surface in /me/accounts. Walk the businesses and collect their owned/client
+    # pages — each carries its own page access_token + instagram_business_account.
+    biz_pages = _pages_via_businesses(ll)
+    seen = {p.get("id") for p in pages}
+    pages += [p for p in biz_pages if p.get("id") not in seen]
+
     if not pages:
-        _die("no Facebook Pages found for this token (is the Page in this app/business + you admin?)")
+        _die("no Facebook Pages found for this token. In the Velluto Website portfolio, link "
+             "the Velluto page to the app (Business-Einstellungen → Konten → Apps → test-reels "
+             "→ 'Assets verknüpfen') and include the 'business_management' scope, then retry.")
     if len(pages) == 1:
         page = pages[0]
     else:

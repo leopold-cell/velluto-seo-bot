@@ -38,6 +38,11 @@ step "seo optimizer"               python3 seo_optimizer.py
 step "geo monitor"                 python3 geo_monitor.py
 step "dashboard"                   python3 dashboard.py
 
+# Daily Instagram Reel: generate clip (Higgsfield) → burn captions → email, and
+# auto-post via Graph API only once IG_ACCESS_TOKEN/IG_USER_ID + IG_AUTOPOST=1 are
+# set (TEST-MODE / email-only until then). Self-contained; never aborts the run.
+step "instagram reel"              python3 instagram_reel_brief.py
+
 # 28-day blog review + site SEO/GEO audit. Self-gates to every 28 days, so a
 # daily invocation is harmless (exits early when not due). Ensure Chromium for
 # the Playwright vision-UI step (idempotent; quick no-op once installed).
