@@ -60,17 +60,52 @@ def _duration(ffmpeg: str, path: str) -> float:
     return 0.0
 
 
-def _download(url: str, dest: str) -> bool:
+def _drive_id(url: str) -> str:
+    import re
+    m = re.search(r"/d/([A-Za-z0-9_-]{20,})", url) or re.search(r"[?&]id=([A-Za-z0-9_-]{20,})", url)
+    return m.group(1) if m else ""
+
+
+def download(url: str, dest: str) -> bool:
+    """Robust download. For Google Drive links, use the usercontent endpoint and
+    transparently pass the virus-scan confirmation form — large files return an HTML
+    interstitial via /uc, which would otherwise be saved as a corrupt 'mp4'."""
+    import re
+    import html as _html
     try:
-        with requests.get(url, stream=True, timeout=120) as r:
-            r.raise_for_status()
-            with open(dest, "wb") as f:
-                for chunk in r.iter_content(1 << 16):
+        sess = requests.Session()
+        fid = _drive_id(url) if "google.com" in url else ""
+        target = (f"https://drive.usercontent.google.com/download?id={fid}&export=download&confirm=t"
+                  if fid else url)
+        r = sess.get(target, stream=True, timeout=180, allow_redirects=True)
+        r.raise_for_status()
+        # If Drive still returns the scan-warning HTML, submit its form to get the file.
+        if "text/html" in r.headers.get("content-type", "").lower():
+            page = r.text
+            action = re.search(r'action="([^"]+)"', page)
+            fields = dict(re.findall(r'name="([^"]+)"\s+value="([^"]*)"', page))
+            if action:
+                r = sess.get(_html.unescape(action.group(1)), params=fields,
+                             stream=True, timeout=180)
+                r.raise_for_status()
+        with open(dest, "wb") as f:
+            for chunk in r.iter_content(1 << 16):
+                if chunk:
                     f.write(chunk)
-        return os.path.getsize(dest) > 0
+        # Sanity: reject HTML error pages saved as a clip (a real clip is > ~20KB).
+        with open(dest, "rb") as f:
+            head = f.read(64).lstrip()
+        if head[:1] == b"<" or os.path.getsize(dest) < 20000:
+            print(f"   ⚠️  download is not a media file ({os.path.getsize(dest)} bytes, looks like HTML)")
+            return False
+        return True
     except Exception as e:
-        print(f"   ⚠️  video download failed: {e}")
+        print(f"   ⚠️  download failed: {e}")
         return False
+
+
+# Back-compat alias.
+_download = download
 
 
 # ── overlay rendering (Pillow) ───────────────────────────────────────────────
