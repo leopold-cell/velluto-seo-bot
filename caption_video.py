@@ -42,6 +42,21 @@ def _ffmpeg() -> str:
         return ""
 
 
+def _duration(ffmpeg: str, path: str) -> float:
+    """Seconds of the video, parsed from ffmpeg's banner. 0.0 if unknown."""
+    try:
+        out = subprocess.run([ffmpeg, "-i", path], capture_output=True, timeout=60).stderr
+        txt = out.decode("utf-8", "ignore")
+        import re
+        m = re.search(r"Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)", txt)
+        if m:
+            h, mi, s = m.groups()
+            return int(h) * 3600 + int(mi) * 60 + float(s)
+    except Exception:
+        pass
+    return 0.0
+
+
 def _download(url: str, dest: str) -> bool:
     try:
         with requests.get(url, stream=True, timeout=120) as r:
@@ -80,16 +95,13 @@ def _draw_block(draw, text, font, cx, top, max_w, fill, stroke=6, pad=28):
     lh = asc + desc + 12
     block_h = lh * len(lines)
     widths = [draw.textlength(ln, font=font) for ln in lines]
-    panel_w = min(_CANVAS[0] - 40, int(max(widths) + pad * 2))
 
-    # translucent panel
-    x0 = int(cx - panel_w / 2)
-    draw.rounded_rectangle([x0, int(top - pad), x0 + panel_w, int(top + block_h + pad)],
-                           radius=28, fill=(0, 0, 0, 110))
+    # Native style: plain white text, no panel — just a thin dark outline so it stays
+    # readable on bright roads (like Instagram's own caption tool).
     y = top
     for ln, w in zip(lines, widths):
         draw.text((cx - w / 2, y), ln, font=font, fill=fill,
-                  stroke_width=stroke, stroke_fill=(0, 0, 0, 255))
+                  stroke_width=stroke, stroke_fill=(0, 0, 0, 220))
         y += lh
     return y + pad
 
@@ -111,13 +123,13 @@ def _render_overlay(onscreen: str, punchline: str, out_png: str) -> bool:
     main_font = ImageFont.truetype(fp, 82)
     punch_font = ImageFont.truetype(fp, 66)
 
-    # Main caption — upper third, held the whole clip (the joke).
+    # Main caption — upper third, held the whole clip (the joke). Plain white.
     _draw_block(draw, (onscreen or "").strip(), main_font, W / 2, int(H * 0.14),
                 int(W * 0.86), fill=(255, 255, 255, 255))
-    # Punchline — lower third, yellow (static; reliability over timed reveal).
+    # Punchline — lower third, also plain white (native look).
     if (punchline or "").strip():
         _draw_block(draw, punchline.strip(), punch_font, W / 2, int(H * 0.68),
-                    int(W * 0.84), fill=(255, 214, 10, 255))
+                    int(W * 0.84), fill=(255, 255, 255, 255))
 
     img.save(out_png)
     return True
@@ -147,8 +159,11 @@ def download_and_caption(video_url: str, onscreen: str, punchline: str,
     # Optionally add a license-free music track as the audio (Instagram's own music
     # library is NOT available via the API — audio must be baked into the file).
     use_music = bool(music_path) and os.path.isfile(music_path)
-    # -loop 1 makes the overlay PNG an endless stream so -shortest keys off the video/
-    # music (a single-frame image is ~0s and would otherwise truncate the whole clip).
+    # Cap the output to the VIDEO's own length with -t. This is robust across ffmpeg
+    # versions — relying on -loop+-shortest let older system ffmpeg run the whole clip
+    # to the music length (98s bug). -loop 1 keeps the still overlay alive for the
+    # full duration; -t trims video + music to the clip length deterministically.
+    vdur = _duration(ffmpeg, raw)
     cmd = [ffmpeg, "-y", "-i", raw, "-loop", "1", "-i", png]
     if use_music:
         cmd += ["-i", music_path]
@@ -157,7 +172,11 @@ def download_and_caption(video_url: str, onscreen: str, punchline: str,
     if use_music:
         # Music track (input 2) as the audio.
         cmd += ["-map", "2:a", "-c:a", "aac", "-b:a", "160k"]
-    cmd += ["-shortest", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p",
+    if vdur > 0:
+        cmd += ["-t", f"{vdur:.3f}"]
+    else:
+        cmd += ["-shortest"]   # fallback if duration probe failed
+    cmd += ["-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p",
             "-movflags", "+faststart", out_path]
     try:
         subprocess.run(cmd, check=True, capture_output=True, timeout=240)
