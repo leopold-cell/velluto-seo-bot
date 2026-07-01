@@ -97,6 +97,11 @@ else
   done
 fi
 
+# ── Resource watchdog: warn early (email) if a key/quota needs topping up/renewing.
+# Silent when everything is healthy; throttled so it won't spam the same warning daily.
+log "▶ resource monitor"
+python3 resource_monitor.py || log "✗ resource monitor failed"
+
 # ── Daily email report (always) — summary + ⚠️ alert if anything needs action ─
 export RUN_FAILED=$(printf '%s\n' "${FAILED[@]}")
 export RUN_PUSH_OK="$PUSH_OK"

@@ -38,3 +38,5 @@ gdrive_sa.json
 credentials*.json
 # Local reel renders
 output/reels/
+# Resource-monitor throttle state
+resource_monitor_state.json
