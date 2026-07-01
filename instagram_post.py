@@ -20,6 +20,7 @@ publish_reel(video_url, caption) -> media_id | "" (never raises; logs + returns 
 """
 from __future__ import annotations
 
+import json
 import os
 import time
 
@@ -43,6 +44,13 @@ def is_configured() -> bool:
 
 def autopost_enabled() -> bool:
     return os.getenv("IG_AUTOPOST", "").strip() in ("1", "true", "yes", "on")
+
+
+def trial_enabled() -> bool:
+    """Post as a TRIAL reel (shown only to non-followers until manually graduated in
+    the app). ON by default — Velluto policy is 'always as test-reel'. Set
+    IG_TRIAL_REELS=0 to post normal reels. Needs a public account with 1,000+ followers."""
+    return os.getenv("IG_TRIAL_REELS", "1").strip() in ("1", "true", "yes", "on")
 
 
 def _poll_container(container_id: str, token: str, tries: int = 30, delay: int = 6) -> str:
@@ -71,17 +79,25 @@ def publish_reel(video_url: str, caption: str = "", share_to_feed: bool = True) 
     if not video_url:
         print("   ▶ IG post skip — no public video_url")
         return ""
+    trial = trial_enabled()
     if not autopost_enabled():
-        print("   ▶ IG post DRY-RUN (IG_AUTOPOST≠1) — would publish Reel:")
+        mode = "TRIAL reel (non-followers only)" if trial else "normal reel"
+        print(f"   ▶ IG post DRY-RUN (IG_AUTOPOST≠1) — would publish {mode}:")
         print(f"     video: {video_url}")
         print(f"     caption: {caption[:80]}…")
         return ""
     try:
         # 1) container
-        r = requests.post(f"{GRAPH}/{uid}/media", data={
-            "media_type": "REELS", "video_url": video_url, "caption": caption,
-            "share_to_feed": "true" if share_to_feed else "false",
-            "access_token": token}, timeout=60).json()
+        data = {"media_type": "REELS", "video_url": video_url, "caption": caption,
+                "access_token": token}
+        if trial:
+            # Trial reel: only non-followers see it; stays out of the grid/feed until
+            # you manually graduate it in the app (graduation_strategy=MANUAL). Nested
+            # object must be a JSON string in a form-encoded Graph request.
+            data["trial_params"] = json.dumps({"graduation_strategy": "MANUAL"})
+        else:
+            data["share_to_feed"] = "true" if share_to_feed else "false"
+        r = requests.post(f"{GRAPH}/{uid}/media", data=data, timeout=60).json()
         cid = r.get("id")
         if not cid:
             print(f"   ⚠️  IG container create failed: {r}")
@@ -97,7 +113,8 @@ def publish_reel(video_url: str, caption: str = "", share_to_feed: bool = True) 
         if not mid:
             print(f"   ⚠️  IG publish failed: {pub}")
             return ""
-        print(f"   ✅ Reel published — media id {mid}")
+        kind = "Trial reel (non-followers only)" if trial else "Reel"
+        print(f"   ✅ {kind} published — media id {mid}")
         return mid
     except Exception as e:
         print(f"   ⚠️  IG publish error: {e}")

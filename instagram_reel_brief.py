@@ -176,7 +176,8 @@ def main():
             public_url = public_url or video_url
             media_id = instagram_post.publish_reel(public_url, ig_caption)
             if media_id:
-                post_line = f"📮 Instagram: ✅ gepostet (media id {media_id})\n   Quelle: {public_url}"
+                mode = "Test-Reel (nur Nicht-Follower)" if instagram_post.trial_enabled() else "Reel"
+                post_line = f"📮 Instagram: ✅ als {mode} gepostet (media id {media_id})\n   Quelle: {public_url}"
             elif instagram_post.autopost_enabled():
                 post_line = "📮 Instagram: ⚠️ Posting fehlgeschlagen — siehe VPS-Log."
             else:
