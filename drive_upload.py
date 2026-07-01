@@ -32,9 +32,10 @@ SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
 
 def is_configured() -> bool:
-    oauth_env = (os.getenv("GOOGLE_CLIENT_ID") and os.getenv("GOOGLE_CLIENT_SECRET")
-                 and os.getenv("GOOGLE_DRIVE_REFRESH_TOKEN"))
-    return bool(oauth_env or os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+    cid    = os.getenv("GOOGLE_DRIVE_CLIENT_ID") or os.getenv("GOOGLE_CLIENT_ID")
+    csec   = os.getenv("GOOGLE_DRIVE_CLIENT_SECRET") or os.getenv("GOOGLE_CLIENT_SECRET")
+    rtoken = os.getenv("GOOGLE_DRIVE_REFRESH_TOKEN")
+    return bool((cid and csec and rtoken) or os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
                 or os.getenv("GOOGLE_OAUTH_TOKEN_JSON"))
 
 
@@ -80,7 +81,8 @@ def upload_public(local_path: str, name: str | None = None) -> str:
         print(f"   ▶ Drive skip — file not found: {local_path}")
         return ""
     if not is_configured():
-        print("   ▶ Drive skip — no GOOGLE_SERVICE_ACCOUNT_JSON / GOOGLE_OAUTH_TOKEN_JSON in .env")
+        print("   ▶ Drive skip — no credentials in .env. Set GOOGLE_DRIVE_REFRESH_TOKEN "
+              "(+ GOOGLE_CLIENT_ID/SECRET), or GOOGLE_SERVICE_ACCOUNT_JSON.")
         return ""
     try:
         from googleapiclient.http import MediaFileUpload
