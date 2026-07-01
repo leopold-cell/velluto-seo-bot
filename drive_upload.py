@@ -22,6 +22,13 @@ broken Drive setup never blocks posting.
 from __future__ import annotations
 
 import os
+import warnings
+
+# Silence only Google's harmless "Python 3.10 end-of-life (2026-10-04)" FutureWarning
+# so it doesn't clutter the daily reel log. Cosmetic — plan a Python 3.11+ upgrade on
+# the VPS before Oct 2026 for the real fix. Other warnings still surface.
+warnings.filterwarnings("ignore", message=r".*Python version.*", category=FutureWarning,
+                        module=r"google\..*")
 
 from dotenv import load_dotenv
 
