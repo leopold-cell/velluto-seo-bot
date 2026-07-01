@@ -162,11 +162,13 @@ def download_and_caption(video_url: str, onscreen: str, punchline: str,
     # Optionally add a license-free music track as the audio (Instagram's own music
     # library is NOT available via the API — audio must be baked into the file).
     use_music = bool(music_path) and os.path.isfile(music_path)
-    # Cap the output to the VIDEO's own length with -t. This is robust across ffmpeg
-    # versions — relying on -loop+-shortest let older system ffmpeg run the whole clip
-    # to the music length (98s bug). -loop 1 keeps the still overlay alive for the
-    # full duration; -t trims video + music to the clip length deterministically.
+    # Hard cut EVERY reel to `duration` seconds (video + music). -t trims all output
+    # streams deterministically across ffmpeg versions (older system ffmpeg mishandled
+    # -loop/-shortest → 98s bug). -loop 1 keeps the still overlay alive for the full cut.
     vdur = _duration(ffmpeg, raw)
+    cut = float(duration) if duration and duration > 0 else 0.0
+    if vdur > 0:                      # never exceed the source clip's length
+        cut = min(cut, vdur) if cut > 0 else vdur
     cmd = [ffmpeg, "-y", "-i", raw, "-loop", "1", "-i", png]
     if use_music:
         cmd += ["-i", music_path]
@@ -175,10 +177,10 @@ def download_and_caption(video_url: str, onscreen: str, punchline: str,
     if use_music:
         # Music track (input 2) as the audio.
         cmd += ["-map", "2:a", "-c:a", "aac", "-b:a", "160k"]
-    if vdur > 0:
-        cmd += ["-t", f"{vdur:.3f}"]
+    if cut > 0:
+        cmd += ["-t", f"{cut:.3f}"]
     else:
-        cmd += ["-shortest"]   # fallback if duration probe failed
+        cmd += ["-shortest"]   # fallback if both probe and duration are unknown
     cmd += ["-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p",
             "-movflags", "+faststart", out_path]
     try:

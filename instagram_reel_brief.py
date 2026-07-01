@@ -32,6 +32,7 @@ TODAY = datetime.date.today().isoformat()
 MODEL = "claude-sonnet-4-6"   # creative copy — wit matters more than cost here
 STATE = os.path.join(BASE, "reel_state.json")
 HASHTAGS = "#cycling #rennrad #fiets #fietsen"   # fixed set on every reel
+REEL_SECONDS = 8   # every reel is hard-cut to this length (video + music)
 
 
 def _already_posted_today() -> bool:
@@ -218,7 +219,7 @@ def main():
         # rider photo is what produced the morphing/off-topic clips.
         start_image = os.getenv("HIGGSFIELD_IMAGE_URL", "") or _pick_start_image()
         video_url = higgsfield_video.generate_video(
-            video_prompt, image_url=start_image, duration=5, aspect_ratio="9:16")
+            video_prompt, image_url=start_image, duration=REEL_SECONDS, aspect_ratio="9:16")
 
     captioned = ""
     captions_burned = False
@@ -231,7 +232,7 @@ def main():
         out = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
         music = _pick_music()   # license-free track baked into the file (no IG music API)
         captioned = caption_video.download_and_caption(
-            video_url, onscreen, punchline, out, duration=5, music_path=music)
+            video_url, onscreen, punchline, out, duration=REEL_SECONDS, music_path=music)
         # captions_burned is True only if the returned file is the captioned one
         # (caption_video returns the *_raw.mp4 path on ffmpeg/font failure).
         captions_burned = bool(captioned) and not captioned.endswith("_raw.mp4")
