@@ -133,13 +133,27 @@ def main():
     page_token, page_id = page["access_token"], page["id"]
     print(f"   ✓ page: {page.get('name')} ({page_id})")
 
-    # 3) IG business account id on that page
-    ig = requests.get(f"{GRAPH}/{page_id}", params={
-        "fields": "instagram_business_account", "access_token": page_token}, timeout=30).json()
-    ig_id = (ig.get("instagram_business_account") or {}).get("id")
+    # 3) IG business account id on that page. Try the page token first, then the
+    # long-lived user token (portfolio pages sometimes only answer to the user token).
+    ig_id = ""
+    last = {}
+    for tok in (page_token, ll):
+        resp = requests.get(f"{GRAPH}/{page_id}", params={
+            "fields": "instagram_business_account", "access_token": tok}, timeout=30).json()
+        last = resp
+        ig_id = (resp.get("instagram_business_account") or {}).get("id")
+        if ig_id:
+            break
+
     if not ig_id:
-        _die(f"no instagram_business_account linked to this Page — connect the IG account to "
-             f"this FB Page first (IG app → Settings → linked Page). Response: {ig}")
+        err = (last.get("error") or {}).get("message", "")
+        if "pages_read_engagement" in err or "code" in str(last.get("error", {}).get("code", "")):
+            _die("token is missing a granted permission. Re-generate it in the Graph Explorer "
+                 "and make sure 'pages_read_engagement' + 'instagram_basic' are actually GRANTED "
+                 "(approve them in the login popup), then verify with GET /me/permissions. "
+                 f"Response: {last}")
+        _die(f"no instagram_business_account linked to this Page. In Business-Suite the link "
+             f"exists (velluto.cc), so this is almost always a token-scope issue. Response: {last}")
 
     upsert_env("IG_ACCESS_TOKEN", page_token)
     upsert_env("IG_USER_ID", ig_id)
