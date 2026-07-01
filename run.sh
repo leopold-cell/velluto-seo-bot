@@ -38,13 +38,8 @@ step "seo optimizer"               python3 seo_optimizer.py
 step "geo monitor"                 python3 geo_monitor.py
 step "dashboard"                   python3 dashboard.py
 
-# Daily Instagram Reel: generate clip (Higgsfield) → burn captions → email, and
-# auto-post via Graph API only once IG_ACCESS_TOKEN/IG_USER_ID + IG_AUTOPOST=1 are
-# set (TEST-MODE / email-only until then). Self-contained; never aborts the run.
-# ffmpeg is REQUIRED to burn the on-screen text overlay (the joke lives in the text);
-# ensure it's present (idempotent, quick no-op once installed).
-command -v ffmpeg >/dev/null 2>&1 || { log "installing ffmpeg for reel captions"; apt-get install -y ffmpeg >/dev/null 2>&1 || true; }
-step "instagram reel"              python3 instagram_reel_brief.py
+# NOTE: the Instagram reel is posted 3×/day on its OWN schedule via run_reel.sh
+# (morning/noon/evening cron), decoupled from this once-daily SEO pipeline.
 
 # 28-day blog review + site SEO/GEO audit. Self-gates to every 28 days, so a
 # daily invocation is harmless (exits early when not due). Ensure Chromium for

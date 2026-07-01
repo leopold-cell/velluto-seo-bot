@@ -32,25 +32,53 @@ TODAY = datetime.date.today().isoformat()
 MODEL = "claude-sonnet-4-6"   # creative copy — wit matters more than cost here
 STATE = os.path.join(BASE, "reel_state.json")
 HASHTAGS = "#cycling #rennrad #fiets #fietsen"   # fixed set on every reel
-REEL_SECONDS = 8   # every reel is hard-cut to this length (video + music)
+REEL_SECONDS = 14   # every reel is standardised to this length (video + music)
 
 
-def _already_posted_today() -> bool:
-    """True if a reel was already published today — keeps it to 1×/day even if
-    run.sh fires twice. Only a successful post is recorded, so dry-runs never block.
+def _current_slot() -> tuple:
+    """Which of the 3 daily posting slots we're in, by local hour. Returns
+    (name, index): morning<11:00, noon<16:00, else evening."""
+    h = datetime.datetime.now().hour
+    if h < 11:
+        return ("morning", 0)
+    if h < 16:
+        return ("noon", 1)
+    return ("evening", 2)
+
+
+def _slot_seed() -> int:
+    """Rotation seed unique per (day, slot) so each of the 3 daily reels uses a
+    different clip/track."""
+    return datetime.date.today().toordinal() * 3 + _current_slot()[1]
+
+
+def _load_state() -> dict:
+    try:
+        st = json.load(open(STATE))
+    except Exception:
+        st = {}
+    if st.get("date") != TODAY:      # reset each day
+        st = {"date": TODAY, "slots": []}
+    return st
+
+
+def _already_posted_slot() -> bool:
+    """True if THIS slot already posted today — keeps it to one post per slot even if
+    the cron fires twice. Only a successful post is recorded, so dry-runs never block.
     Override with REEL_FORCE=1 for manual re-tests."""
     if os.getenv("REEL_FORCE", "").strip() in ("1", "true", "yes", "on"):
         return False
-    try:
-        return json.load(open(STATE)).get("last_post_date") == TODAY
-    except Exception:
-        return False
+    return _current_slot()[0] in _load_state().get("slots", [])
 
 
 def _record_post(media_id: str):
     try:
-        json.dump({"last_post_date": TODAY, "last_media_id": media_id},
-                  open(STATE, "w"), indent=2)
+        st = _load_state()
+        slot = _current_slot()[0]
+        if slot not in st["slots"]:
+            st["slots"].append(slot)
+        st["last_media_id"] = media_id
+        json.dump(st, open(STATE, "w"), indent=2)
     except Exception:
         pass
 
@@ -191,7 +219,7 @@ def _pick_music() -> str:
         urls, src = _library_urls("GDRIVE_MUSIC_FOLDER_ID", "audio/", "music_tracks.json")
         if not urls:
             return ""
-        url = urls[datetime.date.today().toordinal() % len(urls)]
+        url = urls[_slot_seed() % len(urls)]
         import requests
         dest = os.path.join(BASE, "output", "reels", "music_today")
         os.makedirs(os.path.dirname(dest), exist_ok=True)
@@ -212,7 +240,7 @@ def _pick_vetted_clip() -> str:
     change only the caption. Returns "" if empty (then Higgsfield generation kicks in)."""
     urls, src = _library_urls("GDRIVE_CLIPS_FOLDER_ID", "video/", "reel_clips.json")
     if urls:
-        pick = urls[datetime.date.today().toordinal() % len(urls)]
+        pick = urls[_slot_seed() % len(urls)]
         print(f"   ▶ using vetted clip from {src}")
         return pick
     return ""
@@ -225,20 +253,22 @@ def _pick_start_image() -> str:
     try:
         pov = json.load(open(os.path.join(BASE, "pov_images.json")))
         if isinstance(pov, list) and pov:
-            return pov[datetime.date.today().toordinal() % len(pov)]
+            return pov[_slot_seed() % len(pov)]
     except Exception:
         pass
     print("   ⚠️  no pov_images.json — falling back to a candid photo (will look off). "
           "Run `python3 generate_pov_images.py` to build the POV road-ahead library.")
-    return _IMAGE_POOL[datetime.date.today().toordinal() % len(_IMAGE_POOL)]
+    return _IMAGE_POOL[_slot_seed() % len(_IMAGE_POOL)]
 
 
 def main():
-    # 1×/day: if we already posted today, skip the whole run (saves Higgsfield credits
-    # + Claude tokens). Dry-runs don't record, so testing stays unaffected.
-    if _already_posted_today():
-        print(f"   ▶ reel skip — already posted today ({TODAY}). REEL_FORCE=1 to override.")
+    # One post per slot (morning/noon/evening): skip if this slot already posted today
+    # (saves credits + tokens). Dry-runs don't record, so testing stays unaffected.
+    slot = _current_slot()[0]
+    if _already_posted_slot():
+        print(f"   ▶ reel skip — {slot} slot already posted today ({TODAY}). REEL_FORCE=1 to override.")
         return
+    print(f"   ▶ reel slot: {slot}")
 
     topic = _todays_topic()
     try:

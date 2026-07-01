@@ -162,21 +162,19 @@ def download_and_caption(video_url: str, onscreen: str, punchline: str,
     # Optionally add a license-free music track as the audio (Instagram's own music
     # library is NOT available via the API — audio must be baked into the file).
     use_music = bool(music_path) and os.path.isfile(music_path)
-    # Hard cut EVERY reel to `duration` seconds (video + music). -t trims all output
-    # streams deterministically across ffmpeg versions (older system ffmpeg mishandled
-    # -loop/-shortest → 98s bug).
+    # Standardise EVERY reel to `duration` seconds. -stream_loop -1 loops a short clip
+    # (and the music) so it fills the full length; longer clips/tracks are simply
+    # trimmed by -t. -t caps all output streams deterministically across ffmpeg versions.
     vdur = _duration(ffmpeg, raw)
-    cut = float(duration) if duration and duration > 0 else 0.0
-    if vdur > 0:                      # never exceed the source clip's length
-        cut = min(cut, vdur) if cut > 0 else vdur
+    cut = float(duration) if duration and duration > 0 else (vdur if vdur > 0 else 0.0)
     # Format-robust: normalise ANY source (portrait/landscape, any resolution) to a
     # 1080x1920 9:16 frame, then overlay the 1080x1920 caption PNG at 0:0. Avoids the
     # scale2ref fragility that broke compositing on differently-sized clips.
     vf = ("[0:v]scale=1080:1920:force_original_aspect_ratio=increase,"
           "crop=1080:1920,setsar=1,fps=30[base];[base][1:v]overlay=0:0[v]")
-    cmd = [ffmpeg, "-y", "-i", raw, "-i", png]
+    cmd = [ffmpeg, "-y", "-stream_loop", "-1", "-i", raw, "-i", png]
     if use_music:
-        cmd += ["-i", music_path]
+        cmd += ["-stream_loop", "-1", "-i", music_path]
     cmd += ["-filter_complex", vf, "-map", "[v]"]
     if use_music:
         # Music track (input 2) as the audio.
