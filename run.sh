@@ -60,7 +60,7 @@ git add -A
 # ── SAFETY NET: never let a secret reach the public repo (see .env.save leak) ─
 # Layer 1: drop secret/backup files from the staged set even if .gitignore misses one.
 BAD_FILES=$(git diff --cached --name-only \
-  | grep -iE '(^|/)\.env([._]|$)|\.(save|bak|orig|swp|swo)$|(^|/)id_rsa|(^|/)credentials.*\.json' || true)
+  | grep -iE '(^|/)\.env([._]|$)|\.(save|bak|orig|swp|swo|pem|key|p12)$|(^|/)id_rsa|(^|/)(credentials|service_account|gdrive_sa|token).*\.json|_sa\.json$' || true)
 if [ -n "$BAD_FILES" ]; then
   log "⚠️ SECURITY: unstaging secret-like file(s): $(echo "$BAD_FILES" | tr '\n' ' ')"
   echo "$BAD_FILES" | xargs -r git reset -q HEAD --
@@ -68,7 +68,7 @@ if [ -n "$BAD_FILES" ]; then
 fi
 # Layer 2: scan staged CONTENT for secret tokens; if found, ABORT commit+push.
 SECRET_BLOCK=false
-if git diff --cached 2>/dev/null | grep -qE 'sk-ant-[A-Za-z0-9_-]{16}|sk-[A-Za-z0-9]{20}|ghp_[A-Za-z0-9]{20}|AIza[A-Za-z0-9_-]{30}|xox[baprs]-[A-Za-z0-9-]{10}'; then
+if git diff --cached 2>/dev/null | grep -qE 'sk-ant-[A-Za-z0-9_-]{16}|sk-[A-Za-z0-9]{20}|ghp_[A-Za-z0-9]{20}|github_pat_[A-Za-z0-9_]{20}|AIza[A-Za-z0-9_-]{30}|xox[baprs]-[A-Za-z0-9-]{10}|GOCSPX-[A-Za-z0-9_-]{20}|1//[A-Za-z0-9_-]{30}|ya29\.[A-Za-z0-9_-]{30}|EAA[A-Za-z0-9]{40}|hf[-_][A-Za-z0-9-]{20}|-----BEGIN[A-Z ]*PRIVATE KEY-----'; then
   log "✗ SECURITY: secret-looking token in staged content — commit & push SKIPPED. Inspect 'git diff --cached'."
   SECRET_BLOCK=true
   FAILED+=("SECURITY: secret token blocked from push")
