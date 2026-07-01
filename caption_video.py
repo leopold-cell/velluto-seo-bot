@@ -31,15 +31,18 @@ def _font_path() -> str:
 
 
 def _ffmpeg() -> str:
-    """System ffmpeg if present, else the pip-bundled imageio-ffmpeg binary."""
-    exe = shutil.which("ffmpeg")
-    if exe:
-        return exe
+    """Prefer the pip-bundled imageio-ffmpeg binary (pinned v7 — the version every
+    filter here is tested against). Old system ffmpeg (Ubuntu's 4.x) mishandled
+    -loop/-shortest (98s bug) and the -t composite, so only fall back to it if the
+    bundled one is unavailable. Override with FFMPEG_BIN if needed."""
+    env = os.getenv("FFMPEG_BIN", "").strip()
+    if env and os.path.isfile(env):
+        return env
     try:
         import imageio_ffmpeg
         return imageio_ffmpeg.get_ffmpeg_exe()
     except Exception:
-        return ""
+        return shutil.which("ffmpeg") or ""
 
 
 def _duration(ffmpeg: str, path: str) -> float:
