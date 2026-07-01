@@ -30,6 +30,27 @@ load_dotenv(dotenv_path=os.path.join(BASE, ".env"), override=True)
 
 TODAY = datetime.date.today().isoformat()
 MODEL = "claude-sonnet-4-6"   # creative copy — wit matters more than cost here
+STATE = os.path.join(BASE, "reel_state.json")
+
+
+def _already_posted_today() -> bool:
+    """True if a reel was already published today — keeps it to 1×/day even if
+    run.sh fires twice. Only a successful post is recorded, so dry-runs never block.
+    Override with REEL_FORCE=1 for manual re-tests."""
+    if os.getenv("REEL_FORCE", "").strip() in ("1", "true", "yes", "on"):
+        return False
+    try:
+        return json.load(open(STATE)).get("last_post_date") == TODAY
+    except Exception:
+        return False
+
+
+def _record_post(media_id: str):
+    try:
+        json.dump({"last_post_date": TODAY, "last_media_id": media_id},
+                  open(STATE, "w"), indent=2)
+    except Exception:
+        pass
 
 
 def _todays_topic() -> dict:
@@ -54,43 +75,38 @@ def build_brief(topic: dict) -> str:
     from anthropic import Anthropic
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-    # Rotate the format daily so the feed mixes faceless / POV / face content.
-    formats = [
-        "FACELESS — text/voiceover over POV or scenery footage, no person on camera",
-        "POV RIDING — helmet- or handlebar-POV, the rider's-eye view, in-the-saddle",
-        "FACE — talking/reacting to camera (piece-to-camera, skit, or duet-style)",
-    ]
-    fmt = formats[datetime.date.today().toordinal() % len(formats)]
-
     msg = client.messages.create(
         model=MODEL,
         max_tokens=900,
         temperature=1.0,
         system=(
-            "You are a viral social creative for ROAD CYCLISTS (Rennrad). You make HUMOROUS, "
-            "relatable, lifestyle Instagram Reels — the kind a cyclist sends to the group chat or "
-            "tags a mate on, captioned 'this is literally us'. Pure cyclist culture & inside jokes: "
-            "the n+1 rule, café stops, Strava kudos & segment hunting, ridiculous tan lines, the "
-            "friend who always half-wheels, suffering on climbs, kit/sock-height debates, weather "
-            "denial, marginal-gains nonsense, 'just one more lap', pre-ride faff, etc. "
-            "This is NOT product marketing: NO feature pitches, NO 'your glasses fog up' angles, NO "
-            "sales talk, NO CTAs. The brand behind it is Velluto (road eyewear) but it stays in the "
-            "background as vibe only, never a pitch. The ONE goal: make road cyclists laugh and COMMENT."
+            "You create Instagram Reels in the EXACT style of @doctor.running — but for ROAD "
+            "CYCLISTS (Rennrad), not runners. The format is fixed and non-negotiable:\n"
+            "• FACELESS, first-person POV footage looking down the road ahead while riding. No "
+            "face, no talking, no skit. The video is just a calm POV road shot.\n"
+            "• The whole joke lives in ONE big block of on-screen text that stays up the entire "
+            "clip — a relatable first-person confession/thought a roadie has mid-ride. Optionally "
+            "a short punchline flips it at the very end.\n"
+            "• Voice: dry, self-deprecating, insider. Real roadie culture: the n+1 rule, café "
+            "stops, Strava segments & kudos, tan lines, the mate who half-wheels, suffering on "
+            "climbs, 'just one more lap', weather denial, pre-ride faff, watts, empty-road bliss.\n"
+            "This is NOT marketing: NO product pitch, NO glasses/feature talk, NO CTA. Velluto "
+            "(road eyewear) is only a background vibe, never mentioned. The ONE goal: a roadie "
+            "reads the text, thinks 'that's literally me', and TAGS a mate or COMMENTS."
         ),
         messages=[{"role": "user", "content": (
-            f"Reel format for today: {fmt}\n\n"
-            "Write ONE short Reel concept (8-15s) in that format. Make it SPECIFIC and fresh — a real, "
-            "instantly-recognisable road-cyclist moment, not generic. Output EXACTLY these labelled blocks:\n\n"
-            "HOOK: <on-screen text or spoken line for the first 1.5s — must stop the scroll>\n"
-            f"FORMAT: <{fmt}>\n"
-            "BEATS: <3-5 short beats (on-screen text / action / spoken line) building to the funny payoff, one per line>\n"
-            "SHOT: <how to film it on a phone in this format — simple and doable>\n"
-            "VIDEO_PROMPT: <a SHORT motion prompt for animating a POV road PHOTO (image-to-video). Describe "
-            "ONLY a subtle, natural camera move — e.g. 'slow steady forward dolly down the road, gentle drift, "
-            "realistic handheld'. Do NOT describe people, riders or pedalling (it morphs and looks fake). Keep "
-            "the motion minimal and grounded.>\n"
-            "CAPTION: <a funny, relatable caption that BAITS comments — end with a question or 'tag the friend who…'. "
-            "No sales pitch, no link, no product talk.>\n"
+            "Write ONE doctor.running-style POV Rennrad Reel (5-8s). Make the on-screen line "
+            "SPECIFIC and instantly recognisable, not generic. Output EXACTLY these labelled blocks:\n\n"
+            "ONSCREEN: <the ONE on-screen text line that holds the whole clip — first-person, "
+            "relatable, max ~12 words. This is the whole joke/hook. e.g. 'me pretending it's a "
+            "recovery ride for the 4th day in a row'>\n"
+            "PUNCHLINE: <optional short payoff shown in the final ~2s, or '-' if none. max ~8 words>\n"
+            "VIDEO_PROMPT: <a SHORT motion prompt for animating a POV road PHOTO (image-to-video). "
+            "ONLY a subtle forward camera move — e.g. 'slow steady forward dolly down the empty "
+            "road, gentle handheld drift'. Do NOT describe people, riders, hands or pedalling (it "
+            "morphs and looks fake). Minimal, grounded, realistic.>\n"
+            "CAPTION: <Instagram caption that BAITS comments — end with a question or 'tag the "
+            "friend who…'. No sales pitch, no link, no product talk.>\n"
             "HASHTAGS: <10-12 hashtags, mix EN + DE rennrad / cycling-culture, space-separated>\n"
         )}],
     )
@@ -119,18 +135,46 @@ _IMAGE_POOL = [
 ]
 
 
+def _pick_vetted_clip() -> str:
+    """Prefer a hand-vetted road-cycling clip from reel_clips.json — the reliable path.
+    Same idea as doctor.running: reuse good POV footage, change only the caption daily.
+    reel_clips.json = ["https://…mp4", …] or [{"url": "…", "desc": "…"}, …].
+    Returns "" if the library is empty (then we fall back to Higgsfield generation)."""
+    try:
+        clips = json.load(open(os.path.join(BASE, "reel_clips.json")))
+        urls = [c.get("url") if isinstance(c, dict) else c for c in (clips or [])]
+        urls = [u for u in urls if u]
+        if urls:
+            pick = urls[datetime.date.today().toordinal() % len(urls)]
+            print(f"   ▶ using vetted clip from reel_clips.json ({len(urls)} in library)")
+            return pick
+    except Exception:
+        pass
+    return ""
+
+
 def _pick_start_image() -> str:
-    """Prefer generated POV cycling images (pov_images.json); else the candid pool."""
+    """The start frame MUST be a POV road-ahead shot (pov_images.json) — animating a
+    candid rider photo is what produced the morphing 'glidging' clips. Only fall back
+    to the candid pool as a last resort, and warn loudly so POV images get generated."""
     try:
         pov = json.load(open(os.path.join(BASE, "pov_images.json")))
         if isinstance(pov, list) and pov:
             return pov[datetime.date.today().toordinal() % len(pov)]
     except Exception:
         pass
+    print("   ⚠️  no pov_images.json — falling back to a candid photo (will look off). "
+          "Run `python3 generate_pov_images.py` to build the POV road-ahead library.")
     return _IMAGE_POOL[datetime.date.today().toordinal() % len(_IMAGE_POOL)]
 
 
 def main():
+    # 1×/day: if we already posted today, skip the whole run (saves Higgsfield credits
+    # + Claude tokens). Dry-runs don't record, so testing stays unaffected.
+    if _already_posted_today():
+        print(f"   ▶ reel skip — already posted today ({TODAY}). REEL_FORCE=1 to override.")
+        return
+
     topic = _todays_topic()
     try:
         brief = build_brief(topic)
@@ -138,37 +182,85 @@ def main():
         print(f"   ⚠️  reel brief generation failed: {e}")
         return
 
-    # Generate the Reel video via Higgsfield (no-op + note if no API key).
+    # Source the footage: vetted library first (reliable), Higgsfield generation only
+    # as a fallback when the library is empty.
     video_prompt = _extract("VIDEO_PROMPT", brief)
-    video_url = ""
-    captioned = ""
-    if video_prompt:
+    video_url = _pick_vetted_clip()
+    if not video_url and video_prompt:
+        # Fallback: animate a POV road-ahead photo. Force a POV start frame — a candid
+        # rider photo is what produced the morphing/off-topic clips.
         start_image = os.getenv("HIGGSFIELD_IMAGE_URL", "") or _pick_start_image()
         video_url = higgsfield_video.generate_video(
             video_prompt, image_url=start_image, duration=5, aspect_ratio="9:16")
-        if video_url:
-            import caption_video
-            hook  = _extract("HOOK", brief)
-            beats = [b.strip(" -•\t") for b in _extract("BEATS", brief).splitlines() if b.strip()]
-            out   = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
-            captioned = caption_video.download_and_caption(video_url, hook, beats, out, duration=5)
+
+    captioned = ""
+    captions_burned = False
+    if video_url:
+        import caption_video
+        onscreen  = _extract("ONSCREEN", brief)
+        punchline = _extract("PUNCHLINE", brief).strip(" -•\t")
+        if punchline in ("-", ""):
+            punchline = ""
+        out = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
+        captioned = caption_video.download_and_caption(
+            video_url, onscreen, punchline, out, duration=5)
+        # captions_burned is True only if the returned file is the captioned one
+        # (caption_video returns the *_raw.mp4 path on ffmpeg/font failure).
+        captions_burned = bool(captioned) and not captioned.endswith("_raw.mp4")
 
     video_line = (f"🎬 Reel-Video (Higgsfield): {video_url}" if video_url
                   else "🎬 Reel-Video: nicht erzeugt (HIGGSFIELD_API_KEY in .env setzen).")
-    if captioned:
-        video_line += f"\n🎬 Mit Captions (auf VPS): {captioned}"
+    if captioned and captions_burned:
+        video_line += f"\n🎬 Mit Text-Overlay (auf VPS): {captioned}"
+    elif video_url and not captions_burned:
+        video_line += ("\n⚠️  TEXT-OVERLAY FEHLT — ffmpeg ist auf dem VPS nicht installiert. "
+                       "Fix: `apt install ffmpeg -y`. Ohne ffmpeg wird nur der rohe Clip verschickt.")
+
+    # ── Auto-post to Instagram (Graph API). No-op/dry-run until BOTH the IG creds
+    # (instagram_auth.py) AND IG_AUTOPOST=1 are set — i.e. TEST-MODE by default.
+    post_line = "📮 Instagram: TEST-MODE (kein Auto-Posting)."
+    # Never publish a caption-less clip — the on-screen text IS the content. Override
+    # this safety with REEL_ALLOW_NO_CAPTION=1 if you ever want raw clips posted.
+    if video_url and not captions_burned and \
+       os.getenv("REEL_ALLOW_NO_CAPTION", "").strip() not in ("1", "true", "yes", "on"):
+        post_line = ("📮 Instagram: ⛔ nicht gepostet — Text-Overlay fehlt (ffmpeg auf dem VPS "
+                     "installieren: `apt install ffmpeg -y`). Ohne Overlay kein Post.")
+    elif video_url:
+        import instagram_post
+        if instagram_post.is_configured():
+            ig_caption = _extract("CAPTION", brief)
+            tags = _extract("HASHTAGS", brief)
+            if tags:
+                ig_caption = f"{ig_caption}\n\n{tags}".strip()
+            # Host the CAPTIONED clip on Drive; fall back to the raw Higgsfield URL.
+            public_url = ""
+            if captioned and os.path.isfile(captioned):
+                import drive_upload
+                public_url = drive_upload.upload_public(captioned, name=f"velluto_reel_{TODAY}.mp4")
+            public_url = public_url or video_url
+            media_id = instagram_post.publish_reel(public_url, ig_caption)
+            if media_id:
+                _record_post(media_id)
+                mode = "Test-Reel (nur Nicht-Follower)" if instagram_post.trial_enabled() else "Reel"
+                post_line = f"📮 Instagram: ✅ als {mode} gepostet (media id {media_id})\n   Quelle: {public_url}"
+            elif instagram_post.autopost_enabled():
+                post_line = "📮 Instagram: ⚠️ Posting fehlgeschlagen — siehe VPS-Log."
+            else:
+                post_line = ("📮 Instagram: bereit, aber DRY-RUN (IG_AUTOPOST≠1). "
+                             "Zum Scharfschalten IG_AUTOPOST=1 in .env setzen.")
+        else:
+            post_line = ("📮 Instagram: Token fehlt — einmalig `python3 instagram_auth.py` "
+                         "laufen lassen (IG_ACCESS_TOKEN + IG_USER_ID).")
 
     body = (
-        "TEST-MODE · Instagram Reel (noch kein Auto-Posting)\n"
+        f"Instagram Reel — {TODAY}\n"
         f"Quelle: {topic.get('title') or topic.get('topic')}\n\n"
         f"{video_line}\n"
+        f"{post_line}\n"
         "────────────────────────────────────────\n\n"
-        f"{brief}\n\n"
-        "────────────────────────────────────────\n"
-        "Video passt? Dann verdrahte ich das Reels-Posting (offizielle Instagram Graph API), "
-        "sobald dein Meta-Business/App-Setup steht."
+        f"{brief}\n"
     )
-    subject = f"🎬 Velluto Reel (Test) — {TODAY}"
+    subject = f"🎬 Velluto Reel — {TODAY}"
     attach = [captioned] if (captioned and os.path.isfile(captioned)) else None
     mailer.send_email(subject, body, attachments=attach)
 

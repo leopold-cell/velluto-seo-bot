@@ -32,3 +32,9 @@ manual_test.log
 *.save
 *.bak
 *~
+# Google service-account key for Drive uploads (drive_upload.py) — secret, never commit.
+gdrive_sa.json
+*service_account*.json
+credentials*.json
+# Local reel renders
+output/reels/
