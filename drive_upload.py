@@ -28,7 +28,37 @@ from dotenv import load_dotenv
 BASE = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(dotenv_path=os.path.join(BASE, ".env"), override=True)
 
-SCOPES = ["https://www.googleapis.com/auth/drive.file"]
+SCOPES = [
+    "https://www.googleapis.com/auth/drive.file",            # upload app-created files
+    "https://www.googleapis.com/auth/drive.metadata.readonly",  # list input folders (auto-discovery)
+]
+
+
+def list_folder_files(folder_id: str, mime: str = "video/") -> list:
+    """List files in a Drive folder by MIME prefix (e.g. 'video/', 'audio/'), sorted
+    by name for a stable rotation. Returns [{'id','name'}, …], or [] if the token
+    lacks the metadata.readonly scope (then callers fall back to the *.json lists)."""
+    if not folder_id or not is_configured():
+        return []
+    try:
+        svc = _service()
+        if svc is None:
+            return []
+        q = f"'{folder_id}' in parents and mimeType contains '{mime}' and trashed=false"
+        files, token = [], None
+        while True:
+            resp = svc.files().list(q=q, fields="nextPageToken, files(id,name)",
+                                    pageSize=200, orderBy="name",
+                                    supportsAllDrives=True, includeItemsFromAllDrives=True,
+                                    pageToken=token).execute()
+            files += resp.get("files", [])
+            token = resp.get("nextPageToken")
+            if not token:
+                break
+        return files
+    except Exception as e:
+        print(f"   ⚠️  Drive folder list failed (scope 'drive.metadata.readonly' set?): {e}")
+        return []
 
 
 def is_configured() -> bool:
