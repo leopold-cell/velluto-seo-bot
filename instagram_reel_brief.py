@@ -117,7 +117,10 @@ def build_brief(topic: dict) -> str:
 
 def _extract(label: str, text: str) -> str:
     m = re.search(rf"{label}:\s*(.+?)(?:\n[A-Z_]+:|\Z)", text, re.S)
-    return m.group(1).strip() if m else ""
+    if not m:
+        return ""
+    # Strip stray template markers the model sometimes echoes (e.g. "<...>", quotes).
+    return m.group(1).strip().strip("<>").strip().strip('"').strip()
 
 
 # Candid / UGC rider photos (Shopify CDN) used as the start frame — chosen to look
