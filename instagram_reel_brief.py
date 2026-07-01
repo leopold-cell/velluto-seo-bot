@@ -307,13 +307,14 @@ def main():
         # (caption_video returns the *_raw.mp4 path on ffmpeg/font failure).
         captions_burned = bool(captioned) and not captioned.endswith("_raw.mp4")
 
-    video_line = (f"🎬 Reel-Video (Higgsfield): {video_url}" if video_url
-                  else "🎬 Reel-Video: nicht erzeugt (HIGGSFIELD_API_KEY in .env setzen).")
+    video_line = (f"🎬 Reel-Video (Quelle): {video_url}" if video_url
+                  else "🎬 Reel-Video: kein Clip verfügbar (Drive-Ordner / reel_clips.json leer?).")
     if captioned and captions_burned:
         video_line += f"\n🎬 Mit Text-Overlay (auf VPS): {captioned}"
     elif video_url and not captions_burned:
-        video_line += ("\n⚠️  TEXT-OVERLAY FEHLT — ffmpeg ist auf dem VPS nicht installiert. "
-                       "Fix: `apt install ffmpeg -y`. Ohne ffmpeg wird nur der rohe Clip verschickt.")
+        video_line += ("\n⚠️  TEXT-OVERLAY FEHLT — ffmpeg nicht gefunden. Fast immer: der Job lief "
+                       "OHNE venv. Immer über `run_reel.sh` (aktiviert venv) laufen lassen, oder "
+                       "`pip install imageio-ffmpeg` auch ins System-Python.")
 
     # Collect problems; we email ONLY if something actually went wrong (see bottom).
     problems = []
