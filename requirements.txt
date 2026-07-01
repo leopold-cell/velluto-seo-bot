@@ -6,6 +6,10 @@ ddgs
 praw
 PyYAML
 playwright
+# Reel captions: Pillow renders the text overlay, imageio-ffmpeg provides a bundled
+# ffmpeg binary so captions burn even without a system `apt install ffmpeg`.
+Pillow
+imageio-ffmpeg
 # Optional — only needed for the Google Drive hosting path (drive_upload.py).
 # Safe to skip; drive_upload no-ops and the reel falls back to the raw Higgsfield URL.
 google-api-python-client

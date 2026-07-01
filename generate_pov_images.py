@@ -19,21 +19,26 @@ import higgsfield_image
 BASE = os.path.dirname(os.path.abspath(__file__))
 OUT  = os.path.join(BASE, "pov_images.json")
 
-# Photorealistic POV road-cycling scenes. Framed to look like real GoPro/action-cam
-# footage looking DOWN THE ROAD AHEAD — explicitly NO hands, no phone, no rider in
-# frame, no people, to avoid the usual AI artifacts. No text, no branding.
-_NEG = "shot on a GoPro action camera, photorealistic, natural lighting, no hands, no phone, no rider visible, no people, no text, vertical 9:16"
+# Photorealistic ROAD-CYCLING POV. The key to reading as *road cycling* (not a car,
+# not hiking): the road bike's black DROP HANDLEBARS + a Garmin bike computer must be
+# clearly in the lower foreground, with the front wheel rolling on SMOOTH TARMAC ahead.
+# Hands not visible. Hard negatives kill the car/desert/gravel failure modes we saw.
+_FG  = ("first-person POV of a road cyclist: black drop handlebars with brake hoods and a "
+        "Garmin bike computer in the lower foreground, the front wheel on smooth grey asphalt")
+_NEG = ("shot on a GoPro action camera, photorealistic, sharp, natural lighting. "
+        "NO car, NO motorbike, NO dashboard, NO windshield, NO desert, NO gravel, NO dirt trail, "
+        "NO off-road, NO hands, NO phone, NO rider visible, NO people, no text, no logo. Vertical 9:16")
 PROMPTS = [
-    f"First-person handlebar POV looking down an empty sunlit alpine mountain road ahead, tarmac and switchbacks dropping away, golden hour, {_NEG}",
-    f"POV looking forward along a misty forest gravel road at sunrise, dappled light through pine trees, {_NEG}",
-    f"First-person view down a winding coastal road at sunset, ocean glinting beside the road, warm light, {_NEG}",
-    f"POV on an open country road with a small group of road cyclists riding ahead in the distance, their backs and wheels in front, motion, {_NEG}",
-    f"First-person POV climbing a steep Dolomites switchback, the road rising ahead between limestone walls, dramatic, {_NEG}",
-    f"POV down quiet city streets at dawn, wet asphalt reflections, soft light, {_NEG}",
-    f"First-person POV over rolling green countryside, road ahead, blue sky and fields, {_NEG}",
-    f"POV looking ahead on a forest road in light rain, water droplets on the lens, moody atmosphere, {_NEG}",
-    f"First-person POV on a dusty sunlit gravel desert trail, the track stretching ahead, rugged landscape, {_NEG}",
-    f"POV descending fast through autumn trees, the road ahead, falling leaves, sense of speed, {_NEG}",
+    f"{_FG}, an empty sunlit alpine tarmac mountain road with switchbacks dropping away ahead, golden hour, {_NEG}",
+    f"{_FG}, a smooth paved forest road ahead at sunrise, dappled light through pine trees, {_NEG}",
+    f"{_FG}, a winding paved coastal road ahead at sunset, ocean glinting beside the road, warm light, {_NEG}",
+    f"{_FG}, an open paved country road ahead through green fields, blue sky, sunny morning, {_NEG}",
+    f"{_FG}, a steep paved Dolomites switchback rising ahead between limestone walls, dramatic, {_NEG}",
+    f"{_FG}, quiet paved city streets ahead at dawn, wet asphalt reflections, soft light, {_NEG}",
+    f"{_FG}, rolling green countryside with the tarmac road ahead, blue sky and fields, {_NEG}",
+    f"{_FG}, a paved forest road ahead in light rain, water droplets on the lens, moody atmosphere, {_NEG}",
+    f"{_FG}, a long flat paved road ahead through golden farmland, summer haze, {_NEG}",
+    f"{_FG}, descending fast on a paved road through autumn trees ahead, falling leaves, sense of speed, {_NEG}",
 ]
 
 

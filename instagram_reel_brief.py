@@ -135,6 +135,24 @@ _IMAGE_POOL = [
 ]
 
 
+def _pick_vetted_clip() -> str:
+    """Prefer a hand-vetted road-cycling clip from reel_clips.json — the reliable path.
+    Same idea as doctor.running: reuse good POV footage, change only the caption daily.
+    reel_clips.json = ["https://…mp4", …] or [{"url": "…", "desc": "…"}, …].
+    Returns "" if the library is empty (then we fall back to Higgsfield generation)."""
+    try:
+        clips = json.load(open(os.path.join(BASE, "reel_clips.json")))
+        urls = [c.get("url") if isinstance(c, dict) else c for c in (clips or [])]
+        urls = [u for u in urls if u]
+        if urls:
+            pick = urls[datetime.date.today().toordinal() % len(urls)]
+            print(f"   ▶ using vetted clip from reel_clips.json ({len(urls)} in library)")
+            return pick
+    except Exception:
+        pass
+    return ""
+
+
 def _pick_start_image() -> str:
     """The start frame MUST be a POV road-ahead shot (pov_images.json) — animating a
     candid rider photo is what produced the morphing 'glidging' clips. Only fall back
@@ -164,28 +182,31 @@ def main():
         print(f"   ⚠️  reel brief generation failed: {e}")
         return
 
-    # Generate the Reel video via Higgsfield (no-op + note if no API key).
+    # Source the footage: vetted library first (reliable), Higgsfield generation only
+    # as a fallback when the library is empty.
     video_prompt = _extract("VIDEO_PROMPT", brief)
-    video_url = ""
-    captioned = ""
-    captions_burned = False
-    if video_prompt:
-        # Always POV road-ahead footage (doctor.running style) — force a POV start frame.
+    video_url = _pick_vetted_clip()
+    if not video_url and video_prompt:
+        # Fallback: animate a POV road-ahead photo. Force a POV start frame — a candid
+        # rider photo is what produced the morphing/off-topic clips.
         start_image = os.getenv("HIGGSFIELD_IMAGE_URL", "") or _pick_start_image()
         video_url = higgsfield_video.generate_video(
             video_prompt, image_url=start_image, duration=5, aspect_ratio="9:16")
-        if video_url:
-            import caption_video
-            onscreen  = _extract("ONSCREEN", brief)
-            punchline = _extract("PUNCHLINE", brief).strip(" -•\t")
-            if punchline in ("-", ""):
-                punchline = ""
-            out = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
-            captioned = caption_video.download_and_caption(
-                video_url, onscreen, punchline, out, duration=5)
-            # captions_burned is True only if the returned file is the captioned one
-            # (caption_video returns the *_raw.mp4 path on ffmpeg/font failure).
-            captions_burned = bool(captioned) and not captioned.endswith("_raw.mp4")
+
+    captioned = ""
+    captions_burned = False
+    if video_url:
+        import caption_video
+        onscreen  = _extract("ONSCREEN", brief)
+        punchline = _extract("PUNCHLINE", brief).strip(" -•\t")
+        if punchline in ("-", ""):
+            punchline = ""
+        out = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
+        captioned = caption_video.download_and_caption(
+            video_url, onscreen, punchline, out, duration=5)
+        # captions_burned is True only if the returned file is the captioned one
+        # (caption_video returns the *_raw.mp4 path on ffmpeg/font failure).
+        captions_burned = bool(captioned) and not captioned.endswith("_raw.mp4")
 
     video_line = (f"🎬 Reel-Video (Higgsfield): {video_url}" if video_url
                   else "🎬 Reel-Video: nicht erzeugt (HIGGSFIELD_API_KEY in .env setzen).")
