@@ -150,16 +150,45 @@ _IMAGE_POOL = [
 ]
 
 
+def _drive_folder_urls(folder_id: str, mime: str) -> list:
+    """Auto-discovery: list a Drive folder (GDRIVE_CLIPS/MUSIC_FOLDER_ID) and return
+    public download URLs, so newly uploaded files are used automatically. Needs the
+    Drive token minted with 'drive.metadata.readonly'. [] → callers use the *.json."""
+    if not folder_id:
+        return []
+    try:
+        import drive_upload
+        files = drive_upload.list_folder_files(folder_id, mime=mime)
+        return [f"https://drive.google.com/uc?export=download&id={f['id']}" for f in files]
+    except Exception as e:
+        print(f"   ⚠️  Drive auto-discovery skipped: {e}")
+        return []
+
+
+def _library_urls(folder_env: str, mime: str, json_name: str) -> tuple:
+    """Return (urls, source_label). Prefer the Drive folder (auto-discovery); fall
+    back to the committed *.json list."""
+    folder = os.getenv(folder_env, "").strip()
+    urls = _drive_folder_urls(folder, mime)
+    if urls:
+        return urls, f"Drive folder ({len(urls)})"
+    try:
+        items = json.load(open(os.path.join(BASE, json_name)))
+        urls = [i.get("url") if isinstance(i, dict) else i for i in (items or [])]
+        urls = [u for u in urls if u]
+    except Exception:
+        urls = []
+    return urls, f"{json_name} ({len(urls)})"
+
+
 def _pick_music() -> str:
     """Download today's license-free music track and return its local path.
 
-    music_tracks.json = ["https://…mp3", …] or [{"url": "…", "desc": "…"}, …].
-    Instagram's own music library is NOT available via the API, so the track is baked
-    into the video file. Use only license-free / royalty-free music. '' if none set."""
+    Source: the GDRIVE_MUSIC_FOLDER_ID Drive folder (auto-discovery) if set+authorized,
+    else music_tracks.json. Instagram's own music library is NOT available via the API,
+    so the track is baked into the video file. Use only license-free music. '' if none."""
     try:
-        tracks = json.load(open(os.path.join(BASE, "music_tracks.json")))
-        urls = [t.get("url") if isinstance(t, dict) else t for t in (tracks or [])]
-        urls = [u for u in urls if u]
+        urls, src = _library_urls("GDRIVE_MUSIC_FOLDER_ID", "audio/", "music_tracks.json")
         if not urls:
             return ""
         url = urls[datetime.date.today().toordinal() % len(urls)]
@@ -169,7 +198,7 @@ def _pick_music() -> str:
         r = requests.get(url, timeout=120)
         r.raise_for_status()
         open(dest, "wb").write(r.content)
-        print(f"   ▶ music track from music_tracks.json ({len(urls)} in library)")
+        print(f"   ▶ music track from {src}")
         return dest
     except Exception as e:
         print(f"   ⚠️  music skipped: {e}")
@@ -177,20 +206,15 @@ def _pick_music() -> str:
 
 
 def _pick_vetted_clip() -> str:
-    """Prefer a hand-vetted road-cycling clip from reel_clips.json — the reliable path.
-    Same idea as doctor.running: reuse good POV footage, change only the caption daily.
-    reel_clips.json = ["https://…mp4", …] or [{"url": "…", "desc": "…"}, …].
-    Returns "" if the library is empty (then we fall back to Higgsfield generation)."""
-    try:
-        clips = json.load(open(os.path.join(BASE, "reel_clips.json")))
-        urls = [c.get("url") if isinstance(c, dict) else c for c in (clips or [])]
-        urls = [u for u in urls if u]
-        if urls:
-            pick = urls[datetime.date.today().toordinal() % len(urls)]
-            print(f"   ▶ using vetted clip from reel_clips.json ({len(urls)} in library)")
-            return pick
-    except Exception:
-        pass
+    """Pick today's POV clip. Source: the GDRIVE_CLIPS_FOLDER_ID Drive folder
+    (auto-discovery — drop a clip in, it's used automatically) if set+authorized, else
+    reel_clips.json. Daily rotation. Same idea as doctor.running: reuse good POV footage,
+    change only the caption. Returns "" if empty (then Higgsfield generation kicks in)."""
+    urls, src = _library_urls("GDRIVE_CLIPS_FOLDER_ID", "video/", "reel_clips.json")
+    if urls:
+        pick = urls[datetime.date.today().toordinal() % len(urls)]
+        print(f"   ▶ using vetted clip from {src}")
+        return pick
     return ""
 
 
