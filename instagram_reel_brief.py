@@ -220,12 +220,12 @@ def _pick_music() -> str:
         if not urls:
             return ""
         url = urls[_slot_seed() % len(urls)]
-        import requests
+        import caption_video
         dest = os.path.join(BASE, "output", "reels", "music_today")
         os.makedirs(os.path.dirname(dest), exist_ok=True)
-        r = requests.get(url, timeout=120)
-        r.raise_for_status()
-        open(dest, "wb").write(r.content)
+        if not caption_video.download(url, dest):   # Drive-robust (handles scan interstitial)
+            print("   ⚠️  music download failed — reel wird ohne Musik erzeugt")
+            return ""
         print(f"   ▶ music track from {src}")
         return dest
     except Exception as e:
