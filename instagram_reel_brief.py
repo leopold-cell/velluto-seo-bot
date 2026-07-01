@@ -75,43 +75,38 @@ def build_brief(topic: dict) -> str:
     from anthropic import Anthropic
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-    # Rotate the format daily so the feed mixes faceless / POV / face content.
-    formats = [
-        "FACELESS — text/voiceover over POV or scenery footage, no person on camera",
-        "POV RIDING — helmet- or handlebar-POV, the rider's-eye view, in-the-saddle",
-        "FACE — talking/reacting to camera (piece-to-camera, skit, or duet-style)",
-    ]
-    fmt = formats[datetime.date.today().toordinal() % len(formats)]
-
     msg = client.messages.create(
         model=MODEL,
         max_tokens=900,
         temperature=1.0,
         system=(
-            "You are a viral social creative for ROAD CYCLISTS (Rennrad). You make HUMOROUS, "
-            "relatable, lifestyle Instagram Reels — the kind a cyclist sends to the group chat or "
-            "tags a mate on, captioned 'this is literally us'. Pure cyclist culture & inside jokes: "
-            "the n+1 rule, café stops, Strava kudos & segment hunting, ridiculous tan lines, the "
-            "friend who always half-wheels, suffering on climbs, kit/sock-height debates, weather "
-            "denial, marginal-gains nonsense, 'just one more lap', pre-ride faff, etc. "
-            "This is NOT product marketing: NO feature pitches, NO 'your glasses fog up' angles, NO "
-            "sales talk, NO CTAs. The brand behind it is Velluto (road eyewear) but it stays in the "
-            "background as vibe only, never a pitch. The ONE goal: make road cyclists laugh and COMMENT."
+            "You create Instagram Reels in the EXACT style of @doctor.running — but for ROAD "
+            "CYCLISTS (Rennrad), not runners. The format is fixed and non-negotiable:\n"
+            "• FACELESS, first-person POV footage looking down the road ahead while riding. No "
+            "face, no talking, no skit. The video is just a calm POV road shot.\n"
+            "• The whole joke lives in ONE big block of on-screen text that stays up the entire "
+            "clip — a relatable first-person confession/thought a roadie has mid-ride. Optionally "
+            "a short punchline flips it at the very end.\n"
+            "• Voice: dry, self-deprecating, insider. Real roadie culture: the n+1 rule, café "
+            "stops, Strava segments & kudos, tan lines, the mate who half-wheels, suffering on "
+            "climbs, 'just one more lap', weather denial, pre-ride faff, watts, empty-road bliss.\n"
+            "This is NOT marketing: NO product pitch, NO glasses/feature talk, NO CTA. Velluto "
+            "(road eyewear) is only a background vibe, never mentioned. The ONE goal: a roadie "
+            "reads the text, thinks 'that's literally me', and TAGS a mate or COMMENTS."
         ),
         messages=[{"role": "user", "content": (
-            f"Reel format for today: {fmt}\n\n"
-            "Write ONE short Reel concept (8-15s) in that format. Make it SPECIFIC and fresh — a real, "
-            "instantly-recognisable road-cyclist moment, not generic. Output EXACTLY these labelled blocks:\n\n"
-            "HOOK: <on-screen text or spoken line for the first 1.5s — must stop the scroll>\n"
-            f"FORMAT: <{fmt}>\n"
-            "BEATS: <3-5 short beats (on-screen text / action / spoken line) building to the funny payoff, one per line>\n"
-            "SHOT: <how to film it on a phone in this format — simple and doable>\n"
-            "VIDEO_PROMPT: <a SHORT motion prompt for animating a POV road PHOTO (image-to-video). Describe "
-            "ONLY a subtle, natural camera move — e.g. 'slow steady forward dolly down the road, gentle drift, "
-            "realistic handheld'. Do NOT describe people, riders or pedalling (it morphs and looks fake). Keep "
-            "the motion minimal and grounded.>\n"
-            "CAPTION: <a funny, relatable caption that BAITS comments — end with a question or 'tag the friend who…'. "
-            "No sales pitch, no link, no product talk.>\n"
+            "Write ONE doctor.running-style POV Rennrad Reel (5-8s). Make the on-screen line "
+            "SPECIFIC and instantly recognisable, not generic. Output EXACTLY these labelled blocks:\n\n"
+            "ONSCREEN: <the ONE on-screen text line that holds the whole clip — first-person, "
+            "relatable, max ~12 words. This is the whole joke/hook. e.g. 'me pretending it's a "
+            "recovery ride for the 4th day in a row'>\n"
+            "PUNCHLINE: <optional short payoff shown in the final ~2s, or '-' if none. max ~8 words>\n"
+            "VIDEO_PROMPT: <a SHORT motion prompt for animating a POV road PHOTO (image-to-video). "
+            "ONLY a subtle forward camera move — e.g. 'slow steady forward dolly down the empty "
+            "road, gentle handheld drift'. Do NOT describe people, riders, hands or pedalling (it "
+            "morphs and looks fake). Minimal, grounded, realistic.>\n"
+            "CAPTION: <Instagram caption that BAITS comments — end with a question or 'tag the "
+            "friend who…'. No sales pitch, no link, no product talk.>\n"
             "HASHTAGS: <10-12 hashtags, mix EN + DE rennrad / cycling-culture, space-separated>\n"
         )}],
     )
@@ -141,13 +136,17 @@ _IMAGE_POOL = [
 
 
 def _pick_start_image() -> str:
-    """Prefer generated POV cycling images (pov_images.json); else the candid pool."""
+    """The start frame MUST be a POV road-ahead shot (pov_images.json) — animating a
+    candid rider photo is what produced the morphing 'glidging' clips. Only fall back
+    to the candid pool as a last resort, and warn loudly so POV images get generated."""
     try:
         pov = json.load(open(os.path.join(BASE, "pov_images.json")))
         if isinstance(pov, list) and pov:
             return pov[datetime.date.today().toordinal() % len(pov)]
     except Exception:
         pass
+    print("   ⚠️  no pov_images.json — falling back to a candid photo (will look off). "
+          "Run `python3 generate_pov_images.py` to build the POV road-ahead library.")
     return _IMAGE_POOL[datetime.date.today().toordinal() % len(_IMAGE_POOL)]
 
 
@@ -169,26 +168,43 @@ def main():
     video_prompt = _extract("VIDEO_PROMPT", brief)
     video_url = ""
     captioned = ""
+    captions_burned = False
     if video_prompt:
+        # Always POV road-ahead footage (doctor.running style) — force a POV start frame.
         start_image = os.getenv("HIGGSFIELD_IMAGE_URL", "") or _pick_start_image()
         video_url = higgsfield_video.generate_video(
             video_prompt, image_url=start_image, duration=5, aspect_ratio="9:16")
         if video_url:
             import caption_video
-            hook  = _extract("HOOK", brief)
-            beats = [b.strip(" -•\t") for b in _extract("BEATS", brief).splitlines() if b.strip()]
-            out   = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
-            captioned = caption_video.download_and_caption(video_url, hook, beats, out, duration=5)
+            onscreen  = _extract("ONSCREEN", brief)
+            punchline = _extract("PUNCHLINE", brief).strip(" -•\t")
+            if punchline in ("-", ""):
+                punchline = ""
+            out = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
+            captioned = caption_video.download_and_caption(
+                video_url, onscreen, punchline, out, duration=5)
+            # captions_burned is True only if the returned file is the captioned one
+            # (caption_video returns the *_raw.mp4 path on ffmpeg/font failure).
+            captions_burned = bool(captioned) and not captioned.endswith("_raw.mp4")
 
     video_line = (f"🎬 Reel-Video (Higgsfield): {video_url}" if video_url
                   else "🎬 Reel-Video: nicht erzeugt (HIGGSFIELD_API_KEY in .env setzen).")
-    if captioned:
-        video_line += f"\n🎬 Mit Captions (auf VPS): {captioned}"
+    if captioned and captions_burned:
+        video_line += f"\n🎬 Mit Text-Overlay (auf VPS): {captioned}"
+    elif video_url and not captions_burned:
+        video_line += ("\n⚠️  TEXT-OVERLAY FEHLT — ffmpeg ist auf dem VPS nicht installiert. "
+                       "Fix: `apt install ffmpeg -y`. Ohne ffmpeg wird nur der rohe Clip verschickt.")
 
     # ── Auto-post to Instagram (Graph API). No-op/dry-run until BOTH the IG creds
     # (instagram_auth.py) AND IG_AUTOPOST=1 are set — i.e. TEST-MODE by default.
     post_line = "📮 Instagram: TEST-MODE (kein Auto-Posting)."
-    if video_url:
+    # Never publish a caption-less clip — the on-screen text IS the content. Override
+    # this safety with REEL_ALLOW_NO_CAPTION=1 if you ever want raw clips posted.
+    if video_url and not captions_burned and \
+       os.getenv("REEL_ALLOW_NO_CAPTION", "").strip() not in ("1", "true", "yes", "on"):
+        post_line = ("📮 Instagram: ⛔ nicht gepostet — Text-Overlay fehlt (ffmpeg auf dem VPS "
+                     "installieren: `apt install ffmpeg -y`). Ohne Overlay kein Post.")
+    elif video_url:
         import instagram_post
         if instagram_post.is_configured():
             ig_caption = _extract("CAPTION", brief)

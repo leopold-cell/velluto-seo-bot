@@ -42,10 +42,12 @@ def _download(url: str, dest: str) -> bool:
         return False
 
 
-def download_and_caption(video_url: str, hook: str, beats: list[str],
+def download_and_caption(video_url: str, onscreen: str, punchline: str,
                          out_path: str, duration: int = 8) -> str:
-    """Download the clip and burn hook + beats onto it. Returns the captioned path,
-    or the raw download if captioning can't run."""
+    """Download the clip and burn a doctor.running-style overlay: ONE big caption
+    (`onscreen`) held the whole clip, plus an optional end `punchline`. Returns the
+    captioned path, or the *_raw.mp4 download if captioning can't run (so the caller
+    detects a missing ffmpeg via the '_raw.mp4' suffix)."""
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     raw = out_path.replace(".mp4", "_raw.mp4")
     if not _download(video_url, raw):
@@ -53,38 +55,38 @@ def download_and_caption(video_url: str, hook: str, beats: list[str],
 
     font = _font()
     if not shutil.which("ffmpeg") or not font:
-        print("   ⚠️  ffmpeg/font missing — using clip without burned captions")
+        print("   ⚠️  ffmpeg/font missing — using clip WITHOUT burned captions (install ffmpeg!)")
         return raw
 
     tmp = tempfile.mkdtemp()
     try:
         filters = []
-        # Hook: top, first ~2.6s, large.
-        hf = os.path.join(tmp, "hook.txt")
-        open(hf, "w", encoding="utf-8").write(_wrap(hook, 18))
+        # Main caption: big, centered in the upper third, held the ENTIRE clip. This is
+        # the doctor.running signature — the joke lives in the text, not the footage.
+        mf = os.path.join(tmp, "main.txt")
+        open(mf, "w", encoding="utf-8").write(_wrap(onscreen, 20))
         filters.append(
-            f"drawtext=fontfile={font}:textfile={hf}:fontcolor=white:fontsize=58:"
-            f"line_spacing=8:box=1:boxcolor=black@0.45:boxborderw=18:"
-            f"x=(w-text_w)/2:y=110:enable='lt(t,2.6)'"
+            f"drawtext=fontfile={font}:textfile={mf}:fontcolor=white:fontsize=62:"
+            f"line_spacing=10:borderw=4:bordercolor=black@0.9:"
+            f"box=1:boxcolor=black@0.35:boxborderw=22:"
+            f"x=(w-text_w)/2:y=h*0.16"
         )
-        # Beats: sequenced, lower third.
-        beats = [b for b in (beats or []) if b.strip()]
-        if beats:
-            seg = max(1.6, (duration - 2.6) / len(beats))
-            t = 2.6
-            for i, b in enumerate(beats):
-                bf = os.path.join(tmp, f"b{i}.txt")
-                open(bf, "w", encoding="utf-8").write(_wrap(b, 22))
-                filters.append(
-                    f"drawtext=fontfile={font}:textfile={bf}:fontcolor=white:fontsize=46:"
-                    f"line_spacing=6:box=1:boxcolor=black@0.45:boxborderw=14:"
-                    f"x=(w-text_w)/2:y=h-text_h-180:enable='between(t,{t:.2f},{t+seg:.2f})'"
-                )
-                t += seg
+        # Optional punchline: appears in the final ~2s, centered lower third.
+        punchline = (punchline or "").strip()
+        if punchline:
+            start = max(0.5, duration - 2.0)
+            pf = os.path.join(tmp, "punch.txt")
+            open(pf, "w", encoding="utf-8").write(_wrap(punchline, 22))
+            filters.append(
+                f"drawtext=fontfile={font}:textfile={pf}:fontcolor=yellow:fontsize=54:"
+                f"line_spacing=8:borderw=4:bordercolor=black@0.9:"
+                f"box=1:boxcolor=black@0.35:boxborderw=18:"
+                f"x=(w-text_w)/2:y=h*0.66:enable='gte(t,{start:.2f})'"
+            )
 
         cmd = ["ffmpeg", "-y", "-i", raw, "-vf", ",".join(filters),
                "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p",
-               "-c:a", "copy", out_path]
+               out_path]
         try:
             subprocess.run(cmd, check=True, capture_output=True, timeout=240)
             print(f"   ✓ captions burned → {out_path}")
