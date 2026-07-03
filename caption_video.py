@@ -158,16 +158,16 @@ def _render_overlay(onscreen: str, punchline: str, out_png: str) -> bool:
     W, H = _CANVAS
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    main_font = ImageFont.truetype(fp, 82)
-    punch_font = ImageFont.truetype(fp, 66)
+    main_font = ImageFont.truetype(fp, 64)
+    punch_font = ImageFont.truetype(fp, 52)
 
     # Main caption — upper third, held the whole clip (the joke). Plain white.
-    _draw_block(draw, (onscreen or "").strip(), main_font, W / 2, int(H * 0.14),
-                int(W * 0.86), fill=(255, 255, 255, 255))
+    _draw_block(draw, (onscreen or "").strip(), main_font, W / 2, int(H * 0.15),
+                int(W * 0.80), fill=(255, 255, 255, 255), stroke=5)
     # Punchline — lower third, also plain white (native look).
     if (punchline or "").strip():
         _draw_block(draw, punchline.strip(), punch_font, W / 2, int(H * 0.68),
-                    int(W * 0.84), fill=(255, 255, 255, 255))
+                    int(W * 0.78), fill=(255, 255, 255, 255), stroke=4)
 
     img.save(out_png)
     return True
