@@ -1,7 +1,9 @@
 {
-  "date": "2026-07-01",
+  "date": "2026-07-02",
   "slots": [
+    "morning",
+    "noon",
     "evening"
   ],
-  "last_media_id": "18108503807106937"
+  "last_media_id": "18098025191608891"
 }
