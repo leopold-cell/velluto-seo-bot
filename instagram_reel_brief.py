@@ -57,9 +57,26 @@ def _load_state() -> dict:
         st = json.load(open(STATE))
     except Exception:
         st = {}
-    if st.get("date") != TODAY:      # reset each day
-        st = {"date": TODAY, "slots": []}
+    if st.get("date") != TODAY:      # reset slots each day, keep cross-day memory
+        st = {"date": TODAY, "slots": [], "recent_lines": st.get("recent_lines", [])}
+    st.setdefault("recent_lines", [])
     return st
+
+
+def _recent_lines() -> list:
+    """Last on-screen lines used (kept across days) — fed to the model so openings
+    don't repeat (e.g. everything starting with 'told myself…')."""
+    return _load_state().get("recent_lines", [])[-10:]
+
+
+def _remember_line(line: str):
+    try:
+        st = _load_state()
+        if line:
+            st["recent_lines"] = (st.get("recent_lines", []) + [line])[-15:]
+        json.dump(st, open(STATE, "w"), indent=2)
+    except Exception:
+        pass
 
 
 def _already_posted_slot() -> bool:
@@ -105,6 +122,7 @@ def build_brief(topic: dict) -> str:
     from anthropic import Anthropic
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
+    recent = _recent_lines()   # avoid repeating openings (e.g. endless "told myself…")
     msg = client.messages.create(
         model=MODEL,
         max_tokens=900,
@@ -126,11 +144,19 @@ def build_brief(topic: dict) -> str:
         ),
         messages=[{"role": "user", "content": (
             "Write ONE doctor.running-style POV Rennrad Reel (5-8s). Make the on-screen line "
-            "SPECIFIC and instantly recognisable, not generic. Output EXACTLY these labelled blocks:\n\n"
+            "SPECIFIC and instantly recognisable, not generic.\n\n"
+            "VARIETY IS CRITICAL — vary the sentence STRUCTURE, not just the topic. Rotate "
+            "between patterns like: 'me pretending…', 'when the group ride…', 'nobody: / my "
+            "legs at km 2:'-style setups (as plain prose), 'the moment you realise…', 'POV-free "
+            "plain confessions ('I own four bikes and ride one'), rhetorical questions ('why do "
+            "I always…'), third-person observations ('my Garmin judging me silently'). Do NOT "
+            "start with 'told myself' or 'me telling myself' — that opening is overused.\n"
+            + (("DO NOT reuse the structure or opening words of these recent lines:\n- "
+                + "\n- ".join(recent) + "\n") if recent else "")
+            + "\nOutput EXACTLY these labelled blocks:\n\n"
             "ONSCREEN: <the ONE on-screen text line that holds the whole clip — first-person, "
-            "relatable, max ~12 words. This is the whole joke/hook. e.g. 'me pretending it's a "
-            "recovery ride for the 4th day in a row'. Plain text only — NO meta-labels like "
-            "'narrator:', 'me:', 'pov:', 'caption:'.>\n"
+            "relatable, max ~12 words. This is the whole joke/hook. Plain text only — NO "
+            "meta-labels like 'narrator:', 'me:', 'pov:', 'caption:'.>\n"
             "PUNCHLINE: <optional short payoff, or '-' if none. max ~8 words. Plain first-person "
             "text — NO 'narrator:', NO 'me:', NO meta-commentary labels, no stage-direction "
             "clichés. Just the punchline itself.>\n"
@@ -299,6 +325,7 @@ def main():
         punchline = _strip_meta(_extract("PUNCHLINE", brief).strip(" -•\t"))
         if punchline in ("-", ""):
             punchline = ""
+        _remember_line(onscreen)   # feed the no-repeat memory for future briefs
         out = os.path.join(BASE, "output", "reels", f"reel_{TODAY}.mp4")
         music = _pick_music()   # license-free track baked into the file (no IG music API)
         captioned = caption_video.download_and_caption(
