@@ -1,9 +1,13 @@
 {
-  "date": "2026-07-02",
+  "date": "2026-07-03",
   "slots": [
     "morning",
     "noon",
     "evening"
   ],
-  "last_media_id": "18098025191608891"
+  "last_media_id": "17956246569153230",
+  "recent_lines": [
+    "My Garmin has seen things I'm not proud of.",
+    "I own four bikes and have a favourite parking spot at the caf\u00e9."
+  ]
 }

@@ -370,7 +370,60 @@
           "citations": 1
         }
       ]
+    },
+    "2026-07-04": {
+      "aio_serps": 30,
+      "velluto_cited": 0,
+      "competitor_cited": 3,
+      "velluto_gap": 5,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 10.0,
+      "total_citations": 69,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 13
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 9
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 4
+        },
+        {
+          "domain": "evileye.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 3
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 3
+        },
+        {
+          "domain": "sportrx.com",
+          "citations": 3
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 2
+        },
+        {
+          "domain": "bikerumor.com",
+          "citations": 2
+        },
+        {
+          "domain": "kroops.com",
+          "citations": 2
+        }
+      ]
     }
   },
-  "latest": "2026-07-03"
+  "latest": "2026-07-04"
 }

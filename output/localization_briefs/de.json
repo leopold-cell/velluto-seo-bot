@@ -1,6 +1,6 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-06-21",
+  "date": "2026-07-04",
   "locale": "de-DE",
   "locale_short": "de",
   "market_code": "DE",
@@ -9,9 +9,9 @@
   "local_secondary_keywords": [
     "Who makes the best cycling glasses?",
     "What sunglasses are better than Oakleys?",
-    "Are Oakley cycling glasses worth it?",
+    "Are Oakleys worth it for cycling?",
     "What are the best Oakley cycling glasses?",
-    "Are expensive bike riding glasses worth it?"
+    "Are cheap sunglasses just as good as expensive ones?"
   ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -31,7 +31,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-06-21",
+    "last_updated": "2026-07-04",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
