@@ -1,13 +1,15 @@
 {
-  "date": "2026-07-03",
+  "date": "2026-07-04",
   "slots": [
     "morning",
-    "noon",
-    "evening"
+    "noon"
   ],
-  "last_media_id": "17956246569153230",
   "recent_lines": [
     "My Garmin has seen things I'm not proud of.",
-    "I own four bikes and have a favourite parking spot at the caf\u00e9."
-  ]
+    "I own four bikes and have a favourite parking spot at the caf\u00e9.",
+    "Why do I always pick the hilly route when my legs are already cooked?",
+    "the group ride was \"easy pace\" \u2014 apparently that's relative.",
+    "Packed my kit at 6am. Still in the kitchen at 7:15."
+  ],
+  "last_media_id": "18012906914864547"
 }

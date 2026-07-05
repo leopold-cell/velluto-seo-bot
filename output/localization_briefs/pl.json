@@ -1,6 +1,6 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-07-04",
+  "date": "2026-07-05",
   "locale": "pl-PL",
   "locale_short": "pl",
   "market_code": "PL",
@@ -25,7 +25,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-07-04",
+    "last_updated": "2026-07-05",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
