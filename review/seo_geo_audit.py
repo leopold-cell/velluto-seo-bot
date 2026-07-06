@@ -31,7 +31,10 @@ def check_page(url: str) -> dict:
     if m:
         meta_desc = m.group(1).strip()
     h1s = re.findall(r"<h1[^>]*>(.*?)</h1>", html, re.I | re.S)
-    canonical = bool(re.search(r'<link[^>]+rel=["\']canonical["\']', html, re.I))
+    cm = (re.search(r'<link[^>]+rel=["\']canonical["\'][^>]+href=["\']([^"\']+)["\']', html, re.I)
+          or re.search(r'<link[^>]+href=["\']([^"\']+)["\'][^>]+rel=["\']canonical["\']', html, re.I))
+    canonical = bool(cm)
+    canonical_href = cm.group(1) if cm else None
     hreflangs = set(re.findall(r'<link[^>]+rel=["\']alternate["\'][^>]+hreflang=["\']([^"\']+)["\']', html, re.I))
     ld_types = re.findall(r'"@type"\s*:\s*"([^"]+)"', html)
     img_total = len(re.findall(r"<img\b", html, re.I))
@@ -47,6 +50,15 @@ def check_page(url: str) -> dict:
         issues.append(f"{len(h1s)} H1 tags (want exactly 1)")
     if not canonical:
         issues.append("no canonical tag")
+    elif canonical_href.rstrip("/") != url.rstrip("/"):
+        # Pages in an hreflang set MUST self-canonicalize. A cross-locale
+        # canonical (e.g. /de/… pointing at the EN root) breaks hreflang and
+        # triggers GSC "Duplicate, Google chose different canonical than user".
+        issues.append(f"canonical not self-referencing: {canonical_href}")
+    if 'l.rel="canonical"' in html:
+        # Regression guard: seo_bot used to inject a client-side JS canonical
+        # into article bodies (removed Jul 2026) — it must never come back.
+        issues.append("JS-injected canonical found in body (conflicts with Shopify's head canonical)")
     if img_no_alt:
         issues.append(f"{img_no_alt}/{img_total} images missing alt")
     missing_hreflang = [loc for loc in SHOP_LOCALES if not any(h.lower().startswith(loc.lower()) for h in hreflangs)]
@@ -59,6 +71,7 @@ def check_page(url: str) -> dict:
         "meta_description_len": len(meta_desc or ""),
         "h1_count": len(h1s),
         "canonical": canonical,
+        "canonical_href": canonical_href,
         "hreflang_locales": sorted(hreflangs),
         "structured_data_types": sorted(set(ld_types)),
         "images": {"total": img_total, "missing_alt": img_no_alt},
