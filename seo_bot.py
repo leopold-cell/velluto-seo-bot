@@ -1098,7 +1098,7 @@ PRODUCTS (EXACT URLs only — never invent):
 
 Write 3 language versions (800-1000 words each — quality over quantity, go deep):
 
-<h1>[Contains long-tail keyword naturally]</h1>
+<h2>[Contains long-tail keyword naturally — do NOT use <h1>, the theme renders the article title as the page H1]</h2>
 <p>[Intro — {get_cycling_context()} hook, keyword appears here]</p>
 <h2>[Core cyclist problem]</h2>
 <p>[2-3 expert paragraphs]</p>
@@ -1119,7 +1119,7 @@ Use EXACTLY this output format — delimiters on their own lines, no extra text 
 keyword: <chosen long-tail keyword>
 title_en: <max 60 chars, contains keyword>
 meta_description: <max 155 chars English, contains keyword>
-tags: <ENGLISH ONLY: keyword,cycling glasses,road cycling,Velluto StradaPro>
+tags: <ENGLISH ONLY, choose ONLY from: cycling glasses,road cycling,velluto,StradaPro — never invent new tags>
 ===EN===
 <complete English HTML here>
 ===NL===
@@ -1216,14 +1216,33 @@ def validate(post: dict, products: list[dict]) -> list[str]:
         if re.search(r'<img\b', html):
             issues.append(f"[{lang}] Inline <img> tag found — body must be text/links only")
 
-        # Check H1 present
-        if "<h1" not in html.lower():
-            issues.append(f"[{lang}] Missing H1 heading")
+        # Body must NOT contain an H1 — the theme already renders the article
+        # title as <h1 class="hero-title">, so a body H1 produces two H1s per
+        # page (Ahrefs: "Multiple H1 tags").
+        if "<h1" in html.lower():
+            issues.append(f"[{lang}] <h1> found in body — theme renders the H1; use <h2> instead")
 
     return issues
 
 
 # ── Publish ──────────────────────────────────────────────────────────────────
+
+# Fixed tag vocabulary. The per-article keyword used to be added as a tag, which
+# made Shopify spawn a thin /blogs/…/tagged/<keyword> page (×11 locales) for
+# EVERY article — indexable, self-canonical, no meta description and not in the
+# sitemap (Ahrefs: "Meta description missing", "Indexable page not in sitemap").
+# Tags are now clamped to this stable set so no new tag pages ever appear.
+ALLOWED_TAGS = ["cycling glasses", "road cycling", "velluto", "StradaPro"]
+
+
+def _safe_tags(raw: str) -> str:
+    """Clamp generated tags to ALLOWED_TAGS (case-insensitive, order-stable).
+    Falls back to the base set if nothing matches, so tag pages stay stable."""
+    allowed = {t.lower(): t for t in ALLOWED_TAGS}
+    kept = [allowed[t.strip().lower()] for t in (raw or "").split(",")
+            if t.strip().lower() in allowed]
+    return ",".join(dict.fromkeys(kept)) if kept else ",".join(ALLOWED_TAGS[:3])
+
 
 @retry(max_attempts=3, delay=5, label="publish")
 def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url: str) -> int | None:
@@ -1232,7 +1251,7 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
         "body_html":       body_html,
         "published":       True,
         "author":          "Velluto Redaktion",
-        "tags":            tags,
+        "tags":            _safe_tags(tags),
         "template_suffix": "velluto-magazine",
         "metafields": [{"key": "description_tag", "value": meta_desc[:155],
                         "type": "single_line_text_field", "namespace": "global"}]
@@ -1496,7 +1515,7 @@ PUBLISH RULES (HARD — articles violating these get blocked and discarded):
 3. HOMEPAGE LINK — Include exactly one <a href="https://velluto-shop.com">…</a> link with descriptive
    anchor text (e.g., "Velluto", "Velluto cycling eyewear", "premium Velluto glasses").
 4. INTERNAL LINKS — At least 3 <a> elements pointing to velluto-shop.com paths total.
-5. PRIMARY KEYWORD — The exact primary keyword (or its tokens) MUST appear in <title>, the <h1>, and at least one <h2>.
+5. PRIMARY KEYWORD — The exact primary keyword (or its tokens) MUST appear in <title> (= the article title, rendered as the page H1 by the theme) and at least one <h2>. Never write an <h1> in the body.
 """
 
     system = f"""You are the lead SEO editor and copywriter for Velluto (velluto-shop.com), \
@@ -1637,7 +1656,7 @@ meta_description: <max 155 chars, English, contains keyword>
 keyword_de: {keyword_de}
 keyword_nl: {keyword_nl}
 keyword_en: {keyword}
-tags: cycling glasses,road cycling,velluto,StradaPro,{keyword}
+tags: <choose ONLY from: cycling glasses,road cycling,velluto,StradaPro — never invent new tags>
 eyebrow: <topic area label>
 category: <category>
 hero_sub: <subtitle>
@@ -1773,17 +1792,13 @@ def build_body_html(post: dict, cover_url: str) -> str:
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
         '<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">'
     )
-    # Inject canonical pointing to the root (non-locale) URL — strips /nl/, /fr/ etc. prefixes
-    canonical_js = (
-        '<script>'
-        '(function(){'
-        'var l=document.createElement("link");l.rel="canonical";'
-        'l.href="https://velluto-shop.com"+window.location.pathname.replace(/^\\/[a-z]{2}(-[a-z]{2,4})?\\//, "/");'
-        'document.head.appendChild(l);'
-        '})();'
-        '</script>'
-    )
-    return f"{canonical_js}\n{body}"
+    # NOTE: intentionally NO canonical injection. Shopify already renders a
+    # correct self-referencing <link rel="canonical"> plus the full hreflang
+    # set server-side for every locale. The old JS-injected canonical stripped
+    # the locale prefix and pointed every translation at the EN root URL —
+    # contradicting both the server canonical and hreflang, which made Google
+    # override it (GSC: "Duplicate, Google chose different canonical than user").
+    return body
 
 
 def graphql_with_vars(query: str, variables: dict) -> dict:
@@ -2102,7 +2117,7 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
         title=post["title"],
         body_html=body_html,
         meta_desc=post.get("meta_description", "")[:155],
-        tags=post.get("tags", f"cycling glasses,road cycling,velluto,{keyword}"),
+        tags=post.get("tags", ",".join(ALLOWED_TAGS)),
         featured_url=cover_url,
     )
 
