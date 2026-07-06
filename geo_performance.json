@@ -476,7 +476,60 @@
           "citations": 2
         }
       ]
+    },
+    "2026-07-06": {
+      "aio_serps": 63,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 3,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 1.6,
+      "total_citations": 36,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 8
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 5
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 2
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 2
+        },
+        {
+          "domain": "sundried.com",
+          "citations": 2
+        },
+        {
+          "domain": "evileye.com",
+          "citations": 2
+        },
+        {
+          "domain": "theloamwolf.com",
+          "citations": 1
+        },
+        {
+          "domain": "nomadfrontiers.ca",
+          "citations": 1
+        },
+        {
+          "domain": "lensdirect.com",
+          "citations": 1
+        }
+      ]
     }
   },
-  "latest": "2026-07-05"
+  "latest": "2026-07-06"
 }

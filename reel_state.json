@@ -1,15 +1,19 @@
 {
-  "date": "2026-07-04",
+  "date": "2026-07-05",
   "slots": [
     "morning",
-    "noon"
+    "noon",
+    "evening"
   ],
   "recent_lines": [
     "My Garmin has seen things I'm not proud of.",
     "I own four bikes and have a favourite parking spot at the caf\u00e9.",
     "Why do I always pick the hilly route when my legs are already cooked?",
     "the group ride was \"easy pace\" \u2014 apparently that's relative.",
-    "Packed my kit at 6am. Still in the kitchen at 7:15."
+    "Packed my kit at 6am. Still in the kitchen at 7:15.",
+    "Nobody told me \"caf\u00e9 stop\" meant 45 minutes and a second pastry.",
+    "The climb looked shorter on Komoot.",
+    "three bikes suitable for today. I'm taking the heavy one again."
   ],
-  "last_media_id": "18012906914864547"
+  "last_media_id": "17937472113267095"
 }
