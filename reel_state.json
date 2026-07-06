@@ -1,9 +1,8 @@
 {
-  "date": "2026-07-05",
+  "date": "2026-07-06",
   "slots": [
     "morning",
-    "noon",
-    "evening"
+    "noon"
   ],
   "recent_lines": [
     "My Garmin has seen things I'm not proud of.",
@@ -13,7 +12,9 @@
     "Packed my kit at 6am. Still in the kitchen at 7:15.",
     "Nobody told me \"caf\u00e9 stop\" meant 45 minutes and a second pastry.",
     "The climb looked shorter on Komoot.",
-    "three bikes suitable for today. I'm taking the heavy one again."
+    "three bikes suitable for today. I'm taking the heavy one again.",
+    "somehow the \"recovery ride\" now has 1,400m of climbing in it",
+    "somehow my \"quick spin\" has a hotel booked on day two"
   ],
-  "last_media_id": "17937472113267095"
+  "last_media_id": "18064085579709841"
 }
