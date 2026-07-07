@@ -529,7 +529,60 @@
           "citations": 1
         }
       ]
+    },
+    "2026-07-07": {
+      "aio_serps": 32,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 5,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 3.1,
+      "total_citations": 60,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 9
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 8
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 4
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 2
+        },
+        {
+          "domain": "treelinereview.com",
+          "citations": 2
+        },
+        {
+          "domain": "bikeradar.com",
+          "citations": 2
+        },
+        {
+          "domain": "sundried.com",
+          "citations": 2
+        },
+        {
+          "domain": "bicyclewarehouse.com",
+          "citations": 2
+        },
+        {
+          "domain": "theloamwolf.com",
+          "citations": 1
+        }
+      ]
     }
   },
-  "latest": "2026-07-06"
+  "latest": "2026-07-07"
 }

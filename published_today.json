@@ -1,61 +1,183 @@
 [
   {
-    "title": "Are Expensive Cycling Glasses Worth It? Honest Answer",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-honest-answer",
-    "topic": "are expensive cycling glasses worth it",
-    "keyword": "are expensive cycling glasses worth it",
+    "title": "Best Oakley Alternatives for Cyclists 2026 (Lighter & Cheaper)",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternatives-for-cyclists-2026-lighter-cheaper",
+    "topic": "best oakley alternatives",
+    "keyword": "best oakley alternatives",
     "lang": "en",
     "phase": "decision",
-    "tags": "cycling glasses,road cycling,velluto,StradaPro,are expensive cycling glasses worth it",
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "teure Fahrradbrille lohnt sich",
-        "intent": "Evaluating whether premium cycling glasses justify their cost through performance and durability benefits.",
+        "keyword": "Oakley Alternative Radsportbrille",
+        "intent": "Finding comparable cycling eyewear brands to Oakley with similar quality and performance.",
         "volume": 0
       },
       "nl": {
-        "keyword": "dure fietsbril het geld waard",
-        "intent": "Determining if expensive cycling glasses deliver better quality, protection, and longevity to justify the premium price.",
+        "keyword": "alternatieven voor Oakley fietsbril",
+        "intent": "Looking for reliable cycling eyewear brands that offer similar performance to Oakley.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes v\u00e9lo ch\u00e8res en valent-elles la peine",
-        "intent": "Evaluating whether costly cycling glasses offer superior performance, comfort, and protection compared to cheaper options.",
+        "keyword": "meilleures lunettes cyclisme alternatives Oakley",
+        "intent": "Seeking quality cycling eyewear brands that rival Oakley's features and durability.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo caras merecen la pena",
-        "intent": "Assessing if expensive cycling glasses provide better protection, optical quality, and durability to justify their higher cost.",
+        "keyword": "gafas ciclismo mejores que Oakley",
+        "intent": "Finding cycling glasses that match or exceed Oakley's performance and features.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali bici costosi conviene comprarli",
-        "intent": "Determining whether premium cycling glasses justify their investment through superior optics, durability, and safety features.",
+        "keyword": "occhiali ciclismo alternativi a Oakley",
+        "intent": "Discovering quality cycling eyewear brands as an alternative to Oakley.",
         "volume": 0
       },
       "da": {
-        "keyword": "dyre cykelbriller pengene v\u00e6rd",
-        "intent": "Evaluating if expensive cycling glasses provide better performance, protection, and value compared to budget alternatives.",
+        "keyword": "bedste Oakley alternativer cykelbriller",
+        "intent": "Searching for alternative cycling eyewear brands with comparable quality to Oakley.",
         "volume": 0
       },
       "nb": {
-        "keyword": "dyre sykkelbriller verdt pengene",
-        "intent": "Assessing whether premium cycling glasses offer sufficient performance benefits and durability to justify their higher price point.",
+        "keyword": "beste Oakley alternativer sykkelbrill",
+        "intent": "Finding cycling glasses alternatives to Oakley with similar performance standards.",
         "volume": 0
       },
       "pl": {
-        "keyword": "drogie okulary rowerowe warte ceny",
-        "intent": "Determining if expensive cycling glasses provide better optical quality, durability, and protection to justify the premium investment.",
+        "keyword": "alternatywa dla Oakley okulary rowerowe",
+        "intent": "Looking for quality cycling eyewear alternatives to Oakley at competitive prices.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos de bicicleta caros valem a pena",
-        "intent": "Evaluating whether premium cycling glasses deliver superior protection, comfort, and longevity to justify their elevated cost.",
+        "keyword": "melhores alternativas Oakley \u00f3culos ciclismo",
+        "intent": "Seeking cycling eyewear brands that provide similar quality and features to Oakley.",
         "volume": 0
       },
       "sv": {
-        "keyword": "dyra cykelglas\u00f6gon v\u00e4rt pengarna",
-        "intent": "Assessing if expensive cycling glasses offer better performance, durability, and safety features to justify their premium price.",
+        "keyword": "b\u00e4sta Oakley alternativ cykelglas\u00f6gon",
+        "intent": "Finding quality cycling eyewear brands as alternatives to Oakley.",
+        "volume": 0
+      }
+    }
+  },
+  {
+    "title": "Best Road Cycling Glasses 2026: Tested Criteria & Top Picks",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/best-road-cycling-glasses-2026-tested-criteria-top-picks",
+    "topic": "best road cycling glasses 2026",
+    "keyword": "best road cycling glasses 2026",
+    "lang": "en",
+    "phase": "decision-extra",
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "beste Rennrad Sonnenbrille 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      },
+      "nl": {
+        "keyword": "beste wielrenbril 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "meilleur lunettes cyclisme route 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "mejores gafas ciclismo carretera 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "migliori occhiali ciclismo strada 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "bedste cykelbriller vej 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "beste sykkelbriller landevei 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "najlepsze okulary rowerowe szosa 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "melhores \u00f3culos ciclismo estrada 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "b\u00e4sta cykelglas\u00f6gon v\u00e4g 2026",
+        "intent": "Finding top-rated road cycling glasses with current year specifications and features.",
+        "volume": 0
+      }
+    }
+  },
+  {
+    "title": "Best Cycling Glasses 2026: The Complete Buying Guide",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-2026-the-complete-buying-guide",
+    "topic": "cycling glasses",
+    "keyword": "cycling glasses",
+    "lang": "en",
+    "phase": "decision-extra",
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "Fahrradbrille",
+        "intent": "Cyclist searching for protective eyewear designed specifically for cycling activities.",
+        "volume": 9900
+      },
+      "nl": {
+        "keyword": "fietsenbril",
+        "intent": "Dutch cyclist seeking protective glasses optimized for cycling.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "lunettes de cyclisme",
+        "intent": "French cyclist looking for specialized eyewear for bike riding.",
+        "volume": 880
+      },
+      "es": {
+        "keyword": "gafas de ciclismo",
+        "intent": "Spanish cyclist searching for cycling-specific protective eyewear.",
+        "volume": 1900
+      },
+      "it": {
+        "keyword": "occhiali da ciclismo",
+        "intent": "Italian cyclist looking for sport glasses designed for cycling.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "cykelbriller",
+        "intent": "Danish cyclist seeking protective eyewear for cycling activities.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "sykkelbriller",
+        "intent": "Norwegian cyclist searching for glasses designed for biking.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "okulary rowerowe",
+        "intent": "Polish cyclist looking for specialized eyewear for cycling.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "\u00f3culos de ciclismo",
+        "intent": "Portuguese cyclist seeking protective glasses for bike riding.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "cykelglas\u00f6gon",
+        "intent": "Swedish cyclist searching for cycling-specific protective eyewear.",
         "volume": 0
       }
     }

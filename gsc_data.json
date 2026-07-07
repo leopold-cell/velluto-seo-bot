@@ -1,23 +1,32 @@
 {
-  "date": "2026-07-06",
+  "date": "2026-07-07",
   "top_queries": [
     {
       "keys": [
         "velluto"
       ],
-      "clicks": 64,
-      "impressions": 1123,
-      "ctr": 0.05699020480854853,
-      "position": 4.977738201246661
+      "clicks": 63,
+      "impressions": 1120,
+      "ctr": 0.05625,
+      "position": 4.908035714285715
+    },
+    {
+      "keys": [
+        "best cycling sunglasses 2026"
+      ],
+      "clicks": 7,
+      "impressions": 216,
+      "ctr": 0.032407407407407406,
+      "position": 8.546296296296298
     },
     {
       "keys": [
         "best cycling glasses 2026"
       ],
       "clicks": 6,
-      "impressions": 138,
-      "ctr": 0.043478260869565216,
-      "position": 7.22463768115942
+      "impressions": 137,
+      "ctr": 0.043795620437956206,
+      "position": 7.226277372262774
     },
     {
       "keys": [
@@ -26,34 +35,25 @@
       "clicks": 6,
       "impressions": 206,
       "ctr": 0.02912621359223301,
-      "position": 6.936893203883495
-    },
-    {
-      "keys": [
-        "best cycling sunglasses 2026"
-      ],
-      "clicks": 5,
-      "impressions": 215,
-      "ctr": 0.023255813953488372,
-      "position": 8.706976744186047
+      "position": 6.849514563106796
     },
     {
       "keys": [
         "best cycling glasses"
       ],
       "clicks": 2,
-      "impressions": 46,
-      "ctr": 0.043478260869565216,
-      "position": 8.826086956521738
+      "impressions": 48,
+      "ctr": 0.041666666666666664,
+      "position": 8.708333333333332
     },
     {
       "keys": [
         "vellutto"
       ],
       "clicks": 2,
-      "impressions": 32,
-      "ctr": 0.0625,
-      "position": 3.71875
+      "impressions": 30,
+      "ctr": 0.06666666666666667,
+      "position": 3.533333333333333
     },
     {
       "keys": [
@@ -78,9 +78,9 @@
         "best cycling sunglasses"
       ],
       "clicks": 1,
-      "impressions": 44,
-      "ctr": 0.022727272727272728,
-      "position": 8.181818181818182
+      "impressions": 49,
+      "ctr": 0.02040816326530612,
+      "position": 7.918367346938775
     },
     {
       "keys": [
@@ -90,6 +90,15 @@
       "impressions": 4,
       "ctr": 0.25,
       "position": 8.75
+    },
+    {
+      "keys": [
+        "cycling glasses for narrow face"
+      ],
+      "clicks": 1,
+      "impressions": 1,
+      "ctr": 1,
+      "position": 3
     },
     {
       "keys": [
@@ -105,27 +114,27 @@
         "oakley alternative"
       ],
       "clicks": 1,
-      "impressions": 53,
-      "ctr": 0.018867924528301886,
-      "position": 6.735849056603773
+      "impressions": 51,
+      "ctr": 0.0196078431372549,
+      "position": 6.607843137254902
     },
     {
       "keys": [
         "oakley radar alternative"
       ],
       "clicks": 1,
-      "impressions": 49,
-      "ctr": 0.02040816326530612,
-      "position": 3.8979591836734695
+      "impressions": 50,
+      "ctr": 0.02,
+      "position": 3.94
     },
     {
       "keys": [
         "oakley sunglasses alternative"
       ],
       "clicks": 1,
-      "impressions": 64,
-      "ctr": 0.015625,
-      "position": 6.84375
+      "impressions": 67,
+      "ctr": 0.014925373134328358,
+      "position": 6.850746268656716
     },
     {
       "keys": [
@@ -177,9 +186,9 @@
         "veluto"
       ],
       "clicks": 1,
-      "impressions": 292,
-      "ctr": 0.003424657534246575,
-      "position": 5.390410958904109
+      "impressions": 278,
+      "ctr": 0.0035971223021582736,
+      "position": 5.366906474820144
     },
     {
       "keys": [
@@ -213,18 +222,9 @@
         "aerodynamic glasses"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 13
-    },
-    {
-      "keys": [
-        "affordable oakley alternatives"
-      ],
-      "clicks": 0,
-      "impressions": 3,
-      "ctr": 0,
-      "position": 8.666666666666668
+      "position": 13.5
     }
   ],
   "top_pages": [
@@ -232,103 +232,94 @@
       "keys": [
         "https://velluto-shop.com/"
       ],
-      "clicks": 153,
-      "impressions": 2361,
-      "ctr": 0.06480304955527319,
-      "position": 5.060567556120288
+      "clicks": 144,
+      "impressions": 2328,
+      "ctr": 0.061855670103092786,
+      "position": 5.073024054982818
     },
     {
       "keys": [
         "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-sunglasses-2026-tested-ranked-compared"
       ],
-      "clicks": 24,
-      "impressions": 1302,
-      "ctr": 0.018433179723502304,
-      "position": 6.775729646697388
+      "clicks": 26,
+      "impressions": 1452,
+      "ctr": 0.01790633608815427,
+      "position": 6.5929752066115705
     },
     {
       "keys": [
         "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch"
       ],
-      "clicks": 14,
-      "impressions": 7813,
-      "ctr": 0.0017918853193395622,
-      "position": 6.676436708050685
+      "clicks": 15,
+      "impressions": 7532,
+      "ctr": 0.0019915029208709507,
+      "position": 6.618162506638343
     },
     {
       "keys": [
         "https://velluto-shop.com/nl"
       ],
-      "clicks": 14,
-      "impressions": 112,
-      "ctr": 0.125,
-      "position": 2.8392857142857144
-    },
-    {
-      "keys": [
-        "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-narrow-faces-2026-the-complete-buyers-guide"
-      ],
-      "clicks": 9,
-      "impressions": 146,
-      "ctr": 0.06164383561643835,
-      "position": 4.945205479452055
+      "clicks": 13,
+      "impressions": 102,
+      "ctr": 0.12745098039215685,
+      "position": 2.764705882352941
     },
     {
       "keys": [
         "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-for-tour-de-france-conditions-2026"
       ],
-      "clicks": 7,
-      "impressions": 131,
-      "ctr": 0.05343511450381679,
-      "position": 7.916030534351145
+      "clicks": 10,
+      "impressions": 208,
+      "ctr": 0.04807692307692308,
+      "position": 7.0048076923076925
+    },
+    {
+      "keys": [
+        "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-narrow-faces-2026-the-complete-buyers-guide"
+      ],
+      "clicks": 10,
+      "impressions": 163,
+      "ctr": 0.06134969325153374,
+      "position": 5.141104294478527
     },
     {
       "keys": [
         "https://velluto-shop.com/collections/all"
       ],
-      "clicks": 7,
-      "impressions": 681,
-      "ctr": 0.010279001468428781,
-      "position": 4.684287812041116
+      "clicks": 8,
+      "impressions": 671,
+      "ctr": 0.011922503725782414,
+      "position": 4.937406855439642
     },
     {
       "keys": [
         "https://velluto-shop.com/blogs/velluto-the-magazine/road-cycling-glasses-vs-regular-sunglasses-2026-velluto"
       ],
       "clicks": 6,
-      "impressions": 275,
-      "ctr": 0.02181818181818182,
-      "position": 5.898181818181818
-    },
-    {
-      "keys": [
-        "https://velluto-shop.com/blogs/velluto-the-magazine/why-your-cycling-glasses-must-fit-your-helmet-the-complete-guide"
-      ],
-      "clicks": 5,
-      "impressions": 31,
-      "ctr": 0.16129032258064516,
-      "position": 7.451612903225806
+      "impressions": 287,
+      "ctr": 0.020905923344947737,
+      "position": 5.874564459930314
     },
     {
       "keys": [
         "https://velluto-shop.com/pages/about-us"
       ],
       "clicks": 5,
-      "impressions": 320,
-      "ctr": 0.015625,
-      "position": 5.084375
+      "impressions": 326,
+      "ctr": 0.015337423312883436,
+      "position": 5.2607361963190185
+    },
+    {
+      "keys": [
+        "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-2026-what-actually-makes-them-good"
+      ],
+      "clicks": 4,
+      "impressions": 510,
+      "ctr": 0.00784313725490196,
+      "position": 9.645098039215686
     }
   ],
   "daily_trend": [
-    {
-      "keys": [
-        "2026-06-08"
-      ],
-      "clicks": 23,
-      "impressions": 776,
-      "ctr": 0.029639175257731958,
-      "position": 6.972938144329897
-    },
     {
       "keys": [
         "2026-06-09"
@@ -562,6 +553,15 @@
       "impressions": 600,
       "ctr": 0.03,
       "position": 6.17
+    },
+    {
+      "keys": [
+        "2026-07-05"
+      ],
+      "clicks": 21,
+      "impressions": 696,
+      "ctr": 0.03017241379310345,
+      "position": 6.390804597701149
     }
   ]
 }
