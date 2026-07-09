@@ -1,13 +1,11 @@
 {
-  "date": "2026-07-07",
+  "date": "2026-07-08",
   "slots": [
     "morning",
     "noon",
     "evening"
   ],
   "recent_lines": [
-    "My Garmin has seen things I'm not proud of.",
-    "I own four bikes and have a favourite parking spot at the caf\u00e9.",
     "Why do I always pick the hilly route when my legs are already cooked?",
     "the group ride was \"easy pace\" \u2014 apparently that's relative.",
     "Packed my kit at 6am. Still in the kitchen at 7:15.",
@@ -19,7 +17,10 @@
     "my average speed is completely different before and after a caf\u00e9 stop.",
     "my Garmin has seen things it will never forgive me for.",
     "I know every caf\u00e9 on this route. Professionally.",
-    "Why does my \"flat route\" always develop hills on the way home?"
+    "Why does my \"flat route\" always develop hills on the way home?",
+    "The group ride \"just for fun\" and I've already checked everyone's Strava.",
+    "I packed four jerseys for a three-hour ride.",
+    "nobody told me the \"social pace\" would be this fast"
   ],
-  "last_media_id": "18024641183842580"
+  "last_media_id": "18155628385485264"
 }

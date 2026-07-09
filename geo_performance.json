@@ -594,7 +594,19 @@
       "velluto_citations": 0,
       "owned_citation_share": 0.0,
       "top_cited_domains": []
+    },
+    "2026-07-09": {
+      "aio_serps": 0,
+      "velluto_cited": 0,
+      "competitor_cited": 0,
+      "velluto_gap": 0,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 0.0,
+      "total_citations": 0,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": []
     }
   },
-  "latest": "2026-07-08"
+  "latest": "2026-07-09"
 }
