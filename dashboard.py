@@ -602,7 +602,127 @@ new Chart(document.getElementById('geoCiteChart'), {{
 """
 
 
-def build_html(articles, usage, geo, ranking_history, gsc, geo_perf=None):
+def load_meta_ads_history() -> list:
+    """Weekly Meta Ads snapshots written by scripts/meta_ads_report.py."""
+    path = os.path.join(BASE, "data", "meta_ads_history.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+
+def build_meta_ads_html(history: list) -> str:
+    """Render the weekly Meta Ads performance section (or a setup hint)."""
+    if not history:
+        return """
+<div class="table-card" style="margin-top:16px">
+  <div class="table-header">
+    <h3>Meta Ads — Weekly Performance</h3>
+    <span style="font-size:11px;color:#94a3b8">No data yet — scripts/meta_ads_report.py runs every Monday via run.sh (needs META_ACCESS_TOKEN + META_AD_ACCOUNT_ID).</span>
+  </div>
+</div>"""
+
+    weeks = sorted(history, key=lambda w: w.get("week_start", ""))
+    cur   = weeks[-1]
+    prev  = weeks[-2] if len(weeks) > 1 else None
+    a     = cur.get("account", {})
+    p     = (prev or {}).get("account", {})
+
+    def _kpi_delta(cur_v, prev_v, invert=False):
+        if not prev_v:
+            return ""
+        ch = (cur_v - prev_v) / prev_v * 100
+        good = (ch <= 0) if invert else (ch >= 0)
+        color = "#16a34a" if good else "#dc2626"
+        return f'<span style="color:{color}">({ch:+.0f}%)</span>'
+
+    # weekly trend rows (last 8 weeks, newest first)
+    trend_rows = ""
+    for w in reversed(weeks[-8:]):
+        wa = w.get("account", {})
+        trend_rows += (
+            f'<tr><td class="td-kw">{w.get("week_start","")} – {w.get("week_end","")}</td>'
+            f'<td class="td-center">{wa.get("spend",0):.2f} €</td>'
+            f'<td class="td-center">{wa.get("impressions",0):,}</td>'
+            f'<td class="td-center">{wa.get("clicks",0):,}</td>'
+            f'<td class="td-center">{wa.get("ctr",0):.2f}%</td>'
+            f'<td class="td-center">{wa.get("cpc",0):.2f} €</td>'
+            f'<td class="td-center">{wa.get("purchases",0)}</td>'
+            f'<td class="td-center">{wa.get("revenue",0):.2f} €</td>'
+            f'<td class="td-center" style="font-weight:700">{wa.get("roas",0):.2f}</td></tr>'
+        )
+
+    # campaign rows for the latest week
+    camp_rows = ""
+    for c in cur.get("campaigns", [])[:10]:
+        camp_rows += (
+            f'<tr><td class="td-kw">{c.get("name","?")[:48]}</td>'
+            f'<td class="td-center">{c.get("spend",0):.2f} €</td>'
+            f'<td class="td-center">{c.get("clicks",0):,}</td>'
+            f'<td class="td-center">{c.get("ctr",0):.2f}%</td>'
+            f'<td class="td-center">{c.get("cpc",0):.2f} €</td>'
+            f'<td class="td-center">{c.get("purchases",0)}</td>'
+            f'<td class="td-center" style="font-weight:700">{c.get("roas",0):.2f}</td></tr>'
+        )
+    if not camp_rows:
+        camp_rows = '<tr><td colspan="7" style="color:#94a3b8">No campaign spend this week</td></tr>'
+
+    return f"""
+<div style="margin-top:20px" class="section-title">Meta Ads — Week {cur.get('week_start','')} – {cur.get('week_end','')}</div>
+<div class="kpi-grid" style="margin-bottom:16px">
+  <div class="kpi accent">
+    <div class="label">Spend</div>
+    <div class="val">{a.get('spend',0):.2f} € {_kpi_delta(a.get('spend',0), p.get('spend',0))}</div>
+    <div class="sub">vs. previous week</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Purchases</div>
+    <div class="val">{a.get('purchases',0)} {_kpi_delta(a.get('purchases',0), p.get('purchases',0))}</div>
+    <div class="sub">CPA {a.get('cpa',0):.2f} € · Revenue {a.get('revenue',0):.2f} €</div>
+  </div>
+  <div class="kpi">
+    <div class="label">ROAS</div>
+    <div class="val">{a.get('roas',0):.2f} {_kpi_delta(a.get('roas',0), p.get('roas',0))}</div>
+    <div class="sub">revenue / ad spend</div>
+  </div>
+  <div class="kpi">
+    <div class="label">CPC</div>
+    <div class="val">{a.get('cpc',0):.2f} € {_kpi_delta(a.get('cpc',0), p.get('cpc',0), invert=True)}</div>
+    <div class="sub">{a.get('clicks',0):,} link clicks · CTR {a.get('ctr',0):.2f}%</div>
+  </div>
+</div>
+<div class="table-card" style="margin-bottom:16px">
+  <div class="table-header">
+    <h3>Weekly Trend</h3>
+    <span style="font-size:11px;color:#94a3b8">last {min(len(weeks),8)} weeks · updated every Monday</span>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Week</th><th class="td-center">Spend</th><th class="td-center">Impr.</th>
+      <th class="td-center">Clicks</th><th class="td-center">CTR</th><th class="td-center">CPC</th>
+      <th class="td-center">Purchases</th><th class="td-center">Revenue</th><th class="td-center">ROAS</th>
+    </tr></thead>
+    <tbody>{trend_rows}</tbody>
+  </table>
+</div>
+<div class="table-card" style="margin-bottom:16px">
+  <div class="table-header">
+    <h3>Campaigns — Latest Week</h3>
+    <span style="font-size:11px;color:#94a3b8">by spend</span>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Campaign</th><th class="td-center">Spend</th><th class="td-center">Clicks</th>
+      <th class="td-center">CTR</th><th class="td-center">CPC</th>
+      <th class="td-center">Purchases</th><th class="td-center">ROAS</th>
+    </tr></thead>
+    <tbody>{camp_rows}</tbody>
+  </table>
+</div>"""
+
+
+def build_html(articles, usage, geo, ranking_history, gsc, geo_perf=None, meta_ads=None):
     today     = datetime.date.today()
     today_str = str(today)
     now       = datetime.datetime.now().strftime("%d %b %Y %H:%M")
@@ -727,6 +847,7 @@ def build_html(articles, usage, geo, ranking_history, gsc, geo_perf=None):
     vis_color = "#16a34a" if vis_delta >= 0 else "#dc2626"
     gsc_html  = build_gsc_html(gsc)
     geo_perf_html = build_geo_perf_html(geo_perf)
+    meta_ads_html = build_meta_ads_html(meta_ads or [])
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -907,6 +1028,8 @@ footer{{text-align:center;padding:24px;font-size:11px;color:#94a3b8}}
 
 {gsc_html}
 
+{meta_ads_html}
+
 </div><!-- /wrap -->
 
 <footer>Velluto SEO Intelligence · <a href="https://github.com/leopold-cell/velluto-seo-bot" style="color:#94a3b8">leopold-cell/velluto-seo-bot</a> · auto-updated daily</footer>
@@ -999,8 +1122,9 @@ def main():
     gsc = fetch_gsc()
 
     geo_perf = load_geo_performance()
+    meta_ads = load_meta_ads_history()
 
-    html = build_html(articles, usage, geo, ranking_history, gsc, geo_perf)
+    html = build_html(articles, usage, geo, ranking_history, gsc, geo_perf, meta_ads)
 
     out_dir = os.path.join(BASE, "docs")
     os.makedirs(out_dir, exist_ok=True)
