@@ -35,6 +35,7 @@ step "backlinks + sitemap ping"    python3 link_builder.py
 # account bot. Re-enable by uncommenting once Standard access is approved.
 # step "pinterest"                   python3 pinterest_poster.py
 step "seo optimizer"               python3 seo_optimizer.py
+step "ctr optimizer"               python3 ctr_optimizer.py
 step "geo monitor"                 python3 geo_monitor.py
 step "dashboard"                   python3 dashboard.py
 
