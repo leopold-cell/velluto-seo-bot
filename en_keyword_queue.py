@@ -55,6 +55,23 @@ def is_compatible(keyword: str) -> bool:
 
 EN_KEYWORDS = [
     # ── Phase 1: Core commercial ──────────────────────────────────────────────
+    # SunGod is being hyped as "The Oakley Replacement" (YouTube/Runner's World,
+    # Jul 2026) and we have NO SunGod content yet — operator-prioritized.
+    {
+        "keyword": "SunGod alternative cycling glasses",
+        "volume": 350, "phase": 1,
+        "angle": "Mirror of the proven Oakley-alternatives winner: honest look at "
+                 "what SunGod does well (custom colours, lifetime guarantee) and "
+                 "where Velluto beats it — 25g weight, interchangeable lens system, "
+                 "30-day risk-free trial, $149 vs SunGod's premium tiers.",
+    },
+    {
+        "keyword": "SunGod vs Velluto cycling glasses",
+        "volume": 150, "phase": 1,
+        "angle": "Head-to-head comparison with a table: weight, lens tech, "
+                 "customisation vs interchangeability, guarantee vs trial, price. "
+                 "Fair on SunGod's strengths — credibility wins the comparison reader.",
+    },
     {
         "keyword": "best cycling glasses",
         "volume": 2400, "phase": 1,

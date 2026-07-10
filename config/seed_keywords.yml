@@ -56,6 +56,9 @@ phase4_5_problem_keywords:
 # searcher already wants to buy and is only choosing a brand. The opportunity
 # scorer gives these a commercial-comparison boost (decision/opportunity_scorer.py).
 phase6_commercial_keywords:
+  - SunGod alternative cycling glasses
+  - SunGod vs Velluto cycling glasses
+  - SunGod vs Oakley cycling glasses
   - Oakley alternative road cycling glasses
   - best Oakley alternative cycling sunglasses
   - Velluto vs Oakley cycling glasses
