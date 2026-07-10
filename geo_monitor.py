@@ -76,6 +76,15 @@ def compute_record(aio: dict) -> dict:
     }
 
 
+def _last_real(history: dict) -> tuple[str | None, dict | None]:
+    """Most recent NON-stale record that actually measured AIO SERPs."""
+    for date in sorted(history, reverse=True):
+        rec = history[date]
+        if not rec.get("stale") and rec.get("aio_serps", 0) > 0:
+            return date, rec
+    return None, None
+
+
 def run() -> dict:
     aio = _load_aio_snapshots()
     record = compute_record(aio)
@@ -87,6 +96,30 @@ def run() -> dict:
     except Exception:
         store = {}
     history = store.get("history", {})
+
+    # Zero-measurement days must not poison the time series with zeros: carry
+    # the last REAL measurement forward, marked stale + with the reason (no
+    # SERP snapshot at all vs. SERPs fetched but Google showed no AIO box).
+    record["serps_scanned"] = int((aio or {}).get("serps_scanned", 0))
+    if record["aio_serps"] == 0:
+        reason = ("no_serp_snapshot" if record["serps_scanned"] == 0
+                  else "serps_without_aio")
+        existing = history.get(today) or {}
+        if not existing.get("stale") and existing.get("aio_serps", 0) > 0:
+            # a REAL measurement from earlier today must never be replaced
+            # by a stale carry-forward (e.g. manual run + cron on one day)
+            record = existing
+            print("   GEO: keeping today's earlier real measurement")
+        else:
+            last_date, last_rec = _last_real(history)
+            if last_rec:
+                record = {**last_rec, "stale": True, "reason": reason,
+                          "carried_from": last_rec.get("carried_from") or last_date,
+                          "serps_scanned": record["serps_scanned"]}
+                print(f"   GEO: no AIO measured today ({reason}) — carrying forward "
+                      f"the {record['carried_from']} measurement (marked stale)")
+            else:
+                record.update({"stale": True, "reason": reason})
     history[today] = record
     # Keep a rolling year of daily records.
     if len(history) > 400:
