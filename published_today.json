@@ -1,9 +1,63 @@
 [
   {
-    "title": "Gravel vs Road Cycling Glasses 2026 \u2014 Tested & Ranked",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/gravel-vs-road-cycling-glasses-2026-tested-ranked",
-    "topic": "gravel cycling glasses vs road cycling glasses \u2014 key differences",
-    "keyword": "gravel vs road cycling glasses",
-    "tags": "cycling glasses,road cycling,velluto,StradaPro"
+    "title": "Best Road Cycling Glasses 2026: Tested & Ranked",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/best-road-cycling-glasses-2026-tested-ranked",
+    "topic": "best road cycling glasses 2026",
+    "keyword": "best road cycling glasses 2026",
+    "lang": "en",
+    "phase": "decision-extra",
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "beste Radsportbrille 2026",
+        "intent": "German cyclists seeking top-rated road cycling glasses with current year relevance.",
+        "volume": 0
+      },
+      "nl": {
+        "keyword": "beste wielrenbrille 2026",
+        "intent": "Dutch cyclists searching for top performance cycling glasses for road cycling.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "meilleur lunettes cyclisme route 2026",
+        "intent": "French cyclists seeking premium road cycling eyewear with current product recommendations.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "mejores gafas ciclismo carretera 2026",
+        "intent": "Spanish cyclists looking for the best road bike glasses currently available.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "migliori occhiali ciclismo strada 2026",
+        "intent": "Italian cyclists searching for top-quality road cycling glasses with 2026 updates.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "bedste cykelbriller landevej 2026",
+        "intent": "Danish cyclists seeking the best road cycling eyewear options for performance.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "beste sykkelbriller vei 2026",
+        "intent": "Norwegian cyclists looking for premium road cycling glasses recommendations.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "najlepsze okulary kolarski szosa 2026",
+        "intent": "Polish cyclists searching for top-rated road cycling glasses available now.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "melhores \u00f3culos ciclismo estrada 2026",
+        "intent": "Portuguese cyclists seeking the best road cycling eyewear with current recommendations.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "b\u00e4sta cykelglas\u00f6gon v\u00e4g 2026",
+        "intent": "Swedish cyclists looking for premium road cycling glasses with latest options.",
+        "volume": 0
+      }
+    }
   }
 ]
