@@ -1,12 +1,9 @@
 {
-  "date": "2026-07-09",
+  "date": "2026-07-10",
   "slots": [
-    "morning",
-    "noon",
-    "evening"
+    "morning"
   ],
   "recent_lines": [
-    "Nobody told me \"caf\u00e9 stop\" meant 45 minutes and a second pastry.",
     "The climb looked shorter on Komoot.",
     "three bikes suitable for today. I'm taking the heavy one again.",
     "somehow the \"recovery ride\" now has 1,400m of climbing in it",
@@ -20,7 +17,8 @@
     "nobody told me the \"social pace\" would be this fast",
     "I have 11 saved routes and I ride the same one every week.",
     "my legs felt fine until someone mentioned the climb ahead.",
-    "three hours in and I'm already negotiating with myself about the last climb."
+    "three hours in and I'm already negotiating with myself about the last climb.",
+    "the moment you realise you've been drafting a stranger for six kilometres"
   ],
-  "last_media_id": "18475638895110392"
+  "last_media_id": "18158772283461972"
 }
