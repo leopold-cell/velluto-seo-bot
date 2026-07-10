@@ -1090,7 +1090,7 @@ Use hyperlinks and product cards only for visual product integration.
 PRODUCTS (EXACT URLs only — never invent):
 {product_json}
 
-Write 3 language versions (800-1000 words each — quality over quantity, go deep):
+Write 3 language versions (1400-1800 words each — go deep, comprehensive coverage beats thin content):
 
 <h2>[Contains long-tail keyword naturally — do NOT use <h1>, the theme renders the article title as the page H1]</h2>
 <p>[Intro — {get_cycling_context()} hook, keyword appears here]</p>
@@ -1462,6 +1462,20 @@ def generate_de_primary(kw: dict, products: list[dict], quality: dict,
     art_num    = kw.get("art_num", "001")
     word_count = quality["word_count"]
     faq_count  = quality["faq_count"]
+
+    # Money-keyword depth boost: commercial / comparison intent (Oakley/SunGod/
+    # Roka comparisons, "worth it", "best … 2026", "alternative", "vs") rewards
+    # comprehensive coverage — Ahrefs shows the top results here run far longer.
+    # These get 1.4× the day's target with a hard floor, so even an early
+    # quality-day or a fallback-queue money keyword still ships in depth.
+    _mk = f"{keyword} {angle} {kw.get('phase','')}".lower()
+    _is_money = any(t in _mk for t in (
+        " vs ", "vs.", "alternative", "worth it", "worth the", "best ",
+        "comparison", "cheaper", "better value", "decision-extra")) \
+        or kw.get("phase") in (1, "1", 6, "6")
+    if _is_money:
+        word_count = max(2600, int(word_count * 1.4))
+        faq_count  = max(faq_count, 6)
 
     glasses = get_featured_glasses(products)
     accessories = [p for p in products if "stradapro" not in p["handle"]][:1]
