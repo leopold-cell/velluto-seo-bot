@@ -10,8 +10,8 @@ guarded so `blog_review.py --dry-run` works offline):
   translation_audit  — translation completeness + correctness (reuses retrofit_translations.py)
   ui_audit           — Playwright screenshots + Claude vision (mobile + desktop)
   seo_geo_audit      — site-wide technical SEO + GEO (generative-engine) audit
-  report             — aggregate findings → JSON + Markdown + WhatsApp summary
-  whatsapp           — notify_whatsapp() via Meta Cloud API, Telegram fallback
+  report             — aggregate findings → JSON + Markdown + email summary
+  whatsapp           — deliver() via shared Gmail mailer (email only)
 
 Orchestrated by top-level blog_review.py (runs every 28 days via a code gate).
 """

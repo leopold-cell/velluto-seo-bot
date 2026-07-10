@@ -5,14 +5,14 @@ Weekly Meta Ads performance report — READ-ONLY.
 Pulls campaign-level insights (spend, clicks, CTR, CPC, purchases, revenue,
 ROAS) for the last COMPLETED ISO week (Mon-Sun), compares week-over-week,
 appends to data/meta_ads_history.json (committed by the daily cron → the
-trend feeds the dashboard's Meta Ads section) and sends a Telegram summary.
+trend feeds the dashboard's Meta Ads section) and sends an email summary.
 
 Self-gating: runs as a normal step in the daily run.sh. It only does work
 when the last completed week is not in the history yet — i.e. effectively
 every Monday, and it self-heals if that run failed (fires the next day).
 
 ENV: META_ACCESS_TOKEN (ads_read), META_AD_ACCOUNT_ID (act_…),
-     TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID (optional, for the summary).
+     EMAIL_FROM + EMAIL_APP_PASS (optional, for the summary email).
 
 Usage:
   python3 scripts/meta_ads_report.py            # gated (last completed week)
@@ -32,9 +32,6 @@ load_dotenv(os.path.join(ROOT, ".env"), override=True)
 
 META_ACCESS_TOKEN  = os.getenv("META_ACCESS_TOKEN", "")
 META_AD_ACCOUNT_ID = os.getenv("META_AD_ACCOUNT_ID", "")
-TG_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TG_CHAT  = os.getenv("TELEGRAM_CHAT_ID", "")
-
 GRAPH_VERSION = "v22.0"  # keep in sync with research/meta_ads_fetcher.py
 HISTORY = os.path.join(ROOT, "data", "meta_ads_history.json")
 
@@ -132,7 +129,7 @@ def fetch_week(since: dt.date, until: dt.date) -> dict:
     }
 
 
-# ── history + telegram ───────────────────────────────────────────────────────
+# ── history + reporting ──────────────────────────────────────────────────────
 
 def load_history() -> list[dict]:
     try:
@@ -162,20 +159,20 @@ def _delta(cur: float, prev: float, pct: bool = True, invert: bool = False) -> s
 def build_message(week: dict, prev: dict | None) -> str:
     a, p = week["account"], (prev or {}).get("account", {})
     lines = [
-        f"📣 <b>Meta Ads Wochenreport</b> · {week['week_start']} – {week['week_end']}",
+        f"📣 Meta Ads Wochenreport · {week['week_start']} – {week['week_end']}",
         "",
-        f"💶 Spend: <b>{a['spend']:.2f} €</b>{_delta(a['spend'], p.get('spend', 0))}",
-        f"👀 Impressionen: <b>{a['impressions']:,}</b>{_delta(a['impressions'], p.get('impressions', 0))}",
-        f"🖱 Klicks: <b>{a['clicks']:,}</b>{_delta(a['clicks'], p.get('clicks', 0))} · CTR {a['ctr']:.2f}%",
-        f"💸 CPC: <b>{a['cpc']:.2f} €</b>{_delta(a['cpc'], p.get('cpc', 0), invert=True)}",
-        f"🛒 Käufe: <b>{a['purchases']}</b>{_delta(a['purchases'], p.get('purchases', 0))}"
+        f"💶 Spend: {a['spend']:.2f} €{_delta(a['spend'], p.get('spend', 0))}",
+        f"👀 Impressionen: {a['impressions']:,}{_delta(a['impressions'], p.get('impressions', 0))}",
+        f"🖱 Klicks: {a['clicks']:,}{_delta(a['clicks'], p.get('clicks', 0))} · CTR {a['ctr']:.2f}%",
+        f"💸 CPC: {a['cpc']:.2f} €{_delta(a['cpc'], p.get('cpc', 0), invert=True)}",
+        f"🛒 Käufe: {a['purchases']}{_delta(a['purchases'], p.get('purchases', 0))}"
         + (f" · CPA {a['cpa']:.2f} €" if a["purchases"] else ""),
-        f"📈 Umsatz: <b>{a['revenue']:.2f} €</b> · ROAS <b>{a['roas']:.2f}</b>"
+        f"📈 Umsatz: {a['revenue']:.2f} € · ROAS {a['roas']:.2f}"
         f"{_delta(a['roas'], p.get('roas', 0))}",
     ]
     if week["campaigns"]:
         lines.append("")
-        lines.append("<b>Kampagnen</b> (nach Spend):")
+        lines.append("Kampagnen (nach Spend):")
         for c in week["campaigns"][:5]:
             lines.append(f"• {c['name'][:40]}: {c['spend']:.0f} € · "
                          f"{c['clicks']} Klicks · {c['purchases']}🛒 · ROAS {c['roas']:.2f}")
@@ -185,17 +182,14 @@ def build_message(week: dict, prev: dict | None) -> str:
     return "\n".join(lines)
 
 
-def send_telegram(text: str) -> None:
-    if not (TG_TOKEN and TG_CHAT):
-        print("   (Telegram not configured — skipping send)")
-        return
+def send_report(subject: str, text: str) -> None:
+    """All bot communication is email-only (mailer no-ops without creds)."""
     try:
-        requests.post(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
-                      json={"chat_id": TG_CHAT, "text": text, "parse_mode": "HTML",
-                            "disable_web_page_preview": True}, timeout=15)
-        print("   ✓ Telegram summary sent")
+        sys.path.insert(0, ROOT)
+        import mailer
+        mailer.send_email(subject, text)
     except Exception as e:
-        print(f"   ⚠️  Telegram send failed: {e}")
+        print(f"   ⚠️  report email failed: {e}")
 
 
 # ── main ─────────────────────────────────────────────────────────────────────
@@ -238,7 +232,8 @@ def main() -> None:
     a = week["account"]
     print(f"   Spend {a['spend']:.2f}€ | {a['clicks']} clicks | "
           f"{a['purchases']} purchases | ROAS {a['roas']:.2f}")
-    send_telegram(build_message(week, prev))
+    send_report(f"📣 Meta Ads Wochenreport {week['week_start']} – {week['week_end']}",
+                build_message(week, prev))
 
 
 if __name__ == "__main__":

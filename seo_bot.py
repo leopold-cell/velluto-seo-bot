@@ -150,20 +150,14 @@ def load_seo_insights(topic: str = "") -> str:
         return ""
 
 SHOPIFY_HEADERS   = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
-TELEGRAM_TOKEN   = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 
 def notify(msg: str):
-    """Send a Telegram message. Silently skips if credentials missing."""
-    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-        return
+    """Send a notification email (all bot communication is email-only).
+    Silently skips if EMAIL_FROM/EMAIL_APP_PASS are missing."""
     try:
-        requests.post(
-            f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
-            json={"chat_id": TELEGRAM_CHAT_ID, "text": msg},
-            timeout=10
-        )
+        import mailer
+        mailer.send_email("🚴 Velluto SEO-Bot", msg)
     except Exception:
         pass
 

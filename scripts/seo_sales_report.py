@@ -7,13 +7,13 @@ customerJourneySummary.firstVisit.sourceType == "SEO"), excludes 0 EUR
 B2B/wholesale/free orders, and reports the previous calendar month vs the one
 before, plus progress toward the goal (default 20 SEO sales/month).
 
-Sends a Telegram summary (same bot the daily SEO job uses) and appends to
+Sends an email summary (same Gmail mailer as the daily report) and appends to
 output/seo_sales_history.json so the trend is tracked month over month.
 
 Usage:
   python3 scripts/seo_sales_report.py                # previous calendar month
   python3 scripts/seo_sales_report.py --month 2026-06
-  python3 scripts/seo_sales_report.py --no-telegram  # print only
+  python3 scripts/seo_sales_report.py --no-email     # print only
 
 Cron (1st of each month, 07:00):
   0 7 1 * *  cd /root/velluto/velluto-seo-bot && python3 scripts/seo_sales_report.py >> /var/log/seo-bot.log 2>&1
@@ -32,8 +32,6 @@ load_dotenv(os.path.join(ROOT, ".env"), override=True)
 
 SHOPIFY_TOKEN = os.getenv("SHOPIFY_TOKEN", "")
 SHOPIFY_STORE = os.getenv("SHOPIFY_STORE", "")
-TG_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TG_CHAT  = os.getenv("TELEGRAM_CHAT_ID", "")
 HEADERS = {"X-Shopify-Access-Token": SHOPIFY_TOKEN, "Content-Type": "application/json"}
 API = f"https://{SHOPIFY_STORE}/admin/api/2024-01/graphql.json"
 
@@ -104,16 +102,15 @@ def analyze(start: str, end: str) -> dict:
     return {"orders": seo_orders, "revenue": round(seo_rev, 2), "top_pages": top}
 
 
-def _send_telegram(text: str) -> None:
-    if not (TG_TOKEN and TG_CHAT):
-        print("   (Telegram not configured — skipping send)")
-        return
+def _send_email(subject: str, text: str) -> None:
+    """All bot communication is email-only (mailer no-ops without creds)."""
     try:
-        requests.post(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
-                      json={"chat_id": TG_CHAT, "text": text, "parse_mode": "HTML",
-                            "disable_web_page_preview": True}, timeout=15)
+        import sys
+        sys.path.insert(0, ROOT)
+        import mailer
+        mailer.send_email(subject, text)
     except Exception as e:
-        print(f"   ⚠️  Telegram send failed: {e}")
+        print(f"   ⚠️  report email failed: {e}")
 
 
 def _save_history(entry: dict) -> None:
@@ -133,7 +130,8 @@ def _save_history(entry: dict) -> None:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--month", help="YYYY-MM (default: previous calendar month)")
-    ap.add_argument("--no-telegram", action="store_true")
+    ap.add_argument("--no-email", "--no-telegram", dest="no_email",
+                    action="store_true", help="print only, don't send the email")
     args = ap.parse_args()
 
     today = dt.date.today()
@@ -154,10 +152,10 @@ def main():
     status = "🎯 GOAL HIT" if cur["orders"] >= GOAL else f"{pct:.0f}% of goal"
 
     lines = [
-        f"<b>📈 Velluto SEO Sales — {label}</b>",
+        f"📈 Velluto SEO Sales — {label}",
         "",
-        f"Organic-search sales: <b>{cur['orders']}</b>  ({delta:+d} vs {calendar.month_name[pm]})",
-        f"SEO revenue: <b>{cur['revenue']} EUR</b>  (prev {prv['revenue']})",
+        f"Organic-search sales: {cur['orders']}  ({delta:+d} vs {calendar.month_name[pm]})",
+        f"SEO revenue: {cur['revenue']} EUR  (prev {prv['revenue']})",
         f"Goal: {cur['orders']}/{GOAL}  {bar}  {status}",
     ]
     if cur["top_pages"]:
@@ -168,14 +166,14 @@ def main():
             lines.append(f"• {short[:48]} — {v['orders']} / {v['revenue']} EUR")
     msg = "\n".join(lines)
 
-    print(msg.replace("<b>", "").replace("</b>", ""))
+    print(msg)
     _save_history({
         "month": f"{y:04d}-{m:02d}", "seo_orders": cur["orders"],
         "seo_revenue": cur["revenue"], "goal": GOAL,
         "generated_at": dt.datetime.utcnow().isoformat() + "Z",
     })
-    if not args.no_telegram:
-        _send_telegram(msg)
+    if not args.no_email:
+        _send_email(f"📈 Velluto SEO Sales — {label}", msg)
 
 
 if __name__ == "__main__":

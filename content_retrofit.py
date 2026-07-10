@@ -25,7 +25,7 @@ Cycle (self-gated, runs as a daily run.sh step like blog_review):
                 EN body updated via the proven backfill flow (PUT → digests →
                 re-register); every locale gets the fragment ADAPTED and
                 spliced into its EXISTING translation (titles/metas untouched).
-  5. REPORT   — Telegram summary: what changed now + what last cycle achieved.
+  5. REPORT   — email summary: what changed now + what last cycle achieved.
 
 Usage:  python3 content_retrofit.py [--dry-run] [--force]
 """
@@ -60,8 +60,6 @@ MAX_PER_CYCLE   = 2
 HAIKU  = "claude-haiku-4-5-20251001"
 SONNET = "claude-sonnet-4-6"
 
-TG_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TG_CHAT  = os.getenv("TELEGRAM_CHAT_ID", "")
 
 DRY_RUN = "--dry-run" in sys.argv
 FORCE   = "--force" in sys.argv
@@ -329,7 +327,7 @@ def adapt_fragment(client: Anthropic, fragment: str, locale: str) -> str:
     return _extract_html(r.content[0].text)
 
 
-# ── Shopify / state / telegram ───────────────────────────────────────────────
+# ── Shopify / state / reporting ──────────────────────────────────────────────
 
 def fetch_articles() -> list[dict]:
     out, url = [], (f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json"
@@ -370,16 +368,13 @@ def _save(path: str, data) -> None:
         json.dump(data, f, ensure_ascii=False, indent=1)
 
 
-def send_telegram(text: str) -> None:
-    if not (TG_TOKEN and TG_CHAT):
-        print("   (Telegram not configured — skipping send)")
-        return
+def send_report(subject: str, text: str) -> None:
+    """All bot communication is email-only (mailer no-ops without creds)."""
     try:
-        requests.post(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
-                      json={"chat_id": TG_CHAT, "text": text, "parse_mode": "HTML",
-                            "disable_web_page_preview": True}, timeout=15)
+        import mailer
+        mailer.send_email(subject, text)
     except Exception as e:
-        print(f"   ⚠️  Telegram send failed: {e}")
+        print(f"   ⚠️  report email failed: {e}")
 
 
 # ── main ─────────────────────────────────────────────────────────────────────
@@ -519,17 +514,16 @@ def main() -> None:
     state["last_run"], state["cycle"] = today.isoformat(), cycle
     if not DRY_RUN:
         _save(STATE_PATH, state)
-        msg = [f"🛠 <b>Content-Retrofit Zyklus {cycle}</b> · {today}"]
+        msg = []
         if done_lines:
-            msg.append("")
-            msg.append("<b>Umgesetzt:</b>")
+            msg.append("Umgesetzt:")
             msg += [f"• {l}" for l in done_lines]
         if measure_lines:
             msg.append("")
-            msg.append("<b>Messung Zyklus davor (28d vorher/nachher):</b>")
+            msg.append("Messung Zyklus davor (28d vorher/nachher):")
             msg += [f"• {l}" for l in measure_lines]
-        if done_lines or measure_lines:
-            send_telegram("\n".join(msg))
+        if msg:
+            send_report(f"🛠 Content-Retrofit Zyklus {cycle} — {today}", "\n".join(msg))
     print(f"   Done — cycle {cycle}: {len(done_lines)} article(s) retrofitted")
 
 
