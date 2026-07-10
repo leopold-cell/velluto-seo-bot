@@ -1,5 +1,13 @@
 {
   "_comment": "Curated People-Also-Ask questions per topic cluster (from live SERPs). content_retrofit merges these with harvested data/processed/paa_snapshots.json questions and answers them in expansion sections. Cluster key must appear in the article handle or title (case-insensitive).",
+  "best-cycling": [
+    "How much should good cycling glasses weigh?",
+    "What lens technology is best for road cycling?",
+    "Are shield-style cycling glasses better than regular lenses?",
+    "What are the best budget cycling glasses?",
+    "How do you clean cycling sunglasses without scratching the lenses?",
+    "Do cheap cycling glasses protect your eyes as well as expensive ones?"
+  ],
   "anti-fog": [
     "Do anti-fog glasses really work?",
     "Are there any glasses that don't fog up?"
