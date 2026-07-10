@@ -65,8 +65,10 @@ DRY_RUN = "--dry-run" in sys.argv
 FORCE   = "--force" in sys.argv
 
 # Cycle-1 seeds: the two known problems from the report (resolved at runtime).
+# The Oakley post gets table AND PAA-driven expansion in one pass — the SERP
+# shows a large People-Also-Ask block for this cluster (see data/paa_seed.json).
 SEEDS = [
-    {"handle": "oakley-alternative-cycling-sunglasses-why-riders-switch", "action": "table"},
+    {"handle": "oakley-alternative-cycling-sunglasses-why-riders-switch", "action": "table+expand"},
     {"handle_prefix": "best-cycling", "action": "expand"},
 ]
 
@@ -163,10 +165,14 @@ def select_candidates(audit: dict, gsc_pages: dict, state: dict, ctr_state: dict
                          if a.get("handle", "").startswith(pref)]
                 match = max(cands)[1] if cands else None
             if match and not blocked(match):
-                if seed["action"] == "table" and audit[match].get("has_table"):
-                    continue  # already done
+                action = seed["action"]
+                if "table" in action and audit[match].get("has_table"):
+                    # table already there — keep only the expansion part (if any)
+                    action = "expand" if "expand" in action else ""
+                if not action:
+                    continue
                 picks.append({"url": match, "handle": audit[match]["handle"],
-                              "action": seed["action"], "reason": "cycle-1 seed"})
+                              "action": action, "reason": "cycle-1 seed"})
         return picks[:MAX_PER_CYCLE]
 
     # Later cycles: score by impressions × deficit.
@@ -286,18 +292,45 @@ def gen_table_fragment(client: Anthropic, title: str, body: str,
     return _extract_html(r.content[0].text)
 
 
+def load_paa_questions(handle: str, title: str) -> list[str]:
+    """People-Also-Ask questions for this article: curated seed clusters
+    (data/paa_seed.json, key must appear in handle/title) merged with the
+    harvested SERP questions (data/processed/paa_snapshots.json)."""
+    hay = f"{handle} {title}".lower()
+    out: list[str] = []
+    seed = _load(os.path.join(BASE, "data", "paa_seed.json"), {})
+    for cluster, questions in seed.items():
+        if not cluster.startswith("_") and cluster.lower() in hay:
+            out += [q for q in questions if isinstance(q, str)]
+    harvested = _load(os.path.join(BASE, "data", "processed", "paa_snapshots.json"), {})
+    for item in harvested.get("extracted", []):
+        kw = (item.get("keyword") or "").lower()
+        if kw and any(tok in hay for tok in kw.split() if len(tok) > 4):
+            out += [q.get("question", "") for q in item.get("questions", [])
+                    if q.get("question")]
+    return list(dict.fromkeys(out))[:8]
+
+
 def gen_expansion_fragment(client: Anthropic, title: str, body: str,
-                           queries: list[dict]) -> str:
+                           queries: list[dict], paa: list[str] | None = None) -> str:
     q_lines = "\n".join(
         f"- \"{q['keys'][0]}\" ({int(q.get('impressions', 0))} impressions, "
         f"pos {q.get('position', 0):.1f})" for q in queries[:10]) or "- (no query data)"
+    paa_block = ""
+    if paa:
+        paa_block = (
+            "\nPEOPLE ALSO ASK (real questions Google shows for this topic — answer "
+            "the relevant ones):\n" + "\n".join(f"- {q}" for q in paa) + "\n"
+            "For each PAA question you cover: use the question (or a close variant) "
+            "as an <h3> heading and open with a direct, self-contained 40-60 word "
+            "answer (featured-snippet style) before going deeper.\n")
     r = client.messages.create(
         model=SONNET, max_tokens=6000,
         system=("You are the lead SEO editor for Velluto (velluto-shop.com), premium road "
                 "cycling eyewear. Output ONLY an HTML fragment, no markdown fences, no commentary."),
         messages=[{"role": "user", "content":
             f"Article: \"{title}\"\n\nGoogle shows this article for these REAL queries — "
-            f"but the article doesn't answer all of them in depth:\n{q_lines}\n\n"
+            f"but the article doesn't answer all of them in depth:\n{q_lines}\n{paa_block}\n"
             "Write 2-4 NEW <h2> sections (total 1,500-2,500 words) that answer the "
             "highest-impression queries the current article covers thinly.\n"
             "Rules:\n"
@@ -456,20 +489,31 @@ def main() -> None:
                 queries = fetch_page_queries(token, pick["url"])
             except Exception:
                 pass
+        parts: list[str] = []
         try:
-            if pick["action"] == "table":
-                fragment = gen_table_fragment(client, art["title"], body, products, price_str)
-                expect = "table"
-            else:
-                fragment = gen_expansion_fragment(client, art["title"], body, queries)
-                expect = "h2"
+            if "table" in pick["action"]:
+                frag = gen_table_fragment(client, art["title"], body, products, price_str)
+                issues = validate_fragment(frag, "table")
+                if issues:
+                    print(f"   ❌ table fragment rejected for {pick['handle']}: {issues}")
+                else:
+                    parts.append(frag)
+            if "expand" in pick["action"]:
+                paa = load_paa_questions(pick["handle"], art["title"])
+                if paa:
+                    print(f"      +{len(paa)} PAA question(s) fed into the expansion")
+                frag = gen_expansion_fragment(client, art["title"], body, queries, paa)
+                issues = validate_fragment(frag, "h2")
+                if issues:
+                    print(f"   ❌ expansion fragment rejected for {pick['handle']}: {issues}")
+                else:
+                    parts.append(frag)
         except Exception as e:
             print(f"   ⚠️  generation failed for {pick['handle']}: {e}")
+        if not parts:
             continue
-        issues = validate_fragment(fragment, expect)
-        if issues:
-            print(f"   ❌ fragment rejected for {pick['handle']}: {issues}")
-            continue
+        fragment = "\n".join(parts)
+        expect = "table" if "table" in pick["action"] else "h2"
 
         added_words = word_count(fragment)
         print(f"   ✏️  {pick['handle']}: +{added_words} words ({pick['action']})")

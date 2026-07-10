@@ -1,0 +1,15 @@
+{
+  "_comment": "Curated People-Also-Ask questions per topic cluster (from live SERPs). content_retrofit merges these with harvested data/processed/paa_snapshots.json questions and answers them in expansion sections. Cluster key must appear in the article handle or title (case-insensitive).",
+  "oakley": [
+    "Is Oakley or Ray-Bans better?",
+    "Are Oakley glasses high end?",
+    "What's better, Prizm or polarized?",
+    "Are Shady Rays as good as Oakley?",
+    "Is Oakley overpriced?",
+    "Are Oakleys made in China now?",
+    "What country owns Oakley?",
+    "What glasses are on trend in 2026?",
+    "What glasses are hot right now?",
+    "What sunglasses do navy seals use?"
+  ]
+}
