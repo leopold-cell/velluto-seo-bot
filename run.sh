@@ -36,6 +36,7 @@ step "backlinks + sitemap ping"    python3 link_builder.py
 # step "pinterest"                   python3 pinterest_poster.py
 step "seo optimizer"               python3 seo_optimizer.py
 step "ctr optimizer"               python3 ctr_optimizer.py
+step "content retrofit (28d gate)" python3 content_retrofit.py
 step "geo monitor"                 python3 geo_monitor.py
 step "meta ads weekly report"      python3 scripts/meta_ads_report.py
 step "dashboard"                   python3 dashboard.py

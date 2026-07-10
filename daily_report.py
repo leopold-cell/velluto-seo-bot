@@ -170,6 +170,39 @@ def build() -> tuple[str, str]:
             L.append(f"   • Lücke: {g}")
         L.append("")
 
+    # What the automation already executed + what past changes achieved —
+    # so the focus block above only ever shows genuinely OPEN items.
+    ctr_state      = _load("data/ctr_optimizer_state.json", {})
+    retrofit_state = _load("data/content_retrofit_state.json", {})
+    done, measured = [], []
+    for url, e in (ctr_state or {}).items():
+        if not isinstance(e, dict):
+            continue
+        handle = url.rstrip("/").rsplit("/", 1)[-1][:42]
+        if e.get("last_optimized") == TODAY_S:
+            done.append(f"CTR-Rewrite: {handle} → \"{e.get('seo_title', '')[:48]}\"")
+        m = e.get("measured")
+        if m and m.get("date") == TODAY_S:
+            icon = "🟢" if m.get("outcome") == "improved" else "🔴"
+            measured.append(f"{icon} {handle}: CTR {m.get('ctr_before')}% → {m.get('ctr_after')}%")
+    for url, e in (retrofit_state.get("articles") or {}).items():
+        handle = e.get("handle", url.rstrip("/").rsplit("/", 1)[-1])[:42]
+        if e.get("date") == TODAY_S:
+            done.append(f"Retrofit [{e.get('action')}]: {handle} (+{e.get('added_words', '?')} Wörter)")
+        m = e.get("measured")
+        if m and m.get("date") == TODAY_S:
+            icon = {"improved": "🟢", "no_lift": "⚪", "regressed": "🔴"}.get(m.get("outcome"), "⚪")
+            b, a = m.get("before", {}), m.get("after", {})
+            measured.append(f"{icon} {handle} [{e.get('action')}]: Klicks {b.get('clicks')}→{a.get('clicks')}, "
+                            f"CTR {b.get('ctr')}%→{a.get('ctr')}%")
+    if done or measured:
+        L.append("🤖 AUTOMATISIERT UMGESETZT / GEMESSEN")
+        for d in done[:4]:
+            L.append(f"   ✅ {d}")
+        for msr in measured[:4]:
+            L.append(f"   📏 {msr}")
+        L.append("")
+
     L.append(f"💶 KI-Kosten heute: ${cost_today:.4f}")
     L.append("")
     L.append("— Velluto SEO/GEO-Bot · Dashboard: https://leopold-cell.github.io/velluto-seo-bot/")

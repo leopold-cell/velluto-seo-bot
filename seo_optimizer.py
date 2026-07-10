@@ -519,6 +519,59 @@ def _safe_json_parse(raw: str) -> dict:
     return _repair_json(raw[start:])
 
 
+def _load_content_state() -> dict:
+    """Current on-page state written by content_retrofit.py (word counts,
+    tables, FAQ schema) — lets the analysis skip what is already done."""
+    try:
+        with open(os.path.join(BASE, "data", "content_state.json"), encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _current_state_block(content_state: dict) -> str:
+    if not content_state.get("articles"):
+        return ""
+    lines = []
+    for url, a in list(content_state["articles"].items())[:40]:
+        lines.append(f"- {a.get('handle', url)}: {a.get('words', '?')} words, "
+                     f"table={'yes' if a.get('has_table') else 'NO'}, "
+                     f"faq_schema={'yes' if a.get('has_faq_schema') else 'NO'}")
+    cov = content_state.get("faq_schema_coverage", 0)
+    return ("\nCURRENT ON-PAGE STATE (verified — do NOT recommend anything already "
+            f"marked 'yes'; FAQ-schema coverage {cov*100:.0f}%):\n"
+            + "\n".join(lines) + "\n")
+
+
+def _filter_done_recommendations(insights: dict, content_state: dict) -> dict:
+    """Hard post-filter: drop recommendations the verified state shows as
+    already implemented (belt and braces on top of the prompt hint)."""
+    if not content_state:
+        return insights
+    arts = content_state.get("articles") or {}
+
+    def _done(rec: str) -> bool:
+        low = (rec or "").lower()
+        if ("faq" in low and ("schema" in low or "markup" in low or "structured" in low)
+                and content_state.get("faq_schema_coverage", 0) >= 0.9):
+            return True
+        if "comparison table" in low or "vergleichstabelle" in low:
+            mentioned = [a for a in arts.values()
+                         if a.get("handle") and a["handle"][:25] in low]
+            if mentioned and all(a.get("has_table") for a in mentioned):
+                return True
+        return False
+
+    for key in ("seo_quick_wins", "content_quick_wins", "our_gaps"):
+        if insights.get(key):
+            kept = [r for r in insights[key] if not _done(r)]
+            dropped = len(insights[key]) - len(kept)
+            if dropped:
+                print(f"   ↳ {dropped} '{key}' recommendation(s) dropped — already implemented")
+            insights[key] = kept
+    return insights
+
+
 def analyse_and_generate_insights(competitor_data: dict, our_posts: list[dict],
                                    top_competitors: list[dict],
                                    gsc_opps: dict) -> dict:
@@ -528,6 +581,8 @@ def analyse_and_generate_insights(competitor_data: dict, our_posts: list[dict],
     our_summary   = json.dumps(our_posts, indent=2)[:2000]
     top_comp_str  = json.dumps(top_competitors[:6], indent=2)[:1500]
     gsc_str       = json.dumps(gsc_opps, indent=2)[:2000] if gsc_opps else "No GSC data available yet."
+    content_state = _load_content_state()
+    state_block   = _current_state_block(content_state)
     today = str(datetime.date.today())
 
     response = client.messages.create(
@@ -552,7 +607,7 @@ COMPETITORS RANKING IN TOP 3:
 
 OUR RECENT POSTS:
 {our_summary}
-
+{state_block}
 Use the GSC data to prioritise: low-CTR keywords need meta title fixes, near-top keywords
 need deeper content. Analyse and return ONLY this JSON (no extra text):
 {{
@@ -591,7 +646,7 @@ need deeper content. Analyse and return ONLY this JSON (no extra text):
     print(f"   Claude analysis: {response.usage.input_tokens} in / {response.usage.output_tokens} out | ${cost:.4f}")
 
     raw = response.content[0].text
-    return _safe_json_parse(raw)
+    return _filter_done_recommendations(_safe_json_parse(raw), content_state)
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
