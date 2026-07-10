@@ -1,5 +1,22 @@
 {
   "_comment": "Curated People-Also-Ask questions per topic cluster (from live SERPs). content_retrofit merges these with harvested data/processed/paa_snapshots.json questions and answers them in expansion sections. Cluster key must appear in the article handle or title (case-insensitive).",
+  "expensive": [
+    "Do I need cycling glasses?",
+    "Are cheap sunglasses just as good as expensive ones?",
+    "Is $200 for glasses a lot?",
+    "Is $600 a lot for glasses?",
+    "What glasses are best for cycling?"
+  ],
+  "budget": [
+    "Are cheap sunglasses just as good as expensive ones?",
+    "Is $200 for glasses a lot?",
+    "Do I need cycling glasses?"
+  ],
+  "premium": [
+    "Are cheap sunglasses just as good as expensive ones?",
+    "Is $200 for glasses a lot?",
+    "Is $600 a lot for glasses?"
+  ],
   "best-cycling": [
     "How much should good cycling glasses weigh?",
     "What lens technology is best for road cycling?",
