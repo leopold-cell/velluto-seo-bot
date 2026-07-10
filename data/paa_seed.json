@@ -1,5 +1,16 @@
 {
   "_comment": "Curated People-Also-Ask questions per topic cluster (from live SERPs). content_retrofit merges these with harvested data/processed/paa_snapshots.json questions and answers them in expansion sections. Cluster key must appear in the article handle or title (case-insensitive).",
+  "anti-fog": [
+    "Do anti-fog glasses really work?",
+    "Are there any glasses that don't fog up?"
+  ],
+  "photochromic": [
+    "What are the best photochromic cycling glasses?",
+    "Do anti-fog glasses really work?"
+  ],
+  "lens": [
+    "Why do cyclists wear yellow glasses?"
+  ],
   "oakley": [
     "Is Oakley or Ray-Bans better?",
     "Are Oakley glasses high end?",

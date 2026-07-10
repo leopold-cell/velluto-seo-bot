@@ -63,6 +63,7 @@ def run() -> dict:
     serp = serp_fetcher.load_latest()
     if not serp or not serp.get("snapshots"):
         result = {"date": _dt.date.today().isoformat(), "ai_overviews": [],
+                  "serps_scanned": 0,
                   "total_with_aio": 0, "velluto_cited": 0, "competitor_cited": 0}
         _save(result)
         print("   AIO: no SERP snapshot to parse")
@@ -111,6 +112,7 @@ def run() -> dict:
     result = {
         "date":             _dt.date.today().isoformat(),
         "ai_overviews":     aios,
+        "serps_scanned":    len(serp["snapshots"]),
         "total_with_aio":   total_with_aio,
         "velluto_cited":    velluto_cited,
         "competitor_cited": competitor_cited,

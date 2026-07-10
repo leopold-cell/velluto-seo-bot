@@ -34,6 +34,23 @@ def _load(path, default):
         return default
 
 
+def _geo_week_trend(history: dict) -> str:
+    """Ø Velluto-citation-rate of the last 7 REAL measurements vs the 7 before."""
+    real = [(d, r) for d, r in sorted(history.items())
+            if not r.get("stale") and r.get("aio_serps", 0) > 0]
+    if len(real) < 2:
+        return ""
+    cur = real[-7:]
+    prev = real[-14:-7]
+    cur_rate = sum(r.get("velluto_citation_rate", 0) for _, r in cur) / len(cur)
+    line = f"Ø Citation-Rate {cur_rate:.1f}% (letzte {len(cur)} Messungen)"
+    if prev:
+        prev_rate = sum(r.get("velluto_citation_rate", 0) for _, r in prev) / len(prev)
+        arrow = "▲" if cur_rate > prev_rate else ("▼" if cur_rate < prev_rate else "▪")
+        line += f" {arrow} vs. {prev_rate:.1f}% davor"
+    return line
+
+
 def _vis(day: dict) -> float:
     s = []
     for _, p in day.items():
@@ -155,11 +172,28 @@ def build() -> tuple[str, str]:
 
     L.append("🤖 GEO / KI-SICHTBARKEIT (Google AI Overviews)")
     if geo_rec.get("aio_serps"):
+        # Honest wording: "0% of N measured AIO SERPs" is a result, not "no data".
         L.append(f"   • Velluto-Citation-Rate: {geo_rec.get('velluto_citation_rate',0)}%  "
-                 f"(Wettbewerber: {geo_rec.get('competitor_citation_rate',0)}%)")
+                 f"({geo_rec.get('velluto_cited',0)}/{geo_rec.get('aio_serps',0)} AIO-SERPs; "
+                 f"Wettbewerber: {geo_rec.get('competitor_citation_rate',0)}%)")
         L.append(f"   • Owned-Citation-Share: {geo_rec.get('owned_citation_share',0)}%")
+        if geo_rec.get("stale"):
+            reason = {"no_serp_snapshot": "kein SERP-Snapshot",
+                      "serps_without_aio": "SERPs ohne AI-Overview-Box"}.get(
+                          geo_rec.get("reason", ""), geo_rec.get("reason", "?"))
+            L.append(f"   • ⚠️ Heute keine neue Messung ({reason}) — Stand vom "
+                     f"{geo_rec.get('carried_from', '?')}")
+        trend = _geo_week_trend(geo.get("history", {}) or {})
+        if trend:
+            L.append(f"   • 7-Tage-Trend: {trend}")
     else:
         L.append("   • Noch keine AI-Overview-Daten erfasst.")
+    ppx = _load("data/perplexity_geo.json", [])
+    if ppx:
+        p = ppx[-1]
+        L.append(f"   • Perplexity ({p.get('date','?')}): Velluto zitiert bei "
+                 f"{p.get('velluto_cited',0)}/{p.get('questions',0)} Fragen "
+                 f"({p.get('rate',0)}%)")
     L.append("")
 
     if ins.get("our_gaps") or ins.get("seo_quick_wins"):
