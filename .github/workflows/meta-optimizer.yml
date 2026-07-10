@@ -40,9 +40,24 @@ jobs:
           git diff --cached --quiet || git commit -m "chore: meta description optimization $(date -u +%Y-%m-%d)"
           git push
 
-      - name: Notify on failure
+      - name: Notify by email on failure
         if: failure()
+        env:
+          EMAIL_FROM:     ${{ secrets.EMAIL_FROM }}
+          EMAIL_APP_PASS: ${{ secrets.EMAIL_APP_PASS }}
+          EMAIL_TO:       ${{ secrets.EMAIL_TO }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            --data-urlencode "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-            --data-urlencode "text=❌ Meta Optimizer FAILED $(date +%Y-%m-%d)" || true
+          python3 - <<'PY' || true
+          import os, smtplib
+          from email.message import EmailMessage
+          sender = os.getenv("EMAIL_FROM", "")
+          pw     = os.getenv("EMAIL_APP_PASS", "").replace(" ", "")
+          if sender and pw:
+              m = EmailMessage()
+              m["Subject"] = "❌ Velluto Meta Optimizer FAILED — GitHub Actions"
+              m["From"] = sender
+              m["To"] = os.getenv("EMAIL_TO", sender)
+              m.set_content("Check logs: https://github.com/leopold-cell/velluto-seo-bot/actions")
+              with smtplib.SMTP("smtp.gmail.com", 587, timeout=60) as s:
+                  s.starttls(); s.login(sender, pw); s.send_message(m)
+          PY

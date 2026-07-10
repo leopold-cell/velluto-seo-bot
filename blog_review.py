@@ -9,7 +9,7 @@ Reviews ALL published blog posts every 28 days:
   4. UI                (Playwright screenshots → Claude vision, mobile + desktop)
   5. Site SEO + GEO    (technical on-page + generative-engine readiness)
 
-Delivery: WhatsApp (Meta Cloud API) with Telegram fallback; full report committed
+Delivery: email only (shared Gmail mailer); full report committed
 under output/blog_review/.
 
 Runs from the VPS cron (run.sh) daily but SELF-GATES to every `interval_days`

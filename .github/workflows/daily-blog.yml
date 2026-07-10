@@ -25,8 +25,9 @@ jobs:
           OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
           SHOPIFY_STORE:     ${{ secrets.SHOPIFY_STORE }}
           BLOG_ID:           ${{ secrets.BLOG_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          EMAIL_FROM:        ${{ secrets.EMAIL_FROM }}
+          EMAIL_APP_PASS:    ${{ secrets.EMAIL_APP_PASS }}
+          EMAIL_TO:          ${{ secrets.EMAIL_TO }}
         run: python seo_bot.py
 
       - name: Build backlinks
@@ -71,10 +72,24 @@ jobs:
           git diff --cached --quiet || git commit -m "chore: daily dashboard update $(date -u +%Y-%m-%d)"
           git push
 
-      - name: Notify Telegram on failure
+      - name: Notify by email on failure
         if: failure()
+        env:
+          EMAIL_FROM:     ${{ secrets.EMAIL_FROM }}
+          EMAIL_APP_PASS: ${{ secrets.EMAIL_APP_PASS }}
+          EMAIL_TO:       ${{ secrets.EMAIL_TO }}
         run: |
-          TEXT="❌ Velluto SEO Bot FAILED $(date +%Y-%m-%d) — check logs: https://github.com/leopold-cell/velluto-seo-bot/actions"
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            --data-urlencode "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-            --data-urlencode "text=${TEXT}" || true
+          python3 - <<'PY' || true
+          import os, smtplib
+          from email.message import EmailMessage
+          sender = os.getenv("EMAIL_FROM", "")
+          pw     = os.getenv("EMAIL_APP_PASS", "").replace(" ", "")
+          if sender and pw:
+              m = EmailMessage()
+              m["Subject"] = "❌ Velluto SEO Bot FAILED — GitHub Actions"
+              m["From"] = sender
+              m["To"] = os.getenv("EMAIL_TO", sender)
+              m.set_content("Check logs: https://github.com/leopold-cell/velluto-seo-bot/actions")
+              with smtplib.SMTP("smtp.gmail.com", 587, timeout=60) as s:
+                  s.starttls(); s.login(sender, pw); s.send_message(m)
+          PY
