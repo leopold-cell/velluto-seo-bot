@@ -162,6 +162,20 @@ def build() -> tuple[str, str]:
     if top_q:
         L.append("   • Top-Suchbegriffe (Klicks):")
         L += [f"       - {r['keys'][0]}: {r.get('clicks',0)} Klicks / {r.get('impressions',0)} Impr." for r in top_q]
+
+    # Home markets — where Velluto actually sells (75 EUR AOV, NL test offer).
+    # The global top-queries above are English-dominated; this shows DE/NL/BE/AT.
+    bc = gsc.get("by_country") or {}
+    if bc:
+        L.append("   • Heimatmärkte (DACH/NL, 28 Tage):")
+        for label in ("NL", "DE", "BE", "AT"):
+            m = bc.get(label)
+            if not m:
+                continue
+            top = sorted(m.get("queries", []), key=lambda r: r.get("clicks", 0), reverse=True)[:3]
+            top_s = "; ".join(f"{r['keys'][0]} (P{r.get('position',0):.0f}, {r.get('clicks',0)}cl)"
+                              for r in top) or "—"
+            L.append(f"       {label}: {m.get('clicks',0)} Klicks / {m.get('impressions',0):,} Impr — {top_s}")
     L.append("")
 
     L.append("📈 RANKINGS (eigene Messung)")
