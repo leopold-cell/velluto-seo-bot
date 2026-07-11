@@ -149,29 +149,46 @@ def fetch_gsc() -> dict:
     site       = urllib.parse.quote(GSC_SITE_URL, safe="")
     hdrs       = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
-    def _q(dimensions, row_limit=25):
+    def _q(dimensions, row_limit=25, country=None):
+        body = {"startDate": start_date, "endDate": end_date,
+                "dimensions": dimensions, "rowLimit": row_limit}
+        if country:
+            body["dimensionFilterGroups"] = [{"filters": [
+                {"dimension": "country", "operator": "equals", "expression": country}]}]
         try:
             r = requests.post(
                 f"https://searchconsole.googleapis.com/webmasters/v3/sites/{site}/searchAnalytics/query",
-                headers=hdrs,
-                json={"startDate": start_date, "endDate": end_date,
-                      "dimensions": dimensions, "rowLimit": row_limit},
-                timeout=15,
+                headers=hdrs, json=body, timeout=15,
             )
             return r.json().get("rows", [])
         except Exception as e:
             print(f"   ⚠️  GSC query error: {e}")
             return []
 
+    # Core markets (ISO-3166-alpha-3, GSC's country codes). NL/DE/BE/AT are
+    # where Velluto actually sells (75 EUR AOV, NL test offer) — the global
+    # top_queries below are English-dominated and hide this home-market demand.
+    MARKETS = {"NL": "nld", "DE": "deu", "BE": "bel", "AT": "aut"}
+    by_country = {}
+    for label, code in MARKETS.items():
+        rows = _q(["query"], row_limit=15, country=code)
+        by_country[label] = {
+            "queries": rows,
+            "clicks":      int(sum(r.get("clicks", 0) for r in rows)),
+            "impressions": int(sum(r.get("impressions", 0) for r in rows)),
+        }
+
     data = {
         "date":        today,
         "top_queries": _q(["query"], row_limit=25),
         "top_pages":   _q(["page"],  row_limit=10),
         "daily_trend": _q(["date"],  row_limit=28),
+        "by_country":  by_country,
     }
     json.dump(data, open(GSC_LOG, "w"), indent=2)
     total_clicks = sum(r.get("clicks", 0) for r in data["top_queries"])
-    print(f"   ✓ GSC: {len(data['top_queries'])} queries, {int(total_clicks)} clicks (28d)")
+    mkt = " · ".join(f"{k}:{v['clicks']}cl" for k, v in by_country.items())
+    print(f"   ✓ GSC: {len(data['top_queries'])} queries, {int(total_clicks)} clicks (28d) | markets → {mkt}")
     return data
 
 
