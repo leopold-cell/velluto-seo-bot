@@ -1,11 +1,11 @@
 {
   "date": "2026-07-10",
   "slots": [
-    "morning"
+    "morning",
+    "noon",
+    "evening"
   ],
   "recent_lines": [
-    "The climb looked shorter on Komoot.",
-    "three bikes suitable for today. I'm taking the heavy one again.",
     "somehow the \"recovery ride\" now has 1,400m of climbing in it",
     "somehow my \"quick spin\" has a hotel booked on day two",
     "my average speed is completely different before and after a caf\u00e9 stop.",
@@ -18,7 +18,9 @@
     "I have 11 saved routes and I ride the same one every week.",
     "my legs felt fine until someone mentioned the climb ahead.",
     "three hours in and I'm already negotiating with myself about the last climb.",
-    "the moment you realise you've been drafting a stranger for six kilometres"
+    "the moment you realise you've been drafting a stranger for six kilometres",
+    "I only ride in bad weather so Strava knows I suffered.",
+    "Four bikes in the garage. I rotate between the same one."
   ],
-  "last_media_id": "18158772283461972"
+  "last_media_id": "17923872357384507"
 }
