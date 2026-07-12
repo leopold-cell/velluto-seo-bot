@@ -672,7 +672,61 @@
         }
       ],
       "serps_scanned": 198
+    },
+    "2026-07-12": {
+      "aio_serps": 44,
+      "velluto_cited": 0,
+      "competitor_cited": 4,
+      "velluto_gap": 6,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 9.1,
+      "total_citations": 81,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 12
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 11
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 6
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 6
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 3
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 3
+        },
+        {
+          "domain": "bikeradar.com",
+          "citations": 3
+        },
+        {
+          "domain": "smithoptics.com",
+          "citations": 3
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 2
+        },
+        {
+          "domain": "oakley.com",
+          "citations": 2
+        }
+      ],
+      "serps_scanned": 99
     }
   },
-  "latest": "2026-07-11"
+  "latest": "2026-07-12"
 }
