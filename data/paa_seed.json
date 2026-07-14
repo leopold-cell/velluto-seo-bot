@@ -110,7 +110,31 @@
       "Is er een verschil tussen dure en goedkope brillen?"
     ]
   },
-  "fr": {},
+  "fr": {
+    "best-cycling": [
+      "Quelles lunettes pour faire du vélo ?",
+      "Quelles sont les meilleures lunettes de vélo pour la route ?",
+      "Pourquoi lunettes à l'envers sur casque vélo ?",
+      "Quelles sont les meilleures lunettes de soleil pour le cyclisme ?",
+      "Quelles lunettes pour le cyclisme ?",
+      "Quelle est la meilleure marque de lunettes pour vélo ?"
+    ],
+    "anti-fog": [
+      "Comment éviter la buée sur les lunettes pendant la course à pied ?",
+      "Est-ce que les lunettes anti-éblouissement sont efficaces ?",
+      "Quel est le traitement anti-buée le plus efficace pour les lunettes ?"
+    ],
+    "oakley": [
+      "Quelle marque de lunettes est similaire à Oakley ?",
+      "Les lunettes Oakley valent-elles le coup pour le cyclisme ?",
+      "Quelles sont les lunettes de Pogacar ?"
+    ],
+    "expensive": [
+      "Existe-t-il une différence entre des lunettes chères et des lunettes bon marché ?",
+      "Les lunettes de VTT valent-elles l'investissement ?",
+      "Les lunettes de cyclisme font-elles une différence ?"
+    ]
+  },
   "es": {},
   "it": {},
   "pt-PT": {},
