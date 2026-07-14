@@ -208,6 +208,10 @@ def build() -> tuple[str, str]:
         L.append(f"   • Perplexity ({p.get('date','?')}): Velluto zitiert bei "
                  f"{p.get('velluto_cited',0)}/{p.get('questions',0)} Fragen "
                  f"({p.get('rate',0)}%)")
+        bm = p.get("by_market") or {}
+        if bm:
+            per = " · ".join(f"{k.upper()} {v.get('rate',0):.0f}%" for k, v in bm.items())
+            L.append(f"       je Markt: {per}")
     L.append("")
 
     if ins.get("our_gaps") or ins.get("seo_quick_wins"):

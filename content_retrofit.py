@@ -292,22 +292,31 @@ def gen_table_fragment(client: Anthropic, title: str, body: str,
     return _extract_html(r.content[0].text)
 
 
-def load_paa_questions(handle: str, title: str) -> list[str]:
-    """People-Also-Ask questions for this article: curated seed clusters
-    (data/paa_seed.json, key must appear in handle/title) merged with the
-    harvested SERP questions (data/processed/paa_snapshots.json)."""
+def load_paa_questions(handle: str, title: str, lang: str = "en") -> list[str]:
+    """People-Also-Ask questions for this article, in `lang` (en/de/nl/…).
+    Cluster keys stay English (matched against the handle/title); the questions
+    come from data/paa_seed.json[lang][cluster]. Falls back to the English
+    cluster questions when a market map has none yet (so nothing breaks before
+    the native screenshots land). Merged with harvested SERP PAA for EN."""
     hay = f"{handle} {title}".lower()
-    out: list[str] = []
     seed = _load(os.path.join(BASE, "data", "paa_seed.json"), {})
-    for cluster, questions in seed.items():
-        if not cluster.startswith("_") and cluster.lower() in hay:
-            out += [q for q in questions if isinstance(q, str)]
-    harvested = _load(os.path.join(BASE, "data", "processed", "paa_snapshots.json"), {})
-    for item in harvested.get("extracted", []):
-        kw = (item.get("keyword") or "").lower()
-        if kw and any(tok in hay for tok in kw.split() if len(tok) > 4):
-            out += [q.get("question", "") for q in item.get("questions", [])
-                    if q.get("question")]
+    # Back-compat: legacy flat {cluster: [...]} → treat as the "en" map.
+    if seed and "en" not in seed and any(isinstance(v, list) for v in seed.values()):
+        seed = {"en": {k: v for k, v in seed.items() if not k.startswith("_")}}
+    market = seed.get(lang) or {}
+    english = seed.get("en") or {}
+    out: list[str] = []
+    for cluster in english:  # cluster keys are English in every language map
+        if cluster.lower() in hay:
+            qs = market.get(cluster) or (english.get(cluster) if lang == "en" else [])
+            out += [q for q in qs if isinstance(q, str)]
+    if lang == "en":
+        harvested = _load(os.path.join(BASE, "data", "processed", "paa_snapshots.json"), {})
+        for item in harvested.get("extracted", []):
+            kw = (item.get("keyword") or "").lower()
+            if kw and any(tok in hay for tok in kw.split() if len(tok) > 4):
+                out += [q.get("question", "") for q in item.get("questions", [])
+                        if q.get("question")]
     return list(dict.fromkeys(out))[:8]
 
 
