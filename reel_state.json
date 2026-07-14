@@ -1,12 +1,9 @@
 {
-  "date": "2026-07-13",
+  "date": "2026-07-14",
   "slots": [
-    "morning",
-    "noon",
-    "evening"
+    "morning"
   ],
   "recent_lines": [
-    "I have 11 saved routes and I ride the same one every week.",
     "my legs felt fine until someone mentioned the climb ahead.",
     "three hours in and I'm already negotiating with myself about the last climb.",
     "the moment you realise you've been drafting a stranger for six kilometres",
@@ -20,7 +17,8 @@
     "the caf\u00e9 stop was \"just water\" and somehow took 47 minutes",
     "half-wheeling me since kilometre one and he thinks we're friends.",
     "My average watts look completely different before I screenshot it for the group chat.",
-    "When the group ride becomes a race nobody told me about."
+    "When the group ride becomes a race nobody told me about.",
+    "I added the climb to the route \"for training\". I have not trained since March."
   ],
-  "last_media_id": "18052471658785279"
+  "last_media_id": "18073184411347883"
 }
