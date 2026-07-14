@@ -385,13 +385,37 @@ def main():
         else:
             post_line = "📮 Instagram: Token fehlt (instagram_auth.py) — nur Test-Mode."
 
+    # ── Cross-post the SAME captioned reel to YouTube Shorts — search surface #2,
+    # heavily cited by AI answers. Independent of IG; soft + dry-run unless
+    # YT_AUTOPOST=1. Never breaks the reel run.
+    yt_line = ""
+    if captioned and os.path.isfile(captioned) and captions_burned:
+        try:
+            import youtube_short
+            os_txt   = _strip_meta(_extract("ONSCREEN", brief))
+            punch    = _strip_meta(_extract("PUNCHLINE", brief).strip(" -•\t"))
+            cap_line = " ".join(_extract("CAPTION", brief).split())
+            title, desc, tags = youtube_short.build_metadata(os_txt, punch, cap_line)
+            vid = youtube_short.upload_short(captioned, title, desc, tags)
+            if vid:
+                yt_line = f"▶️ YouTube Short: ✅ https://youtu.be/{vid}"
+            elif youtube_short.autopost_enabled() and youtube_short.is_configured():
+                yt_line = "▶️ YouTube: ⚠️ Upload fehlgeschlagen — siehe VPS-Log."
+                problems.append("YouTube-Short-Upload fehlgeschlagen — siehe VPS-Log.")
+            elif youtube_short.is_configured():
+                yt_line = "▶️ YouTube: DRY-RUN (YT_AUTOPOST≠1)."
+            else:
+                yt_line = "▶️ YouTube: nicht konfiguriert (youtube_auth.py)."
+        except Exception as e:
+            print(f"   ⚠️  YouTube cross-post skipped: {e}")
+
     # Email ONLY when something is broken. A clean run (incl. successful post) is silent —
     # you asked to be notified only when something doesn't work.
     if problems:
         body = (
             f"⚠️ Velluto Reel — Problem am {TODAY}:\n\n- " + "\n- ".join(problems) + "\n\n"
             f"Quelle: {topic.get('title') or topic.get('topic')}\n"
-            f"{video_line}\n{post_line}\n"
+            f"{video_line}\n{post_line}\n{yt_line}\n"
             "────────────────────────────────────────\n\n"
             f"{brief}\n"
         )
