@@ -42,7 +42,8 @@ import requests
 
 from seo_bot import (BLOG_ID, SHOP_LOCALES, SHOPIFY_HEADERS, SHOPIFY_STORE,
                      get_translatable_digests, register_shopify_translation)
-from commercial_config import from_price_str, from_price_str_locale
+from commercial_config import (from_price_str, from_price_str_locale,
+                               safe_price_str, amount_str_locale)
 from backfill_seo_cleanup import fetch_translations, put_body
 
 APPLY      = "--apply" in sys.argv
@@ -66,6 +67,29 @@ _LOCAL_OLD = {
     "pl": re.compile(rf'(?:{_CONNECTOR})?649\s?(?:PLN|zł)', re.I),
     "sv": re.compile(rf'(?:{_CONNECTOR})?(?:kr\.?\s?1[.\s]?599|1[.\s]?599\s?(?:SEK|kr\.?))', re.I),
 }
+# Threshold context ("spending over $149", "meer dan 149 EUR") — the price is a
+# market threshold, not a "from" price. Keep the threshold word, drop the "from",
+# swap the amount → "over 69 EUR" (grammatical, and 149 still disappears).
+# Words cover all shop languages so translations don't get "über ab 69 EUR".
+_THRESHOLD_WORDS = (
+    r"over|under|above|below|more than|less than|up to"          # en
+    r"|über|unter|mehr als|weniger als|bis zu"                   # de
+    r"|boven|onder|meer dan|minder dan|tot"                      # nl
+    r"|plus de|moins de|au-dessus de|jusqu['’]à|jusqu['’]a"      # fr
+    r"|más de|mas de|menos de|hasta"                             # es
+    r"|più di|piu di|meno di|oltre|fino a"                       # it
+    r"|mais de|acima de|até|ate"                                 # pt
+    r"|mere end|mindre end|op til"                               # da
+    r"|mer enn|mindre enn|opptil"                                # nb
+    r"|powyżej|poniżej|ponad|więcej niż|mniej niż"              # pl
+    r"|över|mer än|mindre än|upp till"                           # sv
+)
+_THRESHOLD = re.compile(
+    rf'\b({_THRESHOLD_WORDS})\s+'
+    r'(?:(?:€|\$|EUR|USD|kr\.?)\s?(?:149|1[.\s]?099|1[.\s]?499|649|1[.\s]?599)'
+    r'(?:\s?(?:€|EUR|euro|USD|DKK|NOK|PLN|SEK|zł|kr\.?))?'
+    r'|(?:149|1[.\s]?099|1[.\s]?499|649|1[.\s]?599)\s?(?:€|EUR|euro|USD|\$|DKK|NOK|PLN|SEK|zł|kr\.?))',
+    re.I)
 
 
 def transform(body: str, locale: str | None) -> tuple[str, int]:
@@ -74,12 +98,16 @@ def transform(body: str, locale: str | None) -> tuple[str, int]:
     if not body:
         return body, 0
     from_price = from_price_str("US") if locale is None else from_price_str_locale(locale)
+    amount = safe_price_str("US") if locale is None else amount_str_locale(locale)
     n = 0
-    # local-currency old price first (only for its market)
+    # threshold context first ("spending over $149" → "spending over 69 EUR")
+    body, c = _THRESHOLD.subn(lambda m: f"{m.group(1)} {amount}", body)
+    n += c
+    # local-currency old price (only for its market)
     if locale in _LOCAL_OLD:
         body, c = _LOCAL_OLD[locale].subn(from_price, body)
         n += c
-    # generic EUR/USD 149 everywhere
+    # generic EUR/USD 149 everywhere else
     body, c = _EURUSD_149.subn(from_price, body)
     n += c
     return body, n
