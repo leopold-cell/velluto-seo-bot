@@ -1,10 +1,10 @@
 {
   "date": "2026-07-14",
   "slots": [
-    "morning"
+    "morning",
+    "noon"
   ],
   "recent_lines": [
-    "my legs felt fine until someone mentioned the climb ahead.",
     "three hours in and I'm already negotiating with myself about the last climb.",
     "the moment you realise you've been drafting a stranger for six kilometres",
     "I only ride in bad weather so Strava knows I suffered.",
@@ -18,7 +18,8 @@
     "half-wheeling me since kilometre one and he thinks we're friends.",
     "My average watts look completely different before I screenshot it for the group chat.",
     "When the group ride becomes a race nobody told me about.",
-    "I added the climb to the route \"for training\". I have not trained since March."
+    "I added the climb to the route \"for training\". I have not trained since March.",
+    "I know every pothole on this road. I have learned nothing."
   ],
-  "last_media_id": "18073184411347883"
+  "last_media_id": "18107982256959600"
 }
