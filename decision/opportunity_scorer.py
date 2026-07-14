@@ -57,6 +57,69 @@ MOMENTUM_BOOST = {
 # brand, so they jump the queue.
 COMPARISON_BOOST = 12
 
+# Phase 1 (native agenda) — the topic decision was English-only (target_market
+# hard-coded "US"). Velluto sells in DACH/NL/FR where the audience searches
+# natively (Fahrradbrille 8100/mo, lunettes cyclisme 2900/mo). We map each
+# English candidate to its native cluster head term, read the REAL cached
+# volume (data/keyword_volume_cache.json — no new API calls), set target_market
+# to the strongest native market, and add a bounded boost so high native-demand
+# topics rise. NATIVE_BOOST is capped like the other post-aggregate boosts.
+NATIVE_BOOST = 12
+_VOL_CACHE_PATH = os.path.join(ROOT, "data", "keyword_volume_cache.json")
+_DEFAULT_NATIVE = {"de": "fahrradbrille", "nl": "fietsbril", "fr": "lunettes cyclisme"}
+# (english-token triggers, {market: native cache key}) — most specific first.
+_NATIVE_CLUSTERS = [
+    (("interchangeable", "wechsel", "verwissel", "verres interchangeables"),
+     {"de": "fahrradbrille mit wechselgläsern", "nl": "fietsbril met verwisselbare glazen",
+      "fr": "lunettes vélo verres interchangeables"}),
+    (("anti-fog", "antifog", "anti fog", "antibuée", "beschläg", "condens"),
+     {"de": "fahrradbrille beschlägt nicht", "nl": "anti condens fietsbril",
+      "fr": "lunettes cyclisme antibuée"}),
+    (("oakley", "alternative"),
+     {"de": "oakley alternative fahrradbrille", "nl": "oakley alternatief wielrenbril",
+      "fr": "alternative oakley lunettes vélo"}),
+    (("worth it", "expensive", "budget", "value", "cheap"),
+     {"de": "sind teure fahrradbrillen sinnvoll", "nl": "beste betaalbare fietsbril",
+      "fr": "meilleures lunettes vélo pas cher"}),
+]
+
+_vol_cache_memo: dict | None = None
+
+
+def _vol_cache() -> dict:
+    global _vol_cache_memo
+    if _vol_cache_memo is None:
+        try:
+            with open(_VOL_CACHE_PATH, encoding="utf-8") as f:
+                _vol_cache_memo = json.load(f)
+        except Exception:
+            _vol_cache_memo = {}
+    return _vol_cache_memo
+
+
+def native_demand(keyword: str) -> tuple[str, int]:
+    """(best native market code, monthly volume) for an English candidate, from
+    the volume cache. Falls back to the market head term when the specific
+    native term isn't cached yet; ('US', 0) when nothing is known."""
+    cache = _vol_cache()
+    if not cache:
+        return "US", 0
+    kw = (keyword or "").lower()
+    mapping = _DEFAULT_NATIVE
+    for toks, m in _NATIVE_CLUSTERS:
+        if any(t in kw for t in toks):
+            mapping = m
+            break
+    best_m, best_v = "US", 0
+    for mkt, native in mapping.items():
+        # exact cluster term only — no head-term fallback (that would let a big
+        # generic head volume masquerade as a specific-cluster demand signal).
+        entry = cache.get(f"{mkt}|{native.lower()}") or {}
+        vol = int(entry.get("volume", 0) or 0)
+        if vol > best_v:
+            best_v, best_m = vol, mkt.upper()
+    return best_m, best_v
+
 
 def _boost(opp: float, tier: str) -> float:
     return round(min(100.0, opp + MOMENTUM_BOOST.get(tier, 0)), 2)
@@ -443,6 +506,17 @@ def score(research: dict, inventory: dict) -> dict:
         if _is_commercial_comparison(c.get("keyword", "")):
             c["commercial_comparison"] = True
             c["opportunity_score"] = round(min(100.0, c["opportunity_score"] + COMPARISON_BOOST), 2)
+
+    # Phase 1 — native-demand re-ranking: set the real target_market and boost
+    # topics with strong DACH/NL/FR native demand (bounded, cached, no API call).
+    for c in candidates:
+        mkt, vol = native_demand(c.get("keyword", ""))
+        if vol:
+            c["native_market"] = mkt
+            c["native_volume"] = vol
+            c["target_market"] = mkt      # real market, not the hard-coded "US"
+            boost = NATIVE_BOOST * min(1.0, vol / 3000.0)   # 3000+/mo → full boost
+            c["opportunity_score"] = round(min(100.0, c["opportunity_score"] + boost), 2)
 
     # Sort and persist
     candidates.sort(key=lambda c: c["opportunity_score"], reverse=True)

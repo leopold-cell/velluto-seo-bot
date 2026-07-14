@@ -193,6 +193,8 @@ def choose(scored: dict, research: dict, inventory: dict) -> dict:
         "chosen_topic":         chosen_candidate["keyword"],
         "chosen_keyword":       chosen_candidate["keyword"],
         "target_market":        chosen_candidate.get("target_market", "US"),
+        "native_market":        chosen_candidate.get("native_market"),
+        "native_volume":        chosen_candidate.get("native_volume"),
         "opportunity_score":    chosen_candidate["opportunity_score"],
         "sub_scores":           chosen_candidate["sub_scores"],
         "existing_article_url": (chosen_candidate.get("existing_article") or {}).get("url"),
