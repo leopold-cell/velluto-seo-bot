@@ -209,6 +209,13 @@ def from_price_str_locale(locale_short: str) -> str:
     return from_price_str(m["code"]) if m else "from 69 EUR"
 
 
+def amount_str_locale(locale_short: str) -> str:
+    """Bare price amount (no 'from' word), e.g. '69 EUR', '515 DKK'. Used where a
+    'from' framing would break grammar (e.g. 'over 69 EUR')."""
+    m = config_loader.market_by_locale_short(locale_short)
+    return safe_price_str(m["code"]) if m else "69 EUR"
+
+
 if __name__ == "__main__":
     import json
     cfg = load_commercial_config()
