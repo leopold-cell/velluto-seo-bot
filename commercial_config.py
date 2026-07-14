@@ -8,9 +8,9 @@ Why this exists (spec lines 62-92):
   generated articles. Every bot run loads the current config once at startup
   and threads it through every generation prompt.
 
-Current state (May 2026):
-  - NL is testing 69 EUR (offer_status: "test")
-  - Every other market uses 149 EUR UVP
+Current state (Jul 2026):
+  - Every market uses a single "from 69 EUR" starting price (local-currency
+    equivalent for DKK/NOK/PLN/SEK). The old 149 UVP is retired.
 
 Source of truth:
   Shopify product `strada-pro` queried via Admin GraphQL. Variant prices per
@@ -23,8 +23,8 @@ Returned per-market dict (spec line 80-92):
     "market": "NL",
     "currency": "EUR",
     "current_price": 69,
-    "uvp": 149,
-    "offer_status": "test" | "live" | "standard",
+    "uvp": 69,
+    "offer_status": "live" | "standard",
     "free_shipping_threshold": null | int,
     "guarantee": null | str,
     "delivery_claim": null | str,
@@ -60,17 +60,28 @@ PRIMARY_PRODUCT_HANDLE = "velluto-stradapro-cycling-glasses-nero"
 # test offer; everything else uses the 149 UVP.
 # When Shopify Markets pricing is fully configured, this layer can be removed.
 STATIC_PRICE_OVERRIDES: dict[str, dict] = {
-    "US": {"currency": "USD", "current_price": 149, "uvp": 149, "offer_status": "standard"},
-    "DE": {"currency": "EUR", "current_price": 149, "uvp": 149, "offer_status": "standard"},
-    "NL": {"currency": "EUR", "current_price": 69,  "uvp": 149, "offer_status": "test"},
-    "FR": {"currency": "EUR", "current_price": 149, "uvp": 149, "offer_status": "standard"},
-    "ES": {"currency": "EUR", "current_price": 149, "uvp": 149, "offer_status": "standard"},
-    "IT": {"currency": "EUR", "current_price": 149, "uvp": 149, "offer_status": "standard"},
-    "DA": {"currency": "DKK", "current_price": 1099, "uvp": 1099, "offer_status": "standard"},
-    "NB": {"currency": "NOK", "current_price": 1499, "uvp": 1499, "offer_status": "standard"},
-    "PL": {"currency": "PLN", "current_price": 649,  "uvp": 649,  "offer_status": "standard"},
-    "PT": {"currency": "EUR", "current_price": 149,  "uvp": 149,  "offer_status": "standard"},
-    "SV": {"currency": "SEK", "current_price": 1599, "uvp": 1599, "offer_status": "standard"},
+    # Pricing is now a single "from" entry point everywhere: 69 EUR (or the
+    # local-currency ~69-EUR equivalent for DKK/NOK/PLN/SEK). The 149 UVP is
+    # retired — 149 must appear nowhere anymore (operator decision Jul 2026).
+    "US": {"currency": "EUR", "current_price": 69, "uvp": 69, "offer_status": "standard"},
+    "DE": {"currency": "EUR", "current_price": 69, "uvp": 69, "offer_status": "standard"},
+    "NL": {"currency": "EUR", "current_price": 69, "uvp": 69, "offer_status": "standard"},
+    "FR": {"currency": "EUR", "current_price": 69, "uvp": 69, "offer_status": "standard"},
+    "ES": {"currency": "EUR", "current_price": 69, "uvp": 69, "offer_status": "standard"},
+    "IT": {"currency": "EUR", "current_price": 69, "uvp": 69, "offer_status": "standard"},
+    "DA": {"currency": "DKK", "current_price": 515, "uvp": 515, "offer_status": "standard"},
+    "NB": {"currency": "NOK", "current_price": 799, "uvp": 799, "offer_status": "standard"},
+    "PL": {"currency": "PLN", "current_price": 299, "uvp": 299, "offer_status": "standard"},
+    "PT": {"currency": "EUR", "current_price": 69,  "uvp": 69,  "offer_status": "standard"},
+    "SV": {"currency": "SEK", "current_price": 799, "uvp": 799, "offer_status": "standard"},
+}
+
+# Localized "from …" wording per market — the ONLY way a Velluto price is
+# quoted now (starting price, not a fixed price). Consumed by the article
+# generator, the market adaptation, and scripts/backfill_prices.py.
+FROM_WORD = {
+    "US": "from", "DE": "ab", "NL": "vanaf", "FR": "à partir de", "ES": "desde",
+    "IT": "da", "PT": "a partir de", "DA": "fra", "NB": "fra", "PL": "od", "SV": "från",
 }
 
 
@@ -182,11 +193,28 @@ def safe_price_str(code: str) -> str:
     return f"{price} {cur}"
 
 
+def from_price_str(code: str) -> str:
+    """Localized starting-price string, e.g. 'ab 69 EUR', 'from 69 EUR',
+    'fra 515 DKK'. This is the ONLY approved way to quote a Velluto price."""
+    cfg = for_market(code)
+    if not cfg or not cfg.get("current_price"):
+        return "current pricing (see product page)"
+    word = FROM_WORD.get(code.upper(), "from")
+    return f"{word} {cfg['current_price']} {cfg['currency']}"
+
+
+def from_price_str_locale(locale_short: str) -> str:
+    """from_price_str keyed by short locale (de → 'ab 69 EUR', nl → 'vanaf 69 EUR')."""
+    m = config_loader.market_by_locale_short(locale_short)
+    return from_price_str(m["code"]) if m else "from 69 EUR"
+
+
 if __name__ == "__main__":
     import json
     cfg = load_commercial_config()
     print(json.dumps(cfg, indent=2, ensure_ascii=False))
     print(f"\nMarkets loaded: {len(cfg)}")
-    print(f"NL price: {safe_price_str('NL')}  (expected: 69 EUR)")
-    print(f"DE price: {safe_price_str('DE')}  (expected: 149 EUR)")
-    print(f"US price: {safe_price_str('US')}  (expected: $149)")
+    print(f"NL from-price: {from_price_str('NL')}  (expected: vanaf 69 EUR)")
+    print(f"DE from-price: {from_price_str('DE')}  (expected: ab 69 EUR)")
+    print(f"US from-price: {from_price_str('US')}  (expected: from 69 EUR)")
+    print(f"DA from-price: {from_price_str('DA')}  (expected: fra 515 DKK)")

@@ -1441,7 +1441,8 @@ def generate_de_primary(kw: dict, products: list[dict], quality: dict,
 
     commercial: optional commercial config from load_commercial_config(). When
                 provided, the EN-primary template price interpolates the US
-                price string (e.g. "$149"). When None, falls back to "$149".
+                from-price (e.g. "from 69 EUR"); the value comes from
+                commercial_config.from_price_str regardless.
     brief:      optional Phase 4 master brief. When present, augments the prompt
                 with must_answer_questions (PAA), claims_to_avoid, and the
                 Velluto positioning angle. When None, legacy behaviour.
@@ -1449,9 +1450,7 @@ def generate_de_primary(kw: dict, products: list[dict], quality: dict,
     # Phase 1: dynamic price for the EN-primary article (US is the EN market).
     primary_market = (commercial or {}).get("US") or {}
     primary_price_str = (
-        f"${primary_market.get('current_price')}"
-        if primary_market.get("currency") == "USD" and primary_market.get("current_price")
-        else "$149"
+        __import__("commercial_config").from_price_str("US")  # "from 69 EUR"
     )
     keyword_en = kw.get("keyword_en") or kw["keyword"]  # EN keyword is primary
     keyword_de = kw.get("keyword_de") or kw["keyword"]  # DE keyword for context only
@@ -1512,8 +1511,9 @@ def generate_de_primary(kw: dict, products: list[dict], quality: dict,
     publish_rules = f"""
 
 PUBLISH RULES (HARD — articles violating these get blocked and discarded):
-1. PRICING — The ONLY Velluto price you may quote is "{primary_price_str}" (USD for the EN-primary US article).
-   - Do NOT write "€ 149", "149 EUR", "230 EUR", or any other currency/amount as Velluto's price.
+1. PRICING — The ONLY Velluto price you may quote is "{primary_price_str}" (a starting "from" price).
+   - NEVER write "149", "€149", "149 EUR", "$149" or any fixed Velluto price — 149 is retired.
+   - Do NOT write "230 EUR" or any other invented amount as Velluto's price.
    - When discussing the cycling-sunglasses MARKET, use RANGES, not specific competitor prices.
      ✓ "Premium cycling sunglasses range from $150 to $350"
      ✗ "Oakley Sutro costs $280, Rudy Project costs $230"
@@ -1918,19 +1918,14 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     price_rule = ""
     if commercial:
         from commercial_config import for_locale_short as _cc_for_locale
+        from commercial_config import from_price_str_locale as _cc_from_price
         mcfg = _cc_for_locale(target_locale)
         if mcfg and mcfg.get("current_price"):
-            cur, price = mcfg["currency"], mcfg["current_price"]
-            price_token = (
-                f"{price} EUR" if cur == "EUR" else
-                f"${price}"   if cur == "USD" else
-                f"{price} {cur}"
-            )
-            offer_note = " (current test offer — frame as the current price, not as a permanent discount)" \
-                         if mcfg.get("offer_status") == "test" else ""
+            price_token = _cc_from_price(target_locale)  # localized "ab 69 EUR" / "fra 515 DKK"
             price_rule = (
                 f"8. Pricing for this market: when the article references a Velluto price, use exactly "
-                f"'{price_token}'{offer_note}. Replace any other currency or amount you see in the source HTML.\n"
+                f"'{price_token}' (a starting 'from' price). Replace ANY other currency, amount or "
+                f"'149' you see in the source HTML with '{price_token}'. Never keep a fixed 149 price.\n"
             )
 
     ADAPT_MODEL = "claude-haiku-4-5-20251001"

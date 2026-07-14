@@ -476,7 +476,8 @@ def main() -> None:
     except Exception:
         pass
     us = for_locale_short("en") or {}
-    price_str = f"${us.get('current_price')}" if us.get("current_price") else "$149"
+    from commercial_config import from_price_str
+    price_str = from_price_str("US")  # "from 69 EUR"
 
     done_lines: list[str] = []
     for pick in picks:

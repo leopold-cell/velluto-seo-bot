@@ -41,7 +41,7 @@ FR_KEYWORD_QUEUE = [
      "angle": "Exigences spécifiques: plaquette plus fine, monture légère. Variantes Viola/Arancia. "
               "Pourquoi le système réglable est universel."},
     {"keyword": "alternative Julbo lunettes vélo", "volume_tier": "low", "phase": 1, "locale": "fr",
-     "angle": "Comparaison directe: Julbo Aerospeed (220€) vs Velluto StradaPro (149€). "
+     "angle": "Comparaison directe: Julbo Aerospeed (220€) vs Velluto StradaPro (ab 69€). "
               "Poids, verres interchangeables, rapport qualité/prix."},
     {"keyword": "lunettes cyclisme protection UV", "volume_tier": "medium", "phase": 1, "locale": "fr",
      "angle": "UV400 = 100% UVA+UVB. Haute montagne, Côte d'Azur, Alpes en été. "
@@ -81,7 +81,7 @@ ES_KEYWORD_QUEUE = [
      "angle": "Requisitos específicos: almohadilla más estrecha, montura ligera. Variantes Viola/Arancia. "
               "Por qué el sistema ajustable es universal."},
     {"keyword": "alternativa Spiuk gafas ciclismo", "volume_tier": "low", "phase": 1, "locale": "es",
-     "angle": "Comparación directa: Spiuk Jifter (135€) vs Velluto StradaPro (149€). "
+     "angle": "Comparación directa: Spiuk Jifter (135€) vs Velluto StradaPro (ab 69€). "
               "Peso, lentes intercambiables, calidad-precio."},
     {"keyword": "gafas MTB antiempañamiento", "volume_tier": "medium", "phase": 1, "locale": "es",
      "angle": "MTB: protección lateral, resistencia, empañamiento en bosque. "
@@ -125,7 +125,7 @@ IT_KEYWORD_QUEUE = [
      "angle": "Requisiti specifici: nasello più stretto, montatura leggera. Varianti Viola/Arancia. "
               "Perché il sistema regolabile è universale."},
     {"keyword": "alternativa Rudy Project occhiali ciclismo", "volume_tier": "low", "phase": 1, "locale": "it",
-     "angle": "Confronto diretto: Rudy Project Rydon (200€) vs Velluto StradaPro (149€). "
+     "angle": "Confronto diretto: Rudy Project Rydon (200€) vs Velluto StradaPro (ab 69€). "
               "Peso, lenti intercambiabili, rapporto qualità-prezzo."},
     {"keyword": "occhiali MTB antiappannamento", "volume_tier": "medium", "phase": 1, "locale": "it",
      "angle": "MTB: protezione laterale, resistenza, appannamento nel bosco. "
@@ -280,7 +280,7 @@ PT_KEYWORD_QUEUE = [
      "angle": "Requisitos específicos: plaqueta mais estreita, armação leve. Variantes Viola/Arancia. "
               "Sistema regulável funciona universalmente."},
     {"keyword": "alternativa Spiuk óculos ciclismo", "volume_tier": "low", "phase": 1, "locale": "pt-PT",
-     "angle": "Comparação direta: Spiuk Jifter (130€) vs Velluto StradaPro (149€). "
+     "angle": "Comparação direta: Spiuk Jifter (130€) vs Velluto StradaPro (ab 69€). "
               "Peso, lentes intercambiáveis, custo-benefício."},
     {"keyword": "óculos ciclismo proteção UV", "volume_tier": "medium", "phase": 1, "locale": "pt-PT",
      "angle": "UV400 = 100% UVA+UVB. Algarve, Alentejo, verão português. "
