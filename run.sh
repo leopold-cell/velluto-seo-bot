@@ -39,6 +39,7 @@ step "ctr optimizer"               python3 ctr_optimizer.py
 step "content retrofit (28d gate)" python3 content_retrofit.py
 step "geo monitor"                 python3 geo_monitor.py
 step "perplexity geo (7d gate)"    python3 scripts/perplexity_monitor.py
+step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py
 step "meta ads weekly report"      python3 scripts/meta_ads_report.py
 step "dashboard"                   python3 dashboard.py
 
