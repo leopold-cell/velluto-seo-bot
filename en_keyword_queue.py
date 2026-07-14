@@ -63,7 +63,7 @@ EN_KEYWORDS = [
         "angle": "Mirror of the proven Oakley-alternatives winner: honest look at "
                  "what SunGod does well (custom colours, lifetime guarantee) and "
                  "where Velluto beats it — 25g weight, interchangeable lens system, "
-                 "30-day risk-free trial, $149 vs SunGod's premium tiers.",
+                 "30-day risk-free trial, from 69 EUR vs SunGod's premium tiers.",
     },
     {
         "keyword": "SunGod vs Velluto cycling glasses",

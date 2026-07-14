@@ -112,7 +112,7 @@ DE_KEYWORD_QUEUE = [
     {
         "keyword": "fahrradbrille oakley alternative",
         "volume": 200, "phase": 1,
-        "angle": "Direkter Vergleich: Oakley Jawbreaker (€250) vs. Velluto StradaPro (€149). "
+        "angle": "Direkter Vergleich: Oakley Jawbreaker (€250) vs. Velluto StradaPro (ab 69€). "
                  "Gewicht, Wechselgläser, Passform, Preis-Leistung. "
                  "Für wen lohnt sich der Aufpreis? Für wen nicht?",
     },

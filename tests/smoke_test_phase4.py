@@ -77,14 +77,14 @@ fake_master = {"topic": "best cycling sunglasses",
 fake_research = {"paa": {}, "serps": {"snapshots": []}, "ai_overviews": {}, "competitors": {}}
 fake_commercial = {
     "NL": {"current_price": 69, "currency": "EUR", "offer_status": "test"},
-    "DE": {"current_price": 149, "currency": "EUR", "offer_status": "standard"},
+    "DE": {"current_price": 69, "currency": "EUR", "offer_status": "standard"},
 }
 local_briefs = build_all_localization_briefs(fake_master, fake_research, fake_commercial)
 assert len(local_briefs) >= 9
 assert local_briefs["nl"]["local_adaptation_notes"]
 assert "69 EUR" in " ".join(local_briefs["nl"]["local_adaptation_notes"]) \
     or local_briefs["nl"]["commercial"]["current_price"] == 69
-print(f"   ✓ {len(local_briefs)} locale briefs built (NL price=69 EUR, DE price=149 EUR)")
+print(f"   ✓ {len(local_briefs)} locale briefs built (all markets from 69 EUR)")
 print("✅ Step 2: localization briefs land in output/localization_briefs/")
 
 # ── 3. Master brief — Haiku-enriched (real $0.01 call) ───────
