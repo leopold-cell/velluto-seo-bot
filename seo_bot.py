@@ -1928,6 +1928,26 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
                 f"'149' you see in the source HTML with '{price_token}'. Never keep a fixed 149 price.\n"
             )
 
+    # Phase 2b: native PAA depth — for markets with curated native questions,
+    # weave the market's real People-Also-Ask into the translation (no extra API
+    # call). Makes /de/, /nl/, /fr/ rank for what that market actually searches.
+    paa_rule = ""
+    try:
+        from content_retrofit import load_paa_questions as _load_paa
+        _paa = _load_paa("", de_post.get("title", ""), target_locale)
+        if _paa:
+            _qs = "\n".join(f"   - {q}" for q in _paa[:6])
+            paa_rule = (
+                f"9. NATIVE PAA — add 2-3 NEW <h3> Q&A blocks (before any FAQ/<details>) that "
+                f"answer these real {lang_name} search questions in featured-snippet style "
+                f"(question as <h3>, then a direct 40-60 word answer, then depth):\n{_qs}\n"
+                "   Velluto has NO photochromic/self-tinting, polarized or prescription lenses — "
+                "if such a question appears, honestly explain why an interchangeable-lens system is "
+                "the better answer; never claim Velluto offers them.\n"
+            )
+    except Exception:
+        pass
+
     ADAPT_MODEL = "claude-haiku-4-5-20251001"
 
     # Body adaptation — Haiku handles HTML structure well
@@ -1940,13 +1960,14 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
             "Rules (follow exactly):\n"
             f"1. Write entirely in {lang_name} — no German words anywhere.\n"
             f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
-            "3. Keep ALL HTML tags, class names, IDs and structure IDENTICAL.\n"
+            "3. Keep ALL existing HTML tags, class names, IDs and structure IDENTICAL "
+            "(you MAY append the new native PAA blocks from rule 9 where indicated).\n"
             "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
             "5. All URLs (href, src) stay unchanged.\n"
             f"6. Adapt local references to reflect: {cycling_ctx}.\n"
             "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
             "8. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. (Normal hyphens in words are fine.)\n"
-            f"{price_rule}"
+            f"{price_rule}{paa_rule}"
         ),
         messages=[{"role": "user", "content": de_post["body_html"]}]
     )
