@@ -26,10 +26,14 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 SITE   = "https://velluto-shop.com"
-HASHTAGS = "#Shorts #cycling #roadcycling #cyclingglasses #velluto"
-TAGS = ["cycling glasses", "cycling sunglasses", "road cycling", "road bike",
-        "cycling eyewear", "velluto", "velluto stradapro", "oakley alternative",
-        "fahrradbrille", "wielrenbril", "lunettes vélo"]
+# These reels are relatable/funny top-funnel cycling content, NOT keyword pieces.
+# Metadata therefore MATCHES the content (the actual hook + community tags) — no
+# keyword-stuffing, which would mismatch the video, hurt retention, and never
+# rank anyway. Value here is reach + brand (→ brand searches, AI brand recall).
+HASHTAGS = "#Shorts #cycling #roadcycling #cyclinglife #cyclist"
+TAGS = ["cycling", "road cycling", "cycling life", "cyclist", "road bike",
+        "cycling humor", "cycling motivation", "pov cycling", "cycling shorts",
+        "velluto"]
 
 
 def _creds():
@@ -66,20 +70,17 @@ def _service():
 
 def build_metadata(onscreen: str = "", punchline: str = "",
                    caption_line: str = "") -> tuple[str, str, list[str]]:
-    """SEO title (<=95 chars, ends with #Shorts), description (hook + soft CTA +
-    link + hashtags), tags. Mirrors the IG caption but tuned for YouTube search."""
+    """Content-matched metadata for a relatable cycling Short: the video's own
+    hook as the title (NOT a keyword) + #Shorts, a light description with one
+    soft brand line + link, and community tags. Authenticity > keyword-stuffing —
+    Shorts win on retention, and a mismatched SEO title would tank it."""
     hook = (onscreen or caption_line or punchline or "Road cycling POV").strip()
     hook = hook.replace("\n", " ").strip(" .")
-    title = hook[:80].rstrip()
-    if "velluto" not in title.lower():
-        title = f"{title} | Velluto"
-    title = f"{title[:86]} #Shorts"
+    title = f"{hook[:88].rstrip()} #Shorts"
     body_hook = " ".join(x for x in (caption_line or hook, punchline) if x).strip()
     description = (
         f"{body_hook}\n\n"
-        f"Velluto StradaPro — 25g ultralight road cycling glasses, interchangeable "
-        f"lenses, UV400, anti-fog. From 69 EUR, 30-day risk-free trial.\n"
-        f"👉 {SITE}\n\n{HASHTAGS}"
+        f"Velluto — Italian-designed road cycling eyewear. {SITE}\n\n{HASHTAGS}"
     )
     return title, description, TAGS
 
