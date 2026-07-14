@@ -1,18 +1,12 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-07-13",
+  "date": "2026-07-14",
   "locale": "nb-NO",
   "locale_short": "nb",
   "market_code": "NB",
-  "master_topic": "SunGod alternative cycling glasses",
-  "local_primary_keyword": "SunGod alternative cycling glasses",
-  "local_secondary_keywords": [
-    "Are SunGod glasses worth it?",
-    "Who makes the best cycling glasses?",
-    "Who makes the best cycling glasses?",
-    "What glasses are best for cycling?",
-    "Who makes the best cycling glasses?"
-  ],
+  "master_topic": "cycling glasses",
+  "local_primary_keyword": "cycling glasses",
+  "local_secondary_keywords": [],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
   "local_adaptation_notes": [
@@ -31,7 +25,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-07-13",
+    "last_updated": "2026-07-14",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
