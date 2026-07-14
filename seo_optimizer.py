@@ -171,9 +171,11 @@ def fetch_gsc() -> dict:
     MARKETS = {"NL": "nld", "DE": "deu", "BE": "bel", "AT": "aut"}
     by_country = {}
     for label, code in MARKETS.items():
-        rows = _q(["query"], row_limit=15, country=code)
+        rows  = _q(["query"], row_limit=15, country=code)
+        pages = _q(["page"],  row_limit=20, country=code)  # for market-aware retrofit
         by_country[label] = {
             "queries": rows,
+            "pages":   pages,
             "clicks":      int(sum(r.get("clicks", 0) for r in rows)),
             "impressions": int(sum(r.get("impressions", 0) for r in rows)),
         }

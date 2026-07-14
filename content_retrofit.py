@@ -182,17 +182,22 @@ def select_candidates(audit: dict, gsc_pages: dict, state: dict, ctr_state: dict
     for url, a in audit.items():
         if blocked(url):
             continue
-        impr = gsc_pages.get(url, {}).get("impressions", 0)
-        if impr < 200:
+        g = gsc_pages.get(url, {})
+        impr = g.get("impressions", 0)
+        home = g.get("home_impr", 0)
+        # home-market impressions weighted 3× (revenue markets, ~75 EUR/click)
+        weight = impr + home * 3
+        if impr < 200 and home < 30:
             continue
+        home_tag = f", {home} DACH/NL/FR" if home else ""
         comparison_intent = bool(re.search(r"(-vs-|alternative|comparison|better-value)",
                                            a.get("handle", "")))
         if comparison_intent and not a.get("has_table"):
-            scored.append((impr * 2, {"url": url, "handle": a["handle"], "action": "table",
-                                      "reason": f"comparison page without table ({impr:,} impr)"}))
+            scored.append((weight * 2, {"url": url, "handle": a["handle"], "action": "table",
+                                        "reason": f"comparison page without table ({impr:,} impr{home_tag})"}))
         elif median_top and a["words"] < 0.6 * median_top:
-            scored.append((impr, {"url": url, "handle": a["handle"], "action": "expand",
-                                  "reason": f"{a['words']} words vs top-median {median_top} ({impr:,} impr)"}))
+            scored.append((weight, {"url": url, "handle": a["handle"], "action": "expand",
+                                    "reason": f"{a['words']} words vs top-median {median_top} ({impr:,} impr{home_tag})"}))
     scored.sort(key=lambda t: t[0], reverse=True)
     return [c for _, c in scored[:MAX_PER_CYCLE]]
 
@@ -369,6 +374,48 @@ def adapt_fragment(client: Anthropic, fragment: str, locale: str) -> str:
     return _extract_html(r.content[0].text)
 
 
+# Markets with curated native PAA (data/paa_seed.json) — these get a genuinely
+# native expansion (written in-language around the market's real PAA), not a
+# translation of the EN fragment. Others keep the translate-EN path.
+NATIVE_PAA_LANGS = {"de", "nl", "fr"}
+
+
+def gen_native_expansion(client: Anthropic, title: str, body: str,
+                         locale: str, paa: list[str]) -> str:
+    """Native-language <h2>/<h3> sections answering the market's real PAA in
+    featured-snippet style — so the /de/, /nl/, /fr/ page ranks natively for
+    what that market actually searches, not for a translated English article."""
+    lang = LOCALE_LANG_NAMES.get(locale, locale)
+    q_lines = "\n".join(f"- {q}" for q in paa[:8]) or "- (none)"
+    r = client.messages.create(
+        model=SONNET, max_tokens=5000,
+        system=(f"You are Velluto's lead SEO editor writing natively in {lang} for "
+                "that market's road cyclists (NOT translating). Output ONLY an HTML "
+                "fragment, no markdown fences, no commentary."),
+        messages=[{"role": "user", "content":
+            f"Article (its {lang} version): \"{title}\"\n\n"
+            f"Google shows these REAL '{lang}' People-Also-Ask questions for this topic — "
+            f"answer the relevant ones so this page wins the PAA/featured snippets:\n{q_lines}\n\n"
+            f"Write 2-4 NEW sections IN {lang.upper()} (900-1600 words total):\n"
+            "1. Each covered question becomes an <h3> heading (use the question or a close "
+            "native variant) opened by a direct, self-contained 40-60 word answer, then depth.\n"
+            "2. Group under 1-2 <h2> section intros. Native tone — a faster cycling friend, "
+            "not a sales pitch, not translated-sounding.\n"
+            "3. Velluto facts only: 25g, UV400, anti-fog, interchangeable lenses "
+            "(VellutoPuro clear + VellutoVisione high-contrast), adjustable nose pads, "
+            "30-day trial, from 69 EUR. Velluto does NOT offer photochromic/self-tinting "
+            "(selbsttönend/meekleurend/photochromique), polarized or prescription lenses — "
+            "if asked, honestly explain why an interchangeable-lens system is the better "
+            "answer, never claim Velluto has them.\n"
+            "4. Competitor prices as ranges only. No invented facts/stats.\n"
+            "5. Plain <h2>/<h3>/<p>/<ul> HTML. No <h1>, no <script>, no images, "
+            f"links only to {SITE}.\n"
+            "6. Do NOT repeat content already in the page:\n"
+            f"{re.sub(r'<[^>]+>', ' ', body or '')[:2500]}"}],
+    )
+    return _extract_html(r.content[0].text)
+
+
 # ── Shopify / state / reporting ──────────────────────────────────────────────
 
 def fetch_articles() -> list[dict]:
@@ -464,6 +511,16 @@ def main() -> None:
             "endDate": today.isoformat(), "dimensions": ["page"], "rowLimit": 250})
         gsc_pages = {(r.get("keys") or [""])[0]: {"impressions": int(r.get("impressions", 0))}
                      for r in rows}
+    # Home-market (DACH/NL/FR) page impressions — a click here is worth ~75 EUR,
+    # so the retrofit prioritizes pages with revenue-market traction. Locale URLs
+    # (/de/…, /nl/…) are folded back onto their root blog URL to match the audit.
+    gsc_de = _load(os.path.join(BASE, "gsc_data.json"), {}).get("by_country") or {}
+    for label in ("DE", "NL", "BE", "AT"):
+        for r in (gsc_de.get(label) or {}).get("pages", []):
+            u = re.sub(r"^(https://velluto-shop\.com)/[a-z]{2}(-[a-z]{2,4})?/",
+                       r"\1/", (r.get("keys") or [""])[0])
+            gsc_pages.setdefault(u, {}).setdefault("impressions", 0)
+            gsc_pages[u]["home_impr"] = gsc_pages[u].get("home_impr", 0) + int(r.get("impressions", 0))
     cycle = int(state.get("cycle", 0)) + 1
     picks = select_candidates(audit, gsc_pages, state, ctr_state, today, cycle)
     if not picks:
@@ -537,19 +594,34 @@ def main() -> None:
             print(f"   ❌ body PUT failed for {pick['handle']}")
             continue
         digests = get_translatable_digests(art["id"])
+        native_hits = []
         for locale in SHOP_LOCALES:
             tr = fetch_translations(art["id"], locale)
             if not tr.get("body_html"):
                 continue
             try:
-                adapted = adapt_fragment(client, fragment, locale)
-                if validate_fragment(adapted, expect):
-                    adapted = fragment  # fall back to EN fragment rather than skip
-                tr_body = insert_before_faq(tr["body_html"], adapted)
+                # DE/NL/FR with an "expand" action + curated native PAA → write a
+                # genuinely native section for that market's real questions.
+                native_paa = (load_paa_questions(pick["handle"], art["title"], locale)
+                              if locale in NATIVE_PAA_LANGS and "expand" in pick["action"] else [])
+                if native_paa:
+                    frag_loc = gen_native_expansion(client, tr.get("title", "") or art["title"],
+                                                    tr["body_html"], locale, native_paa)
+                    if validate_fragment(frag_loc, "h2"):
+                        frag_loc = adapt_fragment(client, fragment, locale)  # fall back
+                    else:
+                        native_hits.append(locale)
+                else:
+                    frag_loc = adapt_fragment(client, fragment, locale)
+                    if validate_fragment(frag_loc, expect):
+                        frag_loc = fragment  # last-resort: EN fragment
+                tr_body = insert_before_faq(tr["body_html"], frag_loc)
                 register_shopify_translation(art["id"], locale, tr.get("title", ""),
                                              tr_body, tr.get("meta_description", ""), digests)
             except Exception as e:
                 print(f"   ⚠️  [{locale}] adaptation failed: {e}")
+        if native_hits:
+            print(f"      🌍 native PAA sections: {', '.join(native_hits)}")
 
         before = {"words": art["words"]}
         if token:
@@ -559,10 +631,11 @@ def main() -> None:
         state.setdefault("articles", {})[pick["url"]] = {
             "cycle": cycle, "date": today.isoformat(), "action": pick["action"],
             "handle": pick["handle"], "added_words": added_words,
-            "before": before, "measured": None,
+            "native_markets": native_hits, "before": before, "measured": None,
         }
-        done_lines.append(f"✏️ {pick['handle'][:40]} [{pick['action']}] +{added_words} Wörter")
-        print("   ✅ updated (EN + translations)")
+        nat = f" · nativ: {','.join(native_hits)}" if native_hits else ""
+        done_lines.append(f"✏️ {pick['handle'][:40]} [{pick['action']}] +{added_words} Wörter{nat}")
+        print(f"   ✅ updated (EN + translations{', native ' + '/'.join(native_hits) if native_hits else ''})")
 
     # 5. REPORT + persist
     state["last_run"], state["cycle"] = today.isoformat(), cycle
