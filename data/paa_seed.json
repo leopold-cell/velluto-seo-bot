@@ -63,7 +63,14 @@
       "What sunglasses do navy seals use?"
     ]
   },
-  "de": {},
+  "de": {
+    "best-cycling": [
+      "Welche Fahrradbrille ist die beste?",
+      "Welche Brille beim Fahrradfahren?",
+      "Auf was sollte man bei einer Fahrradbrille achten?",
+      "Ist eine Fahrradbrille sinnvoll?"
+    ]
+  },
   "nl": {},
   "fr": {},
   "es": {},
