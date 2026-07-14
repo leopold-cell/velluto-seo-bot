@@ -63,9 +63,78 @@
       "What sunglasses do navy seals use?"
     ]
   },
-  "de": {},
-  "nl": {},
-  "fr": {},
+  "de": {
+    "best-cycling": [
+      "Welche Fahrradbrille ist die beste?",
+      "Welche Brille beim Fahrradfahren?",
+      "Auf was sollte man bei einer Fahrradbrille achten?",
+      "Ist eine Fahrradbrille sinnvoll?",
+      "Welche Sonnenbrille beim Radfahren?"
+    ],
+    "oakley": [
+      "Lohnt sich eine Oakley-Sonnenbrille zum Radfahren?",
+      "Welche Brille trägt Pogacar?"
+    ],
+    "expensive": [
+      "Was kostet eine gute Fahrradbrille?",
+      "Gibt es einen Unterschied zwischen teuren und billigen Brillen?",
+      "Was sollte man beim Kauf einer Fahrradbrille beachten?",
+      "Wie teuer darf eine gute Sonnenbrille sein?"
+    ],
+    "anti-fog": [
+      "Was hilft, dass die Brille nicht beschlägt?",
+      "Was ist das beste Antibeschlagspray für Brillen?",
+      "Wie kann ich verhindern, dass meine Brillengläser trotz Maske beschlagen?"
+    ]
+  },
+  "nl": {
+    "best-cycling": [
+      "Wat is de beste bril voor wielrennen?",
+      "Waar moet ik op letten bij het kopen van een fietsbril?",
+      "Wat zijn de top 5 brillen?",
+      "Wat zijn de top 10 beste fietsbrillen?",
+      "Welke categorie fietsbril heb ik nodig?",
+      "Wat is de beste zonnebril voor wielrennen?",
+      "Welke fietsbril is goed tegen tranende ogen?"
+    ],
+    "oakley": [
+      "Welke fietsbril heeft Pogacar?",
+      "Welke bril draagt Mathieu van der Poel?",
+      "Wat is de beste Oakley fietsbril?"
+    ],
+    "budget": [
+      "Wat is de beste betaalbare fietsbril?"
+    ],
+    "expensive": [
+      "Is een dure bril beter dan een goedkope?",
+      "Is er een verschil tussen dure en goedkope brillen?"
+    ]
+  },
+  "fr": {
+    "best-cycling": [
+      "Quelles lunettes pour faire du vélo ?",
+      "Quelles sont les meilleures lunettes de vélo pour la route ?",
+      "Pourquoi lunettes à l'envers sur casque vélo ?",
+      "Quelles sont les meilleures lunettes de soleil pour le cyclisme ?",
+      "Quelles lunettes pour le cyclisme ?",
+      "Quelle est la meilleure marque de lunettes pour vélo ?"
+    ],
+    "anti-fog": [
+      "Comment éviter la buée sur les lunettes pendant la course à pied ?",
+      "Est-ce que les lunettes anti-éblouissement sont efficaces ?",
+      "Quel est le traitement anti-buée le plus efficace pour les lunettes ?"
+    ],
+    "oakley": [
+      "Quelle marque de lunettes est similaire à Oakley ?",
+      "Les lunettes Oakley valent-elles le coup pour le cyclisme ?",
+      "Quelles sont les lunettes de Pogacar ?"
+    ],
+    "expensive": [
+      "Existe-t-il une différence entre des lunettes chères et des lunettes bon marché ?",
+      "Les lunettes de VTT valent-elles l'investissement ?",
+      "Les lunettes de cyclisme font-elles une différence ?"
+    ]
+  },
   "es": {},
   "it": {},
   "pt-PT": {},
