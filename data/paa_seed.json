@@ -92,6 +92,7 @@
       "Wat is de beste bril voor wielrennen?",
       "Waar moet ik op letten bij het kopen van een fietsbril?",
       "Wat zijn de top 5 brillen?",
+      "Wat zijn de top 10 beste fietsbrillen?",
       "Welke categorie fietsbril heb ik nodig?",
       "Wat is de beste zonnebril voor wielrennen?",
       "Welke fietsbril is goed tegen tranende ogen?"
@@ -103,6 +104,10 @@
     ],
     "budget": [
       "Wat is de beste betaalbare fietsbril?"
+    ],
+    "expensive": [
+      "Is een dure bril beter dan een goedkope?",
+      "Is er een verschil tussen dure en goedkope brillen?"
     ]
   },
   "fr": {},
