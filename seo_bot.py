@@ -2316,6 +2316,9 @@ def main():
         write_daily_research_report(decision, scored, research)
         print(f"   ✓ Decision: {decision['chosen_action']} "
               f"(topic='{decision.get('chosen_topic')}', score={decision.get('opportunity_score')})")
+        if decision.get("native_volume"):
+            print(f"     🎯 Target market: {decision.get('target_market')} "
+                  f"(native demand {decision.get('native_volume'):,}/mo)")
         if decision.get("why_this_topic"):
             print(f"     Why: {decision['why_this_topic']}")
     except Exception as e:
