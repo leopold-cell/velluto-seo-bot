@@ -1,11 +1,11 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-07-14",
+  "date": "2026-07-15",
   "locale": "pl-PL",
   "locale_short": "pl",
   "market_code": "PL",
-  "master_topic": "cycling glasses",
-  "local_primary_keyword": "cycling glasses",
+  "master_topic": "Rudy Project alternative cycling glasses",
+  "local_primary_keyword": "Rudy Project alternative cycling glasses",
   "local_secondary_keywords": [],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -13,19 +13,19 @@
     "Cycling culture context: kolarstwo szosowe w Polsce — Beskidy, Bieszczady",
     "Use local cycling terminology naturally (e.g. Rennrad, fietsbril, vélo, ciclismo)",
     "Avoid literal translations of brand-y phrases like 'cycling sunglasses' — use what locals search for",
-    "Mention price as 649 PLN"
+    "Mention price as 299 PLN"
   ],
   "cta_url": "https://velluto-shop.com/pl/collections/velluto-stradapro-cycling-glasses",
   "commercial": {
     "market": "PL",
     "currency": "PLN",
-    "current_price": 649,
-    "uvp": 649,
+    "current_price": 299,
+    "uvp": 299,
     "offer_status": "standard",
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-07-14",
+    "last_updated": "2026-07-15",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }

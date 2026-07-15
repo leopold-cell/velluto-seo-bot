@@ -1,0 +1,234 @@
+{
+  "review_date": "2026-07-15",
+  "inventory": {
+    "total_articles": 55,
+    "bot_articles": 0
+  },
+  "quality": {
+    "articles_checked": 0,
+    "avg_llm_score": null,
+    "with_issues": 0,
+    "weak": 0,
+    "results": []
+  },
+  "performance": {
+    "window": [
+      "2026-06-17",
+      "2026-07-15"
+    ],
+    "totals": {
+      "curr_impressions": 20014,
+      "curr_clicks": 373,
+      "prev_impressions": 14126,
+      "prev_clicks": 296,
+      "impr_delta_pct": 41.7,
+      "clicks_delta_pct": 26.0
+    },
+    "buckets": {
+      "dead": 0,
+      "weak": 0,
+      "low_ctr": 0,
+      "performing": 0,
+      "no_data": 0
+    },
+    "articles_checked": 0,
+    "has_gsc_data": true,
+    "results": []
+  },
+  "translations": {
+    "target_locales": [
+      "de",
+      "nl",
+      "fr",
+      "es",
+      "it",
+      "da",
+      "nb",
+      "pl",
+      "pt-PT",
+      "sv"
+    ],
+    "articles_checked": 0,
+    "fully_complete": 0,
+    "avg_completeness_pct": 0,
+    "missing_by_locale": {},
+    "articles_needing_fix": [],
+    "results": []
+  },
+  "ui": {
+    "skipped": false,
+    "targets": 0,
+    "broken": 0,
+    "minor": 0,
+    "results": []
+  },
+  "seo_geo": {
+    "technical": {
+      "pages": {
+        "home": {
+          "url": "https://velluto-shop.com/",
+          "ok": true,
+          "status": 200,
+          "title": "Velluto StradaPro | Ultra High Contrast Road Cycling Glasses",
+          "title_len": 60,
+          "meta_description_len": 153,
+          "h1_count": 1,
+          "canonical": true,
+          "canonical_href": "https://velluto-shop.com/",
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "Answer",
+            "BreadcrumbList",
+            "FAQPage",
+            "ListItem",
+            "Organization",
+            "Question",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 61,
+            "missing_alt": 0
+          },
+          "internal_links": 73,
+          "issues": [
+            "hreflang missing for: pt-PT"
+          ]
+        },
+        "collection": {
+          "url": "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses",
+          "ok": true,
+          "status": 200,
+          "title": "Road Cycling Glasses | Velluto StradaPro",
+          "title_len": 40,
+          "meta_description_len": 131,
+          "h1_count": 1,
+          "canonical": true,
+          "canonical_href": "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses",
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "BreadcrumbList",
+            "ListItem",
+            "Organization",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 35,
+            "missing_alt": 0
+          },
+          "internal_links": 61,
+          "issues": [
+            "hreflang missing for: pt-PT"
+          ]
+        },
+        "blog": {
+          "url": "https://velluto-shop.com/blogs/velluto-the-magazine",
+          "ok": true,
+          "status": 200,
+          "title": "Velluto - The Magazine",
+          "title_len": 22,
+          "meta_description_len": 0,
+          "h1_count": 1,
+          "canonical": true,
+          "canonical_href": "https://velluto-shop.com/blogs/velluto-the-magazine",
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "BreadcrumbList",
+            "ListItem",
+            "Organization",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 28,
+            "missing_alt": 0
+          },
+          "internal_links": 104,
+          "issues": [
+            "meta description missing (want ≤160)",
+            "hreflang missing for: pt-PT"
+          ]
+        }
+      },
+      "robots_txt": true,
+      "sitemap_xml": true,
+      "sitemap_references_articles": true
+    },
+    "technical_issues": [
+      "home: hreflang missing for: pt-PT",
+      "collection: hreflang missing for: pt-PT",
+      "blog: meta description missing (want ≤160)",
+      "blog: hreflang missing for: pt-PT"
+    ],
+    "geo": {
+      "geo_score": 38,
+      "seo_score": 62,
+      "top_geo_gaps": [
+        "No article HTML provided — impossible to verify sourceable answer blocks, definitional summaries, or inline citations that AI engines extract for citations",
+        "Blog index page has zero meta description, making it invisible to AI crawlers that rely on snippet context to classify and cite content",
+        "Collection and blog pages lack Article, FAQPage, or Product structured data — AI engines strongly prefer schema-marked content for direct citation",
+        "No visible comparison tables, spec sheets, or 'best-for' summaries detected; these are the primary formats AI answer engines pull into responses",
+        "Entity disambiguation is weak — 'Velluto StradaPro' is not linked to any external authority (brand registry, Wikidata, Google Knowledge Panel signals), reducing trustworthiness score for AI citation",
+        "No external citations or sourced statistics found in crawled pages; AI engines deprioritise unsubstantiated product claims ('ultra high contrast') with no referenced proof",
+        "FAQ schema exists only on the homepage — product and blog pages are uncovered, missing the Q&A format that AI Overviews and Perplexity harvest most aggressively",
+        "Content freshness signals (datePublished / dateModified) not confirmed in structured data for blog articles, reducing recency scoring in AI ranking"
+      ],
+      "top_seo_fixes": [
+        "Add meta description to blog index page (currently 0 chars) — use ≤160 chars with primary keyword and value proposition",
+        "Add hreflang pt-PT tag to all pages (home, collection, blog) alongside the existing pt tag to fix incomplete locale targeting",
+        "Expand collection page structured data to include ItemList and Product schema with price, availability, and review aggregateRating",
+        "Blog page title 'Velluto - The Magazine' (22 chars) is too short and brand-only — rewrite to include topical keywords e.g. 'Road Cycling Tips & Gear Reviews | Velluto Magazine'",
+        "Add Article or BlogPosting schema to all individual blog post pages with datePublished, dateModified, author, and publisher fields",
+        "Audit internal linking depth — 104 internal links on the blog index suggests potential crawl dilution; ensure key article pages are within 2 clicks of homepage"
+      ],
+      "quick_wins": [
+        "Add FAQPage schema to the collection page with 3–5 Q&As answering 'What are the best road cycling glasses for high contrast?', 'What lens options does StradaPro offer?', 'Are Velluto glasses compatible with prescription inserts?' — these map directly to AI Overview trigger queries",
+        "Write a 60–80 word definitional summary paragraph at the top of the collection page starting with 'Velluto StradaPro cycling glasses are…' — this sentence structure is the primary format AI engines extract for zero-click answers",
+        "Fix the blog meta description immediately (zero cost, high impact) — one 150-char sentence summarising the magazine's editorial focus restores AI crawler context",
+        "Add a visible comparison table on the collection page comparing lens tints by light condition (sunny / overcast / low light) with contrast % values — tables are cited in AI responses at disproportionately high rates",
+        "Claim and optimise a Google Business / brand Knowledge Panel and link to it via sameAs in the Organization schema already present — boosts entity confidence for AI engines"
+      ]
+    }
+  },
+  "autofix": {}
+}

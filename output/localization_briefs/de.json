@@ -1,17 +1,17 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-07-14",
+  "date": "2026-07-15",
   "locale": "de-DE",
   "locale_short": "de",
   "market_code": "DE",
-  "master_topic": "cycling glasses",
-  "local_primary_keyword": "cycling glasses",
+  "master_topic": "Rudy Project alternative cycling glasses",
+  "local_primary_keyword": "Rudy Project alternative cycling glasses",
   "local_secondary_keywords": [
-    "Are SunGod glasses worth it?",
     "Who makes the best cycling glasses?",
-    "What glasses are best for cycling?",
-    "Who makes the best cycling glasses?",
-    "Is SunGod worth it?"
+    "What's better than Oakley?",
+    "What are the best Oakley sunglasses for riding bikes?",
+    "What are the best sunglasses for cycling?",
+    "What glasses protect against wind?"
   ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -19,19 +19,19 @@
     "Cycling culture context: Rennrad-Touren in Alpen, Mittelgebirge und auf Norddeutschen Routen; Schwerpunkt auf Schutz und Performance",
     "Use local cycling terminology naturally (e.g. Rennrad, fietsbril, vélo, ciclismo)",
     "Avoid literal translations of brand-y phrases like 'cycling sunglasses' — use what locals search for",
-    "Mention price as 149 EUR"
+    "Mention price as 69 EUR"
   ],
   "cta_url": "https://velluto-shop.com/de/collections/velluto-stradapro-cycling-glasses",
   "commercial": {
     "market": "DE",
     "currency": "EUR",
-    "current_price": 149,
-    "uvp": 149,
+    "current_price": 69,
+    "uvp": 69,
     "offer_status": "standard",
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-07-14",
+    "last_updated": "2026-07-15",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
