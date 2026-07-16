@@ -1,6 +1,6 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-07-15",
+  "date": "2026-07-16",
   "locale": "de-DE",
   "locale_short": "de",
   "market_code": "DE",
@@ -8,10 +8,10 @@
   "local_primary_keyword": "Rudy Project alternative cycling glasses",
   "local_secondary_keywords": [
     "Who makes the best cycling glasses?",
-    "What's better than Oakley?",
-    "What are the best Oakley sunglasses for riding bikes?",
-    "What are the best sunglasses for cycling?",
-    "What glasses protect against wind?"
+    "What glasses are best for cycling?",
+    "Who makes the best cycling glasses?",
+    "What are the best Oakley sunglasses for road cycling?",
+    "What are the best road cycling glasses?"
   ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -31,7 +31,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-07-15",
+    "last_updated": "2026-07-16",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
