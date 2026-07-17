@@ -1267,6 +1267,32 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
     raise RuntimeError(f"Shopify publish failed {r.status_code}: {r.text[:300]}")
 
 
+@retry(max_attempts=3, delay=5, label="replace-article")
+def replace_article(article_id: int, title: str, body_html: str, meta_desc: str,
+                    tags: str) -> bool:
+    """Replace an existing article's title/body/meta IN PLACE and re-publish it —
+    same handle/URL (Shopify keeps the handle when only the title changes). Used by
+    the legal compliance rewrite to bring a drafted article back clean without
+    losing its URL/rankings."""
+    payload = {"article": {
+        "id":              article_id,
+        "title":           title,
+        "body_html":       body_html,
+        "published":       True,
+        "author":          "Velluto",
+        "tags":            _safe_tags(tags),
+        "metafields": [{"key": "description_tag", "value": meta_desc[:155],
+                        "type": "single_line_text_field", "namespace": "global"}],
+    }}
+    r = requests.put(
+        f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles/{article_id}.json",
+        headers=SHOPIFY_HEADERS, json=payload, timeout=20)
+    if r.status_code in (200, 201):
+        print(f"   ♻️  Replaced article {article_id} in place (compliant rewrite)")
+        return True
+    raise RuntimeError(f"Shopify replace failed {r.status_code}: {r.text[:300]}")
+
+
 _BLOG_HANDLE_CACHE: dict = {}
 
 
@@ -2051,8 +2077,12 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
 
 
 def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None = None,
-                       brief: dict | None = None):
+                       brief: dict | None = None, replace_id: int | None = None):
     """Orchestrate: generate EN article → publish (EN primary) → register DE/NL/FR/… via T&A.
+
+    replace_id: if set, REPLACE that existing article in place (same URL/handle) with
+                the freshly-generated compliant body/title and re-publish it — instead
+                of creating a new article. Used by the legal compliance rewrite.
 
     commercial: optional commercial config (dict of per-market price/UVP/offer).
                 When None, a fresh one is loaded lazily — but the caller should
@@ -2158,29 +2188,37 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
                 print(f"   ⚠️  {iss}")
         break
 
-    # Guard: check if an article with this title's handle already exists (prevents -1 duplicates)
-    expected_slug = re.sub(r'[^a-z0-9]+', '-', post.get("title", "").lower()).strip('-')
-    if expected_slug:
-        existing_check = requests.get(
-            f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json",
-            params={"handle": expected_slug, "fields": "id,handle"},
-            headers=SHOPIFY_HEADERS, timeout=15,
-        ).json().get("articles", [])
-        if existing_check:
-            print(f"   ⚠️  Article handle '{expected_slug}' already exists (ID:{existing_check[0]['id']}) — skipping publish")
-            mark_en_keyword_used(keyword)
-            return
-
     # Phase 4.1: quality gate already ran inside the retry loop above.
     # If we reach here, post passed both FACT and gate checks.
     body_html = build_body_html(post, cover_url)
-    aid, handle = publish(
-        title=post["title"],
-        body_html=body_html,
-        meta_desc=post.get("meta_description", "")[:155],
-        tags=post.get("tags", ",".join(ALLOWED_TAGS)),
-        featured_url=cover_url,
-    )
+
+    if replace_id:
+        # In-place compliant rewrite: replace an existing article (same URL/handle)
+        # and re-publish it. No duplicate-handle guard (we WANT to overwrite).
+        replace_article(replace_id, post["title"], body_html,
+                        post.get("meta_description", "")[:155],
+                        post.get("tags", ",".join(ALLOWED_TAGS)))
+        aid, handle = replace_id, None
+    else:
+        # Guard: check if an article with this title's handle already exists (prevents -1 duplicates)
+        expected_slug = re.sub(r'[^a-z0-9]+', '-', post.get("title", "").lower()).strip('-')
+        if expected_slug:
+            existing_check = requests.get(
+                f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json",
+                params={"handle": expected_slug, "fields": "id,handle"},
+                headers=SHOPIFY_HEADERS, timeout=15,
+            ).json().get("articles", [])
+            if existing_check:
+                print(f"   ⚠️  Article handle '{expected_slug}' already exists (ID:{existing_check[0]['id']}) — skipping publish")
+                mark_en_keyword_used(keyword)
+                return
+        aid, handle = publish(
+            title=post["title"],
+            body_html=body_html,
+            meta_desc=post.get("meta_description", "")[:155],
+            tags=post.get("tags", ",".join(ALLOWED_TAGS)),
+            featured_url=cover_url,
+        )
 
     mark_en_keyword_used(keyword)
     increment_quality_day()
