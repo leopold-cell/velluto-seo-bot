@@ -175,7 +175,7 @@ STRADAPRO GLASSES (available in 4 colours: Arancia/orange, Espresso/brown, Nero/
 - Built-in anti-fog system — clear vision on climbs and in variable weather
 - Compatible with VellutoPuro and VellutoVisione interchangeable lenses (click-in, tool-free)
 - 30-day risk-free trial — test on real rides
-- Free shipping on orders over €99
+- Free shipping on orders over €89 (this is the SHIPPING threshold, NOT the product price)
 
 VellutoPuro TRANSPARENT LENS:
 - Optimised for road cyclists: ideal protection against wind and insects
@@ -1510,10 +1510,16 @@ PUBLISH RULES (HARD — articles violating these get blocked and discarded):
 1. PRICING — The ONLY Velluto price you may quote is "{primary_price_str}" (a starting "from" price).
    - NEVER write "149", "€149", "149 EUR", "$149" or any fixed Velluto price — 149 is retired.
    - Do NOT write "230 EUR" or any other invented amount as Velluto's price.
+   - The "€89 free-shipping threshold" is a SHIPPING minimum, NOT the product price. Never
+     present €89 (or any amount other than "{primary_price_str}") as what Velluto costs.
    - When discussing the cycling-sunglasses MARKET, use RANGES, not specific competitor prices.
      ✓ "Premium cycling sunglasses range from $150 to $350"
      ✗ "Oakley Sutro costs $280, Rudy Project costs $230"
    - Mention "{primary_price_str}" at most ONCE, near a CTA/product card. Not in body copy.
+6. LENS FEATURES — Photochromic, polarized, mirrored, prescription and over-glasses lenses
+   are things COMPETITORS may offer; you MAY note that in comparisons. But NEVER attribute
+   any of them to Velluto. Velluto offers exactly two lenses: clear VellutoPuro and
+   high-contrast VellutoVisione. Any Velluto-attributed claim of the above gets blocked.
 2. NO OUTBOUND COMPETITOR LINKS — Never use <a href="..."> to link to: {forbidden_competitor_domains}
    Competitor brand names may appear as plain text only.
 3. HOMEPAGE LINK — Include exactly one <a href="https://velluto-shop.com">…</a> link with descriptive
