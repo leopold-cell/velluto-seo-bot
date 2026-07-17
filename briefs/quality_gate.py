@@ -560,6 +560,52 @@ def check_meta_lengths(post: dict) -> list[str]:
     return issues
 
 
+# ── Legal compliance (EU/German advertising law) ─────────────────────────────
+# Backstop for the prompt's LEGAL COMPLIANCE rules. Not legal advice — a pattern
+# guard against the highest-risk phrasings under §§ 5, 5a, 6 UWG + EU Omnibus.
+
+_FAKE_TEST_RE = re.compile(
+    r"\b(we|our|i|us)\s+(tested|test|reviewed|measured|rode|road-?tested|field-?tested|trial(?:l)?ed|clocked)\b"
+    r"|\bin\s+(our|my)\s+(test|testing|review|lab|hands-on|experience)\b"
+    r"|\b(hands-on|field test|road test|our lab|editorial test|independently tested|"
+    r"independent (test|review|lab)|the evidence supports|test winner|testsieger|getestet)\b"
+    r"|\bafter\s+\d+\s*(hours|hrs|km|kilomet\w*|miles|rides|weeks|months)\s+(of\s+)?(testing|riding|use|wear)\b",
+    re.I)
+
+_DISPARAGE_RE = re.compile(
+    r"\(\s*(stated|claimed|self-?reported|allegedly|supposedly|unverified)\s*\)"
+    r"|\b(degrad\w+|inferior|flimsy|subpar|cheaply made|poorly made|"
+    r"only claims?|merely claims?|just claims?)\b",
+    re.I)
+
+_ORIGIN_RE = re.compile(
+    r"velluto[^.?!]{0,40}\b(dutch|nederland\w*|netherland\w*|niederl\w+|hollan\w+)\b"
+    r"|\b(dutch|nederland\w*|netherland\w*|niederl\w+|hollan\w+)\b[^.?!]{0,40}velluto",
+    re.I)
+
+
+def check_compliance(post: dict) -> list[str]:
+    """EU/German advertising-law guardrails (backstop to the generation prompt):
+    no fabricated tests/reviews (§ 5/5a UWG + EU Omnibus fake-review ban), no
+    disparaging/asymmetric competitor phrasing (§ 6 Abs. 2 Nr. 5 UWG), and correct
+    brand origin (no Herkunftstäuschung, § 5 UWG). Not legal advice."""
+    blob = (f"{post.get('title', '')} {post.get('meta_description', '')} "
+            f"{post.get('body_html', '')}")
+    issues: list[str] = []
+    if _FAKE_TEST_RE.search(blob):
+        issues.append("[LEGAL] implies a test/review/first-hand experience that wasn't "
+                      "performed — no fabricated testing (§ 5/5a UWG, EU fake-review ban); "
+                      "reframe as an honest, spec-based buyer's guide")
+    if _DISPARAGE_RE.search(blob):
+        issues.append("[LEGAL] disparaging or doubt-casting competitor phrasing "
+                      "('(stated)', 'degrades', 'only claims', 'inferior') — § 6 Abs. 2 "
+                      "Nr. 5 UWG; use neutral, verifiable, current facts only")
+    if _ORIGIN_RE.search(blob):
+        issues.append("[LEGAL] Velluto mis-described by nationality — Velluto is a GERMAN "
+                      "brand (Italian design); no false origin (§ 5 UWG)")
+    return issues
+
+
 # ── Top-level gate ────────────────────────────────────────────────────────
 
 def gate(post: dict, brief: dict | None, market_code: str = "US",
@@ -623,6 +669,7 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     hard += check_paa_coverage(post, brief)
     hard += check_commercial_config(post, market_code, commercial)
     hard += check_brand_facts(post)        # Phase 4.4 sentence-aware FACT check
+    hard += check_compliance(post)         # EU/DE advertising-law guardrails (UWG)
     hard += check_no_markdown_fence(post)  # Phase 4.7 leaked ```html fence
     hard += check_image_alt_text(post)     # Phase 4.9b blank/placeholder img alt
 
