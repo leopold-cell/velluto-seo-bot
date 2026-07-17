@@ -167,6 +167,10 @@ def notify(msg: str):
 BRAND_FACTS = """
 VELLUTO — VERIFIED PRODUCT FACTS (do not deviate from these):
 
+BRAND ORIGIN: Velluto is a GERMAN brand with Italian design, sold across Europe.
+NEVER describe Velluto as Dutch, Nederlands, Netherlands-based, or any other
+nationality — a false origin claim is misleading advertising (§ 5 UWG).
+
 STRADAPRO GLASSES (available in 4 colours: Arancia/orange, Espresso/brown, Nero/black, Viola/purple):
 - Italian design, high-performance functionality
 - UV400 protection — certified eye safety, blocks 100% UVA and UVB
@@ -1240,7 +1244,9 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
         "title":           title,
         "body_html":       body_html,
         "published":       True,
-        "author":          "Velluto Redaktion",
+        # Brand voice, NOT an editorial/independent byline — avoids the disguised-
+        # advertising / Trennungsgebot problem (§ 5a UWG, Anhang Nr. 11).
+        "author":          "Velluto",
         "tags":            _safe_tags(tags),
         "template_suffix": "velluto-magazine",
         "metafields": [{"key": "description_tag", "value": meta_desc[:155],
@@ -1526,10 +1532,39 @@ PUBLISH RULES (HARD — articles violating these get blocked and discarded):
    anchor text (e.g., "Velluto", "Velluto cycling eyewear", "premium Velluto glasses").
 4. INTERNAL LINKS — At least 3 <a> elements pointing to velluto-shop.com paths total.
 5. PRIMARY KEYWORD — The exact primary keyword (or its tokens) MUST appear in <title> (= the article title, rendered as the page H1 by the theme) and at least one <h2>. Never write an <h1> in the body.
+
+LEGAL COMPLIANCE (HARD — EU/German advertising law; violations get blocked):
+L1. NO FABRICATED TESTS OR REVIEWS. Never claim or imply first-hand testing, lab
+    measurement, trial rides, "hands-on", "field/road test", "we tested", "in our
+    tests", "after N hours/km", "Testsieger", "getestet", "editorial test", star
+    ratings, or an independent verdict — unless a real, documented test was done
+    (none was). This is misleading advertising and a banned practice (§ 5/5a UWG,
+    EU Omnibus fake-review rules). Write as an honest, spec-based buyer's guide.
+L2. NOT AN INDEPENDENT REVIEW. This is Velluto's own brand content. Do not frame it
+    as independent, journalistic, or editorial ("independent review", "our lab",
+    "the evidence supports [our test]"). Transparent brand voice only.
+L3. COMPARATIVE ADVERTISING (§ 6 UWG). When naming a competitor, every statement
+    about them must be OBJECTIVE, VERIFIABLE, on ESSENTIAL/TYPICAL features, and
+    CURRENT. Only use facts a competitor publishes officially. FORBIDDEN:
+    - Disparagement: "degrades", "inferior", "cheap/flimsy/subpar", mockery.
+    - Asymmetry that casts doubt: writing "UV400 (stated)" for a rival vs
+      "certified" for Velluto, "only claims", "merely".
+    - Absolute negatives that go stale: "does not offer X", "doesn't publish its
+      weights", "no risk-free trial" — you cannot verify these stay true. Instead
+      describe Velluto's OWN strengths without asserting a competitor lacks them.
+    - Inventing competitor specs, prices, or numbers.
+L4. TRUE OWN CLAIMS (§ 5 UWG). Only claims backed by fact. "UV400 certified" and
+    "25 g" and "anti-fog" are allowed (documented). Do not invent other
+    certifications, awards, or seals.
+L5. When in doubt, compare on Velluto's verifiable strengths and neutral,
+    publicly-known category facts — never a negative claim about a named rival you
+    cannot prove.
 """
 
-    system = f"""You are the lead SEO editor and copywriter for Velluto (velluto-shop.com), \
-a premium road cycling eyewear brand with Italian design, sold across Europe.
+    system = f"""You are the lead content writer for Velluto (velluto-shop.com), \
+a premium GERMAN road cycling eyewear brand with Italian design, sold across Europe. \
+You write helpful, honest, first-hand-accurate brand content — never fabricated \
+"tests" or fake independent reviews.
 
 {BRAND_FACTS}
 
