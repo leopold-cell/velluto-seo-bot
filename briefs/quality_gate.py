@@ -420,6 +420,18 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
             # ── Only flag if this price is attributed to Velluto ──
             if not _is_velluto_price_context(body, m.start(), m.end()):
                 continue
+            # Comparison context: a clearly-higher price next to a comparison cue
+            # ("rivals brands charging up to 300 EUR") is market/competitor context
+            # even when no competitor brand is named in the sentence — not Velluto's
+            # own price. Only applies well ABOVE the expected price so a near-miss
+            # like 70 vs 69 (a real Velluto typo) is still caught.
+            ctx = body[max(0, m.start() - 90): m.end() + 90].lower()
+            if amt > expected * 1.4 and any(
+                cue in ctx for cue in (
+                    " than ", "up to", "as much as", "charg", "competitor",
+                    "premium brand", "rival", "compared", "versus", " vs ",
+                    "cost more", "more expensive", "elsewhere", "market")):
+                continue
             # Tolerate exact match + UVP strikethrough
             if curr == expected_curr and amt == expected:
                 continue
@@ -440,6 +452,15 @@ FORBIDDEN_FEATURE_TOKENS = [
     ("photochrom", "claims photochromic lenses — Velluto doesn't offer these"),
     ("polari",     "claims polarized lenses — Velluto doesn't offer these"),
     # 'polari' prefix matches both 'polarized' (US) and 'polarised' (UK)
+    # Feature-specific tokens (not bare words) so "mirror finish" / "prescription
+    # for" prose doesn't hit; sentence-aware attribution still lets competitor and
+    # informational mentions through (see check_brand_facts / _is_velluto_price_context).
+    (r"mirror(ed)?\s+(lens|lense|coating|finish|tint)",
+                   "claims mirrored lenses — Velluto doesn't offer these"),
+    (r"prescription\s+(lens|lenses|insert|inserts|version|option|frame)",
+                   "claims prescription lenses — Velluto doesn't offer these"),
+    (r"over[\s-]glasses|fits?\s+over\s+(your\s+|normal\s+|prescription\s+)?(glasses|spectacles|prescription)",
+                   "claims StradaPro fits over prescription glasses — it does not"),
 ]
 
 
@@ -574,6 +595,13 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     if dashed:
         auto_fixes.append("replaced em-dashes with commas")
     post["body_html"] = fixed_body
+
+    # Auto-fix: trim an over-long meta description instead of hard-failing the whole
+    # article (and burning a full regeneration) over a couple of characters.
+    md = post.get("meta_description") or ""
+    if len(md) > 160:
+        post["meta_description"] = md[:157].rstrip(" ,;:.—-") + "…"
+        auto_fixes.append(f"trimmed meta_description {len(md)}→{len(post['meta_description'])}")
 
     # Hard checks
     hard: list[str] = []
