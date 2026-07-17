@@ -109,8 +109,32 @@ python3 -u bot.py --session 1 --dry-run
 ```
 
 Look for `discovery: N candidate posts collected` with **N > 0** and a list of
-`DRY-RUN — would like/follow @…` lines. If N is 0, the seed accounts may be
-blocked/rate-limited — adjust `SEED_ACCOUNTS` or wait and retry.
+`DRY-RUN — would like/follow @…` lines.
+
+### If discovery finds 0 posts — diagnose ONE profile first
+
+Instagram churns its DOM and throttles automation, so a `0 candidate posts` run
+needs a diagnosis, not a guess. `--debug-profile` loads **one** profile (safe on
+a throttled account) and tells you exactly why:
+
+```bash
+python3 -u bot.py --debug-profile gcn
+```
+
+It logs the final URL, page title, block markers, and — critically — how many
+post shortcodes are in the **DOM anchors** vs. the **raw HTML/JSON**, then prints
+a `VERDICT`. It also saves `logs/debug_gcn.png` + `logs/debug_gcn.html` to eyeball.
+
+| VERDICT | Meaning | Action |
+|---------|---------|--------|
+| redirect → login/challenge | cookie stale or account action-blocked | re-mint `session.json`, slow down — **no code fix helps** |
+| no post data in payload | throttle/block or pure app-shell | slow down / re-mint `session.json` |
+| data present but not in DOM anchors | IG changed the grid DOM | the regex/JSON fallback already handles it — just re-run the dry-run |
+| DOM anchors present | should work | overlay/timing — the built-in dismiss + wait should fix it |
+
+Cross-check manually: open those same profiles in a normal browser **logged in as
+this account** — if you can't see their posts there either, the account is
+restricted (a people problem, not a code one).
 
 Then one live session at the conservative default limits and check the summary
 email.

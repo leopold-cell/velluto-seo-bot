@@ -557,6 +557,90 @@ def unfollow_oldest(page, n, follows_ts):
     return unfollowed
 
 
+def debug_profile(handle: str):
+    """Diagnostic: load ONE profile and dump everything needed to tell WHY
+    discovery finds 0 posts — final URL, title, block markers, DOM vs. raw-HTML
+    shortcode counts, plus a screenshot + HTML dump in logs/. One profile visit,
+    not sixteen, so it's safe to run even on a throttled account."""
+    handle = (handle or "").strip().lstrip("@").strip("/")
+    LOG_DIR.mkdir(exist_ok=True)
+    log("═" * 46)
+    log(f"DEBUG PROFILE @{handle} — {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    cookies = json.loads(COOKIES_FILE.read_text())
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True,
+            args=["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu",
+                  "--disable-blink-features=AutomationControlled"])
+        ctx = browser.new_context(
+            user_agent=("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/124.0.0.0 Safari/537.36"),
+            viewport={"width": 1280, "height": 900}, locale="de-DE")
+        ctx.add_cookies(cookies)
+        page = ctx.new_page()
+        page.goto("https://www.instagram.com/", timeout=30000)
+        sleep(4, 6)
+        if "login" in page.url:
+            log("ERROR: homepage redirected to login — session.json is stale, re-upload it")
+            browser.close(); return
+        log("✓ Logged in (homepage)")
+
+        page.goto(f"https://www.instagram.com/{handle}/", timeout=30000,
+                  wait_until="domcontentloaded")
+        sleep(5, 7)
+        discovery._dismiss(page)
+        for _ in range(4):
+            try:
+                page.evaluate("window.scrollBy(0, 900)")
+            except Exception:
+                break
+            sleep(1.2, 2.0)
+
+        final_url = page.url
+        try:    title = page.title()
+        except Exception: title = ""
+        try:    html = page.content()
+        except Exception: html = ""
+        anchors  = page.query_selector_all("a[href]")
+        p_dom    = sum(1 for el in anchors if "/p/"    in (el.get_attribute("href") or ""))
+        reel_dom = sum(1 for el in anchors if "/reel/" in (el.get_attribute("href") or ""))
+        rx_url   = len(set(m[1] for m in discovery._HTML_CODE_RE.findall(html)))
+        rx_json  = len(set(discovery._JSON_CODE_RE.findall(html)))
+        low = (final_url + " " + title + " " + html[:3000]).lower()
+        markers = [m for m in ("login", "challenge", "suspended", "try again",
+                               "something went wrong", "confirm", "not available",
+                               "couldn't refresh", "captcha", "restricted")
+                   if m in low]
+
+        png   = LOG_DIR / f"debug_{handle}.png"
+        htmlf = LOG_DIR / f"debug_{handle}.html"
+        try:    page.screenshot(path=str(png))
+        except Exception as e: log(f"  screenshot failed: {e}")
+        try:    htmlf.write_text(html)
+        except Exception as e: log(f"  html dump failed: {e}")
+
+        log(f"  final url : {final_url}")
+        log(f"  title     : {title[:80]}")
+        log(f"  anchors   : {len(anchors)} total | /p/ DOM: {p_dom} | /reel/ DOM: {reel_dom}")
+        log(f"  raw html  : {rx_url} p/reel shortcodes | {rx_json} json code keys | {len(html)} bytes")
+        log(f"  markers   : {markers or 'none'}")
+        log(f"  saved     : logs/{png.name}, logs/{htmlf.name}")
+
+        if any(x in final_url.lower() for x in ("/login", "/challenge", "/suspended")):
+            log("  VERDICT   : redirect → cookie stale / action-block. No code fix — "
+                "slow down / re-mint session.json.")
+        elif p_dom == 0 and reel_dom == 0 and rx_url == 0 and rx_json == 0:
+            log("  VERDICT   : no post data in the payload → throttle/block or pure app-shell. "
+                "Slow down / re-mint session.json.")
+        elif p_dom == 0 and reel_dom == 0 and (rx_url > 0 or rx_json > 0):
+            log("  VERDICT   : data present but NOT in DOM anchors → the regex/JSON fallback "
+                "handles this; re-run the dry-run.")
+        else:
+            log("  VERDICT   : DOM anchors present → discovery should work; likely overlay/timing "
+                "(the new dismiss + wait should fix it).")
+        browser.close()
+
+
 def run(session_num: int):
     start_time = time.time()
     log("═" * 46)
@@ -641,6 +725,11 @@ if __name__ == "__main__":
     parser.add_argument("--session", type=int, default=1)
     parser.add_argument("--dry-run", action="store_true",
                         help="discover + log candidates, take NO actions")
+    parser.add_argument("--debug-profile", metavar="HANDLE", default=None,
+                        help="diagnose ONE profile (why discovery finds 0 posts), take NO actions")
     args = parser.parse_args()
-    DRY_RUN = args.dry_run
-    run(args.session)
+    if args.debug_profile:
+        debug_profile(args.debug_profile)
+    else:
+        DRY_RUN = args.dry_run
+        run(args.session)
