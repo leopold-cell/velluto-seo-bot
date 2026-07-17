@@ -942,7 +942,61 @@
         }
       ],
       "serps_scanned": 89
+    },
+    "2026-07-17": {
+      "aio_serps": 57,
+      "velluto_cited": 0,
+      "competitor_cited": 0,
+      "velluto_gap": 6,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 0.0,
+      "total_citations": 73,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 14
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 9
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 5
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 3
+        },
+        {
+          "domain": "bikeradar.com",
+          "citations": 3
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 2
+        },
+        {
+          "domain": "bicyclewarehouse.com",
+          "citations": 2
+        },
+        {
+          "domain": "kroops.com",
+          "citations": 2
+        }
+      ],
+      "serps_scanned": 182
     }
   },
-  "latest": "2026-07-16"
+  "latest": "2026-07-17"
 }

@@ -1,14 +1,11 @@
 {
-  "date": "2026-07-15",
+  "date": "2026-07-16",
   "slots": [
     "morning",
     "noon",
     "evening"
   ],
   "recent_lines": [
-    "My Garmin has seen things I will never speak of aloud.",
-    "Why do I always eat my last gel on the way *to* the climb?",
-    "The ride was supposed to end forty minutes ago.",
     "I packed four layers for a ride that took 90 minutes.",
     "nobody in the group mentioned it was a 4% average \u2014 for 18 kilometres.",
     "the caf\u00e9 stop was \"just water\" and somehow took 47 minutes",
@@ -20,7 +17,10 @@
     "My Garmin has seen things it will never forgive me for.",
     "Three bikes fit in this car. The fourth one stays home. Every time.",
     "Why does 6am feel reasonable the night before but criminal at 5:59?",
-    "I stopped to \"check my tyre\" and needed three minutes to breathe."
+    "I stopped to \"check my tyre\" and needed three minutes to breathe.",
+    "Nobody told my legs the warm-up ended at kilometre three.",
+    "The caf\u00e9 is 4 km away. I have been \"almost there\" for 20 minutes.",
+    "Promised myself a recovery ride. Currently chasing a stranger."
   ],
-  "last_media_id": "18603440230040180"
+  "last_media_id": "18087805334417349"
 }
