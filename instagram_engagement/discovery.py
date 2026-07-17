@@ -26,7 +26,10 @@ import re
 import time
 
 _PROFILE_RE = re.compile(r"^/([a-zA-Z0-9._]{2,30})/$")
-_POST_RE    = re.compile(r"/p/([^/?#]+)")
+_POST_RE    = re.compile(r"/(?:p|reel)/([^/?#]+)")           # posts AND reels
+# DOM-independent fallbacks over raw page HTML/JSON (IG churns the DOM often):
+_HTML_CODE_RE = re.compile(r"/(p|reel)/([A-Za-z0-9_-]{5,})")
+_JSON_CODE_RE = re.compile(r'"(?:short)?code"\s*:\s*"([A-Za-z0-9_-]{6,15})"')
 
 
 # ── pure helpers ─────────────────────────────────────────────────────────────
@@ -69,24 +72,83 @@ def _sleep(lo=1.2, hi=2.6):
     time.sleep(random.uniform(lo, hi))
 
 
+def _dismiss(page) -> None:
+    """Close cookie/consent/interstitial overlays that hide the grid. Soft."""
+    for sel in ("button:has-text('Not Now')", "button:has-text('Jetzt nicht')",
+                "button:has-text('Allow all cookies')", "button:has-text('Alle Cookies erlauben')",
+                "button:has-text('Decline optional cookies')", "button:has-text('Dismiss')",
+                "button:has-text('Schließen')", "[aria-label='Close']", "[aria-label='Schließen']"):
+        try:
+            b = page.query_selector(sel)
+            if b:
+                b.click(timeout=2000)
+                time.sleep(random.uniform(0.6, 1.2))
+        except Exception:
+            pass
+    try:
+        page.keyboard.press("Escape")
+    except Exception:
+        pass
+
+
+def _page_signals(page) -> dict:
+    """Cheap check of where we actually landed — detects login/challenge/block."""
+    try:
+        url = (page.url or "").lower()
+    except Exception:
+        url = ""
+    blocked = any(x in url for x in
+                  ("/accounts/login", "/challenge", "/suspended", "/accounts/suspended"))
+    return {"url": url, "blocked": blocked}
+
+
+def extract_post_links(page, log=print) -> list[str]:
+    """Collect post/reel URLs from an already-loaded page.
+
+    DOM anchors first (`/p/` and `/reel/`); if the DOM yields nothing, fall back
+    to regex over the raw HTML/JSON payload — resilient to IG's DOM churn (the
+    shortcodes are usually still embedded in the page's inline JSON even when the
+    anchor tiles aren't in the initial DOM).
+    """
+    urls: list[str] = []
+    try:
+        for el in page.query_selector_all("a[href*='/p/'], a[href*='/reel/']"):
+            href = el.get_attribute("href") or ""
+            if "/p/" in href or "/reel/" in href:
+                urls.append(_abs(href))
+    except Exception as e:
+        log(f"    discovery: DOM extract failed: {e}")
+    if not urls:                                   # DOM empty → try the payload
+        try:
+            html = page.content()
+            for kind, code in _HTML_CODE_RE.findall(html):
+                urls.append(f"https://www.instagram.com/{kind}/{code}/")
+            for code in _JSON_CODE_RE.findall(html):
+                urls.append(f"https://www.instagram.com/p/{code}/")
+            if urls:
+                log(f"    discovery: DOM empty — regex fallback found {len(dedupe_posts(urls))} codes")
+        except Exception as e:
+            log(f"    discovery: regex fallback failed: {e}")
+    return dedupe_posts(urls)
+
+
 def collect_post_links(page, url: str, scrolls: int = 6, log=print) -> list[str]:
     """Open a grid page (profile or location) and collect its post URLs."""
     try:
-        page.goto(url, timeout=30000)
+        page.goto(url, timeout=30000, wait_until="domcontentloaded")
         _sleep(4, 6)
+        _dismiss(page)
+        try:
+            page.wait_for_selector("a[href*='/p/'], a[href*='/reel/']", timeout=8000)
+        except Exception:
+            pass                                   # regex fallback may still hit
         for _ in range(scrolls):
             try:
                 page.evaluate("window.scrollBy(0, 900)")
             except Exception:
                 break
             time.sleep(random.uniform(1.2, 2.2))
-        links = page.query_selector_all("a[href*='/p/']")
-        out = []
-        for el in links:
-            href = el.get_attribute("href") or ""
-            if "/p/" in href:
-                out.append(_abs(href))
-        return dedupe_posts(out)
+        return extract_post_links(page, log=log)
     except Exception as e:
         log(f"    discovery: grid load failed for {url}: {e}")
         return []
@@ -95,8 +157,9 @@ def collect_post_links(page, url: str, scrolls: int = 6, log=print) -> list[str]
 def commenters_on_post(page, post_url: str, max_users: int = 12, log=print) -> list[str]:
     """Open a post and return the usernames that COMMENTED (real active users)."""
     try:
-        page.goto(post_url, timeout=30000)
+        page.goto(post_url, timeout=30000, wait_until="domcontentloaded")
         _sleep(3, 5)
+        _dismiss(page)
         users, seen = [], set()
         # Comment author links live inside the comment list; grab profile hrefs.
         for el in page.query_selector_all("ul a[href], div[role='presentation'] a[href]"):
@@ -114,15 +177,15 @@ def commenters_on_post(page, post_url: str, max_users: int = 12, log=print) -> l
 
 
 def latest_post_of_user(page, username: str, log=print) -> str:
-    """Return the URL of a user's most recent post (first grid tile), or ''."""
+    """Return the URL of a user's most recent post/reel (first grid tile), or ''."""
     try:
-        page.goto(f"https://www.instagram.com/{username}/", timeout=25000)
+        page.goto(f"https://www.instagram.com/{username}/", timeout=25000,
+                  wait_until="domcontentloaded")
         _sleep(3, 5)
-        el = page.query_selector("a[href*='/p/']")
-        if el:
-            href = el.get_attribute("href") or ""
-            if "/p/" in href:
-                return _abs(href)
+        _dismiss(page)
+        links = extract_post_links(page, log=log)
+        if links:
+            return links[0]
     except Exception as e:
         log(f"    discovery: latest post failed for @{username}: {e}")
     return ""
@@ -145,6 +208,8 @@ def discover(page, seed_accounts: list[str], location_ids: list[str],
     # ── Strategy 1: engagers of seed accounts ──
     seeds = list(seed_accounts or [])
     random.shuffle(seeds)
+    empty_streak = 0
+    block_hit = False
     for acct in seeds:
         if len(targets) >= want:
             break
@@ -152,8 +217,22 @@ def discover(page, seed_accounts: list[str], location_ids: list[str],
         posts = collect_post_links(page, f"https://www.instagram.com/{acct}/",
                                    scrolls=3, log=log)[:4]
         if not posts:
-            log(f"  discovery: seed @{acct} — no posts (private/blocked?)")
+            sig = _page_signals(page)
+            if sig["blocked"]:
+                block_hit = True
+                log(f"  discovery: seed @{acct} — BLOCKED/redirect → {sig['url'][:60]}")
+            else:
+                log(f"  discovery: seed @{acct} — no posts (private/blocked?)")
+            empty_streak += 1
+            # Protect the account: don't hammer all seeds when we're clearly being
+            # blocked, or when the first few seeds are all dry (nothing to gain).
+            if block_hit or (empty_streak >= 3 and not targets):
+                log(f"  discovery: early-exit after {empty_streak} empty seed(s)"
+                    + (" + block signal (cookie stale / action-block?)" if block_hit else "")
+                    + " — stopping to protect the account")
+                break
             continue
+        empty_streak = 0
         log(f"  discovery: seed @{acct} — {len(posts)} posts, reading commenters")
         for post in posts[:2]:
             if len(targets) >= want:
@@ -171,7 +250,9 @@ def discover(page, seed_accounts: list[str], location_ids: list[str],
             _sleep(3, 6)
 
     # ── Strategy 2: location grids (bonus) ──
-    for loc in (location_ids or []):
+    # Skip if we already hit a login/challenge redirect — locations won't fare
+    # better and every extra request digs the block deeper.
+    for loc in ([] if block_hit else (location_ids or [])):
         if len(targets) >= want:
             break
         url = f"https://www.instagram.com/explore/locations/{loc}/"
