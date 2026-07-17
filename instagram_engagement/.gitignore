@@ -1,0 +1,19 @@
+# Instagram engagement bot — local-only state & secrets. NEVER commit these.
+# The session cookie is a live login credential; the state files are per-account
+# runtime data that only exists on the VPS.
+
+# Login cookie (Playwright storage_state) — treat as a password.
+session.json
+
+# Runtime state (rebuilt on the VPS, account-specific).
+engaged.json
+replied.json
+follows.json
+summaries.log
+optimization.log
+
+# Logs
+logs/
+
+# Secrets (this bot also reads the repo-root .env, but ignore any local copy).
+.env
