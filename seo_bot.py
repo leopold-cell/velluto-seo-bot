@@ -1165,19 +1165,15 @@ def _parse_response(raw: str) -> dict:
 # ── Quality validation ───────────────────────────────────────────────────────
 
 FORBIDDEN_CLAIMS = [
-    # Phase 4.4: photochrom + polari[sz] moved to briefs.quality_gate.check_brand_facts
-    # for sentence-aware attribution (only flag VELLUTO-attributed claims, not
-    # competitor mentions or informational FAQ content).
-    #
-    # Only block when prescription is directly linked to Velluto/StradaPro or claimed as a product feature
-    (r'(velluto|stradapro).{0,60}prescription'
-     r'|prescription.{0,30}(lens|lenses|version|option|frame|insert)',
-     "claims prescription lenses — not in range"),
-    (r'mirror(ed)?(\s+lens)?', "claims mirrored lenses — not in range"),
-    (r'tinted?\s+lens', "claims tinted lens beyond Puro/Visione — verify"),
-    # StradaPro is NOT an over-glasses frame
-    (r'fits?\s+over|passt\s+(über|uber)|over[\s-]glasses|über\s+der\s+Brille|über\s+(deine|ihre|normale)\s+Brille|Brillenträger\s+können|for\s+(prescription\s+)?glasses\s+wear',
-     "claims StradaPro fits over prescription glasses — it does not"),
+    # All brand-feature fact checks (mirrored / photochromic / polarized /
+    # prescription / over-glasses) now live in briefs.quality_gate.check_brand_facts,
+    # which is SENTENCE-AWARE: it only flags a claim ATTRIBUTED to Velluto, and lets
+    # competitor comparisons ("Oakley's mirrored lenses") and informational/FAQ
+    # mentions through. The old regexes here matched those tokens ANYWHERE, so on
+    # premium comparison articles (which naturally discuss competitor lens features)
+    # they hard-blocked every publish — the cause of the 2026-07-15+ publish outage.
+    # NB: "tinted lens" was dropped entirely — Velluto DOES offer tinted lenses
+    # (Puro/Visione), so it was never a valid brand-fact violation.
 ]
 
 def validate(post: dict, products: list[dict]) -> list[str]:
