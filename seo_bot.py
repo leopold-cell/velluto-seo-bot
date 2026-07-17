@@ -1384,7 +1384,7 @@ def get_article_number() -> str:
 
 # TODO: replace Claude lookup with Google Keyword Planner API for real volume data
 @retry(max_attempts=2, delay=5, label="research_market_keywords")
-def research_market_keywords(en_keyword: str) -> dict:
+def research_market_keywords(en_keyword: str, skip_volumes: bool = False) -> dict:
     """
     Given the primary EN keyword, return the best keyword + search intent + volume
     for ALL shop markets (DE + SHOP_LOCALES).
@@ -1439,16 +1439,21 @@ def research_market_keywords(en_keyword: str) -> dict:
         entry.setdefault("volume", 0)
 
     # ── Step 3: DataForSEO search_volume/live — attach real volumes ───────────
-    try:
-        from keyword_research import get_search_volumes
-        kw_map   = {loc: entry["keyword"] for loc, entry in normalised.items()}
-        volumes  = get_search_volumes(kw_map)
-        for loc, entry in normalised.items():
-            entry["volume"] = volumes.get(loc, 0)
-        if volumes:
-            print(f"   DataForSEO: volumes attached for {len(volumes)} locales")
-    except Exception as e:
-        print(f"   ⚠️  DataForSEO volume lookup failed: {e} — continuing without volumes")
+    # Skipped for compliance rewrites (replace_id): the article/topic already exists,
+    # volumes only label keywords for reporting — no need to burn the daily cap.
+    if skip_volumes:
+        print("   DataForSEO: skipped (rewrite — volumes not needed)")
+    else:
+        try:
+            from keyword_research import get_search_volumes
+            kw_map   = {loc: entry["keyword"] for loc, entry in normalised.items()}
+            volumes  = get_search_volumes(kw_map)
+            for loc, entry in normalised.items():
+                entry["volume"] = volumes.get(loc, 0)
+            if volumes:
+                print(f"   DataForSEO: volumes attached for {len(volumes)} locales")
+        except Exception as e:
+            print(f"   ⚠️  DataForSEO volume lookup failed: {e} — continuing without volumes")
 
     return normalised
 
@@ -2104,7 +2109,8 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
 
     print(f"   Researching market keywords...")
     try:
-        mkt_kws = research_market_keywords(keyword)
+        # Rewrites (replace_id) skip the DataForSEO volume lookup — saves the daily cap.
+        mkt_kws = research_market_keywords(keyword, skip_volumes=bool(replace_id))
         def _kw_label(loc):
             entry = mkt_kws[loc]
             vol   = entry.get("volume", 0)
