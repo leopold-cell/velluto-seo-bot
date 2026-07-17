@@ -34,8 +34,38 @@ from briefs.quality_gate import _FAKE_TEST_RE, _DISPARAGE_RE, _ORIGIN_RE  # noqa
 from content_retrofit import fetch_articles                              # noqa: E402
 from seo_bot import BLOG_ID, SHOPIFY_HEADERS, SHOPIFY_STORE              # noqa: E402
 
-APPLY = "--apply" in sys.argv
+APPLY   = "--apply" in sys.argv
+URLS    = "--urls" in sys.argv       # print flagged URLs (for GSC Removals tool)
+REWRITE = "--rewrite" in sys.argv    # regenerate drafted articles compliantly in place
+DRY_RUN = "--dry-run" in sys.argv    # with --rewrite: preview targets, don't generate
 REPORT_PATH = os.path.join(BASE, "output", "legal_retrofit_report.json")
+SITE = "https://velluto-shop.com"
+BLOG_HANDLE = "velluto-the-magazine"
+
+
+def _url(handle: str) -> str:
+    return f"{SITE}/blogs/{BLOG_HANDLE}/{handle}"
+
+
+def _load_report() -> list:
+    if not os.path.exists(REPORT_PATH):
+        print("   ⚠️  no report found — run the scan first: python3 scripts/legal_retrofit.py")
+        return []
+    with open(REPORT_PATH, encoding="utf-8") as f:
+        return json.load(f).get("findings", [])
+
+
+_NOISE_RE = None
+def _keyword_from(title: str, handle: str) -> str:
+    """Derive a clean, compliant target keyword from a flagged article — strip the
+    fabricated-test / ranking words so the rewrite doesn't reproduce the same angle
+    (the compliance gate enforces the rest)."""
+    import re
+    base = re.sub(r"[-_]+", " ", handle or "")
+    base = re.sub(r"\b(tested|ranked|compared|comparison|criteria|top|picks?|guide|"
+                  r"honest|real|answer|velluto|stradapro|vs|de|te|the)\b", " ", base, flags=re.I)
+    base = re.sub(r"\s+", " ", base).strip()
+    return base or (title or "").strip()
 
 
 def classify(title: str, body: str) -> dict:
@@ -69,7 +99,60 @@ def set_published(article_id: int, published: bool) -> bool:
     return False
 
 
+def urls_mode() -> None:
+    """Print the flagged article URLs for the GSC 'Removals' tool (copy-paste)."""
+    findings = _load_report()
+    draft = [f for f in findings if f.get("draft_reasons")]
+    review = [f for f in findings if not f.get("draft_reasons") and f.get("review_reasons")]
+    print(f"\n🔗 Flagged URLs from the last scan ({len(draft)} draft, {len(review)} review)\n")
+    print("# 🔴 DRAFT — submit these to GSC → Removals (+ clear cached URL):")
+    for f in draft:
+        print(_url(f.get("handle", "")))
+    if review:
+        print("\n# 🟡 REVIEW — check manually before removing:")
+        for f in review:
+            print(_url(f.get("handle", "")))
+
+
+def rewrite_mode() -> None:
+    """Regenerate each drafted article through the compliant pipeline and re-publish
+    it IN PLACE (same URL). Reuses seo_bot.publish_de_primary(replace_id=…)."""
+    findings = _load_report()
+    drafted = [f for f in findings if f.get("draft_reasons")]
+    print(f"\n♻️  Compliance rewrite — {len(drafted)} drafted article(s) "
+          f"({'DRY-RUN preview' if DRY_RUN else 'LIVE regenerate + republish'})")
+    if not drafted:
+        return
+    if DRY_RUN:
+        for f in drafted:
+            print(f"   • {f.get('handle','')[:55]}  →  keyword: '{_keyword_from(f.get('title',''), f.get('handle',''))}'")
+        print("\n   DRY-RUN — nothing generated. Re-run without --dry-run to rewrite + republish.")
+        return
+    from seo_bot import publish_de_primary, get_products
+    from commercial_config import load_commercial_config
+    products = get_products()
+    commercial = load_commercial_config()
+    done = 0
+    for f in drafted:
+        kw_str = _keyword_from(f.get("title", ""), f.get("handle", ""))
+        kw = {"keyword": kw_str, "keyword_en": kw_str, "phase": "legal-rewrite",
+              "angle": "buying_guide", "art_num": None}
+        print(f"\n── Rewriting {f.get('handle','')[:55]} (kw: '{kw_str}') ──")
+        try:
+            publish_de_primary(kw, products, commercial=commercial, replace_id=f["id"])
+            done += 1
+        except Exception as e:
+            print(f"   ⚠️  rewrite failed (stays drafted): {e}")
+    print(f"\n   ✓ {done}/{len(drafted)} articles rewritten compliantly & re-published "
+          f"in place. Request re-indexing for these URLs in GSC so the clean version "
+          f"replaces the cached one.")
+
+
 def main() -> None:
+    if URLS:
+        urls_mode(); return
+    if REWRITE:
+        rewrite_mode(); return
     print(f"\n⚖️  Legal-compliance retrofit — {datetime.date.today()} "
           f"({'APPLY' if APPLY else 'DRY-RUN'})")
     articles = fetch_articles()
