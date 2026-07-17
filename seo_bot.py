@@ -2426,18 +2426,37 @@ def main():
         except Exception as _e:
             print(f"   ⚠️  Throughput step skipped: {_e}")
 
+    elif decision and decision.get("chosen_action") == "update_existing_article":
+        # Refresh the existing money page the decision pointed at, via the
+        # content_retrofit machinery (additive table/expansion + translations,
+        # cooldown-guarded). If nothing was applied (no match / cooldown), we fall
+        # through to the new-article fallback so the day is never wasted.
+        print(f"\n── Decision: refresh existing article ('{decision.get('chosen_keyword','')[:50]}') ──")
+        try:
+            from content_retrofit import retrofit_for_decision
+            if retrofit_for_decision(decision, commercial=commercial):
+                published += 1
+            else:
+                print("   · no retrofit applied — falling back to a new article")
+        except Exception as e:
+            print(f"   ⚠️  update_existing_article failed: {e} — falling back")
+            import traceback; traceback.print_exc()
+
     elif decision and decision.get("chosen_action") in (
-            "update_existing_article", "improve_paa_blocks", "improve_ai_overview_blocks",
+            "improve_paa_blocks", "improve_ai_overview_blocks",
             "improve_product_page", "improve_collection_page", "add_internal_links",
             "rewrite_metadata", "create_localization_briefs"):
         print(f"\n⏸  Action '{decision['chosen_action']}' not yet implemented (Phase 4+). "
               f"Logging decision, skipping publish today.")
 
     # ── Fallback: EN keyword queue (used when decision layer failed/None) ──
+    # Note: update_existing_article is intentionally NOT excluded here — if the
+    # retrofit above didn't apply (no match / cooldown), published is still 0 and we
+    # want the new-article fallback to run so the day produces content.
     if published == 0 and (decision is None
                             or decision.get("chosen_action") not in (
                                 "monitor_only",
-                                "update_existing_article", "improve_paa_blocks",
+                                "improve_paa_blocks",
                                 "improve_ai_overview_blocks", "improve_product_page",
                                 "improve_collection_page", "add_internal_links",
                                 "rewrite_metadata", "create_localization_briefs")):

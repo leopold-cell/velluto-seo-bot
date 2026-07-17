@@ -129,26 +129,34 @@ def gate_ok(state: dict, today: datetime.date, force: bool = False) -> tuple[boo
     return False, f"only {elapsed}d since last run (<{INTERVAL_DAYS})"
 
 
+def is_on_cooldown(url: str, state: dict, ctr_state: dict, today: datetime.date) -> bool:
+    """True if this URL was retrofitted < COOLDOWN_DAYS ago, or touched by the CTR
+    optimizer < CTR_QUIET_DAYS ago — so we never edit the same page too soon.
+    Shared by the autonomous cycle (select_candidates) and the decision-driven
+    single update (retrofit_for_decision)."""
+    entry = (state.get("articles") or {}).get(url)
+    if entry:
+        try:
+            if (today - datetime.date.fromisoformat(entry["date"])).days < COOLDOWN_DAYS:
+                return True
+        except Exception:
+            pass
+    ctr = ctr_state.get(url)
+    if ctr and ctr.get("last_optimized"):
+        try:
+            if (today - datetime.date.fromisoformat(ctr["last_optimized"])).days < CTR_QUIET_DAYS:
+                return True
+        except Exception:
+            pass
+    return False
+
+
 def select_candidates(audit: dict, gsc_pages: dict, state: dict, ctr_state: dict,
                       today: datetime.date, cycle: int) -> list[dict]:
     """audit: {url: {words, has_table, handle}}; gsc_pages: {url: {impressions,...}}.
     Returns up to MAX_PER_CYCLE {url, handle, action, reason}."""
     def blocked(url: str) -> bool:
-        entry = (state.get("articles") or {}).get(url)
-        if entry:
-            try:
-                if (today - datetime.date.fromisoformat(entry["date"])).days < COOLDOWN_DAYS:
-                    return True
-            except Exception:
-                pass
-        ctr = ctr_state.get(url)
-        if ctr and ctr.get("last_optimized"):
-            try:
-                if (today - datetime.date.fromisoformat(ctr["last_optimized"])).days < CTR_QUIET_DAYS:
-                    return True
-            except Exception:
-                pass
-        return False
+        return is_on_cooldown(url, state, ctr_state, today)
 
     picks: list[dict] = []
 
@@ -466,6 +474,200 @@ def send_report(subject: str, text: str) -> None:
         print(f"   ⚠️  report email failed: {e}")
 
 
+# ── execute one pick (shared by the cycle and the decision path) ─────────────
+
+def execute_pick(pick: dict, audit: dict, articles: list, client, products: list,
+                 price_str: str, token, state: dict, cycle: int,
+                 today: datetime.date, dry_run: bool) -> str | None:
+    """Generate + apply ONE retrofit fragment (table/expansion) to a live article,
+    re-register translations, and record it in state. Returns a one-line summary on
+    success, or None if nothing was applied. Additive-only — never deletes content."""
+    art = audit[pick["url"]]
+    full = next((a for a in articles if a["id"] == art["id"]), None)
+    body = (full or {}).get("body_html", "")
+    queries = []
+    if token:
+        try:
+            queries = fetch_page_queries(token, pick["url"])
+        except Exception:
+            pass
+    parts: list[str] = []
+    try:
+        if "table" in pick["action"]:
+            frag = gen_table_fragment(client, art["title"], body, products, price_str)
+            issues = validate_fragment(frag, "table")
+            if issues:
+                print(f"   ❌ table fragment rejected for {pick['handle']}: {issues}")
+            else:
+                parts.append(frag)
+        if "expand" in pick["action"]:
+            paa = load_paa_questions(pick["handle"], art["title"])
+            if paa:
+                print(f"      +{len(paa)} PAA question(s) fed into the expansion")
+            frag = gen_expansion_fragment(client, art["title"], body, queries, paa)
+            issues = validate_fragment(frag, "h2")
+            if issues:
+                print(f"   ❌ expansion fragment rejected for {pick['handle']}: {issues}")
+            else:
+                parts.append(frag)
+    except Exception as e:
+        print(f"   ⚠️  generation failed for {pick['handle']}: {e}")
+    if not parts:
+        return None
+    fragment = "\n".join(parts)
+    expect = "table" if "table" in pick["action"] else "h2"
+
+    added_words = word_count(fragment)
+    print(f"   ✏️  {pick['handle']}: +{added_words} words ({pick['action']})")
+    if dry_run:
+        print("   ── fragment preview ──")
+        print(fragment[:600])
+        return None
+
+    new_body = insert_before_faq(body, fragment)
+    if not put_body(art["id"], new_body):
+        print(f"   ❌ body PUT failed for {pick['handle']}")
+        return None
+    digests = get_translatable_digests(art["id"])
+    native_hits = []
+    for locale in SHOP_LOCALES:
+        tr = fetch_translations(art["id"], locale)
+        if not tr.get("body_html"):
+            continue
+        try:
+            # DE/NL/FR with an "expand" action + curated native PAA → write a
+            # genuinely native section for that market's real questions.
+            native_paa = (load_paa_questions(pick["handle"], art["title"], locale)
+                          if locale in NATIVE_PAA_LANGS and "expand" in pick["action"] else [])
+            if native_paa:
+                frag_loc = gen_native_expansion(client, tr.get("title", "") or art["title"],
+                                                tr["body_html"], locale, native_paa)
+                if validate_fragment(frag_loc, "h2"):
+                    frag_loc = adapt_fragment(client, fragment, locale)  # fall back
+                else:
+                    native_hits.append(locale)
+            else:
+                frag_loc = adapt_fragment(client, fragment, locale)
+                if validate_fragment(frag_loc, expect):
+                    frag_loc = fragment  # last-resort: EN fragment
+            tr_body = insert_before_faq(tr["body_html"], frag_loc)
+            register_shopify_translation(art["id"], locale, tr.get("title", ""),
+                                         tr_body, tr.get("meta_description", ""), digests)
+        except Exception as e:
+            print(f"   ⚠️  [{locale}] adaptation failed: {e}")
+    if native_hits:
+        print(f"      🌍 native PAA sections: {', '.join(native_hits)}")
+
+    before = {"words": art["words"]}
+    if token:
+        before.update(page_stats(token, pick["url"],
+                                 today - datetime.timedelta(days=INTERVAL_DAYS),
+                                 today - datetime.timedelta(days=1)))
+    state.setdefault("articles", {})[pick["url"]] = {
+        "cycle": cycle, "date": today.isoformat(), "action": pick["action"],
+        "handle": pick["handle"], "added_words": added_words,
+        "native_markets": native_hits, "before": before, "measured": None,
+    }
+    nat = f" · nativ: {','.join(native_hits)}" if native_hits else ""
+    print(f"   ✅ updated (EN + translations{', native ' + '/'.join(native_hits) if native_hits else ''})")
+    return f"✏️ {pick['handle'][:40]} [{pick['action']}] +{added_words} Wörter{nat}"
+
+
+# ── decision-driven single update (called from seo_bot) ──────────────────────
+
+# Grammar fillers only — domain words ("cycling", "glasses", …) are KEPT because
+# they carry the match signal; the highest-overlap article wins, and a keyword that
+# shares 2+ tokens with the right article ("best cycling glasses" → the
+# best-cycling-glasses page) still maps correctly.
+_MATCH_STOP = {"the", "a", "an", "and", "or", "for", "to", "of", "in", "on",
+               "with", "your", "you", "vs", "is", "are", "how", "what", "why"}
+
+
+def _toks(text: str) -> set[str]:
+    """Meaningful tokens, stop-words removed and lightly de-pluralized (trailing
+    's' stripped from 4+ char tokens) so 'alternatives' matches 'alternative'."""
+    out: set[str] = set()
+    for t in re.findall(r"[a-z0-9]+", (text or "").lower()):
+        if t in _MATCH_STOP:
+            continue
+        if len(t) >= 4 and t.endswith("s"):
+            t = t[:-1]
+        out.add(t)
+    return out
+
+
+def _match_article(audit: dict, *keywords: str) -> str | None:
+    """Map a decision keyword/topic to the best-matching existing article URL by
+    token overlap against title+handle. Requires >=2 shared meaningful tokens so a
+    weak match falls through to new-article creation instead of editing a random page."""
+    kw_tokens: set[str] = set()
+    for k in keywords:
+        kw_tokens |= _toks(k)
+    if not kw_tokens:
+        return None
+    best, best_score = None, 0
+    for url, a in audit.items():
+        score = len(kw_tokens & _toks(f"{a.get('title', '')} {a.get('handle', '')}"))
+        if score > best_score:
+            best, best_score = url, score
+    return best if best_score >= 2 else None
+
+
+def retrofit_for_decision(decision: dict, commercial: dict | None = None,
+                          dry_run: bool = False) -> bool:
+    """Decision-driven single-article refresh. Called by seo_bot when the daily
+    decision is 'update_existing_article'. Maps the chosen keyword to an existing
+    article, respects cooldowns, and applies an additive table/expansion via the
+    SAME machinery as the autonomous 28-day cycle (execute_pick). Returns True iff an
+    article was actually updated, so the caller can skip the new-article fallback."""
+    keyword = decision.get("chosen_keyword") or decision.get("chosen_topic") or ""
+    print(f"\n🔁 Retrofit (decision-driven) — target keyword: '{keyword[:60]}'")
+    try:
+        articles = fetch_articles()
+    except Exception as e:
+        print(f"   ⚠️  could not fetch articles: {e} — falling back")
+        return False
+    audit = build_audit(articles)
+    url = _match_article(audit, keyword, decision.get("chosen_topic"))
+    if not url:
+        print("   · no existing article matches the topic — falling back to new article")
+        return False
+    art = audit[url]
+    today = datetime.date.today()
+    state = _load(STATE_PATH, {"last_run": None, "cycle": 0, "articles": {}})
+    ctr_state = _load(CTR_STATE_PATH, {})
+    if is_on_cooldown(url, state, ctr_state, today):
+        print(f"   · '{art['handle']}' recently updated (cooldown) — falling back to new article")
+        return False
+
+    # Deficit → action: a comparison page without a table gets a table (plus an
+    # expansion if it's also thin); anything else gets a fresh expansion section.
+    comparison_intent = bool(
+        re.search(r"(-vs-|alternative|comparison|better-value)", art.get("handle", ""))
+        or re.search(r"\b(vs|versus|alternative|compare|comparison)\b", keyword.lower()))
+    action = "table+expand" if (comparison_intent and not art.get("has_table")) else "expand"
+
+    token = _gsc_token()
+    client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    products = []
+    try:
+        from seo_bot import get_products
+        products = get_products()
+    except Exception:
+        pass
+    from commercial_config import from_price_str
+    price_str = from_price_str("US")
+
+    pick = {"url": url, "handle": art["handle"], "action": action,
+            "reason": f"decision: {keyword[:40]}"}
+    print(f"   → [{action}] {art['handle']}")
+    line = execute_pick(pick, audit, articles, client, products, price_str,
+                        token, state, int(state.get("cycle", 0)), today, dry_run)
+    if line and not dry_run:
+        _save(STATE_PATH, state)   # persist the per-article cooldown (not last_run)
+    return bool(line)
+
+
 # ── main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -547,95 +749,10 @@ def main() -> None:
 
     done_lines: list[str] = []
     for pick in picks:
-        art = audit[pick["url"]]
-        full = next((a for a in articles if a["id"] == art["id"]), None)
-        body = (full or {}).get("body_html", "")
-        queries = []
-        if token:
-            try:
-                queries = fetch_page_queries(token, pick["url"])
-            except Exception:
-                pass
-        parts: list[str] = []
-        try:
-            if "table" in pick["action"]:
-                frag = gen_table_fragment(client, art["title"], body, products, price_str)
-                issues = validate_fragment(frag, "table")
-                if issues:
-                    print(f"   ❌ table fragment rejected for {pick['handle']}: {issues}")
-                else:
-                    parts.append(frag)
-            if "expand" in pick["action"]:
-                paa = load_paa_questions(pick["handle"], art["title"])
-                if paa:
-                    print(f"      +{len(paa)} PAA question(s) fed into the expansion")
-                frag = gen_expansion_fragment(client, art["title"], body, queries, paa)
-                issues = validate_fragment(frag, "h2")
-                if issues:
-                    print(f"   ❌ expansion fragment rejected for {pick['handle']}: {issues}")
-                else:
-                    parts.append(frag)
-        except Exception as e:
-            print(f"   ⚠️  generation failed for {pick['handle']}: {e}")
-        if not parts:
-            continue
-        fragment = "\n".join(parts)
-        expect = "table" if "table" in pick["action"] else "h2"
-
-        added_words = word_count(fragment)
-        print(f"   ✏️  {pick['handle']}: +{added_words} words ({pick['action']})")
-        if DRY_RUN:
-            print("   ── fragment preview ──")
-            print(fragment[:600])
-            continue
-
-        new_body = insert_before_faq(body, fragment)
-        if not put_body(art["id"], new_body):
-            print(f"   ❌ body PUT failed for {pick['handle']}")
-            continue
-        digests = get_translatable_digests(art["id"])
-        native_hits = []
-        for locale in SHOP_LOCALES:
-            tr = fetch_translations(art["id"], locale)
-            if not tr.get("body_html"):
-                continue
-            try:
-                # DE/NL/FR with an "expand" action + curated native PAA → write a
-                # genuinely native section for that market's real questions.
-                native_paa = (load_paa_questions(pick["handle"], art["title"], locale)
-                              if locale in NATIVE_PAA_LANGS and "expand" in pick["action"] else [])
-                if native_paa:
-                    frag_loc = gen_native_expansion(client, tr.get("title", "") or art["title"],
-                                                    tr["body_html"], locale, native_paa)
-                    if validate_fragment(frag_loc, "h2"):
-                        frag_loc = adapt_fragment(client, fragment, locale)  # fall back
-                    else:
-                        native_hits.append(locale)
-                else:
-                    frag_loc = adapt_fragment(client, fragment, locale)
-                    if validate_fragment(frag_loc, expect):
-                        frag_loc = fragment  # last-resort: EN fragment
-                tr_body = insert_before_faq(tr["body_html"], frag_loc)
-                register_shopify_translation(art["id"], locale, tr.get("title", ""),
-                                             tr_body, tr.get("meta_description", ""), digests)
-            except Exception as e:
-                print(f"   ⚠️  [{locale}] adaptation failed: {e}")
-        if native_hits:
-            print(f"      🌍 native PAA sections: {', '.join(native_hits)}")
-
-        before = {"words": art["words"]}
-        if token:
-            before.update(page_stats(token, pick["url"],
-                                     today - datetime.timedelta(days=INTERVAL_DAYS),
-                                     today - datetime.timedelta(days=1)))
-        state.setdefault("articles", {})[pick["url"]] = {
-            "cycle": cycle, "date": today.isoformat(), "action": pick["action"],
-            "handle": pick["handle"], "added_words": added_words,
-            "native_markets": native_hits, "before": before, "measured": None,
-        }
-        nat = f" · nativ: {','.join(native_hits)}" if native_hits else ""
-        done_lines.append(f"✏️ {pick['handle'][:40]} [{pick['action']}] +{added_words} Wörter{nat}")
-        print(f"   ✅ updated (EN + translations{', native ' + '/'.join(native_hits) if native_hits else ''})")
+        line = execute_pick(pick, audit, articles, client, products, price_str,
+                            token, state, cycle, today, DRY_RUN)
+        if line:
+            done_lines.append(line)
 
     # 5. REPORT + persist
     state["last_run"], state["cycle"] = today.isoformat(), cycle
