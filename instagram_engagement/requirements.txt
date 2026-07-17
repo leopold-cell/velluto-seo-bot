@@ -1,0 +1,6 @@
+# Instagram engagement bot deps. The bot runs inside the repo-root venv, which
+# already has anthropic + python-dotenv; these are the extras it needs on top.
+# After installing, run once:  python3 -m playwright install chromium
+playwright>=1.40
+anthropic>=0.39
+langdetect>=1.0.9
