@@ -432,6 +432,17 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
                     "premium brand", "rival", "compared", "versus", " vs ",
                     "cost more", "more expensive", "elsewhere", "market")):
                 continue
+            # Free-shipping / shipping-threshold context: "free shipping on orders
+            # over €89" is a shipping minimum, NOT the product price — never flag it.
+            # (This was the recurring false positive that regenerated whole articles.)
+            if any(cue in ctx for cue in (
+                    "free shipping", "free delivery", "orders over", "spend over",
+                    "shipping over", "shipping on orders", "versandkostenfrei",
+                    "gratis versand", "kostenlose lieferung", "gratis verzend",
+                    "gratis bezorg", "livraison gratuite", "envío gratis",
+                    "envio gratis", "spedizione gratuita", "shipping", "versand",
+                    "livraison", "verzend", "bezorg", "delivery")):
+                continue
             # Tolerate exact match + UVP strikethrough
             if curr == expected_curr and amt == expected:
                 continue

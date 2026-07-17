@@ -76,6 +76,19 @@ ok(not check_commercial_config(
     {"body_html": "<p>The Velluto StradaPro starts at 69 EUR.</p>"}, "US", US),
    "Velluto '69 EUR' exact → NOT flagged")
 
+# Free-shipping threshold → NOT the product price → must NOT flag (the recurring
+# false positive that regenerated whole articles).
+ok(not check_commercial_config(
+    {"body_html": "<p>Velluto offers free shipping on orders over 89 EUR.</p>"}, "US", US),
+   "Velluto 'free shipping over 89 EUR' → NOT flagged")
+ok(not check_commercial_config(
+    {"body_html": "<p>Velluto: kostenlose Lieferung ab 89 EUR.</p>"}, "US", US),
+   "Velluto 'kostenlose Lieferung ab 89 EUR' → NOT flagged")
+# But a bare wrong Velluto price with NO shipping context still flags.
+ok(any("PRICE" in i for i in check_commercial_config(
+    {"body_html": "<p>The Velluto StradaPro costs 89 EUR.</p>"}, "US", US)),
+   "Velluto '89 EUR' as price (no shipping context) → flagged")
+
 print("\n=== Meta description auto-fix ===")
 long_md = "x" * 175
 p = {"title": "Best cycling glasses 2026", "meta_description": long_md,
