@@ -70,8 +70,9 @@ def ensure_shopify() -> None:
 
 APPLY   = "--apply" in sys.argv
 URLS    = "--urls" in sys.argv       # print flagged URLs (for GSC Removals tool)
-REWRITE = "--rewrite" in sys.argv    # regenerate drafted articles compliantly in place
-DRY_RUN = "--dry-run" in sys.argv    # with --rewrite: preview targets, don't generate
+REWRITE = "--rewrite" in sys.argv    # surgical legal fix of flagged articles in place
+STRIP   = "--strip-dashes" in sys.argv  # mechanical em-dash sweep across ALL articles
+DRY_RUN = "--dry-run" in sys.argv    # with --rewrite/--strip-dashes: preview, don't write
 REPORT_PATH = os.path.join(BASE, "output", "legal_retrofit_report.json")
 SITE = "https://velluto-shop.com"
 BLOG_HANDLE = "velluto-the-magazine"
@@ -174,6 +175,12 @@ _EDIT_SYSTEM = (
     "negatives, and absolute 'does not offer X / doesn't publish its weights'. Keep "
     "only neutral, verifiable, current facts; describe Velluto's OWN strengths instead "
     "of a rival's weakness.\n"
+    "2b. Remove ANY fact about a named competitor that cannot be verified with 100% "
+    "certainty from that competitor's own public information. If a comparison point "
+    "needs unverifiable competitor data, do NOT name the competitor there — write "
+    "about the general category or Velluto's own attributes instead.\n"
+    "2c. Never use the em-dash '—' or a spaced en-dash ' – ' anywhere — use commas or "
+    "periods (normal hyphens in words are fine).\n"
     "3. Never attribute photochromic / polarized / mirrored / prescription / "
     "over-glasses lenses to Velluto (competitors may have them). Velluto offers only "
     "clear VellutoPuro and high-contrast VellutoVisione.\n"
@@ -210,7 +217,7 @@ def _parse_edit(txt: str):
 def _compliance_edit(client, title: str, body: str, meta: str, lang_name: str):
     """One targeted LLM edit pass that fixes ONLY the legal issues. Returns
     (title, meta, body) or None if it couldn't produce a clean, intact edit."""
-    from briefs.quality_gate import check_compliance
+    from briefs.quality_gate import check_compliance, strip_em_dashes
     HAIKU = "claude-haiku-4-5-20251001"
 
     def run(feedback=""):
@@ -230,6 +237,7 @@ def _compliance_edit(client, title: str, body: str, meta: str, lang_name: str):
         if not parsed or not parsed[2]:
             return None
         nt, nm, nb = parsed
+        nt = strip_em_dashes(nt)[0]; nm = strip_em_dashes(nm)[0]; nb = strip_em_dashes(nb)[0]
         ok_len   = _wc_html(nb) >= 0.8 * max(1, _wc_html(body))   # don't shrink >20%
         ok_links = _links(nb)   >= _links(body)                   # keep internal links
         issues   = check_compliance({"title": nt, "meta_description": nm, "body_html": nb})
@@ -306,9 +314,54 @@ def rewrite_mode() -> None:
           f"Request re-indexing in GSC so the clean version replaces the cached one.")
 
 
+def strip_dashes_mode() -> None:
+    """Cheap mechanical sweep: remove the AI em-dash '—' (and spaced en-dash) from
+    EVERY article title/body + translations. No LLM, preserves publish state."""
+    from briefs.quality_gate import strip_em_dashes
+    from seo_bot import (get_translatable_digests, register_shopify_translation,
+                         SHOP_LOCALES)
+    from backfill_seo_cleanup import fetch_translations
+    ensure_shopify()
+    articles = fetch_articles()
+    hit = 0
+    for a in articles:
+        t0, b0 = a.get("title", ""), a.get("body_html", "")
+        t1, tc = strip_em_dashes(t0)
+        b1, bc = strip_em_dashes(b0)
+        if not (tc or bc):
+            continue
+        hit += 1
+        print(f"   ✂️  {a.get('handle','')[:55]}")
+        if DRY_RUN:
+            continue
+        try:
+            r = requests.put(
+                f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles/{a['id']}.json",
+                headers=seo_bot.SHOPIFY_HEADERS, timeout=20,
+                json={"article": {"id": a["id"], "title": t1, "body_html": b1}})  # no 'published' → state kept
+            if r.status_code not in (200, 201):
+                print(f"      ❌ PUT {r.status_code}: {r.text[:120]}"); continue
+            digests = get_translatable_digests(a["id"])
+            for loc in SHOP_LOCALES:
+                tr = fetch_translations(a["id"], loc)
+                if not tr.get("body_html"):
+                    continue
+                tb, tcc = strip_em_dashes(tr["body_html"])
+                tt, ttc = strip_em_dashes(tr.get("title", ""))
+                if tcc or ttc:
+                    register_shopify_translation(a["id"], loc, tt, tb,
+                                                 strip_em_dashes(tr.get("meta_description", ""))[0], digests)
+        except Exception as e:
+            print(f"      ⚠️  {e}")
+    print(f"\n   {'would strip' if DRY_RUN else 'stripped'} em-dashes in {hit}/{len(articles)} articles"
+          + ("  (dry-run — nothing written)" if DRY_RUN else ""))
+
+
 def main() -> None:
     if URLS:
         urls_mode(); return
+    if STRIP:
+        strip_dashes_mode(); return
     if REWRITE:
         rewrite_mode(); return
     print(f"\n⚖️  Legal-compliance retrofit — {datetime.date.today()} "

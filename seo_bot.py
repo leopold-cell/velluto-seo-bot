@@ -1584,6 +1584,12 @@ L3. COMPARATIVE ADVERTISING (§ 6 UWG). When naming a competitor, every statemen
       weights", "no risk-free trial" — you cannot verify these stay true. Instead
       describe Velluto's OWN strengths without asserting a competitor lacks them.
     - Inventing competitor specs, prices, or numbers.
+    - ANY fact about a named competitor you cannot verify with 100% certainty from
+      that competitor's OWN public information: omit it. If a comparison point would
+      require unverifiable competitor data, do NOT name the competitor there — write
+      about the general product category or Velluto's own attributes instead.
+L3b. NO EM-DASHES. Never use the em-dash "—" or a spaced en-dash " – " anywhere
+     (title, meta, body) — use commas or periods. (Normal hyphens in words are fine.)
 L4. TRUE OWN CLAIMS (§ 5 UWG). Only claims backed by fact. "UV400 certified" and
     "25 g" and "anti-fog" are allowed (documented). Do not invent other
     certifications, awards, or seals.
