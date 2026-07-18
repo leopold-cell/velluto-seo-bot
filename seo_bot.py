@@ -2278,6 +2278,37 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
     print(f"   https://velluto-shop.com/blogs/{blog_handle}/{handle}")
 
 
+def readapt_all_translations(article_id: int, post: dict, commercial: dict | None = None) -> int:
+    """Re-generate ALL market translations from a (compliant) EN post via Translate &
+    Adapt and register them — creating missing languages too. Used by the legal
+    rewrite after the EN body is fixed in place, so every one of the ~11 languages is
+    freshly adapted from the corrected English. Strips AI em-dashes. Returns count."""
+    from briefs.quality_gate import strip_em_dashes
+    try:
+        digests = get_translatable_digests(article_id)
+    except Exception as e:
+        print(f"   ⚠️  digests failed: {e}")
+        digests = {}
+    kw = post.get("title", "")
+    done = 0
+    for locale in SHOP_LOCALES:
+        try:
+            adaptation = generate_market_adaptation(post, locale, {"keyword": kw, "intent": ""},
+                                                    commercial=commercial)
+            ok = register_shopify_translation(
+                article_id, locale,
+                strip_em_dashes(adaptation["title"])[0],
+                strip_em_dashes(adaptation["body_html"])[0],
+                strip_em_dashes(adaptation.get("meta_desc", ""))[0],
+                digests)
+            if ok:
+                done += 1
+                print(f"   [{locale}] re-adapted via T&A")
+        except Exception as e:
+            print(f"   ❌ [{locale}] adaptation error: {e}")
+    return done
+
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def publish_one(topic: str, trends: str, products: list[dict], post_num: int):

@@ -260,12 +260,11 @@ def rewrite_mode() -> None:
     Re-scans ALL live articles (also picks up ones you drafted manually)."""
     from anthropic import Anthropic
     from briefs.quality_gate import check_compliance
-    from seo_bot import (replace_article, get_translatable_digests,        # noqa
-                         register_shopify_translation, SHOP_LOCALES, LOCALE_LANG_NAMES,
-                         ALLOWED_TAGS)
-    from backfill_seo_cleanup import fetch_translations
+    from seo_bot import replace_article, readapt_all_translations, ALLOWED_TAGS
+    from commercial_config import load_commercial_config
 
     ensure_shopify()
+    commercial = load_commercial_config()
     articles = fetch_articles()
     flagged = [a for a in articles
                if check_compliance({"title": a.get("title", ""), "body_html": a.get("body_html", "")})]
@@ -295,20 +294,16 @@ def rewrite_mode() -> None:
         except Exception as e:
             print(f"   ❌ replace failed: {e}")
             continue
+        # Re-adapt ALL languages freshly from the corrected EN via Translate & Adapt
+        # (creates missing ones too) — not a patch of the old translations.
         try:
-            digests = get_translatable_digests(a["id"])
-            for loc in SHOP_LOCALES:
-                tr = fetch_translations(a["id"], loc)
-                if not tr.get("body_html"):
-                    continue
-                tfix = _compliance_edit(client, tr.get("title", "") or nt, tr["body_html"],
-                                        tr.get("meta_description", ""), LOCALE_LANG_NAMES.get(loc, loc))
-                if tfix:
-                    register_shopify_translation(a["id"], loc, tfix[0], tfix[2], tfix[1], digests)
+            n = readapt_all_translations(a["id"], {"title": nt, "body_html": nb,
+                                                   "meta_description": nm}, commercial)
+            print(f"   🌍 {n} language(s) re-adapted via T&A")
         except Exception as e:
-            print(f"   ⚠️  translation fix issue: {e}")
+            print(f"   ⚠️  translation re-adapt issue: {e}")
         done += 1
-        print("   ✅ fixed in place (EN + translations)")
+        print("   ✅ fixed in place (EN surgical + all languages re-translated)")
 
     print(f"\n   ✓ {done}/{len(flagged)} articles fixed & re-published in place (same URLs). "
           f"Request re-indexing in GSC so the clean version replaces the cached one.")
