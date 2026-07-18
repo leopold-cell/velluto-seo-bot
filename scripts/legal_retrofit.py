@@ -155,6 +155,10 @@ def _wc_html(html: str) -> int:
     return len(_re.sub(r"<[^>]+>", " ", html or "").split())
 
 
+def _links(html: str) -> int:
+    return len(_re.findall(r"velluto-shop\.com", html or "", _re.I))
+
+
 _EDIT_SYSTEM = (
     "You are a legal-compliance editor for a cycling-eyewear brand's OWN blog. You "
     "receive one article and must edit it MINIMALLY to remove EU/German advertising-law "
@@ -176,6 +180,14 @@ _EDIT_SYSTEM = (
     "4. Velluto is a GERMAN brand (Italian design) — never Dutch/Nederlands.\n"
     "5. The only Velluto price is 'from 69 EUR'; '89 EUR' is the free-shipping "
     "threshold, not the product price.\n"
+    "SEO PRESERVATION (critical — must not hurt rankings):\n"
+    "- Keep the article's MAIN TOPIC KEYWORD in the title; only strip the misleading "
+    "test/ranking words (e.g. 'Tested', 'Ranked', 'Compared'). Do not change the topic.\n"
+    "- Do NOT shorten the article. When you remove a non-compliant sentence, REPLACE "
+    "it with an equally substantial compliant sentence on the same subject (Velluto's "
+    "own strengths or a neutral, verifiable category fact) — keep the word count and depth.\n"
+    "- Preserve EVERY internal link to velluto-shop.com, every <h2>/<h3> heading, every "
+    "table and the FAQ block, exactly.\n"
     "Output EXACTLY this format, nothing else:\n"
     "===TITLE===\n<corrected title>\n===META===\n<corrected meta description, <=155 chars>"
     "\n===BODY===\n<corrected full HTML body>"
@@ -218,12 +230,18 @@ def _compliance_edit(client, title: str, body: str, meta: str, lang_name: str):
         if not parsed or not parsed[2]:
             return None
         nt, nm, nb = parsed
-        if _wc_html(nb) < 0.6 * max(1, _wc_html(body)):   # guard against gutted body
-            return None
-        issues = check_compliance({"title": nt, "meta_description": nm, "body_html": nb})
-        if not issues:
+        ok_len   = _wc_html(nb) >= 0.8 * max(1, _wc_html(body))   # don't shrink >20%
+        ok_links = _links(nb)   >= _links(body)                   # keep internal links
+        issues   = check_compliance({"title": nt, "meta_description": nm, "body_html": nb})
+        if ok_len and ok_links and not issues:
             return nt, (nm or nt)[:155], nb
-        parsed = run("\n".join(issues))
+        fb = list(issues)
+        if not ok_len:
+            fb.append("Do NOT shorten — keep the full length; replace removed sentences "
+                      "with compliant ones of similar length.")
+        if not ok_links:
+            fb.append("Keep ALL internal velluto-shop.com links present in the original.")
+        parsed = run("\n".join(fb))
     return None
 
 
