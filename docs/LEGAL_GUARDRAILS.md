@@ -41,6 +41,10 @@ them is:
 - **Not disparaging** (Nr. 5): no "degrades", "inferior", "cheap/flimsy", mockery,
   and no doubt-casting asymmetry like "UV400 (stated)" for a rival vs "certified"
   for Velluto, "only claims", "merely".
+- **100% verifiable, or omit it.** Any fact about a named competitor that cannot be
+  verified with certainty from *their own public information* is left out. If a
+  comparison point would need unverifiable competitor data, the competitor is **not
+  named** there — write about the general category or Velluto's own attributes.
 - **No confusion** (Nr. 3), **no reputation exploitation** (Nr. 4), **no imitation
   claim** (Nr. 6).
 
