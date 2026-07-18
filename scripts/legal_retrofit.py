@@ -160,97 +160,114 @@ def _links(html: str) -> int:
     return len(_re.findall(r"velluto-shop\.com", html or "", _re.I))
 
 
+# Mechanical fixes (no LLM): safe, exact, can't break sentences.
+_STATED_RE = _re.compile(r"\s*\(\s*(stated|claimed|self-?reported|allegedly|supposedly|unverified)\s*\)", _re.I)
+_TITLE_TEST_RE = _re.compile(r"[\s:,\|&\-–—]*\b(tested|ranked|compared|comparison|hands[\s-]?on|reviewed?)\b", _re.I)
+
+
+def _clean_title(title: str) -> str:
+    t = _TITLE_TEST_RE.sub("", title or "")
+    t = _re.sub(r"\s{2,}", " ", t).strip(" :,|&-–—")
+    return t or title
+
+
+def _mechanical(title: str, meta: str, body: str):
+    from briefs.quality_gate import strip_em_dashes
+    title = _clean_title(_STATED_RE.sub("", title or ""))
+    meta  = _STATED_RE.sub("", meta or "")
+    body  = _STATED_RE.sub("", body or "")
+    return strip_em_dashes(title)[0], strip_em_dashes(meta)[0], strip_em_dashes(body)[0]
+
+
 _EDIT_SYSTEM = (
-    "You are a legal-compliance editor for a cycling-eyewear brand's OWN blog. You "
-    "receive one article and must edit it MINIMALLY to remove EU/German advertising-law "
-    "risks — change as LITTLE as possible, keep all HTML tags/structure, headings, "
-    "links, images, tables, the language, and roughly the same length and message.\n"
-    "Fix ONLY these:\n"
-    "1. Remove any claim or implication of a first-hand TEST/REVIEW/measurement — "
-    "'we tested', 'in our tests', 'hands-on', 'tested', 'ranked', 'road test', "
-    "'after N km/hours', star ratings, 'Testsieger', editorial-test framing. Reframe "
-    "as an honest, spec-based buyer's guide.\n"
-    "2. Remove disparaging or doubt-casting statements about named competitors — "
-    "'(stated)', 'only claims', 'merely', 'degrades', 'inferior', 'cheap', one-sided "
-    "negatives, and absolute 'does not offer X / doesn't publish its weights'. Keep "
-    "only neutral, verifiable, current facts; describe Velluto's OWN strengths instead "
-    "of a rival's weakness.\n"
-    "2b. Remove ANY fact about a named competitor that cannot be verified with 100% "
-    "certainty from that competitor's own public information. If a comparison point "
-    "needs unverifiable competitor data, do NOT name the competitor there — write "
-    "about the general category or Velluto's own attributes instead.\n"
-    "2c. Never use the em-dash '—' or a spaced en-dash ' – ' anywhere — use commas or "
-    "periods (normal hyphens in words are fine).\n"
-    "3. Never attribute photochromic / polarized / mirrored / prescription / "
-    "over-glasses lenses to Velluto (competitors may have them). Velluto offers only "
-    "clear VellutoPuro and high-contrast VellutoVisione.\n"
+    "You are a legal-compliance editor for a cycling-eyewear brand's OWN blog. Find the "
+    "text that violates EU/German advertising law and return the minimal replacements to "
+    "fix it. Violations:\n"
+    "1. First-hand TEST/REVIEW claims — 'we tested', 'in our tests', 'hands-on', "
+    "'road test', 'after N km/hours', star ratings, 'Testsieger', editorial-test framing. "
+    "Reframe as an honest, spec-based buyer's guide.\n"
+    "2. Disparaging/doubt-casting statements about named competitors — 'only claims', "
+    "'merely', 'degrades', 'inferior', 'cheap', one-sided negatives, absolute 'does not "
+    "offer X / doesn't publish its weights'. Use neutral, verifiable facts; describe "
+    "Velluto's OWN strengths instead of a rival's weakness.\n"
+    "2b. Any fact about a NAMED competitor that isn't 100% verifiable from that "
+    "competitor's own public info: rewrite to remove it (general category or Velluto's "
+    "own attributes).\n"
+    "3. Never attribute photochromic/polarized/mirrored/prescription/over-glasses lenses "
+    "to Velluto. Velluto offers only clear VellutoPuro and high-contrast VellutoVisione.\n"
     "4. Velluto is a GERMAN brand (Italian design) — never Dutch/Nederlands.\n"
-    "5. The only Velluto price is 'from 69 EUR'; '89 EUR' is the free-shipping "
-    "threshold, not the product price.\n"
-    "SEO PRESERVATION (critical — must not hurt rankings):\n"
-    "- Keep the article's MAIN TOPIC KEYWORD in the title; only strip the misleading "
-    "test/ranking words (e.g. 'Tested', 'Ranked', 'Compared'). Do not change the topic.\n"
-    "- Do NOT shorten the article. When you remove a non-compliant sentence, REPLACE "
-    "it with an equally substantial compliant sentence on the same subject (Velluto's "
-    "own strengths or a neutral, verifiable category fact) — keep the word count and depth.\n"
-    "- Preserve EVERY internal link to velluto-shop.com, every <h2>/<h3> heading, every "
-    "table and the FAQ block, exactly.\n"
-    "Output EXACTLY this format, nothing else:\n"
-    "===TITLE===\n<corrected title>\n===META===\n<corrected meta description, <=155 chars>"
-    "\n===BODY===\n<corrected full HTML body>"
+    "5. The only Velluto price is 'from 69 EUR'; '89 EUR' is the free-shipping threshold, "
+    "not the product price.\n"
+    "Rules for replacements: same language as the article; similar length (do not shorten "
+    "the article); keep any HTML tags/links inside the snippet; never introduce an "
+    "em-dash '—'.\n"
+    "Return ONLY a JSON array of edits: "
+    '[{"find":"<text copied VERBATIM from the article, character-for-character>",'
+    '"replace":"<compliant replacement>"}]. Include ONLY real violations. If nothing '
+    "needs changing, return []."
 )
 
 
-def _parse_edit(txt: str):
-    if "===BODY===" not in txt:
-        return None
-    head, body = txt.split("===BODY===", 1)
-    body = body.strip()
-    if body.startswith("```"):
-        body = body.split("```", 2)[1] if body.count("```") >= 2 else body.lstrip("`")
-        body = _re.sub(r"^html\s*", "", body).strip()
-    t = _re.search(r"===TITLE===\s*(.*?)\s*===META===", head, _re.S)
-    m = _re.search(r"===META===\s*(.*)", head, _re.S)
-    return ((t.group(1).strip() if t else ""), (m.group(1).strip() if m else ""), body)
+def _llm_pairs(client, title: str, meta: str, body: str, lang_name: str, feedback: str):
+    """Ask for targeted find/replace pairs (small output — no full-body regeneration)."""
+    HAIKU = "claude-haiku-4-5-20251001"
+    user = (f"LANGUAGE: {lang_name}\n\nAutomated checks flagged this article for:\n{feedback}\n\n"
+            f"TITLE:\n{title}\n\nMETA:\n{meta}\n\nBODY_HTML:\n{body}")
+    try:
+        r = client.messages.create(model=HAIKU, max_tokens=3000, system=_EDIT_SYSTEM,
+                                   messages=[{"role": "user", "content": user}])
+        txt = r.content[0].text
+    except Exception as e:
+        print(f"      edit call failed: {e}")
+        return []
+    m = _re.search(r"\[.*\]", txt, _re.S)
+    if not m:
+        return []
+    try:
+        data = json.loads(m.group(0))
+        return [p for p in data if isinstance(p, dict) and p.get("find")]
+    except Exception:
+        return []
+
+
+def _apply_pairs(text: str, pairs: list) -> str:
+    for p in pairs:
+        f = (p.get("find") or "").strip()
+        rep = p.get("replace") or ""
+        if not f:
+            continue
+        if f in text:
+            text = text.replace(f, rep)
+        else:   # whitespace-tolerant fallback (model re-spaced the quote)
+            toks = f.split()
+            if toks:
+                pat = r"\s+".join(_re.escape(t) for t in toks)
+                text = _re.sub(pat, lambda _m: rep, text, count=1)
+    return text
 
 
 def _compliance_edit(client, title: str, body: str, meta: str, lang_name: str):
-    """One targeted LLM edit pass that fixes ONLY the legal issues. Returns
-    (title, meta, body) or None if it couldn't produce a clean, intact edit."""
+    """Fix ONLY the legal issues: mechanical first (cheap/exact), then targeted LLM
+    find/replace pairs for the semantic ones. Returns (title, meta, body) or None if it
+    couldn't produce a clean result. Targeted edits preserve content/links/length."""
     from briefs.quality_gate import check_compliance, strip_em_dashes
-    HAIKU = "claude-haiku-4-5-20251001"
-
-    def run(feedback=""):
-        user = (f"LANGUAGE: {lang_name}\n\nTITLE:\n{title}\n\nMETA:\n{meta}\n\n"
-                f"BODY_HTML:\n{body}"
-                + (f"\n\nThese issues are STILL present — fix them:\n{feedback}" if feedback else ""))
-        try:
-            r = client.messages.create(model=HAIKU, max_tokens=8000, system=_EDIT_SYSTEM,
-                                       messages=[{"role": "user", "content": user}])
-            return _parse_edit(r.content[0].text)
-        except Exception as e:
-            print(f"      edit call failed: {e}")
-            return None
-
-    parsed = run()
+    title, meta, body = _mechanical(title, meta, body)
+    base_wc = max(1, _wc_html(body))
     for _ in range(2):
-        if not parsed or not parsed[2]:
-            return None
-        nt, nm, nb = parsed
-        nt = strip_em_dashes(nt)[0]; nm = strip_em_dashes(nm)[0]; nb = strip_em_dashes(nb)[0]
-        ok_len   = _wc_html(nb) >= 0.8 * max(1, _wc_html(body))   # don't shrink >20%
-        ok_links = _links(nb)   >= _links(body)                   # keep internal links
-        issues   = check_compliance({"title": nt, "meta_description": nm, "body_html": nb})
-        if ok_len and ok_links and not issues:
-            return nt, (nm or nt)[:155], nb
-        fb = list(issues)
-        if not ok_len:
-            fb.append("Do NOT shorten — keep the full length; replace removed sentences "
-                      "with compliant ones of similar length.")
-        if not ok_links:
-            fb.append("Keep ALL internal velluto-shop.com links present in the original.")
-        parsed = run("\n".join(fb))
-    return None
+        issues = check_compliance({"title": title, "meta_description": meta, "body_html": body})
+        if not issues:
+            break
+        pairs = _llm_pairs(client, title, meta, body, lang_name, "\n".join(issues))
+        if not pairs:
+            break
+        title = strip_em_dashes(_apply_pairs(title, pairs))[0]
+        meta  = strip_em_dashes(_apply_pairs(meta, pairs))[0]
+        body  = strip_em_dashes(_apply_pairs(body, pairs))[0]
+    if _wc_html(body) < 0.7 * base_wc:                    # sanity: not gutted
+        return None
+    if check_compliance({"title": title, "meta_description": meta, "body_html": body}):
+        return None                                       # still flagged — leave drafted
+    return title, (meta or title)[:155], body
 
 
 def rewrite_mode() -> None:
