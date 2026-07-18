@@ -572,11 +572,25 @@ _FAKE_TEST_RE = re.compile(
     r"|\bafter\s+\d+\s*(hours|hrs|km|kilomet\w*|miles|rides|weeks|months)\s+(of\s+)?(testing|riding|use|wear)\b",
     re.I)
 
-_DISPARAGE_RE = re.compile(
-    r"\(\s*(stated|claimed|self-?reported|allegedly|supposedly|unverified)\s*\)"
-    r"|\b(degrad\w+|inferior|flimsy|subpar|cheaply made|poorly made|"
-    r"only claims?|merely claims?|just claims?)\b",
-    re.I)
+# "(stated)/(claimed)" doubt-casting asymmetry is always risky.
+_ASYMMETRY_RE = re.compile(
+    r"\(\s*(stated|claimed|self-?reported|allegedly|supposedly|unverified)\s*\)", re.I)
+# Disparaging words only matter under § 6 UWG when tied to an IDENTIFIABLE competitor —
+# neutral usage ("merely 25 g", "coatings can degrade over time") is NOT a violation.
+_DISPARAGE_WORD_RE = re.compile(
+    r"\b(degrad\w+|inferior|flimsy|subpar|cheaply made|poorly made|"
+    r"only claims?|merely claims?|just claims?)\b", re.I)
+_COMPETITOR_TOKENS = {
+    "oakley", "sungod", "sun god", "rudy project", "rudy", "poc", "uvex", "alba optics",
+    "alba", "scicon", "tifosi", "100%", "koo", "bliz", "julbo", "alpina", "decathlon",
+    "rapha", "sigma", "endurasport", "evil eye", "roka", "goodr", "smith",
+    "sweet protection", "spiuk", "eassun", "salice", "briko", "van rysel",
+}
+
+
+def _near_competitor(text_lower: str, start: int, end: int, window: int = 130) -> bool:
+    ctx = text_lower[max(0, start - window): end + window]
+    return any(tok in ctx for tok in _COMPETITOR_TOKENS)
 
 _ORIGIN_RE = re.compile(
     r"velluto[^.?!]{0,40}\b(dutch|nederland\w*|netherland\w*|niederl\w+|hollan\w+)\b"
@@ -596,10 +610,17 @@ def check_compliance(post: dict) -> list[str]:
         issues.append("[LEGAL] implies a test/review/first-hand experience that wasn't "
                       "performed — no fabricated testing (§ 5/5a UWG, EU fake-review ban); "
                       "reframe as an honest, spec-based buyer's guide")
-    if _DISPARAGE_RE.search(blob):
+    low = blob.lower()
+    disparage = bool(_ASYMMETRY_RE.search(blob))       # '(stated)' asymmetry always risky
+    if not disparage:
+        for m in _DISPARAGE_WORD_RE.finditer(blob):    # disparaging word only near a rival
+            if _near_competitor(low, m.start(), m.end()):
+                disparage = True
+                break
+    if disparage:
         issues.append("[LEGAL] disparaging or doubt-casting competitor phrasing "
-                      "('(stated)', 'degrades', 'only claims', 'inferior') — § 6 Abs. 2 "
-                      "Nr. 5 UWG; use neutral, verifiable, current facts only")
+                      "('(stated)', or a negative term next to a named competitor) — "
+                      "§ 6 Abs. 2 Nr. 5 UWG; use neutral, verifiable, current facts only")
     if _ORIGIN_RE.search(blob):
         issues.append("[LEGAL] Velluto mis-described by nationality — Velluto is a GERMAN "
                       "brand (Italian design); no false origin (§ 5 UWG)")
