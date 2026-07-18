@@ -32,7 +32,7 @@ sys.path.insert(0, BASE)
 load_dotenv(dotenv_path=os.path.join(BASE, ".env"), override=True)
 
 import seo_bot                                                            # noqa: E402
-from briefs.quality_gate import _FAKE_TEST_RE, _DISPARAGE_RE, _ORIGIN_RE  # noqa: E402
+from briefs.quality_gate import check_compliance                        # noqa: E402
 from content_retrofit import fetch_articles                              # noqa: E402
 from seo_bot import BLOG_ID, SHOPIFY_HEADERS, SHOPIFY_STORE              # noqa: E402
 
@@ -109,14 +109,12 @@ def classify(title: str, body: str) -> dict:
     draft_reasons  → high-confidence legal risk → set to draft on --apply.
     review_reasons → lower-confidence (origin, etc.) → report for human review.
     """
-    blob = f"{title}\n{body}"
     draft, review = [], []
-    if _FAKE_TEST_RE.search(blob):
-        draft.append("fabricated test / first-hand-experience claim (§ 5/5a UWG + EU fake-review ban)")
-    if _DISPARAGE_RE.search(blob):
-        draft.append("disparaging / doubt-casting competitor phrasing (§ 6 Abs. 2 Nr. 5 UWG)")
-    if _ORIGIN_RE.search(blob):
-        review.append("possible false 'Dutch' origin near Velluto — verify it's not just context (§ 5 UWG)")
+    for i in check_compliance({"title": title, "body_html": body}):
+        if "nationality" in i or "origin" in i:
+            review.append(i)
+        else:
+            draft.append(i)
     return {"draft_reasons": draft, "review_reasons": review}
 
 

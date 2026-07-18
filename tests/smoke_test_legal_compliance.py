@@ -32,8 +32,8 @@ ok(flagged("<p>Hands-on, the fit felt secure.</p>"), "'hands-on'")
 ok(flagged("<p>Testsieger 2026 in our editorial test.</p>"), "'Testsieger / editorial test'")
 ok(flagged("<p>After 6 weeks of testing we concluded it wins.</p>"), "'after N weeks of testing'")
 ok(flagged("<p>SunGod lists UV400 (stated) while Velluto is certified.</p>"), "'(stated)' asymmetry")
-ok(flagged("<p>Rival coatings degrade after thirty washes.</p>"), "'degrade' (disparagement)")
-ok(flagged("<p>Their lenses are inferior and cheaply made.</p>"), "'inferior / cheaply made'")
+ok(flagged("<p>Oakley coatings degrade after thirty washes.</p>"), "competitor 'degrade' (disparagement)")
+ok(flagged("<p>SunGod lenses are inferior and cheaply made.</p>"), "competitor 'inferior / cheaply made'")
 ok(flagged("<p>Velluto is a Dutch cycling eyewear brand.</p>"), "false origin 'Dutch Velluto'")
 ok(flagged("<p>De Nederlandse fietsbril van Velluto.</p>"), "false origin 'Nederlands … Velluto'")
 
@@ -48,6 +48,8 @@ ok(not flagged("<p>Premium cycling glasses range from 150 to 350 EUR.</p>"),
    "market price range")
 ok(not flagged("<p>Many riders try different lens tints before choosing.</p>"),
    "generic 'try/test' wording, no first-hand claim")
+ok(not flagged("<p>The StradaPro weighs merely 25 grams and coatings can degrade over years.</p>"),
+   "neutral 'merely'/'degrade' with NO competitor → NOT flagged")
 
 print("\n" + ("✅ ALL PASSED" if not fails else f"❌ {len(fails)} FAILED: {fails}"))
 sys.exit(1 if fails else 0)
