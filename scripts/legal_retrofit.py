@@ -21,6 +21,7 @@ Usage:
 import datetime
 import json
 import os
+import subprocess
 import sys
 
 import requests
@@ -30,9 +31,42 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 load_dotenv(dotenv_path=os.path.join(BASE, ".env"), override=True)
 
+import seo_bot                                                            # noqa: E402
 from briefs.quality_gate import _FAKE_TEST_RE, _DISPARAGE_RE, _ORIGIN_RE  # noqa: E402
 from content_retrofit import fetch_articles                              # noqa: E402
 from seo_bot import BLOG_ID, SHOPIFY_HEADERS, SHOPIFY_STORE              # noqa: E402
+
+
+def _shopify_ok() -> bool:
+    try:
+        r = requests.get(
+            f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json"
+            "?limit=1&fields=id", headers=seo_bot.SHOPIFY_HEADERS, timeout=15)
+        return r.status_code == 200
+    except Exception:
+        return False
+
+
+def ensure_shopify() -> None:
+    """Fail fast (before spending any generation cost): verify the Shopify token,
+    and if it's missing/stale, mint a fresh one like run.sh does. Aborts with a
+    clear message if that still fails — so we never generate articles we can't save."""
+    if _shopify_ok():
+        return
+    print("   Shopify token stale/missing — minting a fresh one…")
+    try:
+        tok = subprocess.run([sys.executable, os.path.join(BASE, "mint_shopify_token.py")],
+                             capture_output=True, text=True, timeout=30).stdout.strip()
+        if tok:
+            seo_bot.SHOPIFY_HEADERS["X-Shopify-Access-Token"] = tok
+            os.environ["SHOPIFY_TOKEN"] = tok
+            if _shopify_ok():
+                print(f"   ✓ minted fresh Shopify token ({tok[:8]}…)")
+                return
+    except Exception as e:
+        print(f"   mint attempt failed: {e}")
+    sys.exit("\n❌ Shopify auth failed and minting didn't help. Check SHOPIFY_CLIENT_ID / "
+             "SHOPIFY_CLIENT_SECRET in .env, then re-run. (Nothing was generated.)")
 
 APPLY   = "--apply" in sys.argv
 URLS    = "--urls" in sys.argv       # print flagged URLs (for GSC Removals tool)
@@ -114,38 +148,144 @@ def urls_mode() -> None:
             print(_url(f.get("handle", "")))
 
 
-def rewrite_mode() -> None:
-    """Regenerate each drafted article through the compliant pipeline and re-publish
-    it IN PLACE (same URL). Reuses seo_bot.publish_de_primary(replace_id=…)."""
-    findings = _load_report()
-    drafted = [f for f in findings if f.get("draft_reasons")]
-    print(f"\n♻️  Compliance rewrite — {len(drafted)} drafted article(s) "
-          f"({'DRY-RUN preview' if DRY_RUN else 'LIVE regenerate + republish'})")
-    if not drafted:
-        return
-    if DRY_RUN:
-        for f in drafted:
-            print(f"   • {f.get('handle','')[:55]}  →  keyword: '{_keyword_from(f.get('title',''), f.get('handle',''))}'")
-        print("\n   DRY-RUN — nothing generated. Re-run without --dry-run to rewrite + republish.")
-        return
-    from seo_bot import publish_de_primary, get_products
-    from commercial_config import load_commercial_config
-    products = get_products()
-    commercial = load_commercial_config()
-    done = 0
-    for f in drafted:
-        kw_str = _keyword_from(f.get("title", ""), f.get("handle", ""))
-        kw = {"keyword": kw_str, "keyword_en": kw_str, "phase": "legal-rewrite",
-              "angle": "buying_guide", "art_num": None}
-        print(f"\n── Rewriting {f.get('handle','')[:55]} (kw: '{kw_str}') ──")
+import re as _re
+
+
+def _wc_html(html: str) -> int:
+    return len(_re.sub(r"<[^>]+>", " ", html or "").split())
+
+
+_EDIT_SYSTEM = (
+    "You are a legal-compliance editor for a cycling-eyewear brand's OWN blog. You "
+    "receive one article and must edit it MINIMALLY to remove EU/German advertising-law "
+    "risks — change as LITTLE as possible, keep all HTML tags/structure, headings, "
+    "links, images, tables, the language, and roughly the same length and message.\n"
+    "Fix ONLY these:\n"
+    "1. Remove any claim or implication of a first-hand TEST/REVIEW/measurement — "
+    "'we tested', 'in our tests', 'hands-on', 'tested', 'ranked', 'road test', "
+    "'after N km/hours', star ratings, 'Testsieger', editorial-test framing. Reframe "
+    "as an honest, spec-based buyer's guide.\n"
+    "2. Remove disparaging or doubt-casting statements about named competitors — "
+    "'(stated)', 'only claims', 'merely', 'degrades', 'inferior', 'cheap', one-sided "
+    "negatives, and absolute 'does not offer X / doesn't publish its weights'. Keep "
+    "only neutral, verifiable, current facts; describe Velluto's OWN strengths instead "
+    "of a rival's weakness.\n"
+    "3. Never attribute photochromic / polarized / mirrored / prescription / "
+    "over-glasses lenses to Velluto (competitors may have them). Velluto offers only "
+    "clear VellutoPuro and high-contrast VellutoVisione.\n"
+    "4. Velluto is a GERMAN brand (Italian design) — never Dutch/Nederlands.\n"
+    "5. The only Velluto price is 'from 69 EUR'; '89 EUR' is the free-shipping "
+    "threshold, not the product price.\n"
+    "Output EXACTLY this format, nothing else:\n"
+    "===TITLE===\n<corrected title>\n===META===\n<corrected meta description, <=155 chars>"
+    "\n===BODY===\n<corrected full HTML body>"
+)
+
+
+def _parse_edit(txt: str):
+    if "===BODY===" not in txt:
+        return None
+    head, body = txt.split("===BODY===", 1)
+    body = body.strip()
+    if body.startswith("```"):
+        body = body.split("```", 2)[1] if body.count("```") >= 2 else body.lstrip("`")
+        body = _re.sub(r"^html\s*", "", body).strip()
+    t = _re.search(r"===TITLE===\s*(.*?)\s*===META===", head, _re.S)
+    m = _re.search(r"===META===\s*(.*)", head, _re.S)
+    return ((t.group(1).strip() if t else ""), (m.group(1).strip() if m else ""), body)
+
+
+def _compliance_edit(client, title: str, body: str, meta: str, lang_name: str):
+    """One targeted LLM edit pass that fixes ONLY the legal issues. Returns
+    (title, meta, body) or None if it couldn't produce a clean, intact edit."""
+    from briefs.quality_gate import check_compliance
+    HAIKU = "claude-haiku-4-5-20251001"
+
+    def run(feedback=""):
+        user = (f"LANGUAGE: {lang_name}\n\nTITLE:\n{title}\n\nMETA:\n{meta}\n\n"
+                f"BODY_HTML:\n{body}"
+                + (f"\n\nThese issues are STILL present — fix them:\n{feedback}" if feedback else ""))
         try:
-            publish_de_primary(kw, products, commercial=commercial, replace_id=f["id"])
-            done += 1
+            r = client.messages.create(model=HAIKU, max_tokens=8000, system=_EDIT_SYSTEM,
+                                       messages=[{"role": "user", "content": user}])
+            return _parse_edit(r.content[0].text)
         except Exception as e:
-            print(f"   ⚠️  rewrite failed (stays drafted): {e}")
-    print(f"\n   ✓ {done}/{len(drafted)} articles rewritten compliantly & re-published "
-          f"in place. Request re-indexing for these URLs in GSC so the clean version "
-          f"replaces the cached one.")
+            print(f"      edit call failed: {e}")
+            return None
+
+    parsed = run()
+    for _ in range(2):
+        if not parsed or not parsed[2]:
+            return None
+        nt, nm, nb = parsed
+        if _wc_html(nb) < 0.6 * max(1, _wc_html(body)):   # guard against gutted body
+            return None
+        issues = check_compliance({"title": nt, "meta_description": nm, "body_html": nb})
+        if not issues:
+            return nt, (nm or nt)[:155], nb
+        parsed = run("\n".join(issues))
+    return None
+
+
+def rewrite_mode() -> None:
+    """Surgically fix legally-risky wording in existing articles IN PLACE (same URL):
+    a single targeted edit pass per article + per translation — keep the rest of the
+    content untouched. Far lighter than a full regeneration and preserves the SEO.
+    Re-scans ALL live articles (also picks up ones you drafted manually)."""
+    from anthropic import Anthropic
+    from briefs.quality_gate import check_compliance
+    from seo_bot import (replace_article, get_translatable_digests,        # noqa
+                         register_shopify_translation, SHOP_LOCALES, LOCALE_LANG_NAMES,
+                         ALLOWED_TAGS)
+    from backfill_seo_cleanup import fetch_translations
+
+    ensure_shopify()
+    articles = fetch_articles()
+    flagged = [a for a in articles
+               if check_compliance({"title": a.get("title", ""), "body_html": a.get("body_html", "")})]
+    print(f"\n🩹 Compliance fix — {len(flagged)}/{len(articles)} articles need editing "
+          f"({'DRY-RUN' if DRY_RUN else 'LIVE in-place edit'})")
+
+    if DRY_RUN:
+        for a in flagged:
+            iss = check_compliance({"title": a.get("title", ""), "body_html": a.get("body_html", "")})
+            print(f"   • {a.get('handle','')[:55]}")
+            for i in iss:
+                print(f"       {i}")
+        print("\n   DRY-RUN — nothing edited. Re-run without --dry-run to fix + re-publish in place.")
+        return
+
+    client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    done = 0
+    for a in flagged:
+        print(f"\n── Fixing {a.get('handle','')[:55]} ──")
+        fixed = _compliance_edit(client, a.get("title", ""), a.get("body_html", ""), "", "English")
+        if not fixed:
+            print("   ⚠️  no clean edit produced — left unchanged (keep it drafted)")
+            continue
+        nt, nm, nb = fixed
+        try:
+            replace_article(a["id"], nt, nb, nm, ",".join(ALLOWED_TAGS))
+        except Exception as e:
+            print(f"   ❌ replace failed: {e}")
+            continue
+        try:
+            digests = get_translatable_digests(a["id"])
+            for loc in SHOP_LOCALES:
+                tr = fetch_translations(a["id"], loc)
+                if not tr.get("body_html"):
+                    continue
+                tfix = _compliance_edit(client, tr.get("title", "") or nt, tr["body_html"],
+                                        tr.get("meta_description", ""), LOCALE_LANG_NAMES.get(loc, loc))
+                if tfix:
+                    register_shopify_translation(a["id"], loc, tfix[0], tfix[2], tfix[1], digests)
+        except Exception as e:
+            print(f"   ⚠️  translation fix issue: {e}")
+        done += 1
+        print("   ✅ fixed in place (EN + translations)")
+
+    print(f"\n   ✓ {done}/{len(flagged)} articles fixed & re-published in place (same URLs). "
+          f"Request re-indexing in GSC so the clean version replaces the cached one.")
 
 
 def main() -> None:
@@ -191,6 +331,7 @@ def main() -> None:
               "articles to draft (reversible).")
         return
 
+    ensure_shopify()
     print("\n   Applying: setting 🔴 articles to draft…")
     done = 0
     for a in to_draft:
