@@ -404,7 +404,25 @@ def strip_dashes_mode() -> None:
           + ("  (dry-run — nothing written)" if DRY_RUN else ""))
 
 
+def show_mode(handle: str) -> None:
+    """Print the EXACT flagged phrases for one article — for diagnosing a stubborn case."""
+    ensure_shopify()
+    a = next((x for x in fetch_articles() if handle in (x.get("handle", ""))), None)
+    if not a:
+        print(f"   no article matching '{handle}'"); return
+    print(f"\n🔎 {a.get('handle','')}\n")
+    flags = _exact_flags(f"{a.get('title','')}\n{a.get('body_html','')}")
+    if not flags:
+        print("   no flagged phrases (already clean)"); return
+    for s in flags:
+        print(f"   • {s!r}")
+
+
 def main() -> None:
+    if "--show" in sys.argv:
+        i = sys.argv.index("--show")
+        handle = sys.argv[i + 1] if i + 1 < len(sys.argv) else ""
+        show_mode(handle); return
     if URLS:
         urls_mode(); return
     if STRIP:
