@@ -32,7 +32,9 @@ sys.path.insert(0, BASE)
 load_dotenv(dotenv_path=os.path.join(BASE, ".env"), override=True)
 
 import seo_bot                                                            # noqa: E402
-from briefs.quality_gate import check_compliance                        # noqa: E402
+from briefs.quality_gate import (check_compliance, strip_em_dashes,     # noqa: E402
+                                 _FAKE_TEST_RE, _ASYMMETRY_RE, _DISPARAGE_WORD_RE,
+                                 _ORIGIN_RE, _near_competitor)
 from content_retrofit import fetch_articles                              # noqa: E402
 from seo_bot import BLOG_ID, SHOPIFY_HEADERS, SHOPIFY_STORE              # noqa: E402
 
@@ -169,11 +171,19 @@ def _clean_title(title: str) -> str:
     return t or title
 
 
+def _fix_origin(text: str) -> str:
+    """Mechanically correct a false 'Dutch' origin to German — only inside the
+    Velluto-proximity matches the origin check flags (won't touch 'Dutch cyclists')."""
+    def _repl(m):
+        return _re.sub(r"\b(dutch|nederland\w*|netherland\w*|niederl\w+|hollan\w+)\b",
+                       "German", m.group(0), flags=_re.I)
+    return _ORIGIN_RE.sub(_repl, text or "")
+
+
 def _mechanical(title: str, meta: str, body: str):
-    from briefs.quality_gate import strip_em_dashes
-    title = _clean_title(_STATED_RE.sub("", title or ""))
-    meta  = _STATED_RE.sub("", meta or "")
-    body  = _STATED_RE.sub("", body or "")
+    title = _clean_title(_fix_origin(_STATED_RE.sub("", title or "")))
+    meta  = _fix_origin(_STATED_RE.sub("", meta or ""))
+    body  = _fix_origin(_STATED_RE.sub("", body or ""))
     return strip_em_dashes(title)[0], strip_em_dashes(meta)[0], strip_em_dashes(body)[0]
 
 
@@ -244,18 +254,45 @@ def _apply_pairs(text: str, pairs: list) -> str:
     return text
 
 
+def _exact_flags(text: str) -> list:
+    """The EXACT substrings the compliance regexes flag — handed to the LLM so it can
+    target each one precisely (much more reliable than a generic 'fix disparagement')."""
+    low = text.lower()
+    out = []
+    for m in _FAKE_TEST_RE.finditer(text):
+        out.append(m.group(0))
+    for m in _ASYMMETRY_RE.finditer(text):
+        out.append(m.group(0))
+    for m in _DISPARAGE_WORD_RE.finditer(text):
+        if _near_competitor(low, m.start(), m.end()):
+            out.append(text[max(0, m.start() - 60): m.end() + 60])
+    for m in _ORIGIN_RE.finditer(text):
+        out.append(m.group(0))
+    seen, res = set(), []
+    for s in out:
+        s = s.strip()
+        if s and s not in seen:
+            seen.add(s)
+            res.append(s)
+    return res[:15]
+
+
 def _compliance_edit(client, title: str, body: str, meta: str, lang_name: str):
     """Fix ONLY the legal issues: mechanical first (cheap/exact), then targeted LLM
     find/replace pairs for the semantic ones. Returns (title, meta, body) or None if it
     couldn't produce a clean result. Targeted edits preserve content/links/length."""
-    from briefs.quality_gate import check_compliance, strip_em_dashes
+    from briefs.quality_gate import check_compliance
     title, meta, body = _mechanical(title, meta, body)
     base_wc = max(1, _wc_html(body))
-    for _ in range(2):
+    for _ in range(3):
         issues = check_compliance({"title": title, "meta_description": meta, "body_html": body})
         if not issues:
             break
-        pairs = _llm_pairs(client, title, meta, body, lang_name, "\n".join(issues))
+        flags = _exact_flags(f"{title}\n{meta}\n{body}")
+        fb = ("Rewrite/remove EACH of these exact phrases so it no longer implies a "
+              "first-hand test, disparages a named competitor, or misstates origin:\n"
+              + "\n".join(f"- {s!r}" for s in flags)) if flags else "\n".join(issues)
+        pairs = _llm_pairs(client, title, meta, body, lang_name, fb)
         if not pairs:
             break
         title = strip_em_dashes(_apply_pairs(title, pairs))[0]
