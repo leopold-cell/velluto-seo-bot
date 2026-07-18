@@ -74,6 +74,7 @@ APPLY   = "--apply" in sys.argv
 URLS    = "--urls" in sys.argv       # print flagged URLs (for GSC Removals tool)
 REWRITE = "--rewrite" in sys.argv    # surgical legal fix of flagged articles in place
 STRIP   = "--strip-dashes" in sys.argv  # mechanical em-dash sweep across ALL articles
+REPUB   = "--republish-clean" in sys.argv  # re-publish drafted articles that are now clean
 DRY_RUN = "--dry-run" in sys.argv    # with --rewrite/--strip-dashes: preview, don't write
 REPORT_PATH = os.path.join(BASE, "output", "legal_retrofit_report.json")
 SITE = "https://velluto-shop.com"
@@ -418,7 +419,53 @@ def show_mode(handle: str) -> None:
         print(f"   • {s!r}")
 
 
+def _fetch_articles_full() -> list:
+    out, url = [], (f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json"
+                    "?fields=id,title,handle,body_html,published_at&limit=250")
+    while url:
+        r = requests.get(url, headers=seo_bot.SHOPIFY_HEADERS, timeout=30)
+        r.raise_for_status()
+        out.extend(r.json().get("articles", []))
+        url = next((p.split(";")[0].strip(" <>")
+                    for p in r.headers.get("Link", "").split(",") if 'rel="next"' in p), None)
+    return out
+
+
+def republish_clean_mode() -> None:
+    """Re-publish drafted articles that check_compliance now considers clean (e.g. the
+    former false-positives). Articles still flagged stay drafted. NOTE: this also
+    republishes any you drafted manually — check the dry-run list first."""
+    ensure_shopify()
+    arts = _fetch_articles_full()
+    drafted = [a for a in arts if not a.get("published_at")]
+    clean   = [a for a in drafted
+               if not check_compliance({"title": a.get("title", ""), "body_html": a.get("body_html", "")})]
+    flagged = [a for a in drafted if a not in clean]
+    print(f"\n📤 Republish-clean — {len(drafted)} drafted of {len(arts)} "
+          f"({'DRY-RUN' if DRY_RUN else 'LIVE'})")
+    for a in clean:
+        print(f"   ✅ clean → would republish: {a.get('handle','')[:55]}")
+    for a in flagged:
+        print(f"   🔴 still flagged → keep drafted: {a.get('handle','')[:55]}")
+    if DRY_RUN or not clean:
+        print("\n   " + ("DRY-RUN — nothing changed; re-run without --dry-run to publish the ✅ ones."
+                         if DRY_RUN else "no clean drafts to republish."))
+        return
+    done = 0
+    for a in clean:
+        r = requests.put(
+            f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles/{a['id']}.json",
+            headers=seo_bot.SHOPIFY_HEADERS, timeout=20,
+            json={"article": {"id": a["id"], "published": True}})
+        if r.status_code in (200, 201):
+            done += 1
+            print(f"   📤 republished: {a.get('handle','')[:55]}")
+    print(f"\n   ✓ {done}/{len(clean)} clean drafts re-published. Request re-indexing in GSC.")
+
+
 def main() -> None:
+    if REPUB:
+        republish_clean_mode(); return
     if "--show" in sys.argv:
         i = sys.argv.index("--show")
         handle = sys.argv[i + 1] if i + 1 < len(sys.argv) else ""
