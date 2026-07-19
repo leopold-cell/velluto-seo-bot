@@ -1,0 +1,150 @@
+nohup: ignoring input
+   Shopify token stale/missing — minting a fresh one…
+   ✓ minted fresh Shopify token (shpat_33…)
+
+🩹 Compliance fix — 5/57 articles need editing (LIVE in-place edit)
+
+── Fixing are-expensive-cycling-glasses-worth-it-the-real-answer ──
+   ♻️  Replaced article 618080895317 in place (compliant rewrite)
+   [de] Adaptation tokens in:10760 out:12000 | $0.0566
+   ✅ [de] 3 translation(s) registered
+   [de] re-adapted via T&A
+   [nl] Adaptation tokens in:10657 out:12000 | $0.0565
+   ✅ [nl] 3 translation(s) registered
+   [nl] re-adapted via T&A
+   [fr] Adaptation tokens in:10711 out:12000 | $0.0566
+   ✅ [fr] 3 translation(s) registered
+   [fr] re-adapted via T&A
+   [es] Adaptation tokens in:10529 out:12000 | $0.0564
+   ✅ [es] 3 translation(s) registered
+   [es] re-adapted via T&A
+   [it] Adaptation tokens in:10542 out:12000 | $0.0564
+   ✅ [it] 3 translation(s) registered
+   [it] re-adapted via T&A
+   [da] Adaptation tokens in:10546 out:12000 | $0.0564
+   ✅ [da] 3 translation(s) registered
+   [da] re-adapted via T&A
+   [nb] Adaptation tokens in:10534 out:12000 | $0.0564
+   ✅ [nb] 3 translation(s) registered
+   [nb] re-adapted via T&A
+   [pl] Adaptation tokens in:10544 out:12000 | $0.0564
+   ✅ [pl] 3 translation(s) registered
+   [pl] re-adapted via T&A
+   [pt-PT] Adaptation tokens in:10538 out:12000 | $0.0564
+   ✅ [pt-PT] 3 translation(s) registered
+   [pt-PT] re-adapted via T&A
+   [sv] Adaptation tokens in:10556 out:12000 | $0.0564
+   ✅ [sv] 3 translation(s) registered
+   [sv] re-adapted via T&A
+   🌍 10 language(s) re-adapted via T&A
+   ✅ fixed in place (EN surgical + all languages re-translated)
+
+── Fixing sungod-alternative-cycling-glasses-velluto-stradapro-te ──
+   ♻️  Replaced article 618068967765 in place (compliant rewrite)
+   [de] Adaptation tokens in:13397 out:12000 | $0.0587
+   ✅ [de] 3 translation(s) registered
+   [de] re-adapted via T&A
+   [nl] Adaptation tokens in:13334 out:12000 | $0.0587
+   ✅ [nl] 3 translation(s) registered
+   [nl] re-adapted via T&A
+   [fr] Adaptation tokens in:13362 out:12000 | $0.0587
+   ✅ [fr] 3 translation(s) registered
+   [fr] re-adapted via T&A
+   [es] Adaptation tokens in:13361 out:12000 | $0.0587
+   ✅ [es] 3 translation(s) registered
+   [es] re-adapted via T&A
+   [it] Adaptation tokens in:13374 out:12000 | $0.0587
+   ✅ [it] 3 translation(s) registered
+   [it] re-adapted via T&A
+   [da] Adaptation tokens in:13378 out:12000 | $0.0587
+   ✅ [da] 3 translation(s) registered
+   [da] re-adapted via T&A
+   [nb] Adaptation tokens in:13366 out:12000 | $0.0587
+   ✅ [nb] 3 translation(s) registered
+   [nb] re-adapted via T&A
+   [pl] Adaptation tokens in:13376 out:12000 | $0.0587
+   ✅ [pl] 3 translation(s) registered
+   [pl] re-adapted via T&A
+   [pt-PT] Adaptation tokens in:13370 out:12000 | $0.0587
+   ✅ [pt-PT] 3 translation(s) registered
+   [pt-PT] re-adapted via T&A
+   [sv] Adaptation tokens in:13388 out:12000 | $0.0587
+   ✅ [sv] 3 translation(s) registered
+   [sv] re-adapted via T&A
+   🌍 10 language(s) re-adapted via T&A
+   ✅ fixed in place (EN surgical + all languages re-translated)
+
+── Fixing best-cycling-glasses-2026-tested-ranked-compared ──
+   ♻️  Replaced article 618060185941 in place (compliant rewrite)
+   [de] Adaptation tokens in:10899 out:12000 | $0.0567
+   ✅ [de] 3 translation(s) registered
+   [de] re-adapted via T&A
+   [nl] Adaptation tokens in:10836 out:12000 | $0.0567
+   ✅ [nl] 3 translation(s) registered
+   [nl] re-adapted via T&A
+   [fr] Adaptation tokens in:10864 out:12000 | $0.0567
+   ✅ [fr] 3 translation(s) registered
+   [fr] re-adapted via T&A
+   [es] Adaptation tokens in:10863 out:12000 | $0.0567
+   ✅ [es] 3 translation(s) registered
+   [es] re-adapted via T&A
+   [it] Adaptation tokens in:10876 out:12000 | $0.0567
+   ✅ [it] 3 translation(s) registered
+   [it] re-adapted via T&A
+   [da] Adaptation tokens in:10880 out:12000 | $0.0567
+   ✅ [da] 3 translation(s) registered
+   [da] re-adapted via T&A
+   [nb] Adaptation tokens in:10868 out:12000 | $0.0567
+   ✅ [nb] 3 translation(s) registered
+   [nb] re-adapted via T&A
+   [pl] Adaptation tokens in:10878 out:12000 | $0.0567
+   ✅ [pl] 3 translation(s) registered
+   [pl] re-adapted via T&A
+   [pt-PT] Adaptation tokens in:10872 out:12000 | $0.0567
+   ✅ [pt-PT] 3 translation(s) registered
+   [pt-PT] re-adapted via T&A
+   [sv] Adaptation tokens in:10890 out:12000 | $0.0567
+   ✅ [sv] 3 translation(s) registered
+   [sv] re-adapted via T&A
+   🌍 10 language(s) re-adapted via T&A
+   ✅ fixed in place (EN surgical + all languages re-translated)
+
+── Fixing best-oakley-alternatives-for-cyclists-2026-tested-ranke ──
+   ⚠️  no clean edit produced — left unchanged (keep it drafted)
+
+── Fixing best-cycling-sunglasses-2026-tested-ranked-compared ──
+   ♻️  Replaced article 616863760725 in place (compliant rewrite)
+   [de] Adaptation tokens in:13462 out:12000 | $0.0588
+   ✅ [de] 3 translation(s) registered
+   [de] re-adapted via T&A
+   [nl] Adaptation tokens in:13399 out:12000 | $0.0587
+   ✅ [nl] 3 translation(s) registered
+   [nl] re-adapted via T&A
+   [fr] Adaptation tokens in:13427 out:12000 | $0.0587
+   ✅ [fr] 3 translation(s) registered
+   [fr] re-adapted via T&A
+   [es] Adaptation tokens in:13426 out:12000 | $0.0587
+   ✅ [es] 3 translation(s) registered
+   [es] re-adapted via T&A
+   [it] Adaptation tokens in:13439 out:12000 | $0.0588
+   ✅ [it] 3 translation(s) registered
+   [it] re-adapted via T&A
+   [da] Adaptation tokens in:13443 out:12000 | $0.0588
+   ✅ [da] 3 translation(s) registered
+   [da] re-adapted via T&A
+   [nb] Adaptation tokens in:13431 out:12000 | $0.0587
+   ✅ [nb] 3 translation(s) registered
+   [nb] re-adapted via T&A
+   [pl] Adaptation tokens in:13441 out:12000 | $0.0588
+   ✅ [pl] 3 translation(s) registered
+   [pl] re-adapted via T&A
+   [pt-PT] Adaptation tokens in:13435 out:12000 | $0.0587
+   ✅ [pt-PT] 3 translation(s) registered
+   [pt-PT] re-adapted via T&A
+   [sv] Adaptation tokens in:13453 out:12000 | $0.0588
+   ✅ [sv] 3 translation(s) registered
+   [sv] re-adapted via T&A
+   🌍 10 language(s) re-adapted via T&A
+   ✅ fixed in place (EN surgical + all languages re-translated)
+
+   ✓ 4/5 articles fixed & re-published in place (same URLs). Request re-indexing in GSC so the clean version replaces the cached one.

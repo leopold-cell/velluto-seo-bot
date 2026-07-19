@@ -1,13 +1,7 @@
 {
-  "date": "2026-07-17",
-  "slots": [
-    "morning",
-    "noon"
-  ],
+  "date": "2026-07-18",
+  "slots": [],
   "recent_lines": [
-    "half-wheeling me since kilometre one and he thinks we're friends.",
-    "My average watts look completely different before I screenshot it for the group chat.",
-    "When the group ride becomes a race nobody told me about.",
     "I added the climb to the route \"for training\". I have not trained since March.",
     "I know every pothole on this road. I have learned nothing.",
     "My Garmin has seen things it will never forgive me for.",
@@ -19,7 +13,9 @@
     "Promised myself a recovery ride. Currently chasing a stranger.",
     "I own four bikes. My fitness suits exactly one of them.",
     "The group ride starts \"easy\". It is never easy.",
-    "Checking the weather forecast won't change what it's doing outside."
-  ],
-  "last_media_id": "17951118969207345"
+    "Checking the weather forecast won't change what it's doing outside.",
+    "My \"just spin the legs\" ride has a 47-minute Strava segment in it.",
+    "Every cyclist I pass on a climb is suddenly racing me.",
+    "My Garmin has seen things I will never tell my coach."
+  ]
 }
