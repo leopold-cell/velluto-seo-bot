@@ -339,7 +339,19 @@ def rewrite_mode() -> None:
         print(f"\n── Fixing {a.get('handle','')[:55]} ──")
         fixed = _compliance_edit(client, a.get("title", ""), a.get("body_html", ""), "", "English")
         if not fixed:
-            print("   ⚠️  no clean edit produced — left unchanged (keep it drafted)")
+            # Can't auto-fix it → take the risky version OFFLINE (draft) so it never
+            # stays live. (Was a bug: a live article that failed the edit stayed live.)
+            try:
+                r = requests.put(
+                    f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles/{a['id']}.json",
+                    headers=seo_bot.SHOPIFY_HEADERS, timeout=20,
+                    json={"article": {"id": a["id"], "published": False}})
+                ok = r.status_code in (200, 201)
+            except Exception as e:
+                ok = False
+                print(f"      draft PUT error: {e}")
+            print("   ⚠️  no clean edit produced — "
+                  + ("set to DRAFT (offline) for review" if ok else "COULD NOT draft — still live!"))
             continue
         nt, nm, nb = fixed
         try:
