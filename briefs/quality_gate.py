@@ -569,7 +569,12 @@ _FAKE_TEST_RE = re.compile(
     r"|\bin\s+(our|my)\s+(test|testing|review|lab|hands-on|experience)\b"
     r"|\b(hands-on|field test|road test|our lab|editorial test|independently tested|"
     r"independent (test|review|lab)|the evidence supports|test winner|testsieger|getestet)\b"
-    r"|\bafter\s+\d+\s*(hours|hrs|km|kilomet\w*|miles|rides|weeks|months)\s+(of\s+)?(testing|riding|use|wear)\b",
+    r"|\bafter\s+\d+\s*(hours|hrs|km|kilomet\w*|miles|rides|weeks|months)\s+(of\s+)?(testing|riding|use|wear)\b"
+    # Fabricated-test TITLE/headline claims (also in JSON-LD schema): "Tested & Ranked",
+    # "Ranked and Tested", "Tested, Compared", "how we tested" — bare, no "we" needed.
+    r"|\btested\s*(?:,|&|and)\s*(?:and\s+)?(?:ranked|compared)\b"
+    r"|\branked\s*(?:,|&|and)\s*(?:and\s+)?tested\b"
+    r"|\bhow we tested\b",
     re.I)
 
 # "(stated)/(claimed)" doubt-casting asymmetry is always risky.
