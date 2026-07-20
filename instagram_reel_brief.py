@@ -184,7 +184,12 @@ def _extract(label: str, text: str) -> str:
     if not m:
         return ""
     # Strip stray template markers the model sometimes echoes (e.g. "<...>", quotes).
-    return m.group(1).strip().strip("<>").strip().strip('"').strip()
+    out = m.group(1).strip().strip("<>").strip().strip('"').strip()
+    # No AI em-dashes anywhere in reel text (on-screen, punchline, caption, YT meta).
+    out = re.sub(r"\s*—\s*", ", ", out)      # em-dash → comma
+    out = re.sub(r"\s+–\s+", ", ", out)      # spaced en-dash → comma (keep '10–20' ranges)
+    out = re.sub(r",\s*,", ", ", out)        # tidy any double comma
+    return out.strip()
 
 
 # Candid / UGC rider photos (Shopify CDN) used as the start frame — chosen to look
