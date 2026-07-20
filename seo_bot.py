@@ -246,6 +246,43 @@ not an interruption.
 """
 
 
+# ── White-hat SEO strategy (people-first; also what keeps us legally safe) ─────
+# https://www.semrush.com/blog/white-hat-seo/ — honest, verifiable, genuinely useful
+# content is simultaneously the best long-term SEO play AND the safest under EU/German
+# advertising law. The two goals reinforce each other: no faked authority, no
+# manipulation, no unverifiable claims.
+WHITE_HAT_SEO = """
+WHITE-HAT SEO STRATEGY (people-first, Google Search Essentials compliant). This is the
+SAME discipline that keeps us legally safe: honest, verifiable, genuinely useful content.
+Rank by being the best answer, never by tricking the reader or the crawler.
+
+WRITE FOR THE READER FIRST:
+- Fully satisfy the search intent behind the keyword. Answer what the cyclist actually
+  typed, directly and early, before any sell.
+- Original, specific, genuinely helpful content: real buying criteria, honest trade-offs,
+  concrete specs (grams, UV rating, lens types). No generic filler, no padding for length.
+- E-E-A-T through AUTHENTIC brand expertise: Velluto designs road cycling eyewear, so
+  write with real product knowledge. NEVER manufacture experience you don't have — no
+  invented tests, ride reports, lab results, ratings or awards (black-hat AND illegal).
+
+ON-PAGE (do it naturally, never forced):
+- Use the primary keyword and natural variants where they genuinely fit — title, one H2,
+  the opening. NO keyword stuffing: no unnatural repetition, no keyword lists, no filler.
+- Clear structure: one topic per H2, skimmable paragraphs, descriptive subheads.
+- Accurate, descriptive alt text on every image (describe what is actually shown).
+- Helpful internal links to relevant Velluto pages with natural, descriptive anchor text
+  (never "click here", never exact-match keyword-stuffed anchors).
+- Title + meta description that honestly describe the page and earn the click — no
+  clickbait the body doesn't deliver.
+
+NEVER (black-hat — this hurts rankings AND legal standing):
+- Keyword stuffing, hidden/invisible text, cloaking (content written only for crawlers).
+- Doorway pages, spun/duplicated/templated content, substance-free AI filler.
+- Misleading titles or claims, fake reviews, fake ratings, fabricated tests or awards.
+- Disparaging, superlative, or unverifiable claims about competitors (see LEGAL COMPLIANCE).
+"""
+
+
 # ── Token tracking ───────────────────────────────────────────────────────────
 
 _MODEL_COSTS = {
@@ -1061,11 +1098,13 @@ def generate(topic: str, trends: str, cover_url: str, products: list[dict]) -> t
     seo_insights = load_seo_insights(topic=topic)
 
     system = f"""You are the SEO content manager and lead copywriter for Velluto (velluto-shop.com), \
-a premium Dutch road cycling eyewear brand.
+a premium GERMAN road cycling eyewear brand with Italian design, sold across Europe.
 
 {BRAND_FACTS}
 
 {COPY_PRINCIPLES}
+
+{WHITE_HAT_SEO}
 {(chr(10) + seo_insights + chr(10)) if seo_insights else ""}
 WRITING RULES:
 1. Every language version must be 100% in that language — no mixed words (brand names Velluto/StradaPro are OK).
@@ -1621,6 +1660,8 @@ You write helpful, honest, first-hand-accurate brand content — never fabricate
 {BRAND_FACTS}
 
 {COPY_PRINCIPLES}
+
+{WHITE_HAT_SEO}
 {(chr(10) + seo_ctx + chr(10)) if seo_ctx else ""}
 WRITING RULES:
 1. Write exclusively in English. Brand names (Velluto, StradaPro, VellutoPuro, VellutoVisione) are unchanged.
@@ -2371,6 +2412,35 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
         else:
             print("   ✅ Quality check passed")
         break
+
+    # ── Final legal quality check before publish — SELF-HEAL, never discard ──
+    # Same philosophy as the primary flow: this fallback path must not be a legal
+    # backdoor (validate() above doesn't run the UWG check). Heal the EN primary in
+    # place; only skip publish if it truly can't be made clean.
+    try:
+        from briefs.quality_gate import check_compliance as _check_legal
+        from briefs.legal_heal import heal_post as _legal_heal
+        _lp = {"title": post.get("title_en", ""),
+               "meta_description": post.get("meta_description", ""),
+               "body_html": post.get("en_html", "")}
+        _leg = _check_legal(_lp)
+        if _leg:
+            print(f"   ⚖️  Legal check flagged {len(_leg)} item(s) — self-healing (no regen):")
+            for i in _leg:
+                print(f"      {i}")
+            if _legal_heal(_lp, client, lang_name="English"):
+                post["title_en"]        = _lp["title"]
+                post["meta_description"] = _lp["meta_description"]
+                post["en_html"]          = _lp["body_html"]
+                print("   ✅ Legal self-heal applied — article is compliant")
+            else:
+                print("   ❌ Could not make the fallback article legally clean — skipping publish (logged).")
+                return
+        else:
+            print("   ✅ Legal check passed")
+    except Exception as _e:
+        print(f"   ⚠️  legal safety net error (skipping publish to be safe): {_e}")
+        return
 
     # Publish EN as primary; no tab switcher — T&A handles other locales
     aid, handle = publish(
