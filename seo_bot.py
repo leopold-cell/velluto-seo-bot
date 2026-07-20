@@ -1564,7 +1564,13 @@ PUBLISH RULES (HARD — articles violating these get blocked and discarded):
 4. INTERNAL LINKS — At least 3 <a> elements pointing to velluto-shop.com paths total.
 5. PRIMARY KEYWORD — The exact primary keyword (or its tokens) MUST appear in <title> (= the article title, rendered as the page H1 by the theme) and at least one <h2>. Never write an <h1> in the body.
 
-LEGAL COMPLIANCE (HARD — EU/German advertising law; violations get blocked):
+LEGAL COMPLIANCE (HARD — EU/German advertising law. Write these in from the start:
+the copy stays aggressive and persuasive, but on Velluto's OWN verifiable strengths,
+never by putting a competitor down or citing a fact you can't prove):
+L0. TONE TOWARD COMPETITORS: OBJECTIVE OR POSITIVE, NEVER NEGATIVE. Treat every named
+    rival neutrally or with genuine respect ("Oakley's Sutro is a well-known road
+    option"). Sell by making VELLUTO look great, not by making a rival look bad. Zero
+    competitor bashing, snark, or insinuation anywhere in the article.
 L1. NO FABRICATED TESTS OR REVIEWS. Never claim or imply first-hand testing, lab
     measurement, trial rides, "hands-on", "field/road test", "we tested", "in our
     tests", "after N hours/km", "Testsieger", "getestet", "editorial test", star
@@ -1583,6 +1589,15 @@ L3. COMPARATIVE ADVERTISING (§ 6 UWG). When naming a competitor, every statemen
     - Absolute negatives that go stale: "does not offer X", "doesn't publish its
       weights", "no risk-free trial" — you cannot verify these stay true. Instead
       describe Velluto's OWN strengths without asserting a competitor lacks them.
+    - UNVERIFIABLE SUPERLATIVES / vague comparatives against a rival: "lighter than
+      anything Oakley makes", "better than any X", "the frames are lighter, the fit
+      cleaner". Give Velluto's OWN measured number instead ("the StradaPro weighs 25 g")
+      and drop the open-ended comparison.
+    - PRICE / VALUE DISPARAGEMENT: never insinuate a rival overcharges or that its
+      price is just marketing — no "subsidise a marketing department", "what Oakley
+      charges", "paying for the logo/name", "brand tax", "overpriced", "rip-off",
+      "a single Oakley lens replacement". State Velluto's price positively instead
+      ("premium build from 69 EUR").
     - Inventing competitor specs, prices, or numbers.
     - ANY fact about a named competitor you cannot verify with 100% certainty from
       that competitor's OWN public information: omit it. If a comparison point would
@@ -2100,7 +2115,10 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
                 pass it in to avoid duplicate Shopify calls.
     brief:      optional Phase 4 master brief. When provided:
                   - generate_de_primary uses brief.must_answer_questions, claims_to_avoid
-                  - quality_gate runs after generation and HARD-BLOCKS publish if it fails
+                  - quality_gate runs after generation: STRUCTURAL failures (too short /
+                    missing keyword / links / PAA / price) regenerate then block; LEGAL
+                    findings are self-healed in place (never discard the article), with a
+                    final legal check before publish as the safety net.
                 When None, falls back to legacy keyword-only flow.
     """
     from en_keyword_queue import mark_en_keyword_used
@@ -2152,8 +2170,13 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
 
     cover_url = pick_cover(keyword, keyword)
 
-    # Generate EN article — up to 3 attempts; retries inject specific failures as feedback
-    from briefs.quality_gate import gate as _quality_gate
+    # Generate EN article — up to 3 attempts; retries inject specific failures as feedback.
+    # Legal compliance is handled by PREVENTION (the generation prompt bakes in the UWG
+    # rules) + a SELF-HEAL pass at the end — never by discarding a whole generated article.
+    # Only STRUCTURAL problems (too short, missing keyword/links, PAA, wrong price) justify
+    # a full regeneration; legal phrasings get surgically fixed after the loop.
+    from briefs.quality_gate import gate as _quality_gate, check_compliance as _check_legal
+    from briefs.legal_heal import heal_post as _legal_heal
     recent_articles = fetch_recent_articles()   # related-link candidates (internal-linking depth)
     post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief)
     qa = None
@@ -2178,30 +2201,47 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
         if qa["auto_fixes"]:
             for af in qa["auto_fixes"]:
                 print(f"   🛠  QA auto-fix: {af}")
-        if not qa["passed"]:
+        # Split legal from structural: legal phrasings are self-healed below (no regen);
+        # only structural issues warrant regenerating the whole article.
+        structural = [i for i in qa["hard_issues"] if not i.startswith("[LEGAL]")]
+        if structural:
             if attempt < 2:
                 print(f"   ✗ Quality gate FAILED (attempt {attempt+1}/3) — regenerating with feedback:")
-                for issue in qa["hard_issues"]:
+                for issue in structural:
                     print(f"      {issue}")
                 post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief,
-                                            retry_feedback="\n".join(f"- {i}" for i in qa["hard_issues"]))
+                                            retry_feedback="\n".join(f"- {i}" for i in structural))
                 continue
             else:
-                print(f"   ❌ Quality gate FAILED after 3 attempts — publish blocked.")
-                for issue in qa["hard_issues"]:
+                print(f"   ❌ Structural quality gate FAILED after 3 attempts — publish blocked.")
+                for issue in structural:
                     print(f"      {issue}")
                 print(f"   (logged to output/quality_gate_failures.json)")
-                return  # Hard-stop: no publish, no T&A
-        # All checks passed
-        if not issues:
-            print(f"   ✅ EN quality check passed (attempt {attempt+1}, gate auto_fixes={len(qa['auto_fixes'])})")
-        else:
-            for iss in issues:
-                print(f"   ⚠️  {iss}")
+                return  # structural quality is non-negotiable (too short / no keyword / no links)
+        # Structural checks passed (any [LEGAL] items are healed below).
+        for iss in issues:
+            print(f"   ⚠️  {iss}")
         break
 
-    # Phase 4.1: quality gate already ran inside the retry loop above.
-    # If we reach here, post passed both FACT and gate checks.
+    # ── 3. Final legal quality check before publish — SELF-HEAL, never discard ──
+    # The prompt should already produce clean copy; this surgically fixes any residual
+    # UWG-risky phrasing (fabricated test, competitor bashing, unverifiable superlative/
+    # price claim, false origin) without regenerating the article.
+    legal_issues = _check_legal(post)
+    if legal_issues:
+        print(f"   ⚖️  Legal check flagged {len(legal_issues)} item(s) — self-healing (no regen):")
+        for i in legal_issues:
+            print(f"      {i}")
+        if _legal_heal(post, client, lang_name="English"):
+            print("   ✅ Legal self-heal applied — article is compliant")
+        else:
+            # Safety net (rare): prevention + heal both failed. Never publish a legally
+            # risky article; the gate already logged it to quality_gate_failures.json.
+            print("   ❌ Could not make the article legally clean — skipping publish (logged).")
+            return
+    else:
+        print(f"   ✅ EN quality + legal check passed (gate auto_fixes={len(qa['auto_fixes']) if qa else 0})")
+
     body_html = build_body_html(post, cover_url)
 
     if replace_id:

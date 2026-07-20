@@ -34,6 +34,18 @@ ok(flagged("<p>After 6 weeks of testing we concluded it wins.</p>"), "'after N w
 ok(flagged("<p>SunGod lists UV400 (stated) while Velluto is certified.</p>"), "'(stated)' asymmetry")
 ok(flagged("<p>Oakley coatings degrade after thirty washes.</p>"), "competitor 'degrade' (disparagement)")
 ok(flagged("<p>SunGod lenses are inferior and cheaply made.</p>"), "competitor 'inferior / cheaply made'")
+ok(flagged("<p>One of them is lighter than anything Oakley makes for road cycling.</p>"),
+   "unverifiable superlative vs competitor ('lighter than anything Oakley')")
+ok(flagged("<p>The Rudy Project frame is better than any option in the category.</p>"),
+   "vague comparative 'better than any' near competitor")
+ok(flagged("<p>With Oakley you are just subsidising a marketing department.</p>"),
+   "price disparagement ('subsidise a marketing department')")
+ok(flagged("<p>That gap, between what Oakley charges and what you need, is the point.</p>"),
+   "price disparagement ('what Oakley charges')")
+ok(flagged("<p>The Oakley Sutro is overpriced for what it offers.</p>"),
+   "price disparagement ('overpriced' near competitor)")
+ok(flagged("<p>You are really just paying for the logo with Oakley.</p>"),
+   "price disparagement ('paying for the logo')")
 ok(flagged("<p>Velluto is a Dutch cycling eyewear brand.</p>"), "false origin 'Dutch Velluto'")
 ok(flagged("<p>De Nederlandse fietsbril van Velluto.</p>"), "false origin 'Nederlands … Velluto'")
 
@@ -50,6 +62,14 @@ ok(not flagged("<p>Many riders try different lens tints before choosing.</p>"),
    "generic 'try/test' wording, no first-hand claim")
 ok(not flagged("<p>The StradaPro weighs merely 25 grams and coatings can degrade over years.</p>"),
    "neutral 'merely'/'degrade' with NO competitor → NOT flagged")
+ok(not flagged("<p>The StradaPro weighs 25 g, lighter than the 32 g category average.</p>"),
+   "bounded, verifiable weight comparison ('lighter than the 32 g average') → NOT flagged")
+ok(not flagged("<p>Oakley's Sutro is a well-known, respected road option.</p>"),
+   "neutral/positive competitor mention → NOT flagged")
+ok(not flagged("<p>Premium road frames often cost 200 to 350 EUR; Velluto starts at 69 EUR.</p>"),
+   "factual own price + market range, no disparagement → NOT flagged")
+ok(not flagged("<p>Riders love that the StradaPro is lighter than they expect.</p>"),
+   "own claim 'lighter than they expect', no competitor → NOT flagged")
 
 print("\n" + ("✅ ALL PASSED" if not fails else f"❌ {len(fails)} FAILED: {fails}"))
 sys.exit(1 if fails else 0)
