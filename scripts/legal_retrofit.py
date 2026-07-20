@@ -181,10 +181,18 @@ def _fix_origin(text: str) -> str:
     return _ORIGIN_RE.sub(_repl, text or "")
 
 
+# Fabricated-test compound ("Tested & Ranked" etc.) — safe to strip from title AND
+# body (it appears as a title-echo in the JSON-LD schema headline); leaves other prose
+# untouched (unlike stripping the bare word "tested").
+_TEST_CLAIM_RE = _re.compile(
+    r"\s*[:\|\-–—&,]*\s*\btested\s*(?:,|&|and)\s*(?:and\s+)?(?:ranked|compared)\b"
+    r"|\s*[:\|\-–—&,]*\s*\branked\s*(?:,|&|and)\s*(?:and\s+)?tested\b", _re.I)
+
+
 def _mechanical(title: str, meta: str, body: str):
-    title = _clean_title(_fix_origin(_STATED_RE.sub("", title or "")))
-    meta  = _fix_origin(_STATED_RE.sub("", meta or ""))
-    body  = _fix_origin(_STATED_RE.sub("", body or ""))
+    title = _clean_title(_TEST_CLAIM_RE.sub("", _fix_origin(_STATED_RE.sub("", title or ""))))
+    meta  = _TEST_CLAIM_RE.sub("", _fix_origin(_STATED_RE.sub("", meta or "")))
+    body  = _TEST_CLAIM_RE.sub("", _fix_origin(_STATED_RE.sub("", body or "")))
     return strip_em_dashes(title)[0], strip_em_dashes(meta)[0], strip_em_dashes(body)[0]
 
 
