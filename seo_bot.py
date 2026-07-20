@@ -1813,12 +1813,17 @@ QUALITY STANDARD: {word_count} words, {faq_count} FAQ questions, at least 2 inte
     GENERATE_MODEL = "claude-sonnet-4-6"
     response = client.messages.create(
         model=GENERATE_MODEL,
-        max_tokens=16000,
-        system=system,
+        max_tokens=20000,          # headroom: long 'alternatives' articles (2600+ words of
+        system=system,             # rich template HTML) were near the old 16000 cap
         messages=[{"role": "user", "content": user}]
     )
     cost = log_usage(response.usage.input_tokens, response.usage.output_tokens, model=GENERATE_MODEL)
     print(f"   Tokens in:{response.usage.input_tokens} out:{response.usage.output_tokens} | ${cost:.4f}")
+    if getattr(response, "stop_reason", None) == "max_tokens":
+        # Truncated → the ===END=== delimiter is missing and the body is partial. Warn
+        # loudly; the quality gate's word-count/structure check will force a regenerate.
+        print(f"   ⚠️  EN generation hit max_tokens ({response.usage.output_tokens} out) — "
+              f"article likely truncated; gate should trigger a regenerate.")
 
     raw = response.content[0].text
     return _parse_primary_response(raw, kw)
@@ -2080,10 +2085,13 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
 
     ADAPT_MODEL = "claude-haiku-4-5-20251001"
 
-    # Body adaptation — Haiku handles HTML structure well
+    # Body adaptation — Haiku handles HTML structure well.
+    # max_tokens headroom: long localized articles were hitting a 12000 cap and getting
+    # TRUNCATED mid-HTML (out==12000 exactly on every locale). Raised so a full article
+    # fits; the guard below refuses to register a translation that still got cut off.
     body_r = client.messages.create(
         model=ADAPT_MODEL,
-        max_tokens=12000,
+        max_tokens=24000,
         system=(
             f"You are an SEO copywriter adapting cycling content for the {lang_name}-speaking market. "
             f"Target keyword: '{target_kw}'. Search intent: {intent}\n\n"
@@ -2103,6 +2111,11 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     )
     cost = log_usage(body_r.usage.input_tokens, body_r.usage.output_tokens, model=ADAPT_MODEL)
     print(f"   [{target_locale}] Adaptation tokens in:{body_r.usage.input_tokens} out:{body_r.usage.output_tokens} | ${cost:.4f}")
+    # Truncation guard: a translation cut off at the token cap is broken HTML — never
+    # register a half-article. Raising so the caller's try/except skips this locale.
+    if getattr(body_r, "stop_reason", None) == "max_tokens":
+        raise RuntimeError(f"{target_locale} adaptation truncated at max_tokens "
+                           f"({body_r.usage.output_tokens} out) — skipping this locale")
     adapted_body = _strip_md_fence(body_r.content[0].text)
 
     # Title + meta in a single Haiku call to save one round-trip
@@ -2136,11 +2149,23 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     if en_title and adapted_title.strip().lower() == en_title and target_kw:
         adapted_title = _clip_words(target_kw, 70)
 
-    return {
+    adapted = {
         "title":     adapted_title,
         "body_html": adapted_body,
         "meta_desc": adapted_meta,
     }
+
+    # Language-aware LEGAL self-heal before this translation is registered. The regex
+    # backstop is English-only, so without this the ~10 non-EN versions (and the freshly
+    # generated native-PAA blocks) would ship UNCHECKED. Fires a semantic pass only when a
+    # competitor is named (zero extra LLM cost otherwise). Best-effort, never discards.
+    try:
+        from briefs.legal_heal import heal_translation
+        heal_translation(adapted, client, lang_name)
+    except Exception as _e:
+        print(f"   ⚠️  [{target_locale}] legal heal skipped: {_e}")
+
+    return adapted
 
 
 def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None = None,

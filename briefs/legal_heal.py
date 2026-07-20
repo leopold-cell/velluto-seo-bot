@@ -27,7 +27,7 @@ import re as _re
 
 from briefs.quality_gate import (check_compliance, strip_em_dashes,
                                   _FAKE_TEST_RE, _ASYMMETRY_RE, _DISPARAGE_WORD_RE,
-                                  _ORIGIN_RE, _near_competitor,
+                                  _ORIGIN_RE, _near_competitor, _COMPETITOR_TOKENS,
                                   _COMPARATIVE_SUPERLATIVE_RE, _PRICE_DISPARAGE_RE)
 
 HEAL_MODEL = "claude-haiku-4-5-20251001"
@@ -217,4 +217,69 @@ def heal_post(post: dict, client, lang_name: str = "English") -> bool:
     if not fixed:
         return False
     post["title"], post["meta_description"], post["body_html"] = fixed
+    return True
+
+
+def _names_competitor(text: str) -> bool:
+    """Whether an identifiable competitor is named anywhere. Brand names are the same
+    in every language, so this works as a language-independent risk gate."""
+    low = (text or "").lower()
+    return any(tok in low for tok in _COMPETITOR_TOKENS)
+
+
+_TRANSLATION_REVIEW_FB = (
+    "Review this {lang} article and, writing in {lang}, fix EVERY statement that breaks "
+    "the rules above. The English regex backstop does NOT cover {lang}, so rely on your "
+    "own judgement. Pay special attention to: competitor bashing or doubt-casting; "
+    "unverifiable superlatives or vague comparatives against a rival; insinuations that a "
+    "competitor overcharges (price/value disparagement); INVENTED competitor specs, "
+    "prices or numbers; fabricated tests/reviews/ratings; and any false brand origin "
+    "(Velluto is GERMAN with Italian design). If a claim about a named competitor is not "
+    "100% verifiable from that competitor's own public info, remove or generalise it. "
+    "Keep all HTML tags, class names, IDs and URLs identical. Return [] if already clean."
+)
+
+
+def heal_translation(post: dict, client, lang_name: str) -> bool:
+    """Language-aware legal self-heal for a TRANSLATED article. The regex backstop in
+    check_compliance is English-only, so a non-English translation (and the freshly
+    generated native-PAA blocks) would otherwise ship UNCHECKED. This adds:
+      1. mechanical fixes (language-agnostic: strip '(stated)', em-dashes, 'Tested &
+         Ranked', correct a false Dutch origin),
+      2. a semantic Haiku legal review IN the target language via _EDIT_SYSTEM — but only
+         when a competitor is actually named (the §6/disparagement risks require an
+         identifiable rival, and brand names are language-independent, so non-comparison
+         articles cost ZERO extra LLM calls),
+      3. the English regex as a final cheap gate (catches EN leakage, 'Testsieger',
+         false Dutch origin) and, if it still trips, one standard compliance_edit pass.
+    Best-effort and in-place: a translation is cleaned, never discarded. Accepts either
+    'meta_description' or 'meta_desc' as the meta key. Returns True."""
+    title = post.get("title", "")
+    meta  = post.get("meta_description", post.get("meta_desc", "")) or ""
+    body  = post.get("body_html", "")
+
+    title, meta, body = _mechanical(title, meta, body)
+
+    if _names_competitor(f"{title} {body}"):
+        fb = _TRANSLATION_REVIEW_FB.format(lang=lang_name)
+        for _ in range(2):
+            pairs = _llm_pairs(client, title, meta, body, lang_name, fb)
+            if not pairs:
+                break
+            title = strip_em_dashes(_apply_pairs(title, pairs))[0]
+            meta  = strip_em_dashes(_apply_pairs(meta, pairs))[0]
+            body  = strip_em_dashes(_apply_pairs(body, pairs))[0]
+
+    # English-regex final gate (EN leakage / Testsieger / Dutch origin). If it still trips
+    # AND we have a client, run one standard fix pass; otherwise keep the best-effort text.
+    if check_compliance({"title": title, "meta_description": meta, "body_html": body}) and client:
+        fixed = compliance_edit(client, title, body, meta, lang_name)
+        if fixed:
+            title, meta, body = fixed
+
+    post["title"] = title
+    post["body_html"] = body
+    for k in ("meta_description", "meta_desc"):
+        if k in post:
+            post[k] = meta
     return True

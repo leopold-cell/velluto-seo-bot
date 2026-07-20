@@ -18,7 +18,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from briefs.legal_heal import _mechanical, _exact_flags, heal_post
+from briefs.legal_heal import _mechanical, _exact_flags, heal_post, heal_translation, _names_competitor
 from briefs.quality_gate import check_compliance
 
 fails = []
@@ -55,6 +55,28 @@ clean = {"title": "Best Road Cycling Sunglasses in 2026",
 ok(not check_compliance(clean), "sample post is already compliant (precondition)")
 ok(heal_post(clean, client=None, lang_name="English") is True,
    "heal_post returns True for a clean post WITHOUT touching the client")
+
+print("\n=== heal_translation: language-aware, competitor-gated, no-client-safe ===")
+ok(_names_competitor("Alternativen zu Oakley für Rennradfahrer"),
+   "_names_competitor True when a rival brand is named (language-independent)")
+ok(not _names_competitor("Die beste Rennradbrille für lange Ausfahrten"),
+   "_names_competitor False when no rival is named → skips the semantic LLM pass")
+
+# No competitor named → must run WITHOUT touching the client (client=None) and preserve body.
+de = {"title": "Beste Rennradbrille 2026", "meta_desc": "UV400, 25 g, beschlagfrei.",
+      "body_html": "<p>Die Velluto StradaPro wiegt 25 g mit UV400-zertifizierten Glaesern.</p>"}
+before = de["body_html"]
+ok(heal_translation(de, client=None, lang_name="German") is True,
+   "heal_translation returns True on a clean non-competitor translation without a client")
+ok(de["body_html"] == before and "meta_desc" in de,
+   "clean translation body preserved and the 'meta_desc' key is kept")
+
+# False Dutch origin → the mechanical fix corrects it even without a client (safety net).
+nl = {"title": "Over Velluto", "meta_desc": "x",
+      "body_html": "<p>Velluto is een Nederlands merk.</p>"}
+heal_translation(nl, client=None, lang_name="Dutch")
+ok("nederlands" not in nl["body_html"].lower(),
+   "mechanical origin fix removes false Dutch origin in a translation (no client needed)")
 
 print("\n" + ("✅ ALL PASSED" if not fails else f"❌ {len(fails)} FAILED: {fails}"))
 sys.exit(1 if fails else 0)
