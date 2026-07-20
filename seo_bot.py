@@ -2033,6 +2033,133 @@ def _clip_words(s: str, n: int) -> str:
     return cut or s[:n]
 
 
+ADAPT_MODEL = "claude-haiku-4-5-20251001"
+
+
+def _adapt_body_fullbody(en_body: str, lang_name: str, target_kw: str, intent: str,
+                         cycling_ctx: str, price_rule: str, paa_rule: str,
+                         target_locale: str) -> str:
+    """Proven path: hand the whole HTML to Haiku and have it rewrite everything in the
+    target language. Used as the guaranteed fallback when segment-adaptation can't be
+    applied. Raises on truncation so the caller skips (never registers a half-article)."""
+    body_r = client.messages.create(
+        model=ADAPT_MODEL,
+        max_tokens=24000,
+        system=(
+            f"You are an SEO copywriter adapting cycling content for the {lang_name}-speaking market. "
+            f"Target keyword: '{target_kw}'. Search intent: {intent}\n\n"
+            "Rules (follow exactly):\n"
+            f"1. Write entirely in {lang_name} — no German words anywhere.\n"
+            f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
+            "3. Keep ALL existing HTML tags, class names, IDs and structure IDENTICAL "
+            "(you MAY append the new native PAA blocks from rule 9 where indicated).\n"
+            "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
+            "5. All URLs (href, src) stay unchanged.\n"
+            f"6. Adapt local references to reflect: {cycling_ctx}.\n"
+            "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
+            "8. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. (Normal hyphens in words are fine.)\n"
+            f"{price_rule}{paa_rule}"
+        ),
+        messages=[{"role": "user", "content": en_body}]
+    )
+    cost = log_usage(body_r.usage.input_tokens, body_r.usage.output_tokens, model=ADAPT_MODEL)
+    print(f"   [{target_locale}] Adaptation tokens in:{body_r.usage.input_tokens} "
+          f"out:{body_r.usage.output_tokens} | ${cost:.4f}")
+    if getattr(body_r, "stop_reason", None) == "max_tokens":
+        raise RuntimeError(f"{target_locale} adaptation truncated at max_tokens "
+                           f"({body_r.usage.output_tokens} out) — skipping this locale")
+    return _strip_md_fence(body_r.content[0].text)
+
+
+def _gen_native_paa(lang_name: str, target_kw: str, questions: list) -> str:
+    """Generate 2-3 native People-Also-Ask <h3> Q&A blocks in the target language (new
+    content, not present in the EN skeleton). Legally checked by the caller's heal pass."""
+    qs = "\n".join(f"- {q}" for q in questions[:3])
+    sysp = (
+        f"Write in {lang_name}. Target keyword (use once if it fits): '{target_kw}'. Output ONLY HTML: "
+        "for EACH question below, an <h3> with the question, then a <p> with a direct 40-60 word answer, "
+        "then one <p> of added depth. No wrapper element, no markdown fences, no commentary.\n"
+        "Velluto is a GERMAN cycling-eyewear brand with Italian design; its lenses are clear VellutoPuro "
+        "and high-contrast VellutoVisione. It has NO photochromic, polarized or prescription lenses — "
+        "never claim it does. No competitor bashing, no invented facts, never an em-dash '—'."
+    )
+    r = client.messages.create(model=ADAPT_MODEL, max_tokens=2000, system=sysp,
+                               messages=[{"role": "user", "content": qs}])
+    log_usage(r.usage.input_tokens, r.usage.output_tokens, model=ADAPT_MODEL)
+    return _strip_md_fence(r.content[0].text)
+
+
+def _insert_before_faq(html: str, block: str) -> str:
+    """Insert an HTML block right before the FAQ section (id="sfaq" or first <details>),
+    else append — same placement the full-body path uses for native PAA."""
+    if re.search(r'<h2[^>]*id=["\']sfaq', html, re.I):
+        return re.sub(r'(<h2[^>]*id=["\']sfaq)', block + r"\1", html, count=1, flags=re.I)
+    if re.search(r'<details', html, re.I):
+        return re.sub(r'(<details)', block + r"\1", html, count=1, flags=re.I)
+    return html + "\n" + block
+
+
+def _adapt_body_segments(en_body: str, lang_name: str, target_kw: str, intent: str,
+                         cycling_ctx: str, price_rule: str, target_locale: str,
+                         paa_questions: list) -> str | None:
+    """Adapt ONLY the translatable text of the article, then reinsert into the identical
+    HTML skeleton. Returns the adapted body, or None to signal the caller to fall back to
+    full-body adaptation (too little structure, count mismatch, truncated/invalid JSON)."""
+    from briefs.html_segments import tokenize, detokenize, first_body_index
+    from briefs.quality_gate import strip_em_dashes
+
+    parts, segments, roles = tokenize(en_body)
+    if len(segments) < 3:
+        return None  # not enough structure to be worth it — use full-body
+
+    heading_idx = [i for i, r in enumerate(roles) if r in ("h1", "h2", "h3")]
+    opening = first_body_index(roles)
+    kw_targets = sorted(set(([opening] if opening >= 0 else []) + heading_idx[:3]))
+    numbered = "\n".join(f"{i}\t{segments[i]}" for i in range(len(segments)))
+
+    system = (
+        f"You ADAPT a cycling article into natural {lang_name} for that market — this is market "
+        f"adaptation, not word-for-word translation. Target keyword: '{target_kw}'. Search intent: {intent}.\n"
+        "INPUT: a numbered list of text fragments, one per line as 'index<TAB>text'.\n"
+        f"For EACH fragment, write the {lang_name} version, adapting local references to reflect "
+        f"{cycling_ctx}. Keep brand names unchanged (Velluto, StradaPro, VellutoPuro, VellutoVisione). "
+        f"Weave the target keyword naturally into the fragments at indices {kw_targets} "
+        "(the title, opening and headings) where it reads well.\n"
+        "Do NOT add, drop, split, merge or reorder fragments. Never use the em-dash '—'.\n"
+        f"{price_rule}"
+        f"OUTPUT: ONLY a JSON array of EXACTLY {len(segments)} strings, in the same order as the input "
+        "(array[0] is the adaptation of fragment 0, and so on). No keys, no commentary, no code fence."
+    )
+    r = client.messages.create(model=ADAPT_MODEL, max_tokens=16000, system=system,
+                               messages=[{"role": "user", "content": numbered}])
+    cost = log_usage(r.usage.input_tokens, r.usage.output_tokens, model=ADAPT_MODEL)
+    print(f"   [{target_locale}] Segment-adapt tokens in:{r.usage.input_tokens} "
+          f"out:{r.usage.output_tokens} | ${cost:.4f}")
+    if getattr(r, "stop_reason", None) == "max_tokens":
+        return None  # truncated JSON → fall back to full-body
+    m = re.search(r"\[.*\]", r.content[0].text, re.S)
+    if not m:
+        return None
+    try:
+        arr = json.loads(m.group(0))
+    except Exception:
+        return None
+    if not isinstance(arr, list) or len(arr) != len(segments):
+        return None  # count mismatch → structure can't be trusted, fall back
+    adapted = [strip_em_dashes(str(x))[0] for x in arr]
+    body = detokenize(parts, adapted)
+
+    # Native PAA — new content, generated separately and inserted before the FAQ.
+    if paa_questions:
+        try:
+            paa_html = _gen_native_paa(lang_name, target_kw, paa_questions)
+            if paa_html.strip():
+                body = _insert_before_faq(body, paa_html)
+        except Exception as e:
+            print(f"   [{target_locale}] native PAA skipped: {e}")
+    return body
+
+
 def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
                                commercial: dict | None = None) -> dict:
     """
@@ -2067,9 +2194,11 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     # weave the market's real People-Also-Ask into the translation (no extra API
     # call). Makes /de/, /nl/, /fr/ rank for what that market actually searches.
     paa_rule = ""
+    paa_questions: list = []
     try:
         from content_retrofit import load_paa_questions as _load_paa
-        _paa = _load_paa("", de_post.get("title", ""), target_locale)
+        paa_questions = _load_paa("", de_post.get("title", ""), target_locale)[:6]
+        _paa = paa_questions
         if _paa:
             _qs = "\n".join(f"   - {q}" for q in _paa[:6])
             paa_rule = (
@@ -2083,40 +2212,26 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     except Exception:
         pass
 
-    ADAPT_MODEL = "claude-haiku-4-5-20251001"
-
-    # Body adaptation — Haiku handles HTML structure well.
-    # max_tokens headroom: long localized articles were hitting a 12000 cap and getting
-    # TRUNCATED mid-HTML (out==12000 exactly on every locale). Raised so a full article
-    # fits; the guard below refuses to register a translation that still got cut off.
-    body_r = client.messages.create(
-        model=ADAPT_MODEL,
-        max_tokens=24000,
-        system=(
-            f"You are an SEO copywriter adapting cycling content for the {lang_name}-speaking market. "
-            f"Target keyword: '{target_kw}'. Search intent: {intent}\n\n"
-            "Rules (follow exactly):\n"
-            f"1. Write entirely in {lang_name} — no German words anywhere.\n"
-            f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
-            "3. Keep ALL existing HTML tags, class names, IDs and structure IDENTICAL "
-            "(you MAY append the new native PAA blocks from rule 9 where indicated).\n"
-            "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
-            "5. All URLs (href, src) stay unchanged.\n"
-            f"6. Adapt local references to reflect: {cycling_ctx}.\n"
-            "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
-            "8. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. (Normal hyphens in words are fine.)\n"
-            f"{price_rule}{paa_rule}"
-        ),
-        messages=[{"role": "user", "content": de_post["body_html"]}]
-    )
-    cost = log_usage(body_r.usage.input_tokens, body_r.usage.output_tokens, model=ADAPT_MODEL)
-    print(f"   [{target_locale}] Adaptation tokens in:{body_r.usage.input_tokens} out:{body_r.usage.output_tokens} | ${cost:.4f}")
-    # Truncation guard: a translation cut off at the token cap is broken HTML — never
-    # register a half-article. Raising so the caller's try/except skips this locale.
-    if getattr(body_r, "stop_reason", None) == "max_tokens":
-        raise RuntimeError(f"{target_locale} adaptation truncated at max_tokens "
-                           f"({body_r.usage.output_tokens} out) — skipping this locale")
-    adapted_body = _strip_md_fence(body_r.content[0].text)
+    # Body adaptation. Preferred path: SEGMENT-adaptation — the model adapts only the text
+    # (keyword, local context, native phrasing), never re-emits the markup, so tokens drop
+    # ~40% and truncation is impossible. It still receives the market keyword + local
+    # context + the heading/opening positions, so localization is unchanged (NOT a plain
+    # translation). Any structural mismatch (wrong segment count, truncated JSON, parse
+    # error, exception) falls back to the proven full-body call below — so it can never
+    # break a market. Kill-switch: VELLUTO_SEGMENT_ADAPT=0.
+    adapted_body = None
+    if os.getenv("VELLUTO_SEGMENT_ADAPT", "1") == "1":
+        try:
+            adapted_body = _adapt_body_segments(
+                de_post["body_html"], lang_name, target_kw, intent, cycling_ctx,
+                price_rule, target_locale, paa_questions)
+        except Exception as e:
+            print(f"   [{target_locale}] segment-adapt error ({e}) — full-body fallback")
+            adapted_body = None
+    if adapted_body is None:
+        adapted_body = _adapt_body_fullbody(
+            de_post["body_html"], lang_name, target_kw, intent, cycling_ctx,
+            price_rule, paa_rule, target_locale)
 
     # Title + meta in a single Haiku call to save one round-trip
     meta_r = client.messages.create(
