@@ -246,6 +246,43 @@ not an interruption.
 """
 
 
+# ── White-hat SEO strategy (people-first; also what keeps us legally safe) ─────
+# https://www.semrush.com/blog/white-hat-seo/ — honest, verifiable, genuinely useful
+# content is simultaneously the best long-term SEO play AND the safest under EU/German
+# advertising law. The two goals reinforce each other: no faked authority, no
+# manipulation, no unverifiable claims.
+WHITE_HAT_SEO = """
+WHITE-HAT SEO STRATEGY (people-first, Google Search Essentials compliant). This is the
+SAME discipline that keeps us legally safe: honest, verifiable, genuinely useful content.
+Rank by being the best answer, never by tricking the reader or the crawler.
+
+WRITE FOR THE READER FIRST:
+- Fully satisfy the search intent behind the keyword. Answer what the cyclist actually
+  typed, directly and early, before any sell.
+- Original, specific, genuinely helpful content: real buying criteria, honest trade-offs,
+  concrete specs (grams, UV rating, lens types). No generic filler, no padding for length.
+- E-E-A-T through AUTHENTIC brand expertise: Velluto designs road cycling eyewear, so
+  write with real product knowledge. NEVER manufacture experience you don't have — no
+  invented tests, ride reports, lab results, ratings or awards (black-hat AND illegal).
+
+ON-PAGE (do it naturally, never forced):
+- Use the primary keyword and natural variants where they genuinely fit — title, one H2,
+  the opening. NO keyword stuffing: no unnatural repetition, no keyword lists, no filler.
+- Clear structure: one topic per H2, skimmable paragraphs, descriptive subheads.
+- Accurate, descriptive alt text on every image (describe what is actually shown).
+- Helpful internal links to relevant Velluto pages with natural, descriptive anchor text
+  (never "click here", never exact-match keyword-stuffed anchors).
+- Title + meta description that honestly describe the page and earn the click — no
+  clickbait the body doesn't deliver.
+
+NEVER (black-hat — this hurts rankings AND legal standing):
+- Keyword stuffing, hidden/invisible text, cloaking (content written only for crawlers).
+- Doorway pages, spun/duplicated/templated content, substance-free AI filler.
+- Misleading titles or claims, fake reviews, fake ratings, fabricated tests or awards.
+- Disparaging, superlative, or unverifiable claims about competitors (see LEGAL COMPLIANCE).
+"""
+
+
 # ── Token tracking ───────────────────────────────────────────────────────────
 
 _MODEL_COSTS = {
@@ -1061,11 +1098,13 @@ def generate(topic: str, trends: str, cover_url: str, products: list[dict]) -> t
     seo_insights = load_seo_insights(topic=topic)
 
     system = f"""You are the SEO content manager and lead copywriter for Velluto (velluto-shop.com), \
-a premium Dutch road cycling eyewear brand.
+a premium GERMAN road cycling eyewear brand with Italian design, sold across Europe.
 
 {BRAND_FACTS}
 
 {COPY_PRINCIPLES}
+
+{WHITE_HAT_SEO}
 {(chr(10) + seo_insights + chr(10)) if seo_insights else ""}
 WRITING RULES:
 1. Every language version must be 100% in that language — no mixed words (brand names Velluto/StradaPro are OK).
@@ -1564,7 +1603,13 @@ PUBLISH RULES (HARD — articles violating these get blocked and discarded):
 4. INTERNAL LINKS — At least 3 <a> elements pointing to velluto-shop.com paths total.
 5. PRIMARY KEYWORD — The exact primary keyword (or its tokens) MUST appear in <title> (= the article title, rendered as the page H1 by the theme) and at least one <h2>. Never write an <h1> in the body.
 
-LEGAL COMPLIANCE (HARD — EU/German advertising law; violations get blocked):
+LEGAL COMPLIANCE (HARD — EU/German advertising law. Write these in from the start:
+the copy stays aggressive and persuasive, but on Velluto's OWN verifiable strengths,
+never by putting a competitor down or citing a fact you can't prove):
+L0. TONE TOWARD COMPETITORS: OBJECTIVE OR POSITIVE, NEVER NEGATIVE. Treat every named
+    rival neutrally or with genuine respect ("Oakley's Sutro is a well-known road
+    option"). Sell by making VELLUTO look great, not by making a rival look bad. Zero
+    competitor bashing, snark, or insinuation anywhere in the article.
 L1. NO FABRICATED TESTS OR REVIEWS. Never claim or imply first-hand testing, lab
     measurement, trial rides, "hands-on", "field/road test", "we tested", "in our
     tests", "after N hours/km", "Testsieger", "getestet", "editorial test", star
@@ -1583,6 +1628,15 @@ L3. COMPARATIVE ADVERTISING (§ 6 UWG). When naming a competitor, every statemen
     - Absolute negatives that go stale: "does not offer X", "doesn't publish its
       weights", "no risk-free trial" — you cannot verify these stay true. Instead
       describe Velluto's OWN strengths without asserting a competitor lacks them.
+    - UNVERIFIABLE SUPERLATIVES / vague comparatives against a rival: "lighter than
+      anything Oakley makes", "better than any X", "the frames are lighter, the fit
+      cleaner". Give Velluto's OWN measured number instead ("the StradaPro weighs 25 g")
+      and drop the open-ended comparison.
+    - PRICE / VALUE DISPARAGEMENT: never insinuate a rival overcharges or that its
+      price is just marketing — no "subsidise a marketing department", "what Oakley
+      charges", "paying for the logo/name", "brand tax", "overpriced", "rip-off",
+      "a single Oakley lens replacement". State Velluto's price positively instead
+      ("premium build from 69 EUR").
     - Inventing competitor specs, prices, or numbers.
     - ANY fact about a named competitor you cannot verify with 100% certainty from
       that competitor's OWN public information: omit it. If a comparison point would
@@ -1606,6 +1660,8 @@ You write helpful, honest, first-hand-accurate brand content — never fabricate
 {BRAND_FACTS}
 
 {COPY_PRINCIPLES}
+
+{WHITE_HAT_SEO}
 {(chr(10) + seo_ctx + chr(10)) if seo_ctx else ""}
 WRITING RULES:
 1. Write exclusively in English. Brand names (Velluto, StradaPro, VellutoPuro, VellutoVisione) are unchanged.
@@ -1757,12 +1813,17 @@ QUALITY STANDARD: {word_count} words, {faq_count} FAQ questions, at least 2 inte
     GENERATE_MODEL = "claude-sonnet-4-6"
     response = client.messages.create(
         model=GENERATE_MODEL,
-        max_tokens=16000,
-        system=system,
+        max_tokens=20000,          # headroom: long 'alternatives' articles (2600+ words of
+        system=system,             # rich template HTML) were near the old 16000 cap
         messages=[{"role": "user", "content": user}]
     )
     cost = log_usage(response.usage.input_tokens, response.usage.output_tokens, model=GENERATE_MODEL)
     print(f"   Tokens in:{response.usage.input_tokens} out:{response.usage.output_tokens} | ${cost:.4f}")
+    if getattr(response, "stop_reason", None) == "max_tokens":
+        # Truncated → the ===END=== delimiter is missing and the body is partial. Warn
+        # loudly; the quality gate's word-count/structure check will force a regenerate.
+        print(f"   ⚠️  EN generation hit max_tokens ({response.usage.output_tokens} out) — "
+              f"article likely truncated; gate should trigger a regenerate.")
 
     raw = response.content[0].text
     return _parse_primary_response(raw, kw)
@@ -1972,6 +2033,133 @@ def _clip_words(s: str, n: int) -> str:
     return cut or s[:n]
 
 
+ADAPT_MODEL = "claude-haiku-4-5-20251001"
+
+
+def _adapt_body_fullbody(en_body: str, lang_name: str, target_kw: str, intent: str,
+                         cycling_ctx: str, price_rule: str, paa_rule: str,
+                         target_locale: str) -> str:
+    """Proven path: hand the whole HTML to Haiku and have it rewrite everything in the
+    target language. Used as the guaranteed fallback when segment-adaptation can't be
+    applied. Raises on truncation so the caller skips (never registers a half-article)."""
+    body_r = client.messages.create(
+        model=ADAPT_MODEL,
+        max_tokens=24000,
+        system=(
+            f"You are an SEO copywriter adapting cycling content for the {lang_name}-speaking market. "
+            f"Target keyword: '{target_kw}'. Search intent: {intent}\n\n"
+            "Rules (follow exactly):\n"
+            f"1. Write entirely in {lang_name} — no German words anywhere.\n"
+            f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
+            "3. Keep ALL existing HTML tags, class names, IDs and structure IDENTICAL "
+            "(you MAY append the new native PAA blocks from rule 9 where indicated).\n"
+            "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
+            "5. All URLs (href, src) stay unchanged.\n"
+            f"6. Adapt local references to reflect: {cycling_ctx}.\n"
+            "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
+            "8. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. (Normal hyphens in words are fine.)\n"
+            f"{price_rule}{paa_rule}"
+        ),
+        messages=[{"role": "user", "content": en_body}]
+    )
+    cost = log_usage(body_r.usage.input_tokens, body_r.usage.output_tokens, model=ADAPT_MODEL)
+    print(f"   [{target_locale}] Adaptation tokens in:{body_r.usage.input_tokens} "
+          f"out:{body_r.usage.output_tokens} | ${cost:.4f}")
+    if getattr(body_r, "stop_reason", None) == "max_tokens":
+        raise RuntimeError(f"{target_locale} adaptation truncated at max_tokens "
+                           f"({body_r.usage.output_tokens} out) — skipping this locale")
+    return _strip_md_fence(body_r.content[0].text)
+
+
+def _gen_native_paa(lang_name: str, target_kw: str, questions: list) -> str:
+    """Generate 2-3 native People-Also-Ask <h3> Q&A blocks in the target language (new
+    content, not present in the EN skeleton). Legally checked by the caller's heal pass."""
+    qs = "\n".join(f"- {q}" for q in questions[:3])
+    sysp = (
+        f"Write in {lang_name}. Target keyword (use once if it fits): '{target_kw}'. Output ONLY HTML: "
+        "for EACH question below, an <h3> with the question, then a <p> with a direct 40-60 word answer, "
+        "then one <p> of added depth. No wrapper element, no markdown fences, no commentary.\n"
+        "Velluto is a GERMAN cycling-eyewear brand with Italian design; its lenses are clear VellutoPuro "
+        "and high-contrast VellutoVisione. It has NO photochromic, polarized or prescription lenses — "
+        "never claim it does. No competitor bashing, no invented facts, never an em-dash '—'."
+    )
+    r = client.messages.create(model=ADAPT_MODEL, max_tokens=2000, system=sysp,
+                               messages=[{"role": "user", "content": qs}])
+    log_usage(r.usage.input_tokens, r.usage.output_tokens, model=ADAPT_MODEL)
+    return _strip_md_fence(r.content[0].text)
+
+
+def _insert_before_faq(html: str, block: str) -> str:
+    """Insert an HTML block right before the FAQ section (id="sfaq" or first <details>),
+    else append — same placement the full-body path uses for native PAA."""
+    if re.search(r'<h2[^>]*id=["\']sfaq', html, re.I):
+        return re.sub(r'(<h2[^>]*id=["\']sfaq)', block + r"\1", html, count=1, flags=re.I)
+    if re.search(r'<details', html, re.I):
+        return re.sub(r'(<details)', block + r"\1", html, count=1, flags=re.I)
+    return html + "\n" + block
+
+
+def _adapt_body_segments(en_body: str, lang_name: str, target_kw: str, intent: str,
+                         cycling_ctx: str, price_rule: str, target_locale: str,
+                         paa_questions: list) -> str | None:
+    """Adapt ONLY the translatable text of the article, then reinsert into the identical
+    HTML skeleton. Returns the adapted body, or None to signal the caller to fall back to
+    full-body adaptation (too little structure, count mismatch, truncated/invalid JSON)."""
+    from briefs.html_segments import tokenize, detokenize, first_body_index
+    from briefs.quality_gate import strip_em_dashes
+
+    parts, segments, roles = tokenize(en_body)
+    if len(segments) < 3:
+        return None  # not enough structure to be worth it — use full-body
+
+    heading_idx = [i for i, r in enumerate(roles) if r in ("h1", "h2", "h3")]
+    opening = first_body_index(roles)
+    kw_targets = sorted(set(([opening] if opening >= 0 else []) + heading_idx[:3]))
+    numbered = "\n".join(f"{i}\t{segments[i]}" for i in range(len(segments)))
+
+    system = (
+        f"You ADAPT a cycling article into natural {lang_name} for that market — this is market "
+        f"adaptation, not word-for-word translation. Target keyword: '{target_kw}'. Search intent: {intent}.\n"
+        "INPUT: a numbered list of text fragments, one per line as 'index<TAB>text'.\n"
+        f"For EACH fragment, write the {lang_name} version, adapting local references to reflect "
+        f"{cycling_ctx}. Keep brand names unchanged (Velluto, StradaPro, VellutoPuro, VellutoVisione). "
+        f"Weave the target keyword naturally into the fragments at indices {kw_targets} "
+        "(the title, opening and headings) where it reads well.\n"
+        "Do NOT add, drop, split, merge or reorder fragments. Never use the em-dash '—'.\n"
+        f"{price_rule}"
+        f"OUTPUT: ONLY a JSON array of EXACTLY {len(segments)} strings, in the same order as the input "
+        "(array[0] is the adaptation of fragment 0, and so on). No keys, no commentary, no code fence."
+    )
+    r = client.messages.create(model=ADAPT_MODEL, max_tokens=16000, system=system,
+                               messages=[{"role": "user", "content": numbered}])
+    cost = log_usage(r.usage.input_tokens, r.usage.output_tokens, model=ADAPT_MODEL)
+    print(f"   [{target_locale}] Segment-adapt tokens in:{r.usage.input_tokens} "
+          f"out:{r.usage.output_tokens} | ${cost:.4f}")
+    if getattr(r, "stop_reason", None) == "max_tokens":
+        return None  # truncated JSON → fall back to full-body
+    m = re.search(r"\[.*\]", r.content[0].text, re.S)
+    if not m:
+        return None
+    try:
+        arr = json.loads(m.group(0))
+    except Exception:
+        return None
+    if not isinstance(arr, list) or len(arr) != len(segments):
+        return None  # count mismatch → structure can't be trusted, fall back
+    adapted = [strip_em_dashes(str(x))[0] for x in arr]
+    body = detokenize(parts, adapted)
+
+    # Native PAA — new content, generated separately and inserted before the FAQ.
+    if paa_questions:
+        try:
+            paa_html = _gen_native_paa(lang_name, target_kw, paa_questions)
+            if paa_html.strip():
+                body = _insert_before_faq(body, paa_html)
+        except Exception as e:
+            print(f"   [{target_locale}] native PAA skipped: {e}")
+    return body
+
+
 def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
                                commercial: dict | None = None) -> dict:
     """
@@ -2006,9 +2194,11 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     # weave the market's real People-Also-Ask into the translation (no extra API
     # call). Makes /de/, /nl/, /fr/ rank for what that market actually searches.
     paa_rule = ""
+    paa_questions: list = []
     try:
         from content_retrofit import load_paa_questions as _load_paa
-        _paa = _load_paa("", de_post.get("title", ""), target_locale)
+        paa_questions = _load_paa("", de_post.get("title", ""), target_locale)[:6]
+        _paa = paa_questions
         if _paa:
             _qs = "\n".join(f"   - {q}" for q in _paa[:6])
             paa_rule = (
@@ -2022,32 +2212,26 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     except Exception:
         pass
 
-    ADAPT_MODEL = "claude-haiku-4-5-20251001"
-
-    # Body adaptation — Haiku handles HTML structure well
-    body_r = client.messages.create(
-        model=ADAPT_MODEL,
-        max_tokens=12000,
-        system=(
-            f"You are an SEO copywriter adapting cycling content for the {lang_name}-speaking market. "
-            f"Target keyword: '{target_kw}'. Search intent: {intent}\n\n"
-            "Rules (follow exactly):\n"
-            f"1. Write entirely in {lang_name} — no German words anywhere.\n"
-            f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
-            "3. Keep ALL existing HTML tags, class names, IDs and structure IDENTICAL "
-            "(you MAY append the new native PAA blocks from rule 9 where indicated).\n"
-            "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
-            "5. All URLs (href, src) stay unchanged.\n"
-            f"6. Adapt local references to reflect: {cycling_ctx}.\n"
-            "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
-            "8. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. (Normal hyphens in words are fine.)\n"
-            f"{price_rule}{paa_rule}"
-        ),
-        messages=[{"role": "user", "content": de_post["body_html"]}]
-    )
-    cost = log_usage(body_r.usage.input_tokens, body_r.usage.output_tokens, model=ADAPT_MODEL)
-    print(f"   [{target_locale}] Adaptation tokens in:{body_r.usage.input_tokens} out:{body_r.usage.output_tokens} | ${cost:.4f}")
-    adapted_body = _strip_md_fence(body_r.content[0].text)
+    # Body adaptation. Preferred path: SEGMENT-adaptation — the model adapts only the text
+    # (keyword, local context, native phrasing), never re-emits the markup, so tokens drop
+    # ~40% and truncation is impossible. It still receives the market keyword + local
+    # context + the heading/opening positions, so localization is unchanged (NOT a plain
+    # translation). Any structural mismatch (wrong segment count, truncated JSON, parse
+    # error, exception) falls back to the proven full-body call below — so it can never
+    # break a market. Kill-switch: VELLUTO_SEGMENT_ADAPT=0.
+    adapted_body = None
+    if os.getenv("VELLUTO_SEGMENT_ADAPT", "1") == "1":
+        try:
+            adapted_body = _adapt_body_segments(
+                de_post["body_html"], lang_name, target_kw, intent, cycling_ctx,
+                price_rule, target_locale, paa_questions)
+        except Exception as e:
+            print(f"   [{target_locale}] segment-adapt error ({e}) — full-body fallback")
+            adapted_body = None
+    if adapted_body is None:
+        adapted_body = _adapt_body_fullbody(
+            de_post["body_html"], lang_name, target_kw, intent, cycling_ctx,
+            price_rule, paa_rule, target_locale)
 
     # Title + meta in a single Haiku call to save one round-trip
     meta_r = client.messages.create(
@@ -2080,11 +2264,23 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     if en_title and adapted_title.strip().lower() == en_title and target_kw:
         adapted_title = _clip_words(target_kw, 70)
 
-    return {
+    adapted = {
         "title":     adapted_title,
         "body_html": adapted_body,
         "meta_desc": adapted_meta,
     }
+
+    # Language-aware LEGAL self-heal before this translation is registered. The regex
+    # backstop is English-only, so without this the ~10 non-EN versions (and the freshly
+    # generated native-PAA blocks) would ship UNCHECKED. Fires a semantic pass only when a
+    # competitor is named (zero extra LLM cost otherwise). Best-effort, never discards.
+    try:
+        from briefs.legal_heal import heal_translation
+        heal_translation(adapted, client, lang_name)
+    except Exception as _e:
+        print(f"   ⚠️  [{target_locale}] legal heal skipped: {_e}")
+
+    return adapted
 
 
 def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None = None,
@@ -2100,7 +2296,10 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
                 pass it in to avoid duplicate Shopify calls.
     brief:      optional Phase 4 master brief. When provided:
                   - generate_de_primary uses brief.must_answer_questions, claims_to_avoid
-                  - quality_gate runs after generation and HARD-BLOCKS publish if it fails
+                  - quality_gate runs after generation: STRUCTURAL failures (too short /
+                    missing keyword / links / PAA / price) regenerate then block; LEGAL
+                    findings are self-healed in place (never discard the article), with a
+                    final legal check before publish as the safety net.
                 When None, falls back to legacy keyword-only flow.
     """
     from en_keyword_queue import mark_en_keyword_used
@@ -2152,8 +2351,13 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
 
     cover_url = pick_cover(keyword, keyword)
 
-    # Generate EN article — up to 3 attempts; retries inject specific failures as feedback
-    from briefs.quality_gate import gate as _quality_gate
+    # Generate EN article — up to 3 attempts; retries inject specific failures as feedback.
+    # Legal compliance is handled by PREVENTION (the generation prompt bakes in the UWG
+    # rules) + a SELF-HEAL pass at the end — never by discarding a whole generated article.
+    # Only STRUCTURAL problems (too short, missing keyword/links, PAA, wrong price) justify
+    # a full regeneration; legal phrasings get surgically fixed after the loop.
+    from briefs.quality_gate import gate as _quality_gate, check_compliance as _check_legal
+    from briefs.legal_heal import heal_post as _legal_heal
     recent_articles = fetch_recent_articles()   # related-link candidates (internal-linking depth)
     post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief)
     qa = None
@@ -2178,30 +2382,47 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
         if qa["auto_fixes"]:
             for af in qa["auto_fixes"]:
                 print(f"   🛠  QA auto-fix: {af}")
-        if not qa["passed"]:
+        # Split legal from structural: legal phrasings are self-healed below (no regen);
+        # only structural issues warrant regenerating the whole article.
+        structural = [i for i in qa["hard_issues"] if not i.startswith("[LEGAL]")]
+        if structural:
             if attempt < 2:
                 print(f"   ✗ Quality gate FAILED (attempt {attempt+1}/3) — regenerating with feedback:")
-                for issue in qa["hard_issues"]:
+                for issue in structural:
                     print(f"      {issue}")
                 post = generate_de_primary(kw_ctx, products, quality, commercial=commercial, brief=brief,
-                                            retry_feedback="\n".join(f"- {i}" for i in qa["hard_issues"]))
+                                            retry_feedback="\n".join(f"- {i}" for i in structural))
                 continue
             else:
-                print(f"   ❌ Quality gate FAILED after 3 attempts — publish blocked.")
-                for issue in qa["hard_issues"]:
+                print(f"   ❌ Structural quality gate FAILED after 3 attempts — publish blocked.")
+                for issue in structural:
                     print(f"      {issue}")
                 print(f"   (logged to output/quality_gate_failures.json)")
-                return  # Hard-stop: no publish, no T&A
-        # All checks passed
-        if not issues:
-            print(f"   ✅ EN quality check passed (attempt {attempt+1}, gate auto_fixes={len(qa['auto_fixes'])})")
-        else:
-            for iss in issues:
-                print(f"   ⚠️  {iss}")
+                return  # structural quality is non-negotiable (too short / no keyword / no links)
+        # Structural checks passed (any [LEGAL] items are healed below).
+        for iss in issues:
+            print(f"   ⚠️  {iss}")
         break
 
-    # Phase 4.1: quality gate already ran inside the retry loop above.
-    # If we reach here, post passed both FACT and gate checks.
+    # ── 3. Final legal quality check before publish — SELF-HEAL, never discard ──
+    # The prompt should already produce clean copy; this surgically fixes any residual
+    # UWG-risky phrasing (fabricated test, competitor bashing, unverifiable superlative/
+    # price claim, false origin) without regenerating the article.
+    legal_issues = _check_legal(post)
+    if legal_issues:
+        print(f"   ⚖️  Legal check flagged {len(legal_issues)} item(s) — self-healing (no regen):")
+        for i in legal_issues:
+            print(f"      {i}")
+        if _legal_heal(post, client, lang_name="English"):
+            print("   ✅ Legal self-heal applied — article is compliant")
+        else:
+            # Safety net (rare): prevention + heal both failed. Never publish a legally
+            # risky article; the gate already logged it to quality_gate_failures.json.
+            print("   ❌ Could not make the article legally clean — skipping publish (logged).")
+            return
+    else:
+        print(f"   ✅ EN quality + legal check passed (gate auto_fixes={len(qa['auto_fixes']) if qa else 0})")
+
     body_html = build_body_html(post, cover_url)
 
     if replace_id:
@@ -2331,6 +2552,35 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
         else:
             print("   ✅ Quality check passed")
         break
+
+    # ── Final legal quality check before publish — SELF-HEAL, never discard ──
+    # Same philosophy as the primary flow: this fallback path must not be a legal
+    # backdoor (validate() above doesn't run the UWG check). Heal the EN primary in
+    # place; only skip publish if it truly can't be made clean.
+    try:
+        from briefs.quality_gate import check_compliance as _check_legal
+        from briefs.legal_heal import heal_post as _legal_heal
+        _lp = {"title": post.get("title_en", ""),
+               "meta_description": post.get("meta_description", ""),
+               "body_html": post.get("en_html", "")}
+        _leg = _check_legal(_lp)
+        if _leg:
+            print(f"   ⚖️  Legal check flagged {len(_leg)} item(s) — self-healing (no regen):")
+            for i in _leg:
+                print(f"      {i}")
+            if _legal_heal(_lp, client, lang_name="English"):
+                post["title_en"]        = _lp["title"]
+                post["meta_description"] = _lp["meta_description"]
+                post["en_html"]          = _lp["body_html"]
+                print("   ✅ Legal self-heal applied — article is compliant")
+            else:
+                print("   ❌ Could not make the fallback article legally clean — skipping publish (logged).")
+                return
+        else:
+            print("   ✅ Legal check passed")
+    except Exception as _e:
+        print(f"   ⚠️  legal safety net error (skipping publish to be safe): {_e}")
+        return
 
     # Publish EN as primary; no tab switcher — T&A handles other locales
     aid, handle = publish(

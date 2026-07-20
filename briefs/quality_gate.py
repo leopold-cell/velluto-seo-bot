@@ -602,12 +602,42 @@ _ORIGIN_RE = re.compile(
     r"|\b(dutch|nederland\w*|netherland\w*|niederl\w+|hollan\w+)\b[^.?!]{0,40}velluto",
     re.I)
 
+# Unverifiable superlative/comparative claim ("lighter than anything Oakley makes",
+# "better than any Oakley", "cleaner than every rival"). Under § 6 UWG a comparison
+# with a competitor must be OBJECTIVE and VERIFIABLE; an open-ended superlative
+# ("…than anything/any/every X makes") is neither. Only flagged NEAR a named rival —
+# a bounded, factual comparison ("lighter than the 32 g category average") is fine
+# because it doesn't match the "than anything/any/every" opener.
+_COMPARATIVE_SUPERLATIVE_RE = re.compile(
+    r"\b(?:light|cheap|clean|tough|strong|fast|clear|slim|sleek|comfortab|durabl|"
+    r"better|superior|nicer|finer|smart)\w*\s+than\s+"
+    r"(?:anything|any|everything|every|all|most)\b", re.I)
+
+# Price/value disparagement of a competitor: insinuating a rival overcharges or that
+# its price is just marketing markup ("subsidise a marketing department", "paying for
+# the logo/name", "brand tax", "overpriced", "rip-off", "what Oakley charges"). This is
+# Herabsetzung/Verunglimpfung under § 6 Abs. 2 Nr. 5 UWG (and § 4 UWG). Only actionable
+# next to an identifiable competitor, so — like _DISPARAGE_WORD_RE — it's competitor-gated.
+_PRICE_DISPARAGE_RE = re.compile(
+    r"\bsubsidis(?:e|es|ed|ing)\s+(?:a\s+|the\s+|their\s+|its\s+)?"
+    r"(?:marketing|brand|advertis\w+|sponsor\w+|ambassador|pro\s+team)"
+    r"|\bsubsidiz(?:e|es|ed|ing)\s+(?:a\s+|the\s+|their\s+|its\s+)?"
+    r"(?:marketing|brand|advertis\w+|sponsor\w+|ambassador|pro\s+team)"
+    r"|\bpaying\s+(?:for\s+)?(?:the\s+)?"
+    r"(?:name|logo|marketing\s+(?:department|budget|machine)|hype|sponsorship|prestige)\b"
+    r"|\b(?:marketing|brand|logo|name|prestige)\s+(?:tax|markup|mark-up|premium|surcharge)\b"
+    r"|\bover-?(?:priced|charg\w+)\b"
+    r"|\brip[\s-]?off\b"
+    r"|\bprice\s+gouging\b"
+    r"|\bwhat\s+\w+\s+charges\b", re.I)
+
 
 def check_compliance(post: dict) -> list[str]:
     """EU/German advertising-law guardrails (backstop to the generation prompt):
     no fabricated tests/reviews (§ 5/5a UWG + EU Omnibus fake-review ban), no
-    disparaging/asymmetric competitor phrasing (§ 6 Abs. 2 Nr. 5 UWG), and correct
-    brand origin (no Herkunftstäuschung, § 5 UWG). Not legal advice."""
+    disparaging/asymmetric competitor phrasing incl. unverifiable superlatives and
+    price/value disparagement (§ 6 Abs. 2 Nr. 5 UWG), and correct brand origin (no
+    Herkunftstäuschung, § 5 UWG). Not legal advice."""
     blob = (f"{post.get('title', '')} {post.get('meta_description', '')} "
             f"{post.get('body_html', '')}")
     issues: list[str] = []
@@ -626,6 +656,23 @@ def check_compliance(post: dict) -> list[str]:
         issues.append("[LEGAL] disparaging or doubt-casting competitor phrasing "
                       "('(stated)', or a negative term next to a named competitor) — "
                       "§ 6 Abs. 2 Nr. 5 UWG; use neutral, verifiable, current facts only")
+    # Unverifiable superlative comparison against a named rival (§ 6 UWG: comparisons
+    # must be objective + verifiable). "lighter than anything Oakley makes" is neither.
+    for m in _COMPARATIVE_SUPERLATIVE_RE.finditer(blob):
+        if _near_competitor(low, m.start(), m.end(), window=160):
+            issues.append("[LEGAL] unverifiable superlative/comparative claim next to a named "
+                          "competitor ('…than anything/any/every X') — § 6 UWG needs objective, "
+                          "verifiable comparisons; state Velluto's own measured spec instead")
+            break
+    # Price/value disparagement of a named rival ("subsidise a marketing department",
+    # "what X charges", "overpriced", "rip-off") — Herabsetzung, § 6 Abs. 2 Nr. 5 / § 4 UWG.
+    for m in _PRICE_DISPARAGE_RE.finditer(blob):
+        if _near_competitor(low, m.start(), m.end(), window=200):
+            issues.append("[LEGAL] price/value disparagement of a named competitor "
+                          "('subsidise a marketing department', 'what X charges', 'overpriced', "
+                          "'rip-off') — § 6 Abs. 2 Nr. 5 UWG; never insinuate a rival overcharges, "
+                          "compare only on neutral verifiable facts")
+            break
     if _ORIGIN_RE.search(blob):
         issues.append("[LEGAL] Velluto mis-described by nationality — Velluto is a GERMAN "
                       "brand (Italian design); no false origin (§ 5 UWG)")
