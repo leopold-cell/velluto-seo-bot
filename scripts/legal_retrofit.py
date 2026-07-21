@@ -162,18 +162,30 @@ def rewrite_mode() -> None:
     from seo_bot import replace_article, readapt_all_translations, ALLOWED_TAGS
     from commercial_config import load_commercial_config
 
+    from briefs.legal_heal import _names_competitor
+
     ensure_shopify()
     commercial = load_commercial_config()
     articles = fetch_articles()
-    flagged = [a for a in articles
-               if check_compliance({"title": a.get("title", ""), "body_html": a.get("body_html", "")})]
-    print(f"\n🩹 Compliance fix — {len(flagged)}/{len(articles)} articles need editing "
+
+    # Process an article if the REGEX flags it (hard violations) OR it names a competitor
+    # (so the semantic pass inside _compliance_edit reviews the subtle issues regex can't
+    # see: a rival's policy/spec stated as incomplete fact, asymmetric 'who should buy'
+    # framing). Change-detection below skips any article the review leaves untouched, so
+    # competitor articles that are already clean are NOT needlessly re-published/re-adapted.
+    def _needs_review(a):
+        t, b = a.get("title", ""), a.get("body_html", "")
+        return bool(check_compliance({"title": t, "body_html": b})) or _names_competitor(f"{t} {b}")
+
+    flagged = [a for a in articles if _needs_review(a)]
+    print(f"\n🩹 Compliance fix — {len(flagged)}/{len(articles)} articles to review "
           f"({'DRY-RUN' if DRY_RUN else 'LIVE in-place edit'})")
 
     if DRY_RUN:
         for a in flagged:
             iss = check_compliance({"title": a.get("title", ""), "body_html": a.get("body_html", "")})
-            print(f"   • {a.get('handle','')[:55]}")
+            tag = "" if iss else "  [competitor mention → semantic review]"
+            print(f"   • {a.get('handle','')[:55]}{tag}")
             for i in iss:
                 print(f"       {i}")
         print("\n   DRY-RUN — nothing edited. Re-run without --dry-run to fix + re-publish in place.")
@@ -200,6 +212,12 @@ def rewrite_mode() -> None:
                   + ("set to DRAFT (offline) for review" if ok else "COULD NOT draft — still live!"))
             continue
         nt, nm, nb = fixed
+        # Change-detection: if the review left the article untouched (already clean, e.g. a
+        # competitor mention that was fine), do NOT re-publish or re-adapt all 10 languages
+        # for nothing. Only genuinely-edited articles proceed.
+        if nt == a.get("title", "") and nb == a.get("body_html", ""):
+            print("   ✓ no change needed (already clean) — skipping republish/re-adapt")
+            continue
         try:
             replace_article(a["id"], nt, nb, nm, ",".join(ALLOWED_TAGS))
         except Exception as e:

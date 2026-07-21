@@ -95,6 +95,18 @@ _EDIT_SYSTEM = (
     "Oakley charges', 'paying for the logo/name', 'brand tax', 'overpriced', 'rip-off', "
     "'a single Oakley lens replacement'. Never insinuate a competitor overcharges. State "
     "Velluto's own price positioning positively ('premium build from 69 EUR') instead.\n"
+    "2e. STATING A COMPETITOR'S POLICY OR SPEC AS FACT — return policy, warranty/guarantee, "
+    "shipping, price, weight, or whether they offer a feature (e.g. 'SunGod has a normal "
+    "return policy'). These are easy to get wrong or state INCOMPLETELY (the rival may have "
+    "a lifetime guarantee you omitted), and an incomplete comparison is as risky as a false "
+    "one (§ 6 UWG). Remove the competitor's policy/spec claim; describe Velluto's OWN terms "
+    "instead (30-day risk-free trial) and leave the rival's out.\n"
+    "2f. ASYMMETRIC / belittling 'who should buy which' framing that IMPLIES a competitor "
+    "neglects or lacks a dimension Velluto is strong in (weight, anti-fog, interchangeable "
+    "lenses, fit). E.g. 'Buy SunGod if looks matter more than performance' wrongly insinuates "
+    "SunGod is not performant. Rewrite so EACH product is described positively by its OWN "
+    "genuine strengths, in parallel, without ranking the reader's priorities as if the rival "
+    "fails at yours.\n"
     "3. Never attribute photochromic/polarized/mirrored/prescription/over-glasses lenses "
     "to Velluto. Velluto offers only clear VellutoPuro and high-contrast VellutoVisione.\n"
     "4. Velluto is a GERMAN brand (Italian design) — never Dutch/Nederlands.\n"
@@ -197,6 +209,18 @@ def compliance_edit(client, title: str, body: str, meta: str, lang_name: str):
         title = strip_em_dashes(_apply_pairs(title, pairs))[0]
         meta  = strip_em_dashes(_apply_pairs(meta, pairs))[0]
         body  = strip_em_dashes(_apply_pairs(body, pairs))[0]
+    # Competitor-gated SEMANTIC review: the regex loop above only fixes pattern hits. When
+    # a rival is named, also catch the subtle issues regex can't see — a competitor policy/
+    # spec stated as fact (incomplete/unverifiable, e.g. "SunGod has a normal return policy"
+    # when they have a lifetime guarantee) and asymmetric belittling "who should buy"
+    # framing. Best-effort; _llm_pairs returns [] when there is nothing to fix.
+    if client and _names_competitor(f"{title} {body}"):
+        pairs = _llm_pairs(client, title, meta, body, lang_name,
+                           _SEMANTIC_REVIEW_FB.format(lang=lang_name))
+        if pairs:
+            title = strip_em_dashes(_apply_pairs(title, pairs))[0]
+            meta  = strip_em_dashes(_apply_pairs(meta, pairs))[0]
+            body  = strip_em_dashes(_apply_pairs(body, pairs))[0]
     if _wc_html(body) < 0.7 * base_wc:                    # sanity: not gutted
         return None
     if check_compliance({"title": title, "meta_description": meta, "body_html": body}):
@@ -206,12 +230,13 @@ def compliance_edit(client, title: str, body: str, meta: str, lang_name: str):
 
 def heal_post(post: dict, client, lang_name: str = "English") -> bool:
     """In-place legal self-heal of a generated post dict (title / meta_description /
-    body_html). Runs the mechanical + targeted-LLM fix and, if it produces a clean
-    version, writes it back into `post`. Returns True if the post is legally clean
-    afterwards (either it already was, or it was healed), False if it could not be
-    made clean (caller should NOT publish it as-is)."""
-    if not check_compliance(post):
-        return True
+    body_html). Heals when the regex flags OR a competitor is named (so comparison
+    articles get the subtle-issue semantic pass even when the regex is clean). Writes the
+    cleaned version back into `post`. Returns True if legally clean afterwards (already
+    was, or healed), False if it could not be made clean (caller must NOT publish it)."""
+    blob = f"{post.get('title', '')} {post.get('body_html', '')}"
+    if not check_compliance(post) and not _names_competitor(blob):
+        return True   # regex-clean AND no competitor named → nothing to review, no LLM
     fixed = compliance_edit(client, post.get("title", ""), post.get("body_html", ""),
                             post.get("meta_description", ""), lang_name)
     if not fixed:
@@ -232,11 +257,34 @@ _TRANSLATION_REVIEW_FB = (
     "the rules above. The English regex backstop does NOT cover {lang}, so rely on your "
     "own judgement. Pay special attention to: competitor bashing or doubt-casting; "
     "unverifiable superlatives or vague comparatives against a rival; insinuations that a "
-    "competitor overcharges (price/value disparagement); INVENTED competitor specs, "
-    "prices or numbers; fabricated tests/reviews/ratings; and any false brand origin "
-    "(Velluto is GERMAN with Italian design). If a claim about a named competitor is not "
-    "100% verifiable from that competitor's own public info, remove or generalise it. "
-    "Keep all HTML tags, class names, IDs and URLs identical. Return [] if already clean."
+    "competitor overcharges (price/value disparagement); a competitor's return policy, "
+    "warranty/guarantee or spec stated as fact (incomplete or unverifiable); asymmetric "
+    "'who should buy' framing that implies a rival neglects a dimension Velluto is strong "
+    "in; INVENTED competitor specs, prices or numbers; fabricated tests/reviews/ratings; "
+    "and any false brand origin (Velluto is GERMAN with Italian design). If a claim about "
+    "a named competitor is not 100% verifiable from that competitor's own public info, "
+    "remove or generalise it. Keep all HTML tags, class names, IDs and URLs identical. "
+    "Return [] if already clean."
+)
+
+# Feedback for the competitor-gated SEMANTIC pass on the EN primary + retrofit (the
+# regex can't see these; the LLM reviews them when a rival is named).
+_SEMANTIC_REVIEW_FB = (
+    "This {lang} article names a competitor. Review it for the SUBTLE competitor issues "
+    "that pattern checks miss and fix ONLY those, writing in {lang}:\n"
+    "1. Any SPECIFIC factual claim about a named competitor that may be incomplete, "
+    "outdated or unverifiable — return policy, warranty/guarantee, shipping, price, weight, "
+    "or whether they offer a feature. Remove it or reframe to Velluto's OWN documented "
+    "facts; never state a rival's policy/spec as fact, and never present a competitor "
+    "detail as a shortcoming.\n"
+    "2. ASYMMETRIC or belittling comparison framing that implies a competitor neglects or "
+    "lacks a dimension Velluto is strong in (weight, anti-fog, interchangeable lenses, fit, "
+    "trial) — e.g. 'buy X if looks matter more than performance' wrongly implies X is not "
+    "performant. Rewrite so each product is described positively by its OWN genuine "
+    "strengths, in parallel, without ranking the reader's priorities as if the rival fails "
+    "at them.\n"
+    "Keep the copy punchy and persuasive; keep all HTML tags and links intact. Change ONLY "
+    "real instances; if there are none, return []."
 )
 
 

@@ -1638,12 +1638,25 @@ L3. COMPARATIVE ADVERTISING (§ 6 UWG). When naming a competitor, every statemen
       "a single Oakley lens replacement". State Velluto's price positively instead
       ("premium build from 69 EUR").
     - Inventing competitor specs, prices, or numbers.
+    - STATING A COMPETITOR'S POLICY OR TERMS as fact — return policy, warranty/guarantee,
+      shipping, price. These change and are easily INCOMPLETE, and an incomplete comparison
+      is as risky as a false one (e.g. calling a rival's returns "standard" when they offer
+      a lifetime guarantee). Do not describe a competitor's policies at all; state Velluto's
+      OWN (30-day risk-free trial) and leave the rival's terms out.
     - ANY fact about a named competitor you cannot verify with 100% certainty from
       that competitor's OWN public information: omit it. If a comparison point would
       require unverifiable competitor data, do NOT name the competitor there — write
       about the general product category or Velluto's own attributes instead.
 L3b. NO EM-DASHES. Never use the em-dash "—" or a spaced en-dash " – " anywhere
      (title, meta, body) — use commas or periods. (Normal hyphens in words are fine.)
+L3c. SYMMETRIC, POSITIVE COMPARISON. In any "which to buy / who should buy each" section,
+     describe EACH product by what it genuinely does well, in parallel. NEVER imply a
+     competitor neglects or lacks a dimension Velluto is strong in (weight, anti-fog,
+     interchangeable lenses, fit).
+     ✗ "Buy SunGod if looks matter more than performance" (insinuates SunGod is not
+        performant).
+     ✓ Name the rival's real strength (e.g. SunGod's colour customisation) AND Velluto's
+        real strengths, without ranking the reader's priorities as if the rival fails at yours.
 L4. TRUE OWN CLAIMS (§ 5 UWG). Only claims backed by fact. "UV400 certified" and
     "25 g" and "anti-fog" are allowed (documented). Do not invent other
     certifications, awards, or seals.
@@ -2409,19 +2422,19 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
     # UWG-risky phrasing (fabricated test, competitor bashing, unverifiable superlative/
     # price claim, false origin) without regenerating the article.
     legal_issues = _check_legal(post)
-    if legal_issues:
-        print(f"   ⚖️  Legal check flagged {len(legal_issues)} item(s) — self-healing (no regen):")
-        for i in legal_issues:
-            print(f"      {i}")
-        if _legal_heal(post, client, lang_name="English"):
-            print("   ✅ Legal self-heal applied — article is compliant")
+    # heal_post also runs a semantic competitor review when a rival is named (even if the
+    # regex is clean), so comparison articles get the subtle-issue pass (incomplete
+    # competitor facts, asymmetric "who should buy" framing) too.
+    if _legal_heal(post, client, lang_name="English"):
+        if legal_issues:
+            print(f"   ⚖️  Legal check flagged {len(legal_issues)} item(s) — self-healed.")
         else:
-            # Safety net (rare): prevention + heal both failed. Never publish a legally
-            # risky article; the gate already logged it to quality_gate_failures.json.
-            print("   ❌ Could not make the article legally clean — skipping publish (logged).")
-            return
+            print("   ✅ EN legal check passed (semantic review run for any competitor mention).")
     else:
-        print(f"   ✅ EN quality + legal check passed (gate auto_fixes={len(qa['auto_fixes']) if qa else 0})")
+        # Safety net (rare): prevention + heal both failed. Never publish a legally risky
+        # article; the gate already logged it to quality_gate_failures.json.
+        print("   ❌ Could not make the article legally clean — skipping publish (logged).")
+        return
 
     body_html = build_body_html(post, cover_url)
 

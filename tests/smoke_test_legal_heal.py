@@ -78,5 +78,40 @@ heal_translation(nl, client=None, lang_name="Dutch")
 ok("nederlands" not in nl["body_html"].lower(),
    "mechanical origin fix removes false Dutch origin in a translation (no client needed)")
 
+print("\n=== semantic competitor review (subtle issues regex can't catch) ===")
+import types
+from briefs.legal_heal import _EDIT_SYSTEM, _SEMANTIC_REVIEW_FB, compliance_edit
+
+ok("return policy" in _EDIT_SYSTEM.lower() and "who should buy" in _EDIT_SYSTEM.lower(),
+   "_EDIT_SYSTEM covers competitor-policy-as-fact + asymmetric framing")
+ok("return policy" in _SEMANTIC_REVIEW_FB.lower(),
+   "_SEMANTIC_REVIEW_FB targets incomplete/unverifiable competitor facts")
+
+# A competitor article that is REGEX-clean but has the subtle issues. With no client the
+# semantic pass is skipped safely; with a (fake) client it applies the find/replace.
+class _FakeClient:
+    def __init__(self, text): self._t = text
+    @property
+    def messages(self):
+        return types.SimpleNamespace(
+            create=lambda **kw: types.SimpleNamespace(content=[types.SimpleNamespace(text=self._t)]))
+
+title = "Velluto vs Oakley Cycling Glasses"
+body  = ("<p>Oakley has a normal return policy. Buy Oakley if looks matter more than "
+         "performance, otherwise the Velluto StradaPro is the better all-rounder.</p>")
+ok(not check_compliance({"title": title, "body_html": body}),
+   "sample competitor article is REGEX-clean (precondition — only subtle issues)")
+
+fake = _FakeClient('[{"find":"Oakley has a normal return policy. ",'
+                   '"replace":"Velluto offers a 30-day risk-free trial. "}]')
+res = compliance_edit(fake, title, body, "", "English")
+ok(res is not None and "return policy" not in res[2],
+   "competitor-gated semantic pass applies the fix on a regex-clean competitor article")
+
+# heal_post on a regex-clean competitor article without a client must not crash → True.
+p = {"title": title, "meta_description": "", "body_html": body}
+ok(heal_post(p, client=None, lang_name="English") is True,
+   "heal_post handles a regex-clean competitor article without a client (no crash)")
+
 print("\n" + ("✅ ALL PASSED" if not fails else f"❌ {len(fails)} FAILED: {fails}"))
 sys.exit(1 if fails else 0)
