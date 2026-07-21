@@ -1,1 +1,63 @@
-[]
+[
+  {
+    "title": "SunGod vs Velluto Cycling Glasses: Full 2026 Comparison",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/sungod-vs-velluto-cycling-glasses-full-2026-comparison",
+    "topic": "SunGod vs Velluto cycling glasses",
+    "keyword": "SunGod vs Velluto cycling glasses",
+    "lang": "en",
+    "phase": 1,
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "SunGod vs Velluto Fahrradbrille Vergleich",
+        "intent": "Cyclist comparing features and performance between two premium cycling eyewear brands.",
+        "volume": 0
+      },
+      "nl": {
+        "keyword": "SunGod versus Velluto fietsenbril",
+        "intent": "Dutch cyclist looking to compare these two cycling eyewear options for their differences.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "SunGod ou Velluto lunettes cyclisme comparaison",
+        "intent": "French cyclist evaluating which brand offers better value and performance for road or mountain cycling.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "SunGod vs Velluto gafas ciclismo",
+        "intent": "Spanish cyclist comparing these cycling glasses brands to make a purchase decision.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "SunGod contro Velluto occhiali ciclismo",
+        "intent": "Italian cyclist seeking a direct comparison between these two cycling eyewear brands.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "SunGod mod Velluto cykelbriller sammenligning",
+        "intent": "Danish cyclist comparing two cycling eyewear brands to determine which suits their needs best.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "SunGod eller Velluto sykkelbriller sammenligning",
+        "intent": "Norwegian cyclist looking to compare features and quality between these two cycling glasses brands.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "SunGod vs Velluto okulary rowerowe por\u00f3wnanie",
+        "intent": "Polish cyclist seeking a comparison of these two cycling eyewear options before purchasing.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "SunGod versus Velluto \u00f3culos ciclismo compara\u00e7\u00e3o",
+        "intent": "Portuguese cyclist evaluating differences between these two premium cycling eyewear brands.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "SunGod eller Velluto cykelglas\u00f6gon j\u00e4mf\u00f6relse",
+        "intent": "Swedish cyclist comparing these two cycling glasses brands to find the best match for their needs.",
+        "volume": 0
+      }
+    }
+  }
+]
