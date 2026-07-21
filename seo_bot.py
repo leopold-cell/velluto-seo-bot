@@ -2233,15 +2233,16 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     except Exception:
         pass
 
-    # Body adaptation. Preferred path: SEGMENT-adaptation — the model adapts only the text
-    # (keyword, local context, native phrasing), never re-emits the markup, so tokens drop
-    # ~40% and truncation is impossible. It still receives the market keyword + local
-    # context + the heading/opening positions, so localization is unchanged (NOT a plain
-    # translation). Any structural mismatch (wrong segment count, truncated JSON, parse
-    # error, exception) falls back to the proven full-body call below — so it can never
-    # break a market. Kill-switch: VELLUTO_SEGMENT_ADAPT=0.
+    # Body adaptation via the proven FULL-BODY path (Haiku rewrites the whole HTML).
+    #
+    # SEGMENT-adaptation was an experiment to cut tokens by adapting only the text. In
+    # practice it almost ALWAYS fails: a real article tokenizes into 100+ fragments and
+    # the model can't return a JSON array of EXACTLY that many strings, so the count check
+    # rejects it and we fall back to full-body — meaning BOTH calls run and the locale is
+    # billed TWICE. So it is OFF by default. Opt in only for experiments with
+    # VELLUTO_SEGMENT_ADAPT=1 (needs a more robust reassembly before it's worth it).
     adapted_body = None
-    if os.getenv("VELLUTO_SEGMENT_ADAPT", "1") == "1":
+    if os.getenv("VELLUTO_SEGMENT_ADAPT", "0") == "1":
         try:
             adapted_body = _adapt_body_segments(
                 de_post["body_html"], lang_name, target_kw, intent, cycling_ctx,
