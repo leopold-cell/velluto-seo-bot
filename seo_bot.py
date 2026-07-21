@@ -2049,32 +2049,41 @@ def _clip_words(s: str, n: int) -> str:
 ADAPT_MODEL = "claude-haiku-4-5-20251001"
 
 
+def _stream_message(model: str, max_tokens: int, system: str, messages: list):
+    """Run a Messages call via STREAMING and return the final Message (same shape as
+    create(): .content / .usage / .stop_reason). The non-streaming API REJECTS large
+    max_tokens with 'Streaming is required for operations that may take longer than 10
+    minutes' (~21k+ tokens); streaming lifts that limit while keeping the truncation
+    guard working via the final message's stop_reason."""
+    with client.messages.stream(model=model, max_tokens=max_tokens,
+                                system=system, messages=messages) as s:
+        return s.get_final_message()
+
+
 def _adapt_body_fullbody(en_body: str, lang_name: str, target_kw: str, intent: str,
                          cycling_ctx: str, price_rule: str, paa_rule: str,
                          target_locale: str) -> str:
     """Proven path: hand the whole HTML to Haiku and have it rewrite everything in the
     target language. Used as the guaranteed fallback when segment-adaptation can't be
     applied. Raises on truncation so the caller skips (never registers a half-article)."""
-    body_r = client.messages.create(
-        model=ADAPT_MODEL,
-        max_tokens=24000,
-        system=(
-            f"You are an SEO copywriter adapting cycling content for the {lang_name}-speaking market. "
-            f"Target keyword: '{target_kw}'. Search intent: {intent}\n\n"
-            "Rules (follow exactly):\n"
-            f"1. Write entirely in {lang_name} — no German words anywhere.\n"
-            f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
-            "3. Keep ALL existing HTML tags, class names, IDs and structure IDENTICAL "
-            "(you MAY append the new native PAA blocks from rule 9 where indicated).\n"
-            "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
-            "5. All URLs (href, src) stay unchanged.\n"
-            f"6. Adapt local references to reflect: {cycling_ctx}.\n"
-            "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
-            "8. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. (Normal hyphens in words are fine.)\n"
-            f"{price_rule}{paa_rule}"
-        ),
-        messages=[{"role": "user", "content": en_body}]
+    sys_prompt = (
+        f"You are an SEO copywriter adapting cycling content for the {lang_name}-speaking market. "
+        f"Target keyword: '{target_kw}'. Search intent: {intent}\n\n"
+        "Rules (follow exactly):\n"
+        f"1. Write entirely in {lang_name} — no German words anywhere.\n"
+        f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
+        "3. Keep ALL existing HTML tags, class names, IDs and structure IDENTICAL "
+        "(you MAY append the new native PAA blocks from rule 9 where indicated).\n"
+        "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
+        "5. All URLs (href, src) stay unchanged.\n"
+        f"6. Adapt local references to reflect: {cycling_ctx}.\n"
+        "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
+        "8. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. (Normal hyphens in words are fine.)\n"
+        f"{price_rule}{paa_rule}"
     )
+    # Streaming: 24000 max_tokens exceeds the non-streaming limit (was the '[xx] adaptation
+    # error: Streaming is required …' failure). Stream to keep the headroom against truncation.
+    body_r = _stream_message(ADAPT_MODEL, 24000, sys_prompt, [{"role": "user", "content": en_body}])
     cost = log_usage(body_r.usage.input_tokens, body_r.usage.output_tokens, model=ADAPT_MODEL)
     print(f"   [{target_locale}] Adaptation tokens in:{body_r.usage.input_tokens} "
           f"out:{body_r.usage.output_tokens} | ${cost:.4f}")
@@ -2143,8 +2152,7 @@ def _adapt_body_segments(en_body: str, lang_name: str, target_kw: str, intent: s
         f"OUTPUT: ONLY a JSON array of EXACTLY {len(segments)} strings, in the same order as the input "
         "(array[0] is the adaptation of fragment 0, and so on). No keys, no commentary, no code fence."
     )
-    r = client.messages.create(model=ADAPT_MODEL, max_tokens=16000, system=system,
-                               messages=[{"role": "user", "content": numbered}])
+    r = _stream_message(ADAPT_MODEL, 16000, system, [{"role": "user", "content": numbered}])
     cost = log_usage(r.usage.input_tokens, r.usage.output_tokens, model=ADAPT_MODEL)
     print(f"   [{target_locale}] Segment-adapt tokens in:{r.usage.input_tokens} "
           f"out:{r.usage.output_tokens} | ${cost:.4f}")
