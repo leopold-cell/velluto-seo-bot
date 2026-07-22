@@ -588,8 +588,9 @@ _DISPARAGE_WORD_RE = re.compile(
 _COMPETITOR_TOKENS = {
     "oakley", "sungod", "sun god", "rudy project", "rudy", "poc", "uvex", "alba optics",
     "alba", "scicon", "tifosi", "100%", "koo", "bliz", "julbo", "alpina", "decathlon",
-    "rapha", "sigma", "endurasport", "evil eye", "roka", "goodr", "smith",
+    "rapha", "sigma", "endurasport", "evil eye", "evileye", "roka", "goodr", "smith",
     "sweet protection", "spiuk", "eassun", "salice", "briko", "van rysel",
+    "kapvoe", "bolle", "bollé", "magicshine", "sungods", "alibaba",
 }
 
 
@@ -630,6 +631,20 @@ _PRICE_DISPARAGE_RE = re.compile(
     r"|\brip[\s-]?off\b"
     r"|\bprice\s+gouging\b"
     r"|\bwhat\s+\w+\s+charges\b", re.I)
+
+# Subjective SUPERIORITY claims against a rival — "better value than Evileye", "superior
+# to Oakley", "beats POC". Unlike an objective, verifiable spec comparison (weight, UV),
+# "value"/"better"/"superior" are holistic judgements that can't be objectively verified,
+# so they fail § 6 UWG (and § 5 if unsubstantiated). This catches the title pattern the
+# superlative regex missed ("better VALUE than X" has a word between 'better' and 'than').
+# Deliberately does NOT flag measurable comparatives ("lighter than X", "cheaper than X") —
+# those can be legitimate if the numbers are verifiable. Competitor-gated like the others.
+_SUPERIORITY_RE = re.compile(
+    r"\bbetter\s+value\b"
+    r"|\bbest\s+value\s+(?:than|over|vs\.?|versus)\b"
+    r"|\bsuperior\s+(?:to|than)\b"
+    r"|\bbetter\s+(?:quality|performance|protection|coverage|clarity|fit)\s+than\b"
+    r"|\b(?:beats|out[\s-]?performs|outclasses|out-?does)\b", re.I)
 
 
 def check_compliance(post: dict) -> list[str]:
@@ -672,6 +687,16 @@ def check_compliance(post: dict) -> list[str]:
                           "('subsidise a marketing department', 'what X charges', 'overpriced', "
                           "'rip-off') — § 6 Abs. 2 Nr. 5 UWG; never insinuate a rival overcharges, "
                           "compare only on neutral verifiable facts")
+            break
+    # Subjective superiority claim vs a named rival ("better value than X", "superior to X",
+    # "beats X") — § 6 UWG needs OBJECTIVE, verifiable comparisons; 'value'/'better'/'superior'
+    # are not. Catches the title pattern (e.g. "Better Value Than Evileye").
+    for m in _SUPERIORITY_RE.finditer(blob):
+        if _near_competitor(low, m.start(), m.end(), window=160):
+            issues.append("[LEGAL] subjective superiority claim over a named competitor "
+                          "('better value than X', 'superior to X', 'beats X') — § 6 UWG requires "
+                          "objective, verifiable comparisons; reframe as a neutral comparison or an "
+                          "'alternative to X', or compare only Velluto's own measurable specs")
             break
     if _ORIGIN_RE.search(blob):
         issues.append("[LEGAL] Velluto mis-described by nationality — Velluto is a GERMAN "

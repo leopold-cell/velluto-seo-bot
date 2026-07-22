@@ -46,6 +46,12 @@ ok(flagged("<p>The Oakley Sutro is overpriced for what it offers.</p>"),
    "price disparagement ('overpriced' near competitor)")
 ok(flagged("<p>You are really just paying for the logo with Oakley.</p>"),
    "price disparagement ('paying for the logo')")
+ok(flagged("<h1>Cycling Glasses Better Value Than Evileye</h1>"),
+   "subjective superiority title ('better value than Evileye')")
+ok(flagged("<p>The Velluto StradaPro is superior to the Oakley Sutro.</p>"),
+   "'superior to' a named competitor")
+ok(flagged("<p>On every metric the StradaPro beats the POC Devour.</p>"),
+   "'beats' a named competitor")
 ok(flagged("<p>Velluto is a Dutch cycling eyewear brand.</p>"), "false origin 'Dutch Velluto'")
 ok(flagged("<p>De Nederlandse fietsbril van Velluto.</p>"), "false origin 'Nederlands … Velluto'")
 
@@ -70,6 +76,10 @@ ok(not flagged("<p>Premium road frames often cost 200 to 350 EUR; Velluto starts
    "factual own price + market range, no disparagement → NOT flagged")
 ok(not flagged("<p>Riders love that the StradaPro is lighter than they expect.</p>"),
    "own claim 'lighter than they expect', no competitor → NOT flagged")
+ok(not flagged("<p>At 25 g the StradaPro is lighter than the Oakley Sutro's 36 g.</p>"),
+   "objective, verifiable weight comparison ('lighter than … 36 g') → NOT flagged")
+ok(not flagged("<p>The StradaPro fits better than ever this season, and Oakley riders notice.</p>"),
+   "idiom 'better than ever' near a competitor → NOT flagged (not a superiority claim)")
 
 print("\n" + ("✅ ALL PASSED" if not fails else f"❌ {len(fails)} FAILED: {fails}"))
 sys.exit(1 if fails else 0)
