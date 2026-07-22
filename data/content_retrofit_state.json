@@ -36,6 +36,26 @@
     "position": 5.9
    },
    "measured": null
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-2026-guide": {
+   "cycle": 1,
+   "date": "2026-07-22",
+   "action": "expand",
+   "handle": "are-expensive-cycling-glasses-worth-it-2026-guide",
+   "added_words": 1835,
+   "native_markets": [
+    "de",
+    "nl",
+    "fr"
+   ],
+   "before": {
+    "words": 6313,
+    "clicks": 0,
+    "impressions": 0,
+    "ctr": 0.0,
+    "position": 0.0
+   },
+   "measured": null
   }
  }
 }

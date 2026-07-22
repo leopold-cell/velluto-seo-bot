@@ -1,11 +1,9 @@
 {
-  "date": "2026-07-20",
+  "date": "2026-07-21",
   "slots": [
-    "noon",
     "evening"
   ],
   "recent_lines": [
-    "The caf\u00e9 is 4 km away. I have been \"almost there\" for 20 minutes.",
     "Promised myself a recovery ride. Currently chasing a stranger.",
     "I own four bikes. My fitness suits exactly one of them.",
     "The group ride starts \"easy\". It is never easy.",
@@ -19,7 +17,8 @@
     "The caf\u00e9 stop was supposed to be five minutes. That was forty minutes ago.",
     "My average speed drops the second another rider pulls alongside.",
     "I own four bikes. I ride one. The others are \"in rotation.",
-    "My \"recovery week\" has more climbing than my last race."
+    "My \"recovery week\" has more climbing than my last race.",
+    "The group ride \"no-drop\" policy quietly ended at kilometre 14."
   ],
-  "last_media_id": "18105069395162723"
+  "last_media_id": "18129100738645790"
 }

@@ -1171,7 +1171,61 @@
         }
       ],
       "serps_scanned": 94
+    },
+    "2026-07-22": {
+      "aio_serps": 32,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 4,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 3.1,
+      "total_citations": 40,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 10
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 7
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 3
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 3
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 2
+        },
+        {
+          "domain": "lensdirect.com",
+          "citations": 1
+        },
+        {
+          "domain": "anderwithwonder.com",
+          "citations": 1
+        },
+        {
+          "domain": "zeiss.com",
+          "citations": 1
+        },
+        {
+          "domain": "yesglasses.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 83
     }
   },
-  "latest": "2026-07-21"
+  "latest": "2026-07-22"
 }
