@@ -1663,6 +1663,27 @@ L4. TRUE OWN CLAIMS (§ 5 UWG). Only claims backed by fact. "UV400 certified" an
 L5. When in doubt, compare on Velluto's verifiable strengths and neutral,
     publicly-known category facts — never a negative claim about a named rival you
     cannot prove.
+L6. COMPARISON ARTICLES / TABLES (these perform well AND stay legal when built this way).
+    A head-to-head "X vs Velluto" or a comparison table is allowed under § 6 UWG ONLY if
+    every competitor cell is objective, verifiable and current. Build them like this:
+    - TITLE/HEADINGS: neutral framing only. "Velluto vs X: Compared", "An Alternative to X",
+      "X vs Velluto: Weight, Lenses & Fit". NEVER "Better Value Than X", "Superior to X",
+      "Which Wins", "X vs Velluto: Better Value".
+    - COMPETITOR CELLS: only specs the rival OFFICIALLY publishes and that are typical/
+      essential (weight, UV rating, lens type). If you are not 100% sure of a competitor
+      number, do NOT invent or estimate it — write "see manufacturer" or leave Velluto's
+      own value and omit the rival's.
+    - NEVER put a competitor's RETURN POLICY, WARRANTY/GUARANTEE, TRIAL or PRICE in the
+      table (e.g. "Standard retail", "30-day"): you cannot verify it stays true and it is
+      easily incomplete. State only Velluto's own (30-day risk-free trial); leave the
+      rival's blank or omit the row.
+    - NEVER use subjective judgements as if they were specs ("Partial", "Basic", "Limited",
+      "Poor"). Use the rival's actual documented feature or leave it out.
+    - "WHO SHOULD BUY WHICH": describe EACH product by what it genuinely does well, in
+      parallel. Never imply a rival neglects a dimension Velluto is strong in.
+    Sell by making Velluto look great on its OWN measured specs (25 g, UV400 certified,
+    built-in anti-fog, two-lens click-in, adjustable nose pads, 30-day trial), not by
+    ranking the rival down.
 """
 
     system = f"""You are the lead content writer for Velluto (velluto-shop.com), \
