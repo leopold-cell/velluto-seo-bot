@@ -28,7 +28,8 @@ import re as _re
 from briefs.quality_gate import (check_compliance, strip_em_dashes,
                                   _FAKE_TEST_RE, _ASYMMETRY_RE, _DISPARAGE_WORD_RE,
                                   _ORIGIN_RE, _near_competitor, _COMPETITOR_TOKENS,
-                                  _COMPARATIVE_SUPERLATIVE_RE, _PRICE_DISPARAGE_RE)
+                                  _COMPARATIVE_SUPERLATIVE_RE, _PRICE_DISPARAGE_RE,
+                                  _SUPERIORITY_RE)
 
 HEAL_MODEL = "claude-haiku-4-5-20251001"
 
@@ -177,6 +178,9 @@ def _exact_flags(text: str) -> list:
     for m in _PRICE_DISPARAGE_RE.finditer(text):
         if _near_competitor(low, m.start(), m.end(), window=200):
             out.append(text[max(0, m.start() - 60): m.end() + 60])
+    for m in _SUPERIORITY_RE.finditer(text):
+        if _near_competitor(low, m.start(), m.end(), window=160):
+            out.append(text[max(0, m.start() - 40): m.end() + 80])
     for m in _ORIGIN_RE.finditer(text):
         out.append(m.group(0))
     seen, res = set(), []
