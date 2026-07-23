@@ -1,12 +1,11 @@
 {
-  "date": "2026-07-21",
+  "date": "2026-07-22",
   "slots": [
+    "morning",
+    "noon",
     "evening"
   ],
   "recent_lines": [
-    "Promised myself a recovery ride. Currently chasing a stranger.",
-    "I own four bikes. My fitness suits exactly one of them.",
-    "The group ride starts \"easy\". It is never easy.",
     "Checking the weather forecast won't change what it's doing outside.",
     "My \"just spin the legs\" ride has a 47-minute Strava segment in it.",
     "Every cyclist I pass on a climb is suddenly racing me.",
@@ -18,7 +17,10 @@
     "My average speed drops the second another rider pulls alongside.",
     "I own four bikes. I ride one. The others are \"in rotation.",
     "My \"recovery week\" has more climbing than my last race.",
-    "The group ride \"no-drop\" policy quietly ended at kilometre 14."
+    "The group ride \"no-drop\" policy quietly ended at kilometre 14.",
+    "Knees screaming. Heart rate spiked. Cadence collapsed. Garmin says \"moderate effort.",
+    "Checked the weather four times. Still left in the wrong kit.",
+    "The climb looked shorter on Komoot."
   ],
-  "last_media_id": "18129100738645790"
+  "last_media_id": "18104595803125124"
 }
