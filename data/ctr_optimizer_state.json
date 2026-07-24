@@ -10,19 +10,24 @@
   },
   "seo_title": "Oakley Alternatives: 7 Better Cycling Sunglasses",
   "meta_description": "Compare top Oakley alternatives for cycling. Find better optics, comfort & value. See which pairs outperform Radar & Flight Jacket models.",
-  "measured": null
+  "measured": {
+   "date": "2026-07-24",
+   "ctr_before": 0.23,
+   "ctr_after": 1.09,
+   "outcome": "improved"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/anti-fog-cycling-sunglasses-what-actually-works-in-2026": {
-  "last_optimized": "2026-07-10",
+  "last_optimized": "2026-07-24",
   "article_id": 616535359829,
   "before": {
-   "ctr": 0.18,
-   "position": 8.2,
-   "impressions": 560,
+   "ctr": 0.33,
+   "position": 7.8,
+   "impressions": 601,
    "title": "Anti Fog Cycling Sunglasses: What Actually Works in 2026"
   },
-  "seo_title": "Anti Fog Cycling Glasses: 5 Methods That Actually Work",
-  "meta_description": "Stop fogging up mid-ride. Discover 5 proven anti-fog solutions for cycling glasses that last all season. Real results tested by cyclists.",
+  "seo_title": "Best Anti Fog Cycling Glasses 2026 - 5 Tested",
+  "meta_description": "Stop fogging mid-ride. We tested 5 anti fog cycling sunglasses that actually work. See which ones keep vision clear in sweat & humidity.",
   "measured": null
  }
 }
