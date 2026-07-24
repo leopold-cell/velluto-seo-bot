@@ -572,9 +572,16 @@ _FAKE_TEST_RE = re.compile(
     r"|\bafter\s+\d+\s*(hours|hrs|km|kilomet\w*|miles|rides|weeks|months)\s+(of\s+)?(testing|riding|use|wear)\b"
     # Fabricated-test TITLE/headline claims (also in JSON-LD schema): "Tested & Ranked",
     # "Ranked and Tested", "Tested, Compared", "how we tested" — bare, no "we" needed.
-    r"|\btested\s*(?:,|&|and)\s*(?:and\s+)?(?:ranked|compared)\b"
+    r"|\btested\s*(?:,|&|and)\s*(?:and\s+)?(?:ranked|compared|rated|reviewed)\b"
     r"|\branked\s*(?:,|&|and)\s*(?:and\s+)?tested\b"
-    r"|\bhow we tested\b",
+    r"|\bhow we tested\b"
+    # Bare count + "tested" ("5 Tested", "7 Models Tested") — a CTR-bait title pattern
+    # that implies a test nobody ran. Lookbehind excludes standard codes like
+    # "EN ISO 12312-1 tested" (digit preceded by '-' or '.').
+    r"|(?<![\w.-])\d+\s+(?:models?\s+|pairs?\s+)?tested\b"
+    # "tested by cyclists/riders/us/experts/our team" — attributes a test to people
+    # who never ran one. Standards bodies stay allowed ("tested to EN ISO 12312-1").
+    r"|\btested\s+by\s+(?:cyclists?|riders?|us|our|real|experts?|pros?)\b",
     re.I)
 
 # "(stated)/(claimed)" doubt-casting asymmetry is always risky.

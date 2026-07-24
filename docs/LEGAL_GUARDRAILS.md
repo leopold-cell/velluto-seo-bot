@@ -65,7 +65,13 @@ Netherlands". A false geographic origin is misleading.
 | Prevention (prompt) | `seo_bot.py` | `BRAND_FACTS` origin + `LEGAL COMPLIANCE` L1–L5 rules, byline "Velluto" |
 | Prevention (gate) | `briefs/quality_gate.py` | `check_compliance()` blocks fake-test / disparagement / false-origin phrasings before publish |
 | Cure (existing) | `content_retrofit.py` compliance pass | scans live articles → auto-softens mechanical issues, sets factual-risk articles to **draft** for review |
+| SERP snippets | `ctr_optimizer.py` | legal rules in the rewrite prompt + `check_compliance()` gate with one retry (non-compliant → old snippet stays); `--legal-fix` re-audits and repairs every snippet ever written |
+| Retrofit fragments | `content_retrofit.py` `validate_fragment()` | every table/expansion fragment (EN + all locale adaptations) passes `check_compliance()` before touching a live article; em-dashes stripped |
 | Test | `tests/smoke_test_legal_compliance.py` | true/false-positive coverage |
+
+> Every path that writes user-visible text — publish, translation, retrofit
+> fragment, SERP snippet — must run through `check_compliance()`. If a new
+> writing path is added, wiring this gate in is part of its definition of done.
 
 ## Sources (background reading, not exhaustive)
 

@@ -15,11 +15,19 @@ rewrote the SERP snippet of an EXISTING page. This step does exactly that:
 3. MEASURE  — after the cooldown, the next runs compare the page's CTR vs.
               the snapshot taken at rewrite time and log the outcome.
 
-Guardrails: max 2 pages/day, 14-day cooldown per page, full before/after
-log in data/ctr_optimizer_state.json (committed by the daily cron).
+Guardrails: max CTR_MAX_PER_DAY pages/day, 14-day cooldown per page, full
+before/after log in data/ctr_optimizer_state.json (committed by the daily cron).
+
+LEGAL (compliance above everything): every generated snippet passes
+briefs.quality_gate.check_compliance BEFORE it is written — a snippet
+implying a test/review nobody ran ("5 Tested", "We tested …"), disparaging
+a competitor, or faking origin is regenerated once with the violations fed
+back, and skipped entirely if still non-compliant (the old snippet stays).
+Em-dashes are stripped (house style). `--legal-fix` re-audits every snippet
+this tool ever wrote and rewrites the non-compliant ones in place.
 
 Runs daily via run.sh; every external dependency fails soft (no crash of
-the chain). Manual: python3 ctr_optimizer.py [--dry-run]
+the chain). Manual: python3 ctr_optimizer.py [--dry-run] [--legal-fix]
 """
 import datetime
 import json
@@ -32,7 +40,10 @@ from anthropic import Anthropic
 from dotenv import load_dotenv
 
 BASE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, BASE)
 load_dotenv(dotenv_path=os.path.join(BASE, ".env"), override=True)
+
+from briefs.quality_gate import check_compliance, strip_em_dashes  # noqa: E402
 
 SHOPIFY_TOKEN = os.getenv("SHOPIFY_TOKEN")
 SHOPIFY_STORE = os.getenv("SHOPIFY_STORE", "velluto-brand.myshopify.com")
@@ -48,12 +59,17 @@ STATE_PATH   = os.path.join(BASE, "data", "ctr_optimizer_state.json")
 SITE         = "https://velluto-shop.com"
 BLOG_PREFIX  = f"{SITE}/blogs/"           # root-locale articles only; locales
                                           # inherit via canonical/hreflang
-MAX_PER_DAY      = 2
+# De-throttled (revenue lever #1): the measured 0.23%→1.09% CTR lift showed this
+# is the fastest payback in the system, but at 2 pages/day + 300-impression floor
+# the low-CTR backlog cleared too slowly. Per-page 14d cooldown STAYS — it is what
+# makes the before/after measurement honest.
+MAX_PER_DAY      = int(os.getenv("CTR_MAX_PER_DAY", "4"))
 COOLDOWN_DAYS    = 14
-MIN_IMPRESSIONS  = 300    # 28d window
+MIN_IMPRESSIONS  = int(os.getenv("CTR_MIN_IMPRESSIONS", "150"))    # 28d window
 HAIKU            = "claude-haiku-4-5-20251001"
 
-DRY_RUN = "--dry-run" in sys.argv
+DRY_RUN   = "--dry-run" in sys.argv
+LEGAL_FIX = "--legal-fix" in sys.argv
 
 
 # ── benchmarks ───────────────────────────────────────────────────────────────
@@ -198,40 +214,72 @@ def _clip_words(s: str, n: int) -> str:
     return s[:n].rsplit(" ", 1)[0].rstrip(" ,;:-–|") or s[:n]
 
 
+# Legal rules injected into every snippet prompt. A SERP snippet is advertising
+# under UWG — the CTR win must never come from a fabricated test or a dig at a rival.
+_LEGAL_RULES = (
+    "LEGAL RULES (EU/German advertising law — MANDATORY, they outrank CTR):\n"
+    "- NEVER imply a test, review, ranking or first-hand trial that was not performed: "
+    "no 'tested', 'we tested', '5 tested', 'reviewed', 'ranked', 'test winner', 'getestet'. "
+    "Velluto has NOT run product tests. Use honest spec/benefit hooks instead "
+    "(weight, UV400, price, lens swaps, guarantee).\n"
+    "- NEVER disparage or cast doubt on a named competitor, and no subjective superiority "
+    "claims ('better value than X', 'beats X'). Objective verifiable facts only.\n"
+    "- Velluto is a GERMAN brand (Italian design) — never Dutch.\n"
+    "- No em-dashes (—); use commas or hyphens.\n"
+)
+
+
+def _snippet_issues(seo_title: str, meta_desc: str) -> list[str]:
+    """Run the shared legal gate over a snippet exactly as it would render."""
+    return check_compliance({"title": seo_title, "meta_description": meta_desc})
+
+
 def generate_snippet(client: Anthropic, title: str, queries: list[dict],
                      cand: dict) -> dict | None:
+    """Generate a compliant snippet. One retry with the violations fed back; if the
+    retry still fails the legal gate, returns None (the old snippet stays live)."""
     q_lines = "\n".join(
         f"- \"{q['keys'][0]}\" — {int(q.get('impressions',0))} impressions, "
         f"pos {q.get('position',0):.1f}, {q.get('clicks',0)} clicks"
         for q in queries[:10]) or "- (no query data)"
-    r = client.messages.create(
-        model=HAIKU, max_tokens=300,
-        system="You are an SEO copywriter. Return ONLY valid JSON, no extra text.",
-        messages=[{"role": "user", "content":
-            f"This blog article ranks on Google (avg pos {cand['position']}) but its "
-            f"snippet only wins {cand['ctr']}% CTR — the benchmark for that position is "
-            f"{cand['benchmark']}%. Rewrite the SERP snippet to WIN THE CLICK.\n\n"
-            f"Current title: {title}\n"
-            f"Real queries it ranks for (28d):\n{q_lines}\n\n"
-            "Rules:\n"
-            "- seo_title: max 60 chars, top query's core terms FIRST, then a concrete "
-            "hook (number, year, outcome). No clickbait, no ALL CAPS, no emoji.\n"
-            "- meta_description: max 155 chars, answers the searcher's intent, ends "
-            "with a reason to click. Same language as the queries.\n\n"
-            'Return: {"seo_title": "...", "meta_description": "..."}'}],
-    )
-    raw = r.content[0].text.strip()
-    if raw.startswith("```"):
-        raw = raw.split("```")[1].lstrip("json").strip()
-    try:
-        data = json.loads(raw)
-        seo_title = _clip_words(data.get("seo_title", ""), 60)
-        meta_desc = (data.get("meta_description") or "").strip()[:155]
+    feedback = ""
+    for attempt in (1, 2):
+        r = client.messages.create(
+            model=HAIKU, max_tokens=300,
+            system="You are an SEO copywriter. Return ONLY valid JSON, no extra text.",
+            messages=[{"role": "user", "content":
+                f"This blog article ranks on Google (avg pos {cand['position']}) but its "
+                f"snippet only wins {cand['ctr']}% CTR — the benchmark for that position is "
+                f"{cand['benchmark']}%. Rewrite the SERP snippet to WIN THE CLICK.\n\n"
+                f"Current title: {title}\n"
+                f"Real queries it ranks for (28d):\n{q_lines}\n\n"
+                f"{_LEGAL_RULES}\n"
+                "Style rules:\n"
+                "- seo_title: max 60 chars, top query's core terms FIRST, then a concrete "
+                "hook (number, year, outcome). No clickbait, no ALL CAPS, no emoji.\n"
+                "- meta_description: max 155 chars, answers the searcher's intent, ends "
+                "with a reason to click. Same language as the queries.\n"
+                f"{feedback}\n"
+                'Return: {"seo_title": "...", "meta_description": "..."}'}],
+        )
+        raw = r.content[0].text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1].lstrip("json").strip()
+        try:
+            data = json.loads(raw)
+        except Exception:
+            return None
+        seo_title = strip_em_dashes(_clip_words(data.get("seo_title", ""), 60))[0].strip()
+        meta_desc = strip_em_dashes((data.get("meta_description") or "").strip()[:155])[0].strip()
         if not seo_title or not meta_desc:
             return None
-        return {"seo_title": seo_title, "meta_description": meta_desc}
-    except Exception:
-        return None
+        issues = _snippet_issues(seo_title, meta_desc)
+        if not issues:
+            return {"seo_title": seo_title, "meta_description": meta_desc}
+        print(f"      ⚖️  snippet failed legal gate (attempt {attempt}): {issues[0][:90]}…")
+        feedback = ("\nYour previous attempt VIOLATED these legal rules — fix them:\n- "
+                    + "\n- ".join(issues) + "\n")
+    return None
 
 
 # ── state + measurement ──────────────────────────────────────────────────────
@@ -277,9 +325,94 @@ def measure_past_rewrites(state: dict, rows: list[dict]) -> None:
               f"CTR {before}% → {ctr_now}% after {age}d")
 
 
+# ── legal fix (audit + repair every snippet this tool ever wrote) ────────────
+
+def legal_fix() -> None:
+    """Re-audit all snippets in state against the legal gate and rewrite the
+    non-compliant ones in place. Needed once because snippets written before the
+    gate existed went out unchecked (e.g. '… - 5 Tested'). Safe to re-run."""
+    print(f"\n⚖️  CTR Optimizer LEGAL FIX — {datetime.date.today()}")
+    state = load_state()
+    flagged = []
+    for url, entry in state.items():
+        if not isinstance(entry, dict):
+            continue
+        title = entry.get("seo_title", "")
+        meta = entry.get("meta_description", "")
+        issues = _snippet_issues(title, meta)
+        if "—" in f"{title}{meta}":
+            issues.append("[STYLE] em-dash in snippet")
+        if issues:
+            flagged.append((url, entry, issues))
+        else:
+            print(f"   ✓ clean: {url.split('/')[-1][:52]}")
+    if not flagged:
+        print("   ✓ all snippets compliant — nothing to fix")
+        return
+    print(f"   {len(flagged)} snippet(s) non-compliant:")
+    for url, entry, issues in flagged:
+        print(f"   ⚖️  {url.split('/')[-1][:52]}")
+        print(f"      title: {entry.get('seo_title','')}")
+        for i in issues:
+            print(f"      → {i[:110]}")
+
+    if not SHOPIFY_TOKEN:
+        print("   ❌ SHOPIFY_TOKEN missing — cannot rewrite (run on the VPS)")
+        return
+    client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    token = _gsc_token()
+    today = datetime.date.today().isoformat()
+    fixed = 0
+    for url, entry, _ in flagged:
+        handle = url.rstrip("/").rsplit("/", 1)[-1]
+        art = article_by_handle(handle)
+        if not art:
+            print(f"   ⚠️  no article for '{handle}' — skipped")
+            continue
+        queries = []
+        if token:
+            try:
+                queries = fetch_page_queries(token, url)
+            except Exception:
+                pass
+        before = entry.get("before", {})
+        cand = {"position": before.get("position", 8), "ctr": before.get("ctr", 0.5),
+                "benchmark": expected_ctr(float(before.get("position", 8) or 8))}
+        snippet = generate_snippet(client, art.get("title", ""), queries, cand)
+        if not snippet:
+            print(f"   ❌ no compliant snippet generated for '{handle}' — left as-is, "
+                  "re-run or fix manually in Shopify (SEO title/meta)")
+            continue
+        print(f"      new title: {snippet['seo_title']}")
+        print(f"      new meta:  {snippet['meta_description']}")
+        if DRY_RUN:
+            print("      (dry-run — not written)")
+            continue
+        ok_t = upsert_metafield(art["id"], "title_tag", snippet["seo_title"], 60)
+        ok_m = upsert_metafield(art["id"], "description_tag", snippet["meta_description"], 155)
+        if not (ok_t and ok_m):
+            print(f"      ❌ metafield write failed (title={ok_t}, meta={ok_m})")
+            continue
+        entry.update({
+            "seo_title": snippet["seo_title"],
+            "meta_description": snippet["meta_description"],
+            "legal_fixed": today,
+            "last_optimized": today,   # restart cooldown: the snippet changed
+            "measured": None,          # measure the compliant snippet, not the old one
+        })
+        fixed += 1
+        print("      ✅ compliant snippet written")
+    if not DRY_RUN:
+        save_state(state)
+    print(f"   Done — {fixed}/{len(flagged)} snippet(s) repaired")
+
+
 # ── main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
+    if LEGAL_FIX:
+        legal_fix()
+        return
     print(f"\n🎯 Velluto CTR Optimizer — {datetime.date.today()}")
     if not SHOPIFY_TOKEN:
         print("   SHOPIFY_TOKEN missing — skipping")
