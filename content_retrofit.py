@@ -49,6 +49,7 @@ from seo_bot import (BLOG_ID, LOCALE_LANG_NAMES, SHOP_LOCALES,           # noqa:
                      SHOPIFY_HEADERS, SHOPIFY_STORE,
                      get_translatable_digests, register_shopify_translation)
 from backfill_seo_cleanup import fetch_translations, put_body            # noqa: E402
+from briefs.quality_gate import check_compliance, strip_em_dashes        # noqa: E402
 
 STATE_PATH   = os.path.join(BASE, "data", "content_retrofit_state.json")
 CONTENT_STATE_PATH = os.path.join(BASE, "data", "content_state.json")
@@ -111,6 +112,10 @@ def validate_fragment(fragment: str, expect_tag: str) -> list[str]:
     for href in re.findall(r'href="([^"]+)"', fragment or ""):
         if not href.startswith(SITE):
             issues.append(f"external link: {href[:60]}")
+    # Legal gate (compliance above everything): a retrofit fragment lands in a
+    # LIVE article without passing the publish gate, so it must clear the same
+    # UWG guardrails here — fabricated tests, disparagement, false origin.
+    issues += check_compliance({"body_html": fragment or ""})
     return issues
 
 
@@ -494,7 +499,8 @@ def execute_pick(pick: dict, audit: dict, articles: list, client, products: list
     parts: list[str] = []
     try:
         if "table" in pick["action"]:
-            frag = gen_table_fragment(client, art["title"], body, products, price_str)
+            frag = strip_em_dashes(gen_table_fragment(client, art["title"], body,
+                                                      products, price_str))[0]
             issues = validate_fragment(frag, "table")
             if issues:
                 print(f"   ❌ table fragment rejected for {pick['handle']}: {issues}")
@@ -504,7 +510,8 @@ def execute_pick(pick: dict, audit: dict, articles: list, client, products: list
             paa = load_paa_questions(pick["handle"], art["title"])
             if paa:
                 print(f"      +{len(paa)} PAA question(s) fed into the expansion")
-            frag = gen_expansion_fragment(client, art["title"], body, queries, paa)
+            frag = strip_em_dashes(gen_expansion_fragment(client, art["title"], body,
+                                                          queries, paa))[0]
             issues = validate_fragment(frag, "h2")
             if issues:
                 print(f"   ❌ expansion fragment rejected for {pick['handle']}: {issues}")
@@ -540,14 +547,17 @@ def execute_pick(pick: dict, audit: dict, articles: list, client, products: list
             native_paa = (load_paa_questions(pick["handle"], art["title"], locale)
                           if locale in NATIVE_PAA_LANGS and "expand" in pick["action"] else [])
             if native_paa:
-                frag_loc = gen_native_expansion(client, tr.get("title", "") or art["title"],
-                                                tr["body_html"], locale, native_paa)
+                frag_loc = strip_em_dashes(gen_native_expansion(
+                    client, tr.get("title", "") or art["title"],
+                    tr["body_html"], locale, native_paa))[0]
                 if validate_fragment(frag_loc, "h2"):
-                    frag_loc = adapt_fragment(client, fragment, locale)  # fall back
+                    frag_loc = strip_em_dashes(adapt_fragment(client, fragment, locale))[0]
+                    if validate_fragment(frag_loc, expect):
+                        frag_loc = fragment  # last-resort: EN fragment (already validated)
                 else:
                     native_hits.append(locale)
             else:
-                frag_loc = adapt_fragment(client, fragment, locale)
+                frag_loc = strip_em_dashes(adapt_fragment(client, fragment, locale))[0]
                 if validate_fragment(frag_loc, expect):
                     frag_loc = fragment  # last-resort: EN fragment
             tr_body = insert_before_faq(tr["body_html"], frag_loc)
@@ -640,14 +650,26 @@ def retrofit_for_decision(decision: dict, commercial: dict | None = None,
         print(f"   · '{art['handle']}' recently updated (cooldown) — falling back to new article")
         return False
 
+    # Revenue guard: expanding a page nobody sees yet is the weakest use of the
+    # daily action (2k words + 11 translations into a 0-impression page). Require
+    # real 28d visibility; below the floor, fall back so the day ships a NEW
+    # BOFU article instead. Mirrors the autonomous cycle's floor (impr>=200).
+    token = _gsc_token()
+    min_impr = int(os.getenv("RETROFIT_MIN_IMPRESSIONS", "100"))
+    if token:
+        stats = page_stats(token, url, today - datetime.timedelta(days=INTERVAL_DAYS),
+                           today - datetime.timedelta(days=1))
+        if stats.get("impressions", 0) < min_impr:
+            print(f"   · '{art['handle']}' has only {stats.get('impressions', 0)} impressions "
+                  f"(28d, floor {min_impr}) — not worth expanding yet, falling back to new article")
+            return False
+
     # Deficit → action: a comparison page without a table gets a table (plus an
     # expansion if it's also thin); anything else gets a fresh expansion section.
     comparison_intent = bool(
         re.search(r"(-vs-|alternative|comparison|better-value)", art.get("handle", ""))
         or re.search(r"\b(vs|versus|alternative|compare|comparison)\b", keyword.lower()))
     action = "table+expand" if (comparison_intent and not art.get("has_table")) else "expand"
-
-    token = _gsc_token()
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
     products = []
     try:
