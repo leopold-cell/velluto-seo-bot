@@ -41,6 +41,7 @@ step "geo monitor"                 python3 geo_monitor.py
 step "perplexity geo (7d gate)"    python3 scripts/perplexity_monitor.py
 step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py
 step "meta ads weekly report"      python3 scripts/meta_ads_report.py
+step "api cost watchdog"           python3 scripts/api_cost_monitor.py
 step "dashboard"                   python3 dashboard.py
 
 # NOTE: the Instagram reel is posted 3×/day on its OWN schedule via run_reel.sh

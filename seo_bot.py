@@ -286,9 +286,9 @@ NEVER (black-hat — this hurts rankings AND legal standing):
 # ── Token tracking ───────────────────────────────────────────────────────────
 
 _MODEL_COSTS = {
-    "claude-opus-4-7":           (15.0, 75.0),
+    "claude-opus-4-7":           (5.0,  25.0),
     "claude-sonnet-4-6":         (3.0,  15.0),
-    "claude-haiku-4-5-20251001": (0.80,  4.0),
+    "claude-haiku-4-5-20251001": (1.0,   5.0),   # was 0.80/4.0 — undercounted Haiku 20%
 }
 
 def log_usage(inp: int, out: int, model: str = "claude-sonnet-4-6") -> float:
