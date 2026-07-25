@@ -1,1 +1,63 @@
-[]
+[
+  {
+    "title": "Cycling Glasses UV Protection: UV400 vs UV380 Explained",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-uv-protection-uv400-vs-uv380-explained",
+    "topic": "cycling glasses UV protection",
+    "keyword": "cycling glasses UV protection",
+    "lang": "en",
+    "phase": 1,
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "Fahrradbrille UV Schutz",
+        "intent": "Cyclist searching for protective eyewear with UV filtering capabilities for cycling safety.",
+        "volume": 20
+      },
+      "nl": {
+        "keyword": "fietsenbril UV bescherming",
+        "intent": "Dutch cyclist seeking glasses with UV protection for cycling activities.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "lunettes cyclisme protection UV",
+        "intent": "French cyclist looking for cycling glasses with UV protection features.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "gafas ciclismo protecci\u00f3n UV",
+        "intent": "Spanish cyclist searching for cycling glasses that offer UV protection.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "occhiali ciclismo protezione UV",
+        "intent": "Italian cyclist looking for cycling eyewear with UV protective properties.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "cykelbriller UV beskyttelse",
+        "intent": "Danish cyclist seeking glasses with UV protection for cycling purposes.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "sykkelbriller UV beskyttelse",
+        "intent": "Norwegian cyclist searching for cycling glasses with UV protection.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "okulary rowerowe ochrona UV",
+        "intent": "Polish cyclist looking for cycling glasses that provide UV protection.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "\u00f3culos ciclismo prote\u00e7\u00e3o UV",
+        "intent": "Portuguese cyclist seeking cycling glasses with UV protective technology.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "cykelglas\u00f6gon UV skydd",
+        "intent": "Swedish cyclist looking for cycling glasses with UV protection features.",
+        "volume": 0
+      }
+    }
+  }
+]

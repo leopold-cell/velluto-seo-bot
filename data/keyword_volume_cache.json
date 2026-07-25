@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-07-21": 6
+   "2026-07-25": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1047,5 +1047,49 @@
  "sv|sungod eller velluto cykelglasögon jämförelse": {
   "volume": 0,
   "date": "2026-07-21"
+ },
+ "de|fahrradbrille uv schutz": {
+  "volume": 20,
+  "date": "2026-07-25"
+ },
+ "en|cycling glasses uv protection": {
+  "volume": 0,
+  "date": "2026-07-25"
+ },
+ "nl|fietsenbril uv bescherming": {
+  "volume": 0,
+  "date": "2026-07-25"
+ },
+ "fr|lunettes cyclisme protection uv": {
+  "volume": 0,
+  "date": "2026-07-25"
+ },
+ "es|gafas ciclismo protección uv": {
+  "volume": 0,
+  "date": "2026-07-25"
+ },
+ "it|occhiali ciclismo protezione uv": {
+  "volume": 0,
+  "date": "2026-07-25"
+ },
+ "da|cykelbriller uv beskyttelse": {
+  "volume": 0,
+  "date": "2026-07-25"
+ },
+ "nb|sykkelbriller uv beskyttelse": {
+  "volume": 0,
+  "date": "2026-07-25"
+ },
+ "pl|okulary rowerowe ochrona uv": {
+  "volume": 0,
+  "date": "2026-07-25"
+ },
+ "pt-PT|óculos ciclismo proteção uv": {
+  "volume": 0,
+  "date": "2026-07-25"
+ },
+ "sv|cykelglasögon uv skydd": {
+  "volume": 0,
+  "date": "2026-07-25"
  }
 }
