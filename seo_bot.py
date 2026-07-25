@@ -291,13 +291,15 @@ _MODEL_COSTS = {
     "claude-haiku-4-5-20251001": (1.0,   5.0),   # was 0.80/4.0 — undercounted Haiku 20%
 }
 
-def log_usage(inp: int, out: int, model: str = "claude-sonnet-4-6") -> float:
+def log_usage(inp: int, out: int, model: str = "claude-sonnet-4-6",
+              rate: float = 1.0) -> float:
+    """rate: price multiplier — 0.5 for Batch-API calls (50% discount on all tokens)."""
     today = str(datetime.date.today())
     log = json.load(open(USAGE_LOG)) if os.path.exists(USAGE_LOG) else {}
     e = log.setdefault(today, {"runs": 0, "input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0})
     e["runs"] += 1; e["input_tokens"] += inp; e["output_tokens"] += out
     ip, op = _MODEL_COSTS.get(model, (3.0, 15.0))
-    cost = (inp * ip + out * op) / 1_000_000
+    cost = (inp * ip + out * op) / 1_000_000 * rate
     e["cost_usd"] = round(e["cost_usd"] + cost, 6)
     json.dump(log, open(USAGE_LOG, "w"), indent=2)
     return cost
@@ -1166,10 +1168,12 @@ tags: <ENGLISH ONLY, choose ONLY from: cycling glasses,road cycling,velluto,Stra
 ===END==="""
 
     GENERATE_MODEL = "claude-sonnet-4-6"
+    # Cached system prefix: BRAND_FACTS + rules are byte-stable within a run, so gate
+    # retries and extra peak-season articles read them at ~0.1x input price.
     response = client.messages.create(
         model=GENERATE_MODEL,
         max_tokens=16000,
-        system=system,
+        system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
         messages=[{"role": "user", "content": user}]
     )
     cost = log_usage(response.usage.input_tokens, response.usage.output_tokens, model=GENERATE_MODEL)
@@ -1845,10 +1849,13 @@ read_time: <number>
 QUALITY STANDARD: {word_count} words, {faq_count} FAQ questions, at least 2 internal links to product pages."""
 
     GENERATE_MODEL = "claude-sonnet-4-6"
+    # Cached system prefix (BRAND_FACTS + COPY_PRINCIPLES + WHITE_HAT + legal rules are
+    # byte-stable within a run): gate retries + peak-season extras read at ~0.1x price.
     response = client.messages.create(
         model=GENERATE_MODEL,
         max_tokens=20000,          # headroom: long 'alternatives' articles (2600+ words of
-        system=system,             # rich template HTML) were near the old 16000 cap
+                                   # rich template HTML) were near the old 16000 cap
+        system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
         messages=[{"role": "user", "content": user}]
     )
     cost = log_usage(response.usage.input_tokens, response.usage.output_tokens, model=GENERATE_MODEL)
@@ -2081,33 +2088,60 @@ def _stream_message(model: str, max_tokens: int, system: str, messages: list):
         return s.get_final_message()
 
 
+# Stable across ALL locales (cost lever): the system prompt and the article-HTML
+# block are byte-identical for every one of the 11 adaptation calls, so with the
+# cache breakpoint after the article block, locales 2-11 read the article from the
+# prompt cache (~0.1x input price) instead of re-paying it. Locale-specific rules
+# ride in a SECOND user block after the breakpoint. Content of the instructions is
+# unchanged — only their position moved.
+_ADAPT_SYSTEM = (
+    "You are an SEO copywriter adapting a cycling article for a target market. The "
+    "article HTML comes first; the MARKET BRIEF (language, keyword, market rules) "
+    "follows it. Apply the brief and these rules exactly:\n"
+    "A. Keep ALL existing HTML tags, class names, IDs and structure IDENTICAL "
+    "(you MAY append the new native PAA blocks when the brief's rule 9 asks for them).\n"
+    "B. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
+    "C. All URLs (href, src) stay unchanged.\n"
+    "D. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
+    "E. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. "
+    "(Normal hyphens in words are fine.)"
+)
+
+
+def _adaptation_messages(en_body: str, lang_name: str, target_kw: str, intent: str,
+                         cycling_ctx: str, price_rule: str, paa_rule: str) -> list:
+    """Shared message builder for the live AND batch adaptation paths — identical
+    bytes so both bill the same and behave the same."""
+    brief = (
+        f"MARKET BRIEF — target keyword: '{target_kw}'. Search intent: {intent}\n"
+        f"1. Write entirely in {lang_name} — no German words anywhere.\n"
+        f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
+        f"6. Adapt local references to reflect: {cycling_ctx}.\n"
+        f"{price_rule}{paa_rule}"
+    )
+    return [{"role": "user", "content": [
+        {"type": "text", "text": f"ARTICLE HTML TO ADAPT:\n\n{en_body}",
+         "cache_control": {"type": "ephemeral"}},
+        {"type": "text", "text": brief},
+    ]}]
+
+
 def _adapt_body_fullbody(en_body: str, lang_name: str, target_kw: str, intent: str,
                          cycling_ctx: str, price_rule: str, paa_rule: str,
                          target_locale: str) -> str:
     """Proven path: hand the whole HTML to Haiku and have it rewrite everything in the
     target language. Used as the guaranteed fallback when segment-adaptation can't be
     applied. Raises on truncation so the caller skips (never registers a half-article)."""
-    sys_prompt = (
-        f"You are an SEO copywriter adapting cycling content for the {lang_name}-speaking market. "
-        f"Target keyword: '{target_kw}'. Search intent: {intent}\n\n"
-        "Rules (follow exactly):\n"
-        f"1. Write entirely in {lang_name} — no German words anywhere.\n"
-        f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
-        "3. Keep ALL existing HTML tags, class names, IDs and structure IDENTICAL "
-        "(you MAY append the new native PAA blocks from rule 9 where indicated).\n"
-        "4. Brand names stay unchanged: Velluto, StradaPro, VellutoPuro, VellutoVisione.\n"
-        "5. All URLs (href, src) stay unchanged.\n"
-        f"6. Adapt local references to reflect: {cycling_ctx}.\n"
-        "7. Output ONLY the adapted HTML body — no markdown fences, no comments outside HTML.\n"
-        "8. NEVER introduce the em-dash '—' or a spaced en-dash ' – '. Use commas/periods. (Normal hyphens in words are fine.)\n"
-        f"{price_rule}{paa_rule}"
-    )
+    messages = _adaptation_messages(en_body, lang_name, target_kw, intent,
+                                    cycling_ctx, price_rule, paa_rule)
     # Streaming: 24000 max_tokens exceeds the non-streaming limit (was the '[xx] adaptation
     # error: Streaming is required …' failure). Stream to keep the headroom against truncation.
-    body_r = _stream_message(ADAPT_MODEL, 24000, sys_prompt, [{"role": "user", "content": en_body}])
+    body_r = _stream_message(ADAPT_MODEL, 24000, _ADAPT_SYSTEM, messages)
     cost = log_usage(body_r.usage.input_tokens, body_r.usage.output_tokens, model=ADAPT_MODEL)
+    cached = getattr(body_r.usage, "cache_read_input_tokens", 0) or 0
     print(f"   [{target_locale}] Adaptation tokens in:{body_r.usage.input_tokens} "
-          f"out:{body_r.usage.output_tokens} | ${cost:.4f}")
+          f"out:{body_r.usage.output_tokens}" + (f" (cached:{cached})" if cached else "")
+          + f" | ${cost:.4f}")
     if getattr(body_r, "stop_reason", None) == "max_tokens":
         raise RuntimeError(f"{target_locale} adaptation truncated at max_tokens "
                            f"({body_r.usage.output_tokens} out) — skipping this locale")
@@ -2202,20 +2236,10 @@ def _adapt_body_segments(en_body: str, lang_name: str, target_kw: str, intent: s
     return body
 
 
-def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
-                               commercial: dict | None = None) -> dict:
-    """
-    Adapt the primary EN article for a target market locale (DE, NL, FR, etc.).
-    Uses Claude Haiku for cost efficiency (~$0.025 vs $0.145 with Sonnet).
-    market = {"keyword": "...", "intent": "..."}
-    commercial: optional commercial config from load_commercial_config(). When
-                provided, Haiku is instructed to replace ALL price strings in
-                the body with the target market's current price (e.g. NL = 69 EUR).
-    """
-    lang_name  = LOCALE_LANG_NAMES.get(target_locale, target_locale)
-    cycling_ctx = LOCALE_CYCLING_CONTEXT.get(target_locale, "local cycling culture and routes")
-    target_kw  = market.get("keyword", "")
-    intent     = market.get("intent", "")
+def _locale_rules(de_post: dict, target_locale: str, commercial: dict | None) -> tuple[str, str, list]:
+    """(price_rule, paa_rule, paa_questions) for a locale — shared by the live and
+    batch adaptation paths so both build byte-identical prompts."""
+    lang_name = LOCALE_LANG_NAMES.get(target_locale, target_locale)
 
     # Phase 1: per-market price rule. Maps target_locale short ("de", "nl", …)
     # to the right entry in the commercial config and builds the rule string.
@@ -2240,9 +2264,8 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     try:
         from content_retrofit import load_paa_questions as _load_paa
         paa_questions = _load_paa("", de_post.get("title", ""), target_locale)[:6]
-        _paa = paa_questions
-        if _paa:
-            _qs = "\n".join(f"   - {q}" for q in _paa[:6])
+        if paa_questions:
+            _qs = "\n".join(f"   - {q}" for q in paa_questions[:6])
             paa_rule = (
                 f"9. NATIVE PAA — add 2-3 NEW <h3> Q&A blocks (before any FAQ/<details>) that "
                 f"answer these real {lang_name} search questions in featured-snippet style "
@@ -2253,6 +2276,28 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
             )
     except Exception:
         pass
+    return price_rule, paa_rule, paa_questions
+
+
+def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
+                               commercial: dict | None = None,
+                               pre_body: str | None = None) -> dict:
+    """
+    Adapt the primary EN article for a target market locale (DE, NL, FR, etc.).
+    Uses Claude Haiku for cost efficiency (~$0.025 vs $0.145 with Sonnet).
+    market = {"keyword": "...", "intent": "..."}
+    commercial: optional commercial config from load_commercial_config(). When
+                provided, Haiku is instructed to replace ALL price strings in
+                the body with the target market's current price (e.g. NL = 69 EUR).
+    pre_body: optional pre-adapted body from batch_adapt_bodies() (Batch API,
+              50% cheaper). When given, the expensive body call is skipped and
+              only title/meta + legal heal run live.
+    """
+    lang_name  = LOCALE_LANG_NAMES.get(target_locale, target_locale)
+    cycling_ctx = LOCALE_CYCLING_CONTEXT.get(target_locale, "local cycling culture and routes")
+    target_kw  = market.get("keyword", "")
+    intent     = market.get("intent", "")
+    price_rule, paa_rule, paa_questions = _locale_rules(de_post, target_locale, commercial)
 
     # Body adaptation via the proven FULL-BODY path (Haiku rewrites the whole HTML).
     #
@@ -2262,8 +2307,8 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     # rejects it and we fall back to full-body — meaning BOTH calls run and the locale is
     # billed TWICE. So it is OFF by default. Opt in only for experiments with
     # VELLUTO_SEGMENT_ADAPT=1 (needs a more robust reassembly before it's worth it).
-    adapted_body = None
-    if os.getenv("VELLUTO_SEGMENT_ADAPT", "0") == "1":
+    adapted_body = pre_body   # Batch-API result (50% cheaper) — live paths below are the fallback
+    if adapted_body is None and os.getenv("VELLUTO_SEGMENT_ADAPT", "0") == "1":
         try:
             adapted_body = _adapt_body_segments(
                 de_post["body_html"], lang_name, target_kw, intent, cycling_ctx,
@@ -2324,6 +2369,93 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
         print(f"   ⚠️  [{target_locale}] legal heal skipped: {_e}")
 
     return adapted
+
+
+def batch_adapt_bodies(de_post: dict, locale_markets: dict[str, dict],
+                       commercial: dict | None = None) -> dict[str, str]:
+    """Adapt the article body for ALL locales in ONE Message Batch (50% cheaper —
+    Batch API discounts every token; translations are not latency-sensitive).
+
+    Prompts are byte-identical to the live path (_adaptation_messages), so quality
+    is unchanged by construction. Returns {locale: adapted_body} for every locale
+    that succeeded; missing locales fall back to the live per-locale call in
+    generate_market_adaptation. Any submit/poll error returns {} (full live
+    fallback) — this function can never break a publish.
+
+    Toggle: ADAPT_BATCH=0 disables (live calls, old behavior).
+    Timeout: ADAPT_BATCH_TIMEOUT_S (default 2700s); most batches finish in minutes.
+    """
+    if os.getenv("ADAPT_BATCH", "1") != "1" or not locale_markets:
+        return {}
+    try:
+        from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
+        from anthropic.types.messages.batch_create_params import Request
+    except Exception as e:
+        print(f"   ⚠️  batch types unavailable ({e}) — live adaptation fallback")
+        return {}
+
+    requests_list = []
+    for locale, market in locale_markets.items():
+        lang_name   = LOCALE_LANG_NAMES.get(locale, locale)
+        cycling_ctx = LOCALE_CYCLING_CONTEXT.get(locale, "local cycling culture and routes")
+        price_rule, paa_rule, _ = _locale_rules(de_post, locale, commercial)
+        messages = _adaptation_messages(
+            de_post["body_html"], lang_name, market.get("keyword", ""),
+            market.get("intent", ""), cycling_ctx, price_rule, paa_rule)
+        requests_list.append(Request(
+            custom_id=locale,
+            params=MessageCreateParamsNonStreaming(
+                model=ADAPT_MODEL, max_tokens=24000,
+                system=_ADAPT_SYSTEM, messages=messages),
+        ))
+
+    try:
+        batch = client.messages.batches.create(requests=requests_list)
+    except Exception as e:
+        print(f"   ⚠️  batch submit failed ({e}) — live adaptation fallback")
+        return {}
+    print(f"   📦 adaptation batch {batch.id}: {len(requests_list)} locale(s) submitted "
+          "(50% Batch-API rate) — polling…")
+
+    timeout = int(os.getenv("ADAPT_BATCH_TIMEOUT_S", "2700"))
+    waited = 0
+    while batch.processing_status != "ended":
+        if waited >= timeout:
+            print(f"   ⚠️  batch not finished after {timeout}s — live adaptation fallback")
+            try:
+                client.messages.batches.cancel(batch.id)
+            except Exception:
+                pass
+            return {}
+        time.sleep(20)
+        waited += 20
+        try:
+            batch = client.messages.batches.retrieve(batch.id)
+        except Exception:
+            continue
+
+    bodies: dict[str, str] = {}
+    try:
+        for result in client.messages.batches.results(batch.id):
+            locale = result.custom_id
+            if result.result.type != "succeeded":
+                print(f"   ⚠️  [{locale}] batch result {result.result.type} — live fallback")
+                continue
+            msg = result.result.message
+            cost = log_usage(msg.usage.input_tokens, msg.usage.output_tokens,
+                             model=ADAPT_MODEL, rate=0.5)
+            if getattr(msg, "stop_reason", None) == "max_tokens":
+                print(f"   ⚠️  [{locale}] batch adaptation truncated — live fallback")
+                continue
+            text = next((b.text for b in msg.content if b.type == "text"), "")
+            if text:
+                bodies[locale] = _strip_md_fence(text)
+                print(f"   [{locale}] batch adaptation in:{msg.usage.input_tokens} "
+                      f"out:{msg.usage.output_tokens} | ${cost:.4f} (batched)")
+    except Exception as e:
+        print(f"   ⚠️  batch results read failed ({e}) — live fallback for the rest")
+    print(f"   📦 batch done after ~{waited}s: {len(bodies)}/{len(requests_list)} bodies")
+    return bodies
 
 
 def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None = None,
@@ -2508,11 +2640,18 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
         print(f"   ⚠️  Could not fetch digests: {e}")
         digests = {}
 
+    # One Batch-API submit for all locale bodies (50% discount); per-locale live
+    # calls below only run for locales the batch could not deliver.
+    _all_markets = {loc: mkt_kws.get(loc, {"keyword": keyword, "intent": ""})
+                    for loc in SHOP_LOCALES}
+    pre_bodies = batch_adapt_bodies(post, _all_markets, commercial=commercial)
+
     for locale in SHOP_LOCALES:
-        market = mkt_kws.get(locale, {"keyword": keyword, "intent": ""})
+        market = _all_markets[locale]
         print(f"   Generating {locale.upper()} adaptation (kw: {market['keyword']})...")
         try:
-            adaptation = generate_market_adaptation(post, locale, market, commercial=commercial)
+            adaptation = generate_market_adaptation(post, locale, market, commercial=commercial,
+                                                    pre_body=pre_bodies.get(locale))
             ok = register_shopify_translation(
                 aid, locale,
                 adaptation["title"],
@@ -2554,11 +2693,14 @@ def readapt_all_translations(article_id: int, post: dict, commercial: dict | Non
         print(f"   ⚠️  digests failed: {e}")
         digests = {}
     kw = post.get("title", "")
+    _all_markets = {loc: {"keyword": kw, "intent": ""} for loc in SHOP_LOCALES}
+    pre_bodies = batch_adapt_bodies(post, _all_markets, commercial=commercial)
     done = 0
     for locale in SHOP_LOCALES:
         try:
-            adaptation = generate_market_adaptation(post, locale, {"keyword": kw, "intent": ""},
-                                                    commercial=commercial)
+            adaptation = generate_market_adaptation(post, locale, _all_markets[locale],
+                                                    commercial=commercial,
+                                                    pre_body=pre_bodies.get(locale))
             ok = register_shopify_translation(
                 article_id, locale,
                 strip_em_dashes(adaptation["title"])[0],
