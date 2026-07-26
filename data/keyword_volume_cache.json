@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-07-25": 11
+   "2026-07-26": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1091,5 +1091,49 @@
  "sv|cykelglasögon uv skydd": {
   "volume": 0,
   "date": "2026-07-25"
+ },
+ "de|leichte fahrradbrille": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "en|lightweight cycling glasses": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "nl|lichte fietsenbril": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "fr|lunettes cyclisme légères": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "es|gafas ciclismo ligeras": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "it|occhiali ciclismo leggeri": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "da|lette cykelbriller": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "nb|lette sykkelbriller": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "pl|lekkie okulary rowerowe": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "pt-PT|óculos ciclismo leves": {
+  "volume": 0,
+  "date": "2026-07-26"
+ },
+ "sv|lätta cykelglasögon": {
+  "volume": 0,
+  "date": "2026-07-26"
  }
 }
