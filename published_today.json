@@ -1,61 +1,61 @@
 [
   {
-    "title": "Lightweight Cycling Glasses: Why Every Gram Matters",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/lightweight-cycling-glasses-why-every-gram-matters",
-    "topic": "lightweight cycling glasses",
-    "keyword": "lightweight cycling glasses",
+    "title": "Women's Cycling Glasses: Why Fit Beats Gender Labels",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/womens-cycling-glasses-why-fit-beats-gender-labels",
+    "topic": "women's cycling glasses",
+    "keyword": "women's cycling glasses",
     "lang": "en",
     "phase": 1,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "leichte Fahrradbrille",
-        "intent": "Cyclist searching for lightweight eyewear that reduces fatigue during long rides.",
-        "volume": 0
+        "keyword": "Damen Fahrradbrille",
+        "intent": "Women cyclists searching for sport-specific eyewear designed for cycling performance and protection.",
+        "volume": 1900
       },
       "nl": {
-        "keyword": "lichte fietsenbril",
-        "intent": "Dutch cyclist seeking comfortable, lightweight glasses for daily or sport cycling.",
+        "keyword": "dames fietsbrille",
+        "intent": "Dutch women cyclists seeking protective eyewear tailored for cycling comfort and visibility.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes cyclisme l\u00e9g\u00e8res",
-        "intent": "French cyclist wanting lightweight glasses that won't slip or cause discomfort.",
+        "keyword": "lunettes cyclisme femme",
+        "intent": "French female cyclists searching for specialized glasses designed for cycling safety and performance.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo ligeras",
-        "intent": "Spanish cyclist searching for lightweight eyewear optimized for performance cycling.",
+        "keyword": "gafas ciclismo mujer",
+        "intent": "Spanish-speaking women cyclists looking for eyewear specifically engineered for cycling conditions.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali ciclismo leggeri",
-        "intent": "Italian cyclist looking for comfortable, lightweight glasses for cycling comfort.",
+        "keyword": "occhiali ciclismo donna",
+        "intent": "Italian female cyclists seeking protective cycling glasses with style and performance features.",
         "volume": 0
       },
       "da": {
-        "keyword": "lette cykelbriller",
-        "intent": "Danish cyclist seeking lightweight glasses for comfort during cycling activities.",
+        "keyword": "cykelbriller til kvinder",
+        "intent": "Danish women cyclists shopping for cycling-specific eyewear designed for protection and comfort.",
         "volume": 0
       },
       "nb": {
-        "keyword": "lette sykkelbriller",
-        "intent": "Norwegian cyclist wanting lightweight eyewear for road or mountain cycling.",
+        "keyword": "sykkelbriller damer",
+        "intent": "Norwegian female cyclists searching for women's cycling glasses optimized for their riding needs.",
         "volume": 0
       },
       "pl": {
-        "keyword": "lekkie okulary rowerowe",
-        "intent": "Polish cyclist searching for lightweight glasses designed for cycling performance.",
+        "keyword": "okulary rowerowe damskie",
+        "intent": "Polish women cyclists looking for specialized eyewear for cycling protection and visibility.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos ciclismo leves",
-        "intent": "Portuguese cyclist looking for lightweight eyewear for enhanced cycling comfort.",
+        "keyword": "\u00f3culos de ciclismo feminino",
+        "intent": "Portuguese female cyclists seeking women-specific cycling eyewear for safety and performance.",
         "volume": 0
       },
       "sv": {
-        "keyword": "l\u00e4tta cykelglas\u00f6gon",
-        "intent": "Swedish cyclist seeking lightweight glasses that provide comfort and performance while cycling.",
+        "keyword": "cykelglas\u00f6gon dam",
+        "intent": "Swedish women cyclists searching for specialized cycling glasses designed for female riders.",
         "volume": 0
       }
     }

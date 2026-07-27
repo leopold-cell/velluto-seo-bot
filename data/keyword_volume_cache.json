@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-07-26": 11
+   "2026-07-27": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1135,5 +1135,49 @@
  "sv|lätta cykelglasögon": {
   "volume": 0,
   "date": "2026-07-26"
+ },
+ "de|damen fahrradbrille": {
+  "volume": 1900,
+  "date": "2026-07-27"
+ },
+ "en|women's cycling glasses": {
+  "volume": 0,
+  "date": "2026-07-27"
+ },
+ "nl|dames fietsbrille": {
+  "volume": 0,
+  "date": "2026-07-27"
+ },
+ "fr|lunettes cyclisme femme": {
+  "volume": 0,
+  "date": "2026-07-27"
+ },
+ "es|gafas ciclismo mujer": {
+  "volume": 0,
+  "date": "2026-07-27"
+ },
+ "it|occhiali ciclismo donna": {
+  "volume": 0,
+  "date": "2026-07-27"
+ },
+ "da|cykelbriller til kvinder": {
+  "volume": 0,
+  "date": "2026-07-27"
+ },
+ "nb|sykkelbriller damer": {
+  "volume": 0,
+  "date": "2026-07-27"
+ },
+ "pl|okulary rowerowe damskie": {
+  "volume": 0,
+  "date": "2026-07-27"
+ },
+ "pt-PT|óculos de ciclismo feminino": {
+  "volume": 0,
+  "date": "2026-07-27"
+ },
+ "sv|cykelglasögon dam": {
+  "volume": 0,
+  "date": "2026-07-27"
  }
 }
