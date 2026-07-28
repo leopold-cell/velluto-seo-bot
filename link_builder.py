@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """
-Velluto Link Builder — Daily indexing + Reddit backlink automation.
+Velluto Link Builder — Daily Reddit backlink automation.
 Runs after seo_bot.py. Reads published_today.json for today's article URLs.
 
-Two channels:
-  1. Sitemap pings  — tells Google + Bing to re-crawl sitemap immediately (no auth needed)
-  2. Reddit         — posts best article to the most relevant cycling subreddit
+One channel:
+  Reddit — posts best article to the most relevant cycling subreddit
+
+(The old sitemap-ping channel was removed 2026-07-28: Google shut down the
+/ping endpoint in mid-2023 and Bing's returns 410 — the log showed http_404 /
+http_410 on every daily run. Discovery now happens via the sitemap registered
+in GSC/Bing Webmaster Tools; Shopify keeps that sitemap current in real time.)
 """
 
 import os, json, datetime, time, re
@@ -23,9 +27,6 @@ REDDIT_CLIENT_SECRET = os.getenv("REDDIT_CLIENT_SECRET", "")
 REDDIT_USERNAME      = os.getenv("REDDIT_USERNAME", "")
 REDDIT_PASSWORD      = os.getenv("REDDIT_PASSWORD", "")
 
-SITEMAP_URL = "https://velluto-shop.com/sitemap.xml"
-
-
 # ── Logging ───────────────────────────────────────────────────────────────────
 
 def log_result(entry: dict):
@@ -33,33 +34,6 @@ def log_result(entry: dict):
     log = json.load(open(LINK_BUILD_LOG)) if os.path.exists(LINK_BUILD_LOG) else {}
     log.setdefault(today, []).append(entry)
     json.dump(log, open(LINK_BUILD_LOG, "w"), indent=2)
-
-
-# ── Sitemap pings ─────────────────────────────────────────────────────────────
-
-def ping_search_engines(articles: list[dict]) -> dict:
-    """
-    Ping Google and Bing to re-crawl the sitemap.
-    No auth required — these are standard unauthenticated ping endpoints.
-    Also pings each article URL directly at Bing via IndexNow-style submission.
-    """
-    results = {}
-
-    ping_urls = [
-        ("Google", f"https://www.google.com/ping?sitemap={SITEMAP_URL}"),
-        ("Bing",   f"https://www.bing.com/ping?sitemap={SITEMAP_URL}"),
-    ]
-    for engine, url in ping_urls:
-        try:
-            r = requests.get(url, timeout=10)
-            status = "ok" if r.status_code == 200 else f"http_{r.status_code}"
-            print(f"   ✓ {engine} sitemap ping: {status}")
-            results[engine] = status
-        except Exception as e:
-            print(f"   ✗ {engine} ping failed: {e}")
-            results[engine] = "error"
-
-    return results
 
 
 # ── Reddit ────────────────────────────────────────────────────────────────────
@@ -183,13 +157,7 @@ def main():
 
     print(f"   {len(articles)} article(s) to promote")
 
-    # ── 1. Sitemap pings ──────────────────────────────────────────────────────
-    print("\n📡 Pinging search engines...")
-    ping_results = ping_search_engines(articles)
-    log_result({"channel": "sitemap_ping", "results": ping_results,
-                "timestamp": datetime.datetime.utcnow().isoformat()})
-
-    # ── 2. Reddit — post the first (most evergreen) article ──────────────────
+    # ── Reddit — post the first (most evergreen) article ─────────────────────
     print("\n📮 Posting to Reddit...")
     # Pick article with the most generic/educational topic (avoid product-heavy ones)
     candidate = next(

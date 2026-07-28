@@ -29,7 +29,7 @@ else
 fi
 
 step "generate + publish article"  python3 seo_bot.py
-step "backlinks + sitemap ping"    python3 link_builder.py
+step "backlinks (reddit)"          python3 link_builder.py
 # Pinterest paused: posting needs boards:write, which Pinterest only grants with
 # Standard access (app-review + demo video) — a poor fit for a headless single-
 # account bot. Re-enable by uncommenting once Standard access is approved.

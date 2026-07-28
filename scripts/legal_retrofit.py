@@ -210,6 +210,10 @@ def rewrite_mode() -> None:
                 print(f"      draft PUT error: {e}")
             print("   ⚠️  no clean edit produced — "
                   + ("set to DRAFT (offline) for review" if ok else "COULD NOT draft — still live!"))
+            if ok:
+                print("      → its URL now 404s in every locale; other articles may still link to it.")
+                print("        Scrub inbound internal links (or skip if you'll republish soon):")
+                print("        python3 scripts/scrub_drafted_links.py --apply")
             continue
         nt, nm, nb = fixed
         # Change-detection: if the review left the article untouched (already clean, e.g. a
@@ -400,6 +404,10 @@ def main() -> None:
     print(f"\n   ✓ {done}/{len(to_draft)} articles set to draft. Review/rewrite them, "
           f"then re-publish (or let the now-compliant bot refresh them). 🟡 review "
           f"items were left live — check them manually.")
+    if done:
+        print("   → drafted URLs now 404 in every locale; other articles may still link to them.")
+        print("     Scrub inbound internal links (or skip if you'll republish soon):")
+        print("     python3 scripts/scrub_drafted_links.py --apply")
 
 
 if __name__ == "__main__":
