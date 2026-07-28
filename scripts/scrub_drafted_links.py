@@ -36,6 +36,7 @@ Usage:
 import os
 import re
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -56,6 +57,27 @@ BLOG_SITEMAP = "https://velluto-shop.com/sitemap_blogs_1.xml"
 
 # ── Sitemap health check (no auth) ────────────────────────────────────────────
 
+def _get_status(url: str) -> int:
+    """GET with 429-aware retries. Shopify's bot shield throttles bursts of
+    storefront requests from one IP — a 429 here is OUR rate, not a site error,
+    so back off (honouring Retry-After) and try again before reporting."""
+    for attempt in range(4):
+        try:
+            r = requests.get(url, timeout=15, allow_redirects=False)
+            code = r.status_code
+        except Exception:
+            code = 0
+        if code != 429:
+            return code
+        wait = 2 ** (attempt + 1)  # 2, 4, 8s
+        try:
+            wait = max(wait, int(r.headers.get("Retry-After", 0)))
+        except (TypeError, ValueError):
+            pass
+        time.sleep(wait)
+    return 429
+
+
 def check_sitemap() -> int:
     """Fetch the EN blog sitemap and GET every URL. Returns count of non-200s."""
     print(f"\n🩺 Sitemap health — {BLOG_SITEMAP}")
@@ -67,13 +89,11 @@ def check_sitemap() -> int:
     urls = re.findall(r"<loc>([^<]+)</loc>", xml)
     bad = 0
     for u in urls:
-        try:
-            code = requests.get(u, timeout=15, allow_redirects=False).status_code
-        except Exception:
-            code = 0
+        code = _get_status(u)
         if code != 200:
             bad += 1
             print(f"   ✗ {code} {u}")
+        time.sleep(1.0)  # stay under Shopify's storefront burst limit
     print(f"   {len(urls)} URLs checked · {bad} not 200"
           + ("  ✅" if bad == 0 else "  — fix these (GSC will report them)"))
     return bad
