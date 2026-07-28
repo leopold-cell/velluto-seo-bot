@@ -1,61 +1,61 @@
 [
   {
-    "title": "Women's Cycling Glasses: Why Fit Beats Gender Labels",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/womens-cycling-glasses-why-fit-beats-gender-labels",
-    "topic": "women's cycling glasses",
-    "keyword": "women's cycling glasses",
+    "title": "Gravel Cycling Glasses: What Actually Works Off-Road",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/gravel-cycling-glasses-what-actually-works-off-road",
+    "topic": "gravel cycling glasses",
+    "keyword": "gravel cycling glasses",
     "lang": "en",
     "phase": 1,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Damen Fahrradbrille",
-        "intent": "Women cyclists searching for sport-specific eyewear designed for cycling performance and protection.",
-        "volume": 1900
+        "keyword": "Gravel Bike Brille",
+        "intent": "German cyclists searching for eyewear specifically designed for gravel riding conditions.",
+        "volume": 140
       },
       "nl": {
-        "keyword": "dames fietsbrille",
-        "intent": "Dutch women cyclists seeking protective eyewear tailored for cycling comfort and visibility.",
+        "keyword": "gravel fietsenbril",
+        "intent": "Dutch cyclists seeking specialized glasses for gravel bike adventures and rough terrain riding.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes cyclisme femme",
-        "intent": "French female cyclists searching for specialized glasses designed for cycling safety and performance.",
+        "keyword": "lunettes v\u00e9lo gravel",
+        "intent": "French cyclists looking for eyewear tailored to gravel cycling and unpaved road conditions.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo mujer",
-        "intent": "Spanish-speaking women cyclists looking for eyewear specifically engineered for cycling conditions.",
+        "keyword": "gafas ciclismo gravel",
+        "intent": "Spanish cyclists searching for protective eyewear designed for gravel bike riding.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali ciclismo donna",
-        "intent": "Italian female cyclists seeking protective cycling glasses with style and performance features.",
+        "keyword": "occhiali gravel bike",
+        "intent": "Italian cyclists seeking specialized sunglasses for gravel cycling and off-road performance.",
         "volume": 0
       },
       "da": {
-        "keyword": "cykelbriller til kvinder",
-        "intent": "Danish women cyclists shopping for cycling-specific eyewear designed for protection and comfort.",
+        "keyword": "gravel cykelbriller",
+        "intent": "Danish cyclists looking for eyewear designed for gravel biking on rough terrain.",
         "volume": 0
       },
       "nb": {
-        "keyword": "sykkelbriller damer",
-        "intent": "Norwegian female cyclists searching for women's cycling glasses optimized for their riding needs.",
+        "keyword": "gravel sykkelbriller",
+        "intent": "Norwegian cyclists searching for glasses optimized for gravel cycling conditions.",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary rowerowe damskie",
-        "intent": "Polish women cyclists looking for specialized eyewear for cycling protection and visibility.",
+        "keyword": "okulary do kolarstwa gravel",
+        "intent": "Polish cyclists seeking eyewear specifically designed for gravel bike riding.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos de ciclismo feminino",
-        "intent": "Portuguese female cyclists seeking women-specific cycling eyewear for safety and performance.",
+        "keyword": "\u00f3culos bicicleta gravel",
+        "intent": "Portuguese cyclists looking for protective eyewear for gravel cycling adventures.",
         "volume": 0
       },
       "sv": {
-        "keyword": "cykelglas\u00f6gon dam",
-        "intent": "Swedish women cyclists searching for specialized cycling glasses designed for female riders.",
+        "keyword": "gravel cykelglas\u00f6gon",
+        "intent": "Swedish cyclists searching for specialized glasses for gravel biking and unpaved terrain.",
         "volume": 0
       }
     }

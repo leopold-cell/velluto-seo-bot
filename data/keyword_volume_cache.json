@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-07-27": 11
+   "2026-07-28": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1179,5 +1179,49 @@
  "sv|cykelglasögon dam": {
   "volume": 0,
   "date": "2026-07-27"
+ },
+ "de|gravel bike brille": {
+  "volume": 140,
+  "date": "2026-07-28"
+ },
+ "en|gravel cycling glasses": {
+  "volume": 0,
+  "date": "2026-07-28"
+ },
+ "nl|gravel fietsenbril": {
+  "volume": 0,
+  "date": "2026-07-28"
+ },
+ "fr|lunettes vélo gravel": {
+  "volume": 0,
+  "date": "2026-07-28"
+ },
+ "es|gafas ciclismo gravel": {
+  "volume": 0,
+  "date": "2026-07-28"
+ },
+ "it|occhiali gravel bike": {
+  "volume": 0,
+  "date": "2026-07-28"
+ },
+ "da|gravel cykelbriller": {
+  "volume": 0,
+  "date": "2026-07-28"
+ },
+ "nb|gravel sykkelbriller": {
+  "volume": 0,
+  "date": "2026-07-28"
+ },
+ "pl|okulary do kolarstwa gravel": {
+  "volume": 0,
+  "date": "2026-07-28"
+ },
+ "pt-PT|óculos bicicleta gravel": {
+  "volume": 0,
+  "date": "2026-07-28"
+ },
+ "sv|gravel cykelglasögon": {
+  "volume": 0,
+  "date": "2026-07-28"
  }
 }
