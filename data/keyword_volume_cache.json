@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-07-28": 11
+   "2026-07-29": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1223,5 +1223,49 @@
  "sv|gravel cykelglasögon": {
   "volume": 0,
   "date": "2026-07-28"
+ },
+ "de|fahrradbrille wechselgläser": {
+  "volume": 90,
+  "date": "2026-07-29"
+ },
+ "en|cycling glasses interchangeable lenses": {
+  "volume": 0,
+  "date": "2026-07-29"
+ },
+ "nl|fietsenbril verwisselbare glazen": {
+  "volume": 0,
+  "date": "2026-07-29"
+ },
+ "fr|lunettes cyclisme verres interchangeables": {
+  "volume": 0,
+  "date": "2026-07-29"
+ },
+ "es|gafas ciclismo lentes intercambiables": {
+  "volume": 0,
+  "date": "2026-07-29"
+ },
+ "it|occhiali ciclismo lenti intercambiabili": {
+  "volume": 0,
+  "date": "2026-07-29"
+ },
+ "da|cykelbriller udskiftelige linser": {
+  "volume": 0,
+  "date": "2026-07-29"
+ },
+ "nb|sykkelbriller utskiftbare linser": {
+  "volume": 0,
+  "date": "2026-07-29"
+ },
+ "pl|okulary rowerowe wymienne soczewki": {
+  "volume": 0,
+  "date": "2026-07-29"
+ },
+ "pt-PT|óculos ciclismo lentes intercambiáveis": {
+  "volume": 0,
+  "date": "2026-07-29"
+ },
+ "sv|cykelglasögon utbytbara linser": {
+  "volume": 0,
+  "date": "2026-07-29"
  }
 }
