@@ -1603,7 +1603,61 @@
         }
       ],
       "serps_scanned": 181
+    },
+    "2026-07-30": {
+      "aio_serps": 43,
+      "velluto_cited": 0,
+      "competitor_cited": 2,
+      "velluto_gap": 6,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 4.7,
+      "total_citations": 71,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 16
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 9
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 5
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 5
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 3
+        },
+        {
+          "domain": "amazon.com",
+          "citations": 3
+        },
+        {
+          "domain": "coachweb.com",
+          "citations": 2
+        },
+        {
+          "domain": "bikerumor.com",
+          "citations": 2
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 2
+        },
+        {
+          "domain": "trainerroad.com",
+          "citations": 2
+        }
+      ],
+      "serps_scanned": 88
     }
   },
-  "latest": "2026-07-29"
+  "latest": "2026-07-30"
 }

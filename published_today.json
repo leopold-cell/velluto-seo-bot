@@ -1,61 +1,61 @@
 [
   {
-    "title": "Cycling Glasses Interchangeable Lenses: One Frame, All Conditions",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-interchangeable-lenses-one-frame-all-conditions",
-    "topic": "cycling glasses interchangeable lenses",
-    "keyword": "cycling glasses interchangeable lenses",
+    "title": "Anti Fog Cycling Glasses: What Actually Works in 2026",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/anti-fog-cycling-glasses-what-actually-works-in-2026",
+    "topic": "anti fog cycling glasses",
+    "keyword": "anti fog cycling glasses",
     "lang": "en",
     "phase": 1,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Fahrradbrille Wechselgl\u00e4ser",
-        "intent": "Cyclist seeking eyewear with interchangeable lenses for different light conditions.",
-        "volume": 90
+        "keyword": "Fahrradbrille beschlagfrei",
+        "intent": "German cyclists searching for anti-fog cycling glasses that won't fog up during rides.",
+        "volume": 10
       },
       "nl": {
-        "keyword": "fietsenbril verwisselbare glazen",
-        "intent": "Dutch cyclist searching for bike glasses with quick-change lens systems.",
+        "keyword": "fietsenbril anti condens",
+        "intent": "Dutch cyclists seeking cycling glasses that prevent condensation and fogging.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes cyclisme verres interchangeables",
-        "intent": "French cyclist seeking cycling eyewear with multiple lens options.",
+        "keyword": "lunettes v\u00e9lo anti-bu\u00e9e",
+        "intent": "French cyclists looking for cycling glasses with anti-fog coating or technology.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo lentes intercambiables",
-        "intent": "Spanish cyclist looking for bike glasses with interchangeable lens technology.",
+        "keyword": "gafas ciclismo antivaho",
+        "intent": "Spanish cyclists searching for cycling eyewear that resists fogging and condensation.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali ciclismo lenti intercambiabili",
-        "intent": "Italian cyclist seeking cycling glasses with swappable lenses for different conditions.",
+        "keyword": "occhiali ciclismo antiappannamento",
+        "intent": "Italian cyclists seeking cycling glasses that prevent lens fogging during rides.",
         "volume": 0
       },
       "da": {
-        "keyword": "cykelbriller udskiftelige linser",
-        "intent": "Danish cyclist looking for bike eyewear with interchangeable lens systems.",
+        "keyword": "cykelbriller antibug",
+        "intent": "Danish cyclists looking for cycling glasses that resist fogging and condensation.",
         "volume": 0
       },
       "nb": {
-        "keyword": "sykkelbriller utskiftbare linser",
-        "intent": "Norwegian cyclist seeking cycling glasses with exchangeable lens options.",
+        "keyword": "sykkelbriller antidugga",
+        "intent": "Norwegian cyclists searching for cycling eyewear that prevents lens fogging.",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary rowerowe wymienne soczewki",
-        "intent": "Polish cyclist searching for cycling eyewear with replaceable lenses.",
+        "keyword": "okulary rowerowe antypara",
+        "intent": "Polish cyclists seeking cycling glasses with anti-fog properties for clear vision.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos ciclismo lentes intercambi\u00e1veis",
-        "intent": "Portuguese cyclist seeking cycling glasses with interchangeable lens capability.",
+        "keyword": "\u00f3culos ciclismo anti-embaciamento",
+        "intent": "Portuguese cyclists looking for cycling glasses that prevent fogging and lens misting.",
         "volume": 0
       },
       "sv": {
-        "keyword": "cykelglas\u00f6gon utbytbara linser",
-        "intent": "Swedish cyclist looking for bike glasses with quick-swap lens systems.",
+        "keyword": "cykelglas\u00f6gon antidimma",
+        "intent": "Swedish cyclists searching for cycling glasses with anti-fog technology for better visibility.",
         "volume": 0
       }
     }

@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-07-29": 11
+   "2026-07-30": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1267,5 +1267,49 @@
  "sv|cykelglasögon utbytbara linser": {
   "volume": 0,
   "date": "2026-07-29"
+ },
+ "de|fahrradbrille beschlagfrei": {
+  "volume": 10,
+  "date": "2026-07-30"
+ },
+ "en|anti fog cycling glasses": {
+  "volume": 0,
+  "date": "2026-07-30"
+ },
+ "nl|fietsenbril anti condens": {
+  "volume": 0,
+  "date": "2026-07-30"
+ },
+ "fr|lunettes vélo anti-buée": {
+  "volume": 0,
+  "date": "2026-07-30"
+ },
+ "es|gafas ciclismo antivaho": {
+  "volume": 0,
+  "date": "2026-07-30"
+ },
+ "it|occhiali ciclismo antiappannamento": {
+  "volume": 0,
+  "date": "2026-07-30"
+ },
+ "da|cykelbriller antibug": {
+  "volume": 0,
+  "date": "2026-07-30"
+ },
+ "nb|sykkelbriller antidugga": {
+  "volume": 0,
+  "date": "2026-07-30"
+ },
+ "pl|okulary rowerowe antypara": {
+  "volume": 0,
+  "date": "2026-07-30"
+ },
+ "pt-PT|óculos ciclismo anti-embaciamento": {
+  "volume": 0,
+  "date": "2026-07-30"
+ },
+ "sv|cykelglasögon antidimma": {
+  "volume": 0,
+  "date": "2026-07-30"
  }
 }

@@ -1,14 +1,11 @@
 {
-  "date": "2026-07-28",
+  "date": "2026-07-29",
   "slots": [
     "morning",
     "noon",
     "evening"
   ],
   "recent_lines": [
-    "The caf\u00e9 stop was supposed to be optional.",
-    "The Strava segment ended 200m ago. I'm still sprinting.",
-    "Four bikes in the garage. One has seen tarmac this month.",
     "My kit is perfectly colour-matched. My fitness is absolutely not.",
     "Legs felt incredible. Right up until the first actual climb.",
     "My Garmin has seen every kilometre. My wife has not.",
@@ -20,7 +17,10 @@
     "When the group ride becomes \"just a coffee\" and we do 120km first.",
     "The caf\u00e9 is 8km away. I've been 'almost there' for 25 minutes.",
     "I own four bikes. I ride the same one every time.",
-    "My legs were fine. I checked. Four times before leaving the house."
+    "My legs were fine. I checked. Four times before leaving the house.",
+    "The climb looked shorter on Komoot. It always looks shorter on Komoot.",
+    "Signed up for the sportive eight months ago. Still haven't told my legs.",
+    "My Garmin has seen things I'll never admit to Strava."
   ],
-  "last_media_id": "18109396070278729"
+  "last_media_id": "17902666242532892"
 }
