@@ -1,61 +1,61 @@
 [
   {
-    "title": "Cycling Glasses for Big Head: Fit Guide 2026",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-big-head-fit-guide-2026",
-    "topic": "cycling glasses for big head",
-    "keyword": "cycling glasses for big head",
+    "title": "Cycling Sunglasses UV400: What the Standard Really Means",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-sunglasses-uv400-what-the-standard-really-means",
+    "topic": "cycling sunglasses UV400",
+    "keyword": "cycling sunglasses UV400",
     "lang": "en",
     "phase": 1,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Fahrradbrille gro\u00dfe Kopfgr\u00f6\u00dfe",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
-        "volume": 0
+        "keyword": "Fahrradbrille UV-Schutz",
+        "intent": "German cyclists searching for protective eyewear with UV protection for cycling.",
+        "volume": 20
       },
       "nl": {
-        "keyword": "fietsbril groot hoofd",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
+        "keyword": "fietsbril UV bescherming",
+        "intent": "Dutch cyclists looking for bike-specific sunglasses with UV protection.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes cyclisme grande t\u00eate",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
+        "keyword": "lunettes cyclisme protection UV",
+        "intent": "French cyclists searching for cycling eyewear with UV protection.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo cabeza grande",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
+        "keyword": "gafas ciclismo UV400",
+        "intent": "Spanish cyclists seeking UV400 sunglasses designed for cycling.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali ciclismo testa grande",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
+        "keyword": "occhiali ciclismo protezione UV",
+        "intent": "Italian cyclists looking for cycling-specific sunglasses with UV protection.",
         "volume": 0
       },
       "da": {
-        "keyword": "cykelbriller stort hoved",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
+        "keyword": "cykelbriller UV-beskyttelse",
+        "intent": "Danish cyclists searching for cycling sunglasses with UV protection.",
         "volume": 0
       },
       "nb": {
-        "keyword": "sykkelbriller stort hode",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
+        "keyword": "sykkelbriller UV-beskyttelse",
+        "intent": "Norwegian cyclists seeking UV-protective sunglasses for cycling.",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary rowerowe du\u017ca g\u0142owa",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
+        "keyword": "okulary rowerowe UV400",
+        "intent": "Polish cyclists looking for cycling eyewear with UV400 protection.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos ciclismo cabe\u00e7a grande",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
+        "keyword": "\u00f3culos ciclismo prote\u00e7\u00e3o UV",
+        "intent": "Portuguese cyclists searching for cycling sunglasses with UV protection.",
         "volume": 0
       },
       "sv": {
-        "keyword": "cykelglas\u00f6gon stort huvud",
-        "intent": "Finding cycling glasses that fit larger head sizes comfortably.",
+        "keyword": "cykelglas\u00f6gon UV-skydd",
+        "intent": "Swedish cyclists seeking UV-protected sunglasses for cycling.",
         "volume": 0
       }
     }

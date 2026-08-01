@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-07-31": 11
+   "2026-08-01": 8
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1355,5 +1355,37 @@
  "sv|cykelglasögon stort huvud": {
   "volume": 0,
   "date": "2026-07-31"
+ },
+ "de|fahrradbrille uv-schutz": {
+  "volume": 20,
+  "date": "2026-08-01"
+ },
+ "en|cycling sunglasses uv400": {
+  "volume": 0,
+  "date": "2026-08-01"
+ },
+ "nl|fietsbril uv bescherming": {
+  "volume": 0,
+  "date": "2026-08-01"
+ },
+ "es|gafas ciclismo uv400": {
+  "volume": 0,
+  "date": "2026-08-01"
+ },
+ "da|cykelbriller uv-beskyttelse": {
+  "volume": 0,
+  "date": "2026-08-01"
+ },
+ "nb|sykkelbriller uv-beskyttelse": {
+  "volume": 0,
+  "date": "2026-08-01"
+ },
+ "pl|okulary rowerowe uv400": {
+  "volume": 0,
+  "date": "2026-08-01"
+ },
+ "sv|cykelglasögon uv-skydd": {
+  "volume": 0,
+  "date": "2026-08-01"
  }
 }
