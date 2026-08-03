@@ -17,6 +17,8 @@ Hybrid policy (operator-chosen):
 Usage:
   python3 scripts/legal_retrofit.py            # dry-run: report only
   python3 scripts/legal_retrofit.py --apply    # set risky articles to draft
+  python3 scripts/legal_retrofit.py --rewrite --drafted-only --dry-run   # repair plan for offline articles
+  python3 scripts/legal_retrofit.py --rewrite --drafted-only             # repair + republish them
 """
 import datetime
 import json
@@ -78,6 +80,33 @@ REWRITE = "--rewrite" in sys.argv    # surgical legal fix of flagged articles in
 STRIP   = "--strip-dashes" in sys.argv  # mechanical em-dash sweep across ALL articles
 REPUB   = "--republish-clean" in sys.argv  # re-publish drafted articles that are now clean
 DRY_RUN = "--dry-run" in sys.argv    # with --rewrite/--strip-dashes: preview, don't write
+DRAFTED_ONLY = "--drafted-only" in sys.argv  # with --rewrite: repair offline articles only
+
+# Titles the mechanical cleaner in briefs/legal_heal.py cannot fix on its own.
+# It strips fabricated-test wording ("Tested & Ranked") but leaves a comparative
+# superiority claim intact, because rephrasing one is an editorial decision, not a
+# deletion: "Better Value Than Endurasport" has to become a neutral comparison, and
+# only a human can decide what the piece is actually about.
+#
+# The topic stays, the claim goes — § 6 UWG allows a factual head-to-head, it
+# forbids the subjective verdict. Each replacement is <60 chars (SEO title limit),
+# keeps the "X vs Velluto" comparison intent, and passes check_compliance().
+TITLE_OVERRIDES = {
+    "roka-vs-velluto-cycling-glasses-same-performance-better-value-2026":
+        "Roka vs Velluto Cycling Glasses: Specs Compared (2026)",
+    "cycling-glasses-better-value-than-endurasport-velluto-2026":
+        "Velluto vs Endurasport Cycling Glasses: Specs Compared 2026",
+    "cycling-glasses-better-value-than-alibaba-2026-velluto":
+        "Velluto vs Alibaba Cycling Glasses: Specs Compared 2026",
+    "cycling-glasses-better-value-than-evileye-velluto-stradapro":
+        "Velluto StradaPro vs Evil Eye: Specs Compared",
+    "girly-vs-velluto-cycling-glasses-better-value-in-2026":
+        "Girly vs Velluto Cycling Glasses: Specs Compared (2026)",
+    "best-value-cycling-glasses-2026-bing-vs-velluto-velluto":
+        "Bing vs Velluto Cycling Glasses: Specs Compared 2026",
+    "sigma-vs-velluto-cycling-glasses-which-wins-in-2026":
+        "Sigma vs Velluto Cycling Glasses: Specs Compared (2026)",
+}
 REPORT_PATH = os.path.join(BASE, "output", "legal_retrofit_report.json")
 SITE = "https://velluto-shop.com"
 BLOG_HANDLE = "velluto-the-magazine"
@@ -166,7 +195,7 @@ def rewrite_mode() -> None:
 
     ensure_shopify()
     commercial = load_commercial_config()
-    articles = fetch_articles()
+    articles = _fetch_articles_full() if DRAFTED_ONLY else fetch_articles()
 
     # Process an article if the REGEX flags it (hard violations) OR it names a competitor
     # (so the semantic pass inside _compliance_edit reviews the subtle issues regex can't
@@ -177,6 +206,16 @@ def rewrite_mode() -> None:
         t, b = a.get("title", ""), a.get("body_html", "")
         return bool(check_compliance({"title": t, "body_html": b})) or _names_competitor(f"{t} {b}")
 
+    if DRAFTED_ONLY:
+        # Repair scope: ONLY articles that are currently offline. Without this the run
+        # also re-edits every live article that merely names a competitor — including
+        # the comparison pages that actually produce sales. Re-writing a page that
+        # converts, to fix nothing, is pure downside; a drafted page can only improve.
+        before = len(articles)
+        articles = [a for a in articles if not a.get("published_at")]
+        print(f"   ⓘ --drafted-only: {len(articles)} offline of {before} articles "
+              f"(live articles are not touched)")
+
     flagged = [a for a in articles if _needs_review(a)]
     print(f"\n🩹 Compliance fix — {len(flagged)}/{len(articles)} articles to review "
           f"({'DRY-RUN' if DRY_RUN else 'LIVE in-place edit'})")
@@ -185,17 +224,31 @@ def rewrite_mode() -> None:
         for a in flagged:
             iss = check_compliance({"title": a.get("title", ""), "body_html": a.get("body_html", "")})
             tag = "" if iss else "  [competitor mention → semantic review]"
+            new_t = TITLE_OVERRIDES.get(a.get("handle", ""))
             print(f"   • {a.get('handle','')[:55]}{tag}")
+            if new_t:
+                print(f"       ↻ title → {new_t}")
             for i in iss:
                 print(f"       {i}")
-        print("\n   DRY-RUN — nothing edited. Re-run without --dry-run to fix + re-publish in place.")
+        est = len(flagged) * 0.70
+        print(f"\n   Estimated cost if run for real: ~${est:.2f} "
+              f"({len(flagged)} × ~$0.70 = EN edit + 10 locale re-translations)")
+        print("   DRY-RUN — nothing edited. Re-run without --dry-run to fix + re-publish in place.")
         return
 
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
     done = 0
     for a in flagged:
         print(f"\n── Fixing {a.get('handle','')[:55]} ──")
-        fixed = _compliance_edit(client, a.get("title", ""), a.get("body_html", ""), "", "English")
+        # Apply the editorial title decision BEFORE the LLM pass, so the model edits
+        # the body against the title the article will actually ship with (and so the
+        # claim can't survive in the JSON-LD headline).
+        src_title = a.get("title", "")
+        override = TITLE_OVERRIDES.get(a.get("handle", ""))
+        if override and override != src_title:
+            print(f"   ↻ title: {src_title}\n            → {override}")
+            src_title = override
+        fixed = _compliance_edit(client, src_title, a.get("body_html", ""), "", "English")
         if not fixed:
             # Can't auto-fix it → take the risky version OFFLINE (draft) so it never
             # stays live. (Was a bug: a live article that failed the edit stayed live.)
@@ -219,8 +272,28 @@ def rewrite_mode() -> None:
         # Change-detection: if the review left the article untouched (already clean, e.g. a
         # competitor mention that was fine), do NOT re-publish or re-adapt all 10 languages
         # for nothing. Only genuinely-edited articles proceed.
-        if nt == a.get("title", "") and nb == a.get("body_html", ""):
+        unchanged = nt == a.get("title", "") and nb == a.get("body_html", "")
+        if unchanged and not DRAFTED_ONLY:
             print("   ✓ no change needed (already clean) — skipping republish/re-adapt")
+            continue
+        if unchanged:
+            # Repair mode: the article is OFFLINE and the review found nothing to fix,
+            # so it is clean and simply needs to go live again. Skipping here would
+            # leave it 404 forever — the exact failure this run exists to undo.
+            # Republish without re-translating: nothing changed, the existing
+            # translations still match.
+            try:
+                r = requests.put(
+                    f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles/{a['id']}.json",
+                    headers=seo_bot.SHOPIFY_HEADERS, timeout=20,
+                    json={"article": {"id": a["id"], "published": True}})
+                ok = r.status_code in (200, 201)
+            except Exception as e:
+                ok = False
+                print(f"      republish error: {e}")
+            done += int(ok)
+            print("   ✅ already clean — re-published as-is (no re-translation needed)"
+                  if ok else "   ❌ republish failed")
             continue
         try:
             replace_article(a["id"], nt, nb, nm, ",".join(ALLOWED_TAGS))
