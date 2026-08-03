@@ -175,7 +175,36 @@ def check_gmail():
         return ("Gmail (Warn-Mails)", FAIL, f"SMTP-Login fehlgeschlagen: {e}")
 
 
-CHECKS = [check_anthropic, check_google_drive, check_instagram,
+def check_openai():
+    """OpenAI key health.
+
+    Added after a dead key (401) went unnoticed: nothing watched it, because its
+    only consumer — image_generator.py — falls back to the curated pool silently
+    and AI cover generation is off anyway (publishing_rules.yml images.generate).
+    scripts/chatgpt_monitor.py now depends on the key every week, so a dead key
+    must show up in the daily mail rather than at the next manual run.
+
+    models.list() is the cheapest authenticated call — no tokens, no cost.
+    """
+    label = "OpenAI (ChatGPT-GEO/Bilder)"
+    key = os.getenv("OPENAI_API_KEY", "")
+    if not key:
+        return (label, WARN, "OPENAI_API_KEY fehlt in .env — ChatGPT-GEO-Messung läuft nicht")
+    try:
+        from openai import OpenAI
+        OpenAI(api_key=key).models.list()
+        return (label, OK, "Key gültig")
+    except Exception as e:
+        msg = str(e)
+        low = msg.lower()
+        if "401" in msg or "invalid_api_key" in low or "authentication" in low:
+            return (label, FAIL, "Key ungültig/abgelaufen — auf platform.openai.com erneuern")
+        if "429" in msg or "quota" in low or "insufficient" in low or "billing" in low:
+            return (label, WARN, "Rate/Guthaben-Limit — Billing-Guthaben prüfen")
+        return (label, WARN, f"Check unklar: {msg[:120]}")
+
+
+CHECKS = [check_anthropic, check_openai, check_google_drive, check_instagram,
           check_dataforseo, check_higgsfield, check_gmail]
 
 

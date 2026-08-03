@@ -61,6 +61,22 @@ python3 scripts/chatgpt_monitor.py --force --dry-run   # 1 Frage, zeigt die erka
 python3 scripts/chatgpt_monitor.py --force             # voller Lauf
 ```
 
+**Fehlerbilder** — Konfigurationsfehler (toter Key, kein Guthaben, falsches Modell)
+brechen sofort mit einer Klartext-Zeile ab, statt sich 40× zu wiederholen, und
+schreiben **nichts** — eine falsche Baseline wäre schlimmer als gar keine:
+
+| Meldung | Ursache |
+|---|---|
+| `OPENAI_API_KEY is rejected (401)` | Key widerrufen/abgelaufen → auf platform.openai.com erneuern |
+| `OpenAI rate/quota limit (429)` | meist leeres Billing-Guthaben |
+| `Model '…' is not available` | `CHATGPT_MONITOR_MODEL` in der `.env` setzen |
+
+> Beim ersten Rollout (2026-08-03) war der OpenAI-Key in der VPS-`.env` bereits tot
+> (401). Betroffen war nichts: `image_generator.py` ist der einzige weitere Nutzer,
+> und die KI-Bildgenerierung steht in `config/publishing_rules.yml` ohnehin auf
+> `generate: false`. Aufgefallen ist es erst, weil dieser Monitor der erste *aktive*
+> Nutzer des Keys ist — deshalb prüft `resource_monitor.py` den Key jetzt täglich mit.
+
 ### `scripts/geo_gaps.py` — Messung zurück in den Content
 
 Zieht aus `chatgpt_geo.json` + `perplexity_geo.json` die Fragen, bei denen Velluto

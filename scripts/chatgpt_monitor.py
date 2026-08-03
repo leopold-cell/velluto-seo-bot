@@ -116,11 +116,37 @@ def ask(client, question: str) -> tuple[bool, bool, list[str]]:
     return cited, mentioned, domains
 
 
+def _fatal_reason(exc: Exception) -> str:
+    """Actionable one-liner for errors where retrying the other 39 questions is
+    pointless, '' when the error is per-question and the loop should continue.
+
+    A dead key used to surface as 40 stack-trace-ish warnings followed by
+    'no successful queries' — correct outcome, cause buried in the noise.
+    """
+    msg = str(exc)
+    name = type(exc).__name__
+    if name == "AuthenticationError" or "401" in msg or "invalid_api_key" in msg:
+        return ("OPENAI_API_KEY is rejected (401). Rotate it at "
+                "platform.openai.com/api-keys and update .env.")
+    if name == "RateLimitError" or "429" in msg or "insufficient_quota" in msg:
+        return ("OpenAI rate/quota limit (429). Usually an empty billing balance — "
+                "check platform.openai.com/settings/organization/billing.")
+    if name == "NotFoundError" or "model_not_found" in msg or "does not exist" in msg:
+        return (f"Model '{MODEL}' is not available on this key. Set "
+                f"CHATGPT_MONITOR_MODEL in .env to one you have access to.")
+    return ""
+
+
 def _dry_run(client) -> None:
     """One live call, printed raw — to verify the citation shape before trusting a full run."""
     q = build_questions("en")[0]
     print(f"🔬 DRY-RUN · model={MODEL}\n   Q: {q}\n")
-    cited, mentioned, domains = ask(client, q)
+    try:
+        cited, mentioned, domains = ask(client, q)
+    except Exception as e:
+        reason = _fatal_reason(e)
+        print(f"   ✗ {reason or str(e)[:200]}")
+        return
     print(f"   cited={cited}  mentioned={mentioned}")
     print(f"   domains: {domains}")
     if not domains:
@@ -160,13 +186,15 @@ def main() -> None:
             try:
                 cited, mentioned, domains = ask(client, q)
             except Exception as e:
-                msg = str(e)
-                print(f"   ⚠️  '{q[:40]}': {msg[:120]}")
-                if "model" in msg.lower() and ("not found" in msg.lower()
-                                               or "does not exist" in msg.lower()):
-                    print(f"   → model '{MODEL}' unavailable on this key. Set "
-                          f"CHATGPT_MONITOR_MODEL in .env to one you have access to.")
+                # Config-level failures (dead key, no quota, wrong model) affect
+                # every remaining question — stop instead of repeating the same
+                # error 40 times and burying the cause.
+                fatal = _fatal_reason(e)
+                if fatal:
+                    print(f"   ✗ {fatal}")
+                    print("   → nothing recorded; the baseline stays untouched.")
                     return
+                print(f"   ⚠️  '{q[:40]}': {str(e)[:120]}")
                 continue
             calls += 1
             cited_n += int(cited)
