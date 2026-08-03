@@ -292,7 +292,31 @@ def _pick_start_image() -> str:
     return _IMAGE_POOL[_slot_seed() % len(_IMAGE_POOL)]
 
 
+def _reels_enabled() -> bool:
+    """Kill-switch from config/publishing_rules.yml (reels.enabled).
+
+    Checked before anything else so a paused pipeline costs nothing — no
+    Higgsfield credits, no Anthropic tokens, no Instagram call. Defaults to
+    enabled when the key is absent, so older configs behave as before.
+    Set REEL_ENABLE=1 for a deliberate one-off run while paused.
+    """
+    if os.getenv("REEL_ENABLE") == "1":
+        return True
+    try:
+        import config_loader
+        cfg = (config_loader._load("publishing_rules") or {}).get("reels") or {}
+    except Exception as e:
+        print(f"   ⚠️  reel kill-switch unreadable ({e}) — assuming enabled")
+        return True
+    return cfg.get("enabled", True) is not False
+
+
 def main():
+    if not _reels_enabled():
+        print("   ⏸  reel automation is OFF (config/publishing_rules.yml → reels.enabled: false). "
+              "Set it to true to resume, or REEL_ENABLE=1 for a one-off run.")
+        return
+
     # One post per slot (morning/noon/evening): skip if this slot already posted today
     # (saves credits + tokens). Dry-runs don't record, so testing stays unaffected.
     slot = _current_slot()[0]

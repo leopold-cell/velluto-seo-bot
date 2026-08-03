@@ -91,6 +91,15 @@ images:
   monthly_budget_usd: 30.0     # stop generating (fall back to pool) past this
   filename_prefix: ai-cover
 
+# Instagram reel automation (run_reel.sh → instagram_reel_brief.py, 3×/day via cron).
+# Kill-switch in the same spirit as the paused Pinterest step in run.sh: the cron
+# entry stays, the pipeline no-ops, and one line here brings it back.
+reels:
+  enabled: false               # false → run_reel.sh exits before spending any credits/tokens
+  # Paused 2026-08-03 on request. Re-enable by setting this to true (takes effect on
+  # the VPS at the next `git pull`, which run_reel.sh does on every run).
+  # For a one-off manual run while paused: REEL_ENABLE=1 python3 instagram_reel_brief.py
+
 # Optimization timeline — do not aggressively rewrite pages (spec line 1370-1392).
 optimization_timeline:
   day_0:  Publish or update page.
