@@ -1282,7 +1282,20 @@ def _safe_tags(raw: str) -> str:
 
 
 @retry(max_attempts=3, delay=5, label="publish")
-def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url: str) -> int | None:
+def _featured_alt(title: str, keyword: str = "") -> str:
+    """Alt text for the article's hero image.
+
+    The theme renders `alt="{{ article.image.alt }}"` — with no alt on the
+    Shopify Article resource that came out as alt="", i.e. the single most
+    prominent image on every article page was invisible to screen readers and
+    to any crawler (including the AI crawlers) reading the page.
+    """
+    subject = (keyword or title or "cycling glasses").strip()
+    return f"Velluto StradaPro cycling glasses — {subject}"[:120]
+
+
+def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url: str,
+            keyword: str = "") -> int | None:
     payload = {"article": {
         "title":           title,
         "body_html":       body_html,
@@ -1297,7 +1310,10 @@ def publish(title: str, body_html: str, meta_desc: str, tags: str, featured_url:
     }}
     if featured_url:
         sep = "&" if "?" in featured_url else "?"
-        payload["article"]["image"] = {"src": f"{featured_url}{sep}width=1200&height=800&crop=center"}
+        payload["article"]["image"] = {
+            "src": f"{featured_url}{sep}width=1200&height=800&crop=center",
+            "alt": _featured_alt(title, keyword),
+        }
 
     r = requests.post(
         f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json",
@@ -2626,6 +2642,7 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
             meta_desc=post.get("meta_description", "")[:155],
             tags=post.get("tags", ",".join(ALLOWED_TAGS)),
             featured_url=cover_url,
+            keyword=keyword,
         )
 
     mark_en_keyword_used(keyword)
@@ -2773,7 +2790,8 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
         body_html=post["en_html"],
         meta_desc=post["meta_description"],
         tags=post["tags"],
-        featured_url=cover_url
+        featured_url=cover_url,
+        keyword=kw.get("keyword_en") or kw.get("keyword", ""),
     )
     # Register NL and DE translations via Shopify T&A
     try:

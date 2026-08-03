@@ -27,79 +27,27 @@ import time
 import requests
 from dotenv import load_dotenv
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from geo_questions import (  # noqa: E402
+    GEO_MARKETS, ROOT, build_questions, gate_ok, load_json,
+)
+
 load_dotenv(os.path.join(ROOT, ".env"), override=True)
 
 API_KEY  = os.getenv("PERPLEXITY_API_KEY", "")
 HISTORY  = os.path.join(ROOT, "data", "perplexity_geo.json")
 DOMAIN   = "velluto-shop.com"
 MODEL    = "sonar"
-MAX_QUESTIONS = 10   # per market; × GEO_MARKETS ≈ 40 sonar calls/week (cents)
 
-# Native core buyer questions per market — GEO is measured in the language the
-# buyer actually asks (a DACH cyclist asks Perplexity in German). Markets mirror
-# the shop's revenue markets. English ("en") stays the baseline.
-CORE_QUESTIONS = {
-    "en": [
-        "What are the best cycling glasses in 2026?",
-        "What are the best Oakley alternatives for road cycling?",
-        "What are the best lightweight cycling sunglasses?",
-        "Are Velluto cycling glasses any good?",
-        "Which cycling glasses have interchangeable lenses?",
-    ],
-    "de": [
-        "Was sind die besten Fahrradbrillen 2026?",
-        "Was ist die beste Alternative zu Oakley Fahrradbrillen?",
-        "Welche Rennradbrille hat Wechselgläser?",
-        "Sind Velluto Fahrradbrillen gut?",
-        "Was ist die beste leichte Rennradbrille?",
-    ],
-    "nl": [
-        "Wat is de beste wielrenbril in 2026?",
-        "Wat is het beste alternatief voor een Oakley wielrenbril?",
-        "Welke fietsbril heeft verwisselbare glazen?",
-        "Zijn Velluto fietsbrillen goed?",
-        "Wat is de beste lichte wielrenbril?",
-    ],
-    "fr": [
-        "Quelles sont les meilleures lunettes de vélo en 2026 ?",
-        "Quelle est la meilleure alternative aux lunettes Oakley pour le vélo ?",
-        "Quelles lunettes de cyclisme ont des verres interchangeables ?",
-        "Les lunettes de vélo Velluto sont-elles bonnes ?",
-        "Quelles sont les meilleures lunettes de vélo légères ?",
-    ],
-}
-# Markets to sample each week (native GEO visibility). Keep small for cost.
-GEO_MARKETS = ["en", "de", "nl", "fr"]
+# CORE_QUESTIONS / GEO_MARKETS / build_questions() / gate_ok() now live in
+# scripts/geo_questions.py so this monitor and chatgpt_monitor.py ask the exact
+# same questions and their rates stay comparable.
 
 
 def _load(path: str, default):
-    try:
-        with open(path, encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return default
-
-
-def build_questions(lang: str = "en") -> list[str]:
-    """Native CORE + curated PAA seed for that market, deduped, capped.
-    English also folds in the top GSC queries."""
-    out = list(CORE_QUESTIONS.get(lang, CORE_QUESTIONS["en"]))
-    seed = _load(os.path.join(ROOT, "data", "paa_seed.json"), {})
-    market = seed.get(lang) if isinstance(seed.get(lang), dict) else None
-    # legacy flat structure counts as English
-    if market is None and lang == "en":
-        market = {k: v for k, v in seed.items()
-                  if not k.startswith("_") and isinstance(v, list)}
-    for qs in (market or {}).values():
-        out += [q for q in qs if isinstance(q, str)]
-    if lang == "en":
-        gsc = _load(os.path.join(ROOT, "gsc_data.json"), {})
-        for row in (gsc.get("top_queries") or [])[:5]:
-            kw = (row.get("keys") or [""])[0]
-            if kw and kw.lower() != "velluto":
-                out.append(f"What are the {kw}?" if not kw.endswith("?") else kw)
-    return list(dict.fromkeys(out))[:MAX_QUESTIONS]
+    """Back-compat shim — geo_questions.load_json handles repo-relative paths too."""
+    return load_json(path, default)
 
 
 def ask(question: str) -> tuple[bool, list[str]]:
@@ -131,16 +79,6 @@ def ask(question: str) -> tuple[bool, list[str]]:
             domains.append(d)
     cited = any(DOMAIN in u for u in urls) or DOMAIN in text or "velluto" in text.lower()
     return cited, domains
-
-
-def gate_ok(hist: list[dict], force: bool) -> bool:
-    if force or not hist:
-        return True
-    try:
-        last = dt.date.fromisoformat(hist[-1]["date"])
-        return (dt.date.today() - last).days >= 7
-    except Exception:
-        return True
 
 
 def main() -> None:
