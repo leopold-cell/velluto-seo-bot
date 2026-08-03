@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-02": 7
+   "2026-08-03": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1415,5 +1415,49 @@
  "sv|bästa vägarnas cykelglasögon 2026": {
   "volume": 0,
   "date": "2026-08-02"
+ },
+ "de|fahrradbrille schmales gesicht": {
+  "volume": 70,
+  "date": "2026-08-03"
+ },
+ "en|cycling glasses small face": {
+  "volume": 0,
+  "date": "2026-08-03"
+ },
+ "nl|fietsenbril klein gezicht": {
+  "volume": 0,
+  "date": "2026-08-03"
+ },
+ "fr|lunettes vélo petit visage": {
+  "volume": 0,
+  "date": "2026-08-03"
+ },
+ "es|gafas ciclismo cara pequeña": {
+  "volume": 0,
+  "date": "2026-08-03"
+ },
+ "it|occhiali ciclismo viso piccolo": {
+  "volume": 0,
+  "date": "2026-08-03"
+ },
+ "da|cykelbriller lille ansigt": {
+  "volume": 0,
+  "date": "2026-08-03"
+ },
+ "nb|sykkelbriller lite ansikt": {
+  "volume": 0,
+  "date": "2026-08-03"
+ },
+ "pl|okulary rowerowe mała twarz": {
+  "volume": 0,
+  "date": "2026-08-03"
+ },
+ "pt-PT|óculos ciclismo rosto pequeno": {
+  "volume": 0,
+  "date": "2026-08-03"
+ },
+ "sv|cykelglasögon litet ansikte": {
+  "volume": 0,
+  "date": "2026-08-03"
  }
 }

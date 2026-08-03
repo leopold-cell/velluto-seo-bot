@@ -1,14 +1,11 @@
 {
-  "date": "2026-08-01",
+  "date": "2026-08-02",
   "slots": [
     "morning",
     "noon",
     "evening"
   ],
   "recent_lines": [
-    "The caf\u00e9 is 8km away. I've been 'almost there' for 25 minutes.",
-    "I own four bikes. I ride the same one every time.",
-    "My legs were fine. I checked. Four times before leaving the house.",
     "The climb looked shorter on Komoot. It always looks shorter on Komoot.",
     "Signed up for the sportive eight months ago. Still haven't told my legs.",
     "My Garmin has seen things I'll never admit to Strava.",
@@ -20,7 +17,10 @@
     "The route was supposed to be flat. I believed it.",
     "I own four bikes. I ride one. The others are optimised.",
     "My kit is perfectly colour-matched. My fitness is not.",
-    "Peaked in September. It's April. I'm \"building back."
+    "Peaked in September. It's April. I'm \"building back.",
+    "The climb looked manageable on Komoot. It was not manageable.",
+    "Garmin says 4 watts above target. I negotiate with myself for 6km.",
+    "Caf\u00e9 stop planned for km 40. I'm at km 41 and still riding."
   ],
-  "last_media_id": "18093839408381712"
+  "last_media_id": "18153050824509688"
 }
