@@ -1699,6 +1699,16 @@ L6. COMPARISON ARTICLES / TABLES (these perform well AND stay legal when built t
       rival's blank or omit the row.
     - NEVER use subjective judgements as if they were specs ("Partial", "Basic", "Limited",
       "Poor"). Use the rival's actual documented feature or leave it out.
+    - SYMMETRY IS MANDATORY — same row, same level of detail, same kind of wording for
+      EVERY column including Velluto's. Both of these are violations:
+        Yes, Oakley only        | Yes, tool-free click-in     ← same answer, opposite spin
+        Passive ventilation     | Built-in anti-fog system    ← rival flattened, ours enriched
+      Write instead:
+        Yes                     | Yes                          (bare answer, detail in the prose)
+        Ventilation             | Ventilation + coating        (same vocabulary, factual delta)
+      Test every row: if you swapped the column headers, would the wording still read
+      fair to both sides? If not, rewrite the row. A qualifier that only ever appears in
+      Velluto's column, or only ever in a rival's, is the tell.
     - "WHO SHOULD BUY WHICH": describe EACH product by what it genuinely does well, in
       parallel. Never imply a rival neglects a dimension Velluto is strong in.
     Sell by making Velluto look great on its OWN measured specs (25 g, UV400 certified,

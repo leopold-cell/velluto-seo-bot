@@ -261,6 +261,56 @@ def limit_brand_table_rows(html: str, brand: str, max_rows: int = 1) -> tuple[st
     return fixed, removed
 
 
+# ── Auto-fix step 2e: symmetric Yes/No cells in comparison tables ──────────────
+# Observed live: the same answer carried opposite spin depending on whose column
+# it sat in.
+#
+#   Interchangeable Lenses | Yes, brand-specific | Yes, Oakley only | Yes, tool-free click-in
+#   Trial Period           | Standard return …   | Standard return… | 30-day risk-free trial
+#
+# Every cell says "Yes", but the rival's qualifier narrows it and Velluto's widens
+# it. That is asymmetric framing under § 6 UWG (the L3c rule in the generation
+# prompt), and it reads as subtly disparaging even where each single word is true.
+#
+# The fix is symmetry, not censorship: where a cell answers Yes/No and then
+# qualifies it, the qualifier goes — in EVERY column, Velluto's included. A row
+# then compares like with like. Detail belongs in the prose, where it can be
+# attributed and dated; a one-word table cell cannot carry it fairly.
+_CELL_QUALIFIER_RE = re.compile(
+    r"\b(Yes|No)\b\s*[,;:–—-]\s*[^<]{1,60}", re.I)
+
+
+def normalize_comparison_cells(html: str) -> tuple[str, int]:
+    """Reduce qualified Yes/No table cells to the bare answer.
+
+    Only inside <table>, only <td> (a <th> is a header, not an answer), and only
+    when the cell STARTS with Yes/No — a cell whose whole content is prose
+    ("Passive ventilation") is left alone, because shortening it would invent an
+    answer that isn't there. Returns (fixed_html, cells_changed).
+    """
+    changed = 0
+
+    def fix_cell(m):
+        nonlocal changed
+        open_tag, inner, close_tag = m.group(1), m.group(2), m.group(3)
+        # Text content only — the cell may wrap its answer in <strong>/<em>.
+        text = re.sub(r"<[^>]+>", "", inner).strip()
+        if not re.match(r"^\s*(?:Yes|No)\b\s*[,;:–—-]\s*\S", text, re.I):
+            return m.group(0)
+        new_inner, n = _CELL_QUALIFIER_RE.subn(lambda mm: mm.group(1), inner)
+        if not n:
+            return m.group(0)
+        changed += 1
+        return open_tag + new_inner + close_tag
+
+    def fix_table(tm):
+        return re.sub(r"(<td\b[^>]*>)(.*?)(</td>)", fix_cell, tm.group(0),
+                      flags=re.S | re.I)
+
+    fixed = re.sub(r"<table\b.*?</table>", fix_table, html, flags=re.S | re.I)
+    return fixed, changed
+
+
 def strip_em_dashes(html: str) -> tuple[str, bool]:
     """
     Phase 4.11: remove the em-dash '—' (and spaced en-dash ' – ') used as a
@@ -769,6 +819,10 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
         fixed_body, dropped = limit_brand_table_rows(fixed_body, _alt_brand)
         if dropped:
             auto_fixes.append(f"removed {dropped} redundant {_alt_brand} row(s) from comparison table")
+    # Auto-fix 2e: make qualified Yes/No table cells symmetric across all columns
+    fixed_body, cells_n = normalize_comparison_cells(fixed_body)
+    if cells_n:
+        auto_fixes.append(f"removed qualifier from {cells_n} Yes/No comparison-table cell(s)")
     # Auto-fix 3: strip em-dashes (Phase 4.11 — the AI-writing tell)
     fixed_body, dashed = strip_em_dashes(fixed_body)
     if dashed:
