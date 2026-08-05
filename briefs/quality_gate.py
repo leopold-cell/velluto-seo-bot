@@ -651,7 +651,24 @@ _SUPERIORITY_RE = re.compile(
     r"|\bbest\s+value\s+(?:than|over|vs\.?|versus)\b"
     r"|\bsuperior\s+(?:to|than)\b"
     r"|\bbetter\s+(?:quality|performance|protection|coverage|clarity|fit)\s+than\b"
-    r"|\b(?:beats|out[\s-]?performs|outclasses|out-?does)\b", re.I)
+    r"|\b(?:beats|out[\s-]?performs|outclasses|out-?does)\b"
+    # A counted "better" list — "Oakley Alternatives: 7 Better Cycling Sunglasses".
+    # No "than" and no value-word, so every pattern above missed it, yet next to a
+    # named rival it is exactly the holistic verdict § 6 UWG rules out. Found live in
+    # a ctr_optimizer-generated title_tag, which passes check_compliance before
+    # writing — the gate let it through.
+    r"|\b\d+\s+better\b"
+    # Bare "better than <rival>". _COMPARATIVE_SUPERLATIVE_RE only covers the
+    # open-ended form ("better than any/every/anything"); the specific one slipped
+    # past. Excluded: idioms that compare to a past state or to Velluto's own
+    # earlier product, which name no rival even when one is mentioned nearby.
+    # Also excluded: "better than <Velluto/StradaPro>" — a statement AGAINST our own
+    # product is the balanced framing § 6 UWG asks for ("where a rival does something
+    # better than the StradaPro, that is stated"). Flagging it would push the bot away
+    # from honest comparison, which is the opposite of the intent.
+    r"|\bbetter\s+than\s+(?!ever\b|before\b|expected\b|nothing\b|the\s+previous\b"
+    r"|our\s|my\s|its\s|their\s+(?:own|previous|old)\b"
+    r"|(?:the\s+|a\s+)?(?:velluto|stradapro)\b)", re.I)
 
 
 def check_compliance(post: dict) -> list[str]:
