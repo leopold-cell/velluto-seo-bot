@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-04": 11
+   "2026-08-05": 4
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1503,5 +1503,21 @@
  "sv|italienska cykelglasögon": {
   "volume": 0,
   "date": "2026-08-04"
+ },
+ "de|italienische fahrradbrille": {
+  "volume": 0,
+  "date": "2026-08-05"
+ },
+ "fr|lunettes de cyclisme italiennes": {
+  "volume": 0,
+  "date": "2026-08-05"
+ },
+ "es|gafas de ciclismo italianas": {
+  "volume": 0,
+  "date": "2026-08-05"
+ },
+ "pl|włoskie okulary rowerowe": {
+  "volume": 0,
+  "date": "2026-08-05"
  }
 }

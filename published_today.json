@@ -1,1 +1,63 @@
-[]
+[
+  {
+    "title": "Italian Cycling Glasses: Design, Heritage and Performance",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/italian-cycling-glasses-design-heritage-and-performance",
+    "topic": "Italian cycling glasses",
+    "keyword": "Italian cycling glasses",
+    "lang": "en",
+    "phase": 1,
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "italienische Fahrradbrille",
+        "intent": "Cyclist seeking premium eyewear from Italian brands known for cycling performance.",
+        "volume": 0
+      },
+      "nl": {
+        "keyword": "Italiaanse fietsenbril",
+        "intent": "Dutch cyclist searching for Italian-made cycling eyewear with performance features.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "lunettes de cyclisme italiennes",
+        "intent": "French cyclist wanting quality eyewear from Italian cycling brands.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "gafas de ciclismo italianas",
+        "intent": "Spanish cyclist looking for Italian cycling eyewear brands.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "occhiali da ciclismo italiani",
+        "intent": "Italian cyclist seeking premium domestic cycling eyewear.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "italienske cykelbriller",
+        "intent": "Danish cyclist interested in Italian-made cycling glasses.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "italienske sykkelbriller",
+        "intent": "Norwegian cyclist searching for Italian cycling eyewear brands.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "w\u0142oskie okulary rowerowe",
+        "intent": "Polish cyclist wanting high-performance cycling glasses from Italian manufacturers.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "\u00f3culos de ciclismo italianos",
+        "intent": "Portuguese cyclist looking for Italian cycling eyewear.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "italienska cykelglas\u00f6gon",
+        "intent": "Swedish cyclist seeking quality cycling glasses from Italian brands.",
+        "volume": 0
+      }
+    }
+  }
+]
