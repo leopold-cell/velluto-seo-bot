@@ -7,6 +7,22 @@
 > 3 reels/day; the **Pitfalls** section encodes every failure mode that was hit and
 > fixed on the way, so read it before writing code.
 
+> **⏸ Status in THIS repo (2026-08-03): the reel pipeline is PAUSED.**
+> `config/publishing_rules.yml` → `reels.enabled: false`. `instagram_reel_brief.py`
+> exits at the top of `main()`, before any Higgsfield/Anthropic/Instagram call, so a
+> paused pipeline costs nothing. The cron entries stay in place — no VPS changes were
+> made — and the switch takes effect on the next `git pull`, which `run_reel.sh` does
+> on every run.
+>
+> ```bash
+> # resume: set reels.enabled back to true, commit, push
+> # one-off run while paused:
+> REEL_ENABLE=1 python3 instagram_reel_brief.py
+> ```
+>
+> Absent `reels.enabled`, the pipeline defaults to enabled — older configs and other
+> projects using this blueprint behave as before.
+
 ---
 
 ## 1. What the pipeline does

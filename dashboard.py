@@ -124,6 +124,13 @@ RANK_KEYWORDS = [
     "best wielrenbril 2026",
     "cycling glasses under 150",
     "cycling glasses adjustable nose pads",
+    # DE was entirely absent from this list while DACH is a core revenue market —
+    # German progress was structurally invisible. seo_optimizer.ANALYSIS_KEYWORDS
+    # already carried a German set; the rank tracker had none.
+    "beste Fahrradbrille 2026",
+    "Fahrradbrille Test",
+    "Rennradbrille Wechselgläser",
+    "leichte Rennradbrille",
 ]
 
 
@@ -602,6 +609,74 @@ new Chart(document.getElementById('geoCiteChart'), {{
 """
 
 
+def build_ai_surfaces_html() -> str:
+    """Side-by-side citation rate across the three AI answer surfaces.
+
+    Kept separate from build_geo_perf_html() on purpose: that one returns '' when
+    no AI Overview was captured, which would also hide the ChatGPT/Perplexity
+    numbers. These are independent measurements and should survive each other.
+
+    Note the Perplexity rate counts a bare brand mention as a citation
+    (perplexity_monitor.py), while ChatGPT counts only real source links — so
+    Perplexity reads optimistically next to ChatGPT. Labelled in the UI.
+    """
+    def _last(rel):
+        try:
+            with open(os.path.join(BASE, rel), encoding="utf-8") as f:
+                hist = json.load(f)
+            return hist[-1] if hist else None
+        except Exception:
+            return None
+
+    ppx, cgp = _last("data/perplexity_geo.json"), _last("data/chatgpt_geo.json")
+    if not ppx and not cgp:
+        return ""
+
+    def _card(title, rec, sub_extra=""):
+        if not rec:
+            return (f'<div class="kpi"><div class="label">{title}</div>'
+                    f'<div class="val" style="color:#94a3b8">—</div>'
+                    f'<div class="sub">noch keine Messung</div></div>')
+        return (f'<div class="kpi"><div class="label">{title}</div>'
+                f'<div class="val">{rec.get("rate", 0)}%</div>'
+                f'<div class="sub">{rec.get("velluto_cited", 0)}/{rec.get("questions", 0)} '
+                f'Fragen · {rec.get("date", "?")}{sub_extra}</div></div>')
+
+    ment = ""
+    if cgp and cgp.get("velluto_mentioned"):
+        ment = f' · +{cgp["velluto_mentioned"]} nur erwähnt'
+
+    rows = ""
+    for lang in ("en", "de", "nl", "fr"):
+        p = ((ppx or {}).get("by_market") or {}).get(lang) or {}
+        c = ((cgp or {}).get("by_market") or {}).get(lang) or {}
+        if not p and not c:
+            continue
+        fmt = lambda r: (f'{r.get("rate", 0)}% ({r.get("velluto_cited", 0)}/'
+                         f'{r.get("questions", 0)})') if r else "—"
+        rows += (f'<tr><td class="td-kw">{lang.upper()}</td>'
+                 f'<td class="td-center">{fmt(c)}</td>'
+                 f'<td class="td-center">{fmt(p)}</td></tr>')
+    if not rows:
+        rows = ('<tr><td class="td-kw" style="color:#94a3b8" colspan="3">'
+                'Noch keine Marktdaten</td></tr>')
+
+    return f"""
+<div style="margin-top:16px" class="section-title">AI Answer Surfaces — Citation Rate</div>
+<div class="kpi-grid">
+  {_card("ChatGPT (echte Quellen)", cgp, ment)}
+  {_card("Perplexity (inkl. Erwähnungen)", ppx)}
+</div>
+<div class="table-card" style="margin-bottom:0">
+  <div class="table-header"><h3>Je Markt</h3></div>
+  <table>
+    <thead><tr><th>Markt</th><th class="td-center">ChatGPT</th><th class="td-center">Perplexity</th></tr></thead>
+    <tbody>{rows}</tbody>
+  </table>
+</div>
+"""
+
+
 def load_meta_ads_history() -> list:
     """Weekly Meta Ads snapshots written by scripts/meta_ads_report.py."""
     path = os.path.join(BASE, "data", "meta_ads_history.json")
@@ -847,6 +922,7 @@ def build_html(articles, usage, geo, ranking_history, gsc, geo_perf=None, meta_a
     vis_color = "#16a34a" if vis_delta >= 0 else "#dc2626"
     gsc_html  = build_gsc_html(gsc)
     geo_perf_html = build_geo_perf_html(geo_perf)
+    ai_surfaces_html = build_ai_surfaces_html()
     meta_ads_html = build_meta_ads_html(meta_ads or [])
 
     return f"""<!DOCTYPE html>
@@ -1025,6 +1101,8 @@ footer{{text-align:center;padding:24px;font-size:11px;color:#94a3b8}}
 </div>
 
 {geo_perf_html}
+
+{ai_surfaces_html}
 
 {gsc_html}
 

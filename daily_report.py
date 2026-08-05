@@ -212,6 +212,22 @@ def build() -> tuple[str, str]:
         if bm:
             per = " · ".join(f"{k.upper()} {v.get('rate',0):.0f}%" for k, v in bm.items())
             L.append(f"       je Markt: {per}")
+    # ChatGPT: 'cited' = echte Quellenangabe. Reine Namensnennungen werden separat
+    # ausgewiesen und NICHT in die Rate gezählt (anders als bei Perplexity oben).
+    cgp = _load("data/chatgpt_geo.json", [])
+    if cgp:
+        c = cgp[-1]
+        L.append(f"   • ChatGPT ({c.get('date','?')}): Velluto zitiert bei "
+                 f"{c.get('velluto_cited',0)}/{c.get('questions',0)} Fragen "
+                 f"({c.get('rate',0)}%)")
+        if c.get("velluto_mentioned"):
+            L.append(f"       + {c['velluto_mentioned']}× nur erwähnt (ohne Quell-Link)")
+        bm = c.get("by_market") or {}
+        if bm:
+            per = " · ".join(f"{k.upper()} {v.get('rate',0):.0f}%" for k, v in bm.items())
+            L.append(f"       je Markt: {per}")
+    else:
+        L.append("   • ChatGPT: noch keine Messung (läuft wöchentlich, 7-Tage-Gate)")
     L.append("")
 
     if ins.get("our_gaps") or ins.get("seo_quick_wins"):

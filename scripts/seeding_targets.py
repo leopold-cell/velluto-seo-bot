@@ -204,6 +204,26 @@ def digest(data: dict) -> str:
     L.append("")
     L.append("Priorität 1 = 🤖-Ziele: dort zitiert die KI, aber nicht Velluto — "
              "ein Review dort bringt dich ins AI-Answer-Set.")
+
+    # Off-site targets answer "WO fehlen wir"; the GEO gaps answer "WORAUF".
+    # Both belong in the same weekly decision, so they ship in one digest.
+    try:
+        from geo_gaps import collect_gaps, format_report
+        gap_txt = format_report(collect_gaps())
+        L.append("")
+        L.append("=" * 62)
+        L.append(gap_txt)
+    except Exception as e:
+        L.append(f"\n   ⚠️  GEO-Lücken nicht ermittelbar: {e}")
+
+    try:
+        from reddit_drafts import build_drafts, format_drafts
+        L.append("")
+        L.append("=" * 62)
+        L.append(format_drafts(build_drafts()))
+    except Exception as e:
+        L.append(f"\n   ⚠️  Reddit-Entwürfe nicht ermittelbar: {e}")
+
     return "\n".join(L)
 
 
