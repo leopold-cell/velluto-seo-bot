@@ -1,13 +1,10 @@
 {
-  "date": "2026-08-04",
+  "date": "2026-08-05",
   "slots": [
     "morning",
-    "noon",
-    "evening"
+    "noon"
   ],
   "recent_lines": [
-    "Nobody told my legs the first 20km were supposed to be easy.",
-    "The group said \"steady pace.\" We were at threshold by km 3.",
     "The route was supposed to be flat. I believed it.",
     "I own four bikes. I ride one. The others are optimised.",
     "My kit is perfectly colour-matched. My fitness is not.",
@@ -20,7 +17,9 @@
     "Nobody told me \"just a social ride\" meant 38 km/h average.",
     "My riding buddy \"just sits on\" at 42 km/h.",
     "The group ride finishes. Everyone \"wasn't even trying.",
-    "I own four bikes. I ride one. The others are \"for different conditions."
+    "I own four bikes. I ride one. The others are \"for different conditions.",
+    "My kit matches. My fitness does not.",
+    "My Garmin has seen things I'm not ready to discuss with my coach."
   ],
-  "last_media_id": "17901991494516251"
+  "last_media_id": "18110375255086526"
 }

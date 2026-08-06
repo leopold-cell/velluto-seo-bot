@@ -800,5 +800,13 @@
       "reason": "no_credentials",
       "timestamp": "2026-08-05T04:58:29.642069"
     }
+  ],
+  "2026-08-06": [
+    {
+      "channel": "reddit",
+      "status": "skipped",
+      "reason": "no_credentials",
+      "timestamp": "2026-08-06T04:56:52.668946"
+    }
   ]
 }

@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-05": 4
+   "2026-08-06": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1519,5 +1519,49 @@
  "pl|włoskie okulary rowerowe": {
   "volume": 0,
   "date": "2026-08-05"
+ },
+ "de|mtb brille": {
+  "volume": 1900,
+  "date": "2026-08-06"
+ },
+ "en|mtb glasses": {
+  "volume": 0,
+  "date": "2026-08-06"
+ },
+ "nl|mountainbike bril": {
+  "volume": 0,
+  "date": "2026-08-06"
+ },
+ "fr|lunettes vtt": {
+  "volume": 0,
+  "date": "2026-08-06"
+ },
+ "es|gafas mtb": {
+  "volume": 0,
+  "date": "2026-08-06"
+ },
+ "it|occhiali mtb": {
+  "volume": 0,
+  "date": "2026-08-06"
+ },
+ "da|mountainbike briller": {
+  "volume": 0,
+  "date": "2026-08-06"
+ },
+ "nb|sykkelbrillen mtb": {
+  "volume": 0,
+  "date": "2026-08-06"
+ },
+ "pl|okulary rowerowe mtb": {
+  "volume": 0,
+  "date": "2026-08-06"
+ },
+ "pt-PT|óculos mtb": {
+  "volume": 0,
+  "date": "2026-08-06"
+ },
+ "sv|mtb-cykelglasögon": {
+  "volume": 0,
+  "date": "2026-08-06"
  }
 }

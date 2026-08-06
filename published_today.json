@@ -1,61 +1,61 @@
 [
   {
-    "title": "Italian Cycling Glasses: Design, Heritage and Performance",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/italian-cycling-glasses-design-heritage-and-performance",
-    "topic": "Italian cycling glasses",
-    "keyword": "Italian cycling glasses",
+    "title": "MTB Cycling Glasses: What to Look for in 2026",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/mtb-cycling-glasses-what-to-look-for-in-2026",
+    "topic": "MTB cycling glasses",
+    "keyword": "MTB cycling glasses",
     "lang": "en",
     "phase": 1,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "italienische Fahrradbrille",
-        "intent": "Cyclist seeking premium eyewear from Italian brands known for cycling performance.",
-        "volume": 0
+        "keyword": "MTB Brille",
+        "intent": "Finding protective eyewear specifically designed for mountain biking trails and off-road terrain.",
+        "volume": 1900
       },
       "nl": {
-        "keyword": "Italiaanse fietsenbril",
-        "intent": "Dutch cyclist searching for Italian-made cycling eyewear with performance features.",
+        "keyword": "mountainbike bril",
+        "intent": "Looking for durable cycling glasses optimized for Dutch off-road and trail riding conditions.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes de cyclisme italiennes",
-        "intent": "French cyclist wanting quality eyewear from Italian cycling brands.",
+        "keyword": "lunettes VTT",
+        "intent": "Seeking protective eyewear for mountain biking with impact resistance and weather protection.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas de ciclismo italianas",
-        "intent": "Spanish cyclist looking for Italian cycling eyewear brands.",
+        "keyword": "gafas MTB",
+        "intent": "Finding mountain bike glasses that offer protection from dust, wind, and debris on trails.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali da ciclismo italiani",
-        "intent": "Italian cyclist seeking premium domestic cycling eyewear.",
+        "keyword": "occhiali MTB",
+        "intent": "Searching for mountain biking sunglasses with ventilation and secure fit for trail riding.",
         "volume": 0
       },
       "da": {
-        "keyword": "italienske cykelbriller",
-        "intent": "Danish cyclist interested in Italian-made cycling glasses.",
+        "keyword": "mountainbike briller",
+        "intent": "Looking for protective cycling eyewear designed for Danish off-road and trail conditions.",
         "volume": 0
       },
       "nb": {
-        "keyword": "italienske sykkelbriller",
-        "intent": "Norwegian cyclist searching for Italian cycling eyewear brands.",
+        "keyword": "sykkelbrillen MTB",
+        "intent": "Finding robust cycling glasses for Norwegian mountain biking with weather resistance.",
         "volume": 0
       },
       "pl": {
-        "keyword": "w\u0142oskie okulary rowerowe",
-        "intent": "Polish cyclist wanting high-performance cycling glasses from Italian manufacturers.",
+        "keyword": "okulary rowerowe MTB",
+        "intent": "Seeking protective cycling glasses for mountain biking with good visibility and durability.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos de ciclismo italianos",
-        "intent": "Portuguese cyclist looking for Italian cycling eyewear.",
+        "keyword": "\u00f3culos MTB",
+        "intent": "Looking for mountain bike eyewear with UV protection and impact resistance for trail riding.",
         "volume": 0
       },
       "sv": {
-        "keyword": "italienska cykelglas\u00f6gon",
-        "intent": "Swedish cyclist seeking quality cycling glasses from Italian brands.",
+        "keyword": "MTB-cykelglas\u00f6gon",
+        "intent": "Finding protective eyewear for mountain biking adapted to Swedish weather and terrain conditions.",
         "volume": 0
       }
     }
