@@ -230,6 +230,26 @@ def build() -> tuple[str, str]:
         L.append("   • ChatGPT: noch keine Messung (läuft wöchentlich, 7-Tage-Gate)")
     L.append("")
 
+    # Legal watchdog — checks PUBLISHED text on every surface in every language.
+    # Belongs near the top of the mail: a live legal claim outranks a ranking dip.
+    law = _load("data/legal_watchdog.json", [])
+    if law:
+        w = law[-1]
+        if w.get("articles"):
+            L.append(f"⚖️  RECHTLICHE PRÜFUNG ({w.get('date','?')}) — "
+                     f"{w['articles']} Artikel auffällig")
+            for d in (w.get("detail") or [])[:5]:
+                L.append(f"   • {d['handle'][:52]}  "
+                         f"[{'/'.join(d.get('locales', []))} · {', '.join(d.get('surfaces', []))}]")
+                L.append(f"       {d['issue'][:110]}")
+            if w["articles"] > 5:
+                L.append(f"   … und {w['articles'] - 5} weitere")
+            L.append("")
+        else:
+            L.append(f"⚖️  Rechtliche Prüfung ({w.get('date','?')}): "
+                     f"unauffällig über {w.get('locales', 0)} Sprachen")
+            L.append("")
+
     if ins.get("our_gaps") or ins.get("seo_quick_wins"):
         L.append("🧠 HEUTIGER OPTIMIERUNGS-FOKUS")
         for g in (ins.get("seo_quick_wins") or [])[:2]:
