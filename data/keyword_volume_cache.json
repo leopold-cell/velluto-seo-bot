@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-06": 11
+   "2026-08-07": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1563,5 +1563,49 @@
  "sv|mtb-cykelglasögon": {
   "volume": 0,
   "date": "2026-08-06"
+ },
+ "de|radsportbrille langstrecke": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "en|cycling glasses for sportives": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "nl|fietsbril lange afstand": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "fr|lunettes cyclisme sportive": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "es|gafas ciclismo deportivas": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "it|occhiali ciclismo granfondo": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "da|cykelbriller langtur": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "nb|sykkelbriller langdistanse": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "pl|okulary rowerowe dystans": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "pt-PT|óculos ciclismo longas distâncias": {
+  "volume": 0,
+  "date": "2026-08-07"
+ },
+ "sv|cykelglasögon långväga": {
+  "volume": 0,
+  "date": "2026-08-07"
  }
 }
