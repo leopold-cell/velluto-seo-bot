@@ -2390,7 +2390,14 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     # competitor is named (zero extra LLM cost otherwise). Best-effort, never discards.
     try:
         from briefs.legal_heal import heal_translation
-        heal_translation(adapted, client, lang_name)
+        if not heal_translation(adapted, client, lang_name):
+            # Could not be cleaned. Returning None means this locale is not
+            # registered, so Shopify serves the (gated, compliant) English version
+            # instead. A missing translation costs traffic; a non-compliant one
+            # costs an Abmahnung.
+            print(f"   ⛔ [{target_locale}] translation NOT registered — "
+                  f"would ship a legal claim. English version is served instead.")
+            return None
     except Exception as _e:
         print(f"   ⚠️  [{target_locale}] legal heal skipped: {_e}")
 
@@ -2679,6 +2686,8 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
         try:
             adaptation = generate_market_adaptation(post, locale, market, commercial=commercial,
                                                     pre_body=pre_bodies.get(locale))
+            if adaptation is None:
+                continue      # legal heal could not clean it — EN is served instead
             ok = register_shopify_translation(
                 aid, locale,
                 adaptation["title"],
@@ -2728,6 +2737,8 @@ def readapt_all_translations(article_id: int, post: dict, commercial: dict | Non
             adaptation = generate_market_adaptation(post, locale, _all_markets[locale],
                                                     commercial=commercial,
                                                     pre_body=pre_bodies.get(locale))
+            if adaptation is None:
+                continue      # legal heal could not clean it — EN is served instead
             ok = register_shopify_translation(
                 article_id, locale,
                 strip_em_dashes(adaptation["title"])[0],
