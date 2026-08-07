@@ -71,6 +71,39 @@ if "--handles" in sys.argv:
 BLOG_HANDLE = "velluto-the-magazine"
 SITE = "https://velluto-shop.com"
 
+# Topic clusters, matched against the handle.
+#
+# Token overlap alone reaches only ~23% of the orphans, and the reason is
+# structural, not a tuning problem: _REL_STOPWORDS strips the entire domain
+# vocabulary (cycling, glasses, road, lens, best, guide, 2026), so most titles
+# keep just one distinguishing word and "share >= 2" almost never fires. Two
+# anti-fog articles are obviously related; the tokeniser cannot see it.
+#
+# This map encodes the topic structure the titles already follow. Measured on the
+# live corpus: 58 of 71 articles land in a cluster (82%). The 13 that do not are
+# the broad buying guides — they are the general entry points, not orphans of a
+# missing topic, so they are deliberately left uncategorised.
+TOPIC_CLUSTERS = {
+    "oakley-alternatives": r"oakley|sungod|roka|poc|sigma|kapvoe|evileye|endurasport"
+                           r"|alibaba|smith|decathlon|girly|bing|premium-brands",
+    "anti-fog":            r"anti-?fog|fog|ventilation",
+    "lens-system":         r"interchangeable|lens-replacement|lenses|photochromic|polaris",
+    "fit":                 r"narrow|small-face|big-head|fit|womens|gender",
+    "price-value":         r"expensive|worth|budget|value|under-150|how-much|cost",
+    "conditions":          r"weather|winter|summer|cold|wet|gravel|tour-de-france"
+                           r"|amstel|long-rides",
+    "uv-tech":             r"uv400|uv-protection|uv380|lightweight|gram|aero"
+                           r"|half-vs-full|smart|ar-glasses",
+}
+
+
+def _topic_of(handle: str) -> str:
+    """First matching cluster — order matters, brand beats generic."""
+    for name, pat in TOPIC_CLUSTERS.items():
+        if re.search(pat, handle or "", re.I):
+            return name
+    return ""
+
 
 def _list_articles() -> list[dict]:
     out, url = [], (
@@ -152,33 +185,70 @@ def main() -> None:
     pending: dict[int, str] = {}
     plan: list[tuple[str, str, str]] = []
 
+    # Pairwise overlap once — reused for source ranking and for the clusters.
+    toks = {a["handle"]: _rel_tokens(_clean_title(a.get("title", "")), a.get("tags", ""))
+            for a in arts}
+    overlap: dict[str, dict[str, int]] = {a["handle"]: {} for a in arts}
+    for i, a in enumerate(arts):
+        for b in arts[i + 1:]:
+            n = len(toks[a["handle"]] & toks[b["handle"]])
+            if n:
+                overlap[a["handle"]][b["handle"]] = n
+                overlap[b["handle"]][a["handle"]] = n
+    by_handle = {a["handle"]: a for a in arts}
+    orphan_handles = {x["handle"] for x in orphans}
+    weak = 0
+
     for o in orphans:
-        want = _rel_tokens(_clean_title(o.get("title", "")), o.get("tags", ""))
         url = f"{SITE}/blogs/{BLOG_HANDLE}/{o['handle']}"
-        scored = []
-        for a in arts:
-            if a["handle"] == o["handle"] or a["handle"] in {x["handle"] for x in orphans}:
-                continue      # don't hang an orphan off another orphan
-            body = pending.get(a["id"], a.get("body_html", ""))
-            if _links_to(body, o["handle"]):
-                continue
-            overlap = want & _rel_tokens(_clean_title(a.get("title", "")), a.get("tags", ""))
-            if len(overlap) >= MIN_OVERLAP:
-                scored.append((len(overlap), a.get("created_at", ""), a))
-        # Sort on the first two fields only — the third is a dict, and on a tie
-        # Python would fall through to comparing dicts and raise TypeError.
-        scored.sort(key=lambda x: (x[0], x[1] or ""), reverse=True)
+        oh = o["handle"]
+
+        def _candidates(min_n: int):
+            out = []
+            for cand, n in overlap.get(oh, {}).items():
+                if n < min_n or cand in orphan_handles:
+                    continue          # never hang an orphan off another orphan
+                a = by_handle[cand]
+                if _links_to(pending.get(a["id"], a.get("body_html", "")), oh):
+                    continue
+                out.append((n, a.get("created_at", ""), a))
+            # Sort on the first two fields only — the third is a dict, and on a tie
+            # Python would fall through to comparing dicts and raise TypeError.
+            out.sort(key=lambda x: (x[0], x[1] or ""), reverse=True)
+            return out
+
+        # Primary signal: the curated topic cluster. Ranked inside the cluster by
+        # token overlap, so the closest sibling wins; recency breaks ties.
+        topic = _topic_of(oh)
+        scored, tier = [], ""
+        if topic:
+            for cand, a in by_handle.items():
+                if cand == oh or cand in orphan_handles or _topic_of(cand) != topic:
+                    continue
+                if _links_to(pending.get(a["id"], a.get("body_html", "")), oh):
+                    continue
+                scored.append((overlap.get(oh, {}).get(cand, 0),
+                               a.get("created_at", ""), a))
+            scored.sort(key=lambda x: (x[0], x[1] or ""), reverse=True)
+            tier = f"  [{topic}]"
         if not scored:
-            print(f"\n  ⚠️  {o['handle'][:50]}: no source with >={MIN_OVERLAP} shared topic words")
+            # No cluster (the broad buying guides) — fall back to raw token overlap.
+            scored = _candidates(MIN_OVERLAP)
+            tier = "  [token match]"
+            if scored:
+                weak += 1
+        if not scored:
+            print(f"\n  ⚠️  {oh[:50]}: no source in its topic cluster — needs a hub page or a rewrite")
             continue
-        print(f"\n  → {o['handle'][:52]}")
+        print(f"\n  → {oh[:52]}{tier}")
         for n, _, src in scored[:MAX_SOURCES]:
             body = pending.get(src["id"], src.get("body_html", ""))
             pending[src["id"]] = _inject(body, o.get("title", ""), url)
-            plan.append((src["handle"], o["handle"], f"{n} shared token(s)"))
+            plan.append((src["handle"], oh, f"{n} shared token(s)"))
             print(f"       from {src['handle'][:48]}  ({n} shared token(s))")
 
-    print(f"\n=== {len(plan)} link(s) across {len(pending)} source article(s) ===")
+    print(f"\n=== {len(plan)} link(s) across {len(pending)} source article(s)"
+          + (f"; {weak} via cluster fallback" if weak else "") + " ===")
     if not APPLY:
         print("DRY-RUN — nothing written. Re-run with --apply.")
         return
