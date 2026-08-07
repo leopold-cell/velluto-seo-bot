@@ -334,4 +334,17 @@ def heal_translation(post: dict, client, lang_name: str) -> bool:
     for k in ("meta_description", "meta_desc"):
         if k in post:
             post[k] = meta
+
+    # Report whether the text is actually clean now. This used to return True
+    # unconditionally ("a translation is cleaned, never discarded"), which was
+    # defensible while check_compliance was English-only — it could not judge a
+    # translation anyway. Now that it reads all 11 languages, the caller can and
+    # should decide: registering a locale we KNOW is non-compliant is worse than
+    # leaving it unregistered, because Shopify then serves the compliant English
+    # version instead of a risky localized one.
+    remaining = check_compliance({"title": title, "meta_description": meta,
+                                  "body_html": body})
+    if remaining:
+        print(f"   ⚠️  [{lang_name}] still non-compliant after heal: {remaining[0][:90]}")
+        return False
     return True

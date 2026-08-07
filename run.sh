@@ -40,6 +40,8 @@ step "content retrofit (28d gate)" python3 content_retrofit.py
 step "geo monitor"                 python3 geo_monitor.py
 step "perplexity geo (7d gate)"    python3 scripts/perplexity_monitor.py
 step "chatgpt geo (7d gate)"       python3 scripts/chatgpt_monitor.py
+step "legal watchdog (7d gate)"    python3 scripts/legal_watchdog.py
+step "reddit worklist (daily)"     python3 scripts/reddit_daily.py
 step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py
 step "meta ads weekly report"      python3 scripts/meta_ads_report.py
 step "api cost watchdog"           python3 scripts/api_cost_monitor.py

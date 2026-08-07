@@ -617,8 +617,13 @@ def check_meta_lengths(post: dict) -> list[str]:
 _FAKE_TEST_RE = re.compile(
     r"\b(we|our|i|us)\s+(tested|test|reviewed|measured|rode|road-?tested|field-?tested|trial(?:l)?ed|clocked)\b"
     r"|\bin\s+(our|my)\s+(test|testing|review|lab|hands-on|experience)\b"
+    # NOTE: bare "getestet" used to sit in this list, which made the German rule
+    # STRICTER than the English one — "nach EN ISO 12312-1 getestet" is a standards
+    # statement the English side explicitly allows, yet it was flagged. The German
+    # claim forms now live in _FAKE_TEST_I18N, where they require first-person or
+    # the "getestet und verglichen" compound, matching the English calibration.
     r"|\b(hands-on|field test|road test|our lab|editorial test|independently tested|"
-    r"independent (test|review|lab)|the evidence supports|test winner|testsieger|getestet)\b"
+    r"independent (test|review|lab)|the evidence supports|test winner|testsieger)\b"
     r"|\bafter\s+\d+\s*(hours|hrs|km|kilomet\w*|miles|rides|weeks|months)\s+(of\s+)?(testing|riding|use|wear)\b"
     # Fabricated-test TITLE/headline claims (also in JSON-LD schema): "Tested & Ranked",
     # "Ranked and Tested", "Tested, Compared", "how we tested" — bare, no "we" needed.
@@ -632,6 +637,54 @@ _FAKE_TEST_RE = re.compile(
     # "tested by cyclists/riders/us/experts/our team" — attributes a test to people
     # who never ran one. Standards bodies stay allowed ("tested to EN ISO 12312-1").
     r"|\btested\s+by\s+(?:cyclists?|riders?|us|our|real|experts?|pros?)\b",
+    re.I)
+
+# ── Multilingual patterns ─────────────────────────────────────────────────────
+# The shop publishes in 11 languages; every regex above reads English (plus the two
+# German tokens "getestet"/"testsieger"). The 10 adapted locales were therefore
+# effectively ungated — and DACH, where the gate is blindest, is exactly where UWG
+# enforcement and Abmahnung risk are highest.
+#
+# Calibration matters more than coverage here. A bare past participle ("getest",
+# "testet", "testado") is an ordinary word in these languages and matching it would
+# flag legitimate prose — the over-blocking that already took 18 articles offline
+# once. So these mirror the English logic: they match the CLAIM of having tested
+# (first person, or the "tested & ranked" compound), never the word alone.
+_FAKE_TEST_I18N = re.compile(
+    # first person: "wij hebben getest", "nous avons testé", "wir haben getestet"
+    r"\b(?:wij|we|ons|onze)\s+(?:hebben\s+)?(?:zelf\s+)?getest\b"
+    r"|\bdoor\s+ons\s+getest\b"
+    r"|\b(?:nous\s+avons|on\s+a)\s+test[ée]s?\b|\btest[ée]s?\s+par\s+nos\s+soins\b"
+    r"|\b(?:abbiamo|ho)\s+testato\b|\btestato\s+da\s+noi\b"
+    r"|\b(?:hemos|he)\s+probado\b|\bprobado\s+por\s+nosotros\b"
+    r"|\bvi\s+har\s+testat\b|\btestad[e]?\s+av\s+oss\b"
+    r"|\bvi\s+har\s+testet\b|\btestet\s+a[fv]\s+os[s]?\b"
+    r"|\bprzetestowali[śs]my\b|\btestowane\s+przez\s+nas\b"
+    r"|\b(?:test[áa]mos|testamos)\b|\btestado\s+por\s+n[óo]s\b"
+    r"|\bwir\s+haben\s+.{0,20}getestet\b|\bin\s+unserem\s+test\b"
+    # "von Radfahrern/uns/Experten getestet" and "12 Brillen getestet" — the German
+    # equivalents of the English "tested by cyclists" / "N tested" patterns. The
+    # lookbehind keeps standards references legal ("nach EN ISO 12312-1 getestet"),
+    # mirroring the English rule.
+    r"|\bvon\s+(?:radfahrern|rennradfahrern|uns|expert\w+|profis)\s+getestet\b"
+    r"|(?<![\w.-])\d+\s+(?:modelle?\s+|brillen\s+)?getestet\b"
+    # "getestet und verglichen" / "testet og rangeret" — the headline compound
+    r"|\bgetest(?:et)?\s+(?:en|und|og|och)\s+(?:vergeleken|verglichen|rangeret|rankad)\b"
+    r"|\btestsieger\b|\btestvinnare\b|\btestvinder\b",
+    re.I)
+
+# Subjective superiority over a NAMED rival, per language. Competitor-gated by the
+# caller exactly like _SUPERIORITY_RE — "besser als normale Gläser" compares product
+# categories and is perfectly legal; only a named rival triggers § 6 UWG.
+_SUPERIORITY_I18N = re.compile(
+    r"\bbesser(?:er|es|e)?\s+(?:\w+\s+)?als\b|\büberlegen\b|\bschl[äa]gt\b"
+    r"|\bbeter(?:e)?\s+(?:\w+\s+)?dan\b|\bsuperieur\b|\bverslaat\b"
+    r"|\bmeilleur(?:e|s)?\s+que\b|\bsup[ée]rieur(?:e|s)?\s+[àa]\b|\bsurpasse\b"
+    r"|\bmiglior(?:e|i)\s+d(?:i|el)\b|\bsuperiore\s+a\b|\bbatte\b"
+    r"|\bmejor(?:es)?\s+que\b|\bsuperior\s+a\b|\bsupera\s+a\b"
+    r"|\bb[äa]ttre\s+[äa]n\b|\bbedre\s+en[nd]\b|\böverl[äa]gsen\b"
+    r"|\blepsz(?:y|a|e)\s+ni[żz]\b"
+    r"|\bmelhor(?:es)?\s+(?:do\s+)?que\b",
     re.I)
 
 # "(stated)/(claimed)" doubt-casting asymmetry is always risky.
@@ -730,7 +783,7 @@ def check_compliance(post: dict) -> list[str]:
     blob = (f"{post.get('title', '')} {post.get('meta_description', '')} "
             f"{post.get('body_html', '')}")
     issues: list[str] = []
-    if _FAKE_TEST_RE.search(blob):
+    if _FAKE_TEST_RE.search(blob) or _FAKE_TEST_I18N.search(blob):
         issues.append("[LEGAL] implies a test/review/first-hand experience that wasn't "
                       "performed — no fabricated testing (§ 5/5a UWG, EU fake-review ban); "
                       "reframe as an honest, spec-based buyer's guide")
@@ -765,13 +818,32 @@ def check_compliance(post: dict) -> list[str]:
     # Subjective superiority claim vs a named rival ("better value than X", "superior to X",
     # "beats X") — § 6 UWG needs OBJECTIVE, verifiable comparisons; 'value'/'better'/'superior'
     # are not. Catches the title pattern (e.g. "Better Value Than Evileye").
-    for m in _SUPERIORITY_RE.finditer(blob):
-        if _near_competitor(low, m.start(), m.end(), window=160):
-            issues.append("[LEGAL] subjective superiority claim over a named competitor "
-                          "('better value than X', 'superior to X', 'beats X') — § 6 UWG requires "
-                          "objective, verifiable comparisons; reframe as a neutral comparison or an "
-                          "'alternative to X', or compare only Velluto's own measurable specs")
-            break
+    # Same rule in the other 10 shop languages, but the proximity test has to be
+    # TIGHTER. The English patterns name the claim ("better value", "superior to"),
+    # whereas the translations of "better than" are bare comparatives that also carry
+    # ordinary prose: "een dure bril beter dan een goedkope", "een getal klopt beter
+    # dan een vaag statement". Measured on 154 live localized pages, the ±160-char
+    # window flagged 8, all of them category comparisons — on a long page some brand
+    # is nearly always within 160 chars. In a real § 6 comparison the rival is the
+    # OBJECT of the claim, so it follows within a few words: "besser als die Oakley
+    # Sutro". Looking forward, narrowly, is what separates the two.
+    superiority = any(_near_competitor(low, m.start(), m.end(), window=160)
+                      for m in _SUPERIORITY_RE.finditer(blob))
+    if not superiority:
+        for m in _SUPERIORITY_I18N.finditer(blob):
+            # Cut at the sentence boundary: the rival has to be the OBJECT of the
+            # comparison, so it sits in the same clause. "beter dan een vaag
+            # statement. Oakley gebruikt UV400" is two sentences and no claim about
+            # Oakley at all — a plain distance window cannot tell those apart.
+            tail = re.split(r"[.!?;:]", low[m.end(): m.end() + 60], 1)[0]
+            if any(tok in tail for tok in _COMPETITOR_TOKENS):
+                superiority = True
+                break
+    if superiority:
+        issues.append("[LEGAL] subjective superiority claim over a named competitor "
+                      "('better value than X', 'superior to X', 'beats X') — § 6 UWG requires "
+                      "objective, verifiable comparisons; reframe as a neutral comparison or an "
+                      "'alternative to X', or compare only Velluto's own measurable specs")
     if _ORIGIN_RE.search(blob):
         issues.append("[LEGAL] Velluto mis-described by nationality — Velluto is a GERMAN "
                       "brand (Italian design); no false origin (§ 5 UWG)")
