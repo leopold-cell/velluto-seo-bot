@@ -250,6 +250,22 @@ def build() -> tuple[str, str]:
                      f"unauffällig über {w.get('locales', 0)} Sprachen")
             L.append("")
 
+    # Reddit worklist — real open threads to answer by hand. Written to disk by
+    # scripts/reddit_daily.py so this mail never depends on a network call.
+    try:
+        _rd = os.path.join(BASE, "output", "reddit_daily.txt")
+        if os.path.exists(_rd) and (TODAY - datetime.date.fromtimestamp(
+                os.path.getmtime(_rd))).days <= 1:
+            with open(_rd, encoding="utf-8") as f:
+                txt = f.read().strip()
+            if txt and "keine passenden" not in txt:
+                L.append("💬 REDDIT — heute beantworten (du postest, nichts automatisch)")
+                L += ["   " + x for x in txt.splitlines()[:24]]
+                L.append("   … vollständig in output/reddit_daily.txt")
+                L.append("")
+    except Exception:
+        pass
+
     if ins.get("our_gaps") or ins.get("seo_quick_wins"):
         L.append("🧠 HEUTIGER OPTIMIERUNGS-FOKUS")
         for g in (ins.get("seo_quick_wins") or [])[:2]:
