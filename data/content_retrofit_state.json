@@ -1,6 +1,6 @@
 {
- "last_run": "2026-07-11",
- "cycle": 1,
+ "last_run": "2026-08-08",
+ "cycle": 2,
  "articles": {
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-sunglasses-2026-tested-ranked-compared": {
    "cycle": 1,
@@ -15,7 +15,23 @@
     "ctr": 1.75,
     "position": 6.5
    },
-   "measured": null
+   "measured": {
+    "date": "2026-08-08",
+    "before": {
+     "clicks": 35,
+     "impressions": 2024,
+     "ctr": 1.73,
+     "position": 6.5
+    },
+    "after": {
+     "clicks": 6,
+     "impressions": 329,
+     "ctr": 1.82,
+     "position": 6.5
+    },
+    "outcome": "improved",
+    "ctr_optimizer_overlap": false
+   }
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternatives-for-cyclists-2026-tested-ranked": {
    "cycle": 1,
@@ -90,6 +106,38 @@
     "impressions": 0,
     "ctr": 0.0,
     "position": 0.0
+   },
+   "measured": null
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch": {
+   "cycle": 2,
+   "date": "2026-08-08",
+   "action": "table",
+   "handle": "oakley-alternative-cycling-sunglasses-why-riders-switch",
+   "added_words": 350,
+   "native_markets": [],
+   "before": {
+    "words": 2684,
+    "clicks": 21,
+    "impressions": 1802,
+    "ctr": 1.17,
+    "position": 7.3
+   },
+   "measured": null
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/road-cycling-glasses-vs-regular-sunglasses-2026-velluto": {
+   "cycle": 2,
+   "date": "2026-08-08",
+   "action": "table",
+   "handle": "road-cycling-glasses-vs-regular-sunglasses-2026-velluto",
+   "added_words": 422,
+   "native_markets": [],
+   "before": {
+    "words": 1156,
+    "clicks": 8,
+    "impressions": 952,
+    "ctr": 0.84,
+    "position": 8.0
    },
    "measured": null
   }

@@ -47,19 +47,24 @@
   },
   "seo_title": "POC Alternative Cycling Glasses, Save 40-60%",
   "meta_description": "Compare POC specs to lighter, UV400 alternatives. German engineering, lens swaps, lifetime guarantee. Find your match.",
-  "measured": null
+  "measured": {
+   "date": "2026-08-08",
+   "ctr_before": 0.39,
+   "ctr_after": 2.36,
+   "outcome": "improved"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-2026-guide-velluto": {
-  "last_optimized": "2026-07-25",
+  "last_optimized": "2026-08-08",
   "article_id": 616678850901,
   "before": {
-   "ctr": 0.49,
-   "position": 7.1,
-   "impressions": 204,
+   "ctr": 0.51,
+   "position": 7.2,
+   "impressions": 198,
    "title": "Are Expensive Cycling Glasses Worth It? 2026 Guide | Velluto"
   },
-  "seo_title": "Expensive Cycling Glasses Worth It? Cost vs. Performance",
-  "meta_description": "Compare premium vs. budget cycling glasses by weight, UV protection, durability. Find what actually justifies the price difference for your needs.",
+  "seo_title": "Are Expensive Cycling Glasses Worth It? Price vs.",
+  "meta_description": "Compare cycling glasses by price, UV protection, weight, and lens durability. Find out which features justify the cost and which don't.",
   "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-honest-answer": {
@@ -73,7 +78,12 @@
   },
   "seo_title": "Expensive Cycling Glasses Worth It? Price vs Performance",
   "meta_description": "Discover when premium cycling glasses justify the cost. UV400 protection, weight, durability, and lens options compared. Find your answer here.",
-  "measured": null
+  "measured": {
+   "date": "2026-08-08",
+   "ctr_before": 0.65,
+   "ctr_after": 0.93,
+   "outcome": "improved"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-sunglasses-worth-it-2026-guide-velluto": {
   "last_optimized": "2026-07-25",
@@ -86,7 +96,12 @@
   },
   "seo_title": "Expensive Cycling Sunglasses Worth It? Cost vs Features",
   "meta_description": "Compare premium cycling glasses: UV400 protection, lightweight frames, lens swap systems. See what justifies the price difference in 2026.",
-  "measured": null
+  "measured": {
+   "date": "2026-08-08",
+   "ctr_before": 0.65,
+   "ctr_after": 0.0,
+   "outcome": "no_lift"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-2026-guide": {
   "last_optimized": "2026-08-01",
