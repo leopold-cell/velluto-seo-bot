@@ -701,7 +701,39 @@ _COMPETITOR_TOKENS = {
     "rapha", "sigma", "endurasport", "evil eye", "evileye", "roka", "goodr", "smith",
     "sweet protection", "spiuk", "eassun", "salice", "briko", "van rysel",
     "kapvoe", "bolle", "bollé", "magicshine", "sungods", "alibaba",
+    # Brands the bot wrote comparison articles about before they were listed here.
+    # "girly-vs-velluto-…-better-value" shipped a § 6 claim that nothing flagged,
+    # because the gate did not know the name — the article did.
+    "girly", "bing",
 }
+
+
+def _competitor_tokens_from_config() -> set[str]:
+    """Merge in config/competitors.yml — the registry the rest of the bot uses.
+
+    A hardcoded list drifts: the article generator picks a rival, writes "better
+    value than X", and the gate waves it through because X was never added here.
+    Reading the same registry that drives competitor research keeps the two in
+    step. The literal set above stays as the floor, so a broken or missing YAML
+    can only ever widen coverage, never silently remove it.
+    """
+    try:
+        import config_loader
+        raw = config_loader._load("competitors") or {}
+    except Exception:
+        return set()
+    out: set[str] = set()
+    for group in raw.values():
+        if not isinstance(group, list):
+            continue
+        for entry in group:
+            name = (entry or {}).get("name") if isinstance(entry, dict) else entry
+            if isinstance(name, str) and len(name.strip()) >= 3:
+                out.add(name.strip().lower())
+    return out
+
+
+_COMPETITOR_TOKENS |= _competitor_tokens_from_config()
 
 
 def _near_competitor(text_lower: str, start: int, end: int, window: int = 130) -> bool:
