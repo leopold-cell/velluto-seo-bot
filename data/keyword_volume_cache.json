@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-08": 11
+   "2026-08-09": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1651,5 +1651,49 @@
  "sv|cykelglasögon test 2026": {
   "volume": 0,
   "date": "2026-08-08"
+ },
+ "de|fahrradbrille kaufberatung": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "en|cycling sunglasses buying guide": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "nl|fietsbril kopen tips": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "fr|lunettes cyclisme guide d'achat": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "es|gafas ciclismo cómo elegir": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "it|occhiali ciclismo guida acquisto": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "da|cykelbriller købeguide": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "nb|sykkelbiller kjøpeguide": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "pl|okulary rowerowe poradnik zakupu": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "pt-PT|óculos ciclismo guia compra": {
+  "volume": 0,
+  "date": "2026-08-09"
+ },
+ "sv|cykelglasögon köpguide": {
+  "volume": 0,
+  "date": "2026-08-09"
  }
 }

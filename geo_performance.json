@@ -2143,7 +2143,61 @@
         }
       ],
       "serps_scanned": 90
+    },
+    "2026-08-09": {
+      "aio_serps": 42,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 4,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 2.4,
+      "total_citations": 40,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 8
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 5
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 3
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 2
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 2
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 2
+        },
+        {
+          "domain": "indrider.com",
+          "citations": 2
+        },
+        {
+          "domain": "rockbrosbike.de",
+          "citations": 2
+        },
+        {
+          "domain": "bikerumor.com",
+          "citations": 1
+        },
+        {
+          "domain": "oakley.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 95
     }
   },
-  "latest": "2026-08-08"
+  "latest": "2026-08-09"
 }
