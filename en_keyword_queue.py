@@ -65,6 +65,21 @@ EN_KEYWORDS = [
                  "where Velluto beats it — 25g weight, interchangeable lens system, "
                  "30-day risk-free trial, from 69 EUR vs SunGod's premium tiers.",
     },
+    # From the AI-Overview gap analysis (scripts/geo_gaps.py): Google answers this
+    # query with a cited AI Overview and Velluto is not among the sources. The
+    # OTHER nine keywords that analysis surfaced already have a matching article —
+    # adding those would have produced duplicates competing with our own pages.
+    # This was the only one with no coverage at all.
+    {
+        "keyword": "Rudy Project alternative cycling glasses",
+        "volume": 200, "phase": 1,
+        "angle": "Rudy Project's Rydon/Keyblade line is the established "
+                 "Italian-design reference point. Cover what it genuinely does "
+                 "well (adjustable ErgoIV temples, RX-ready frames) and place the "
+                 "StradaPro next to it on specs Velluto can evidence: 25 g, "
+                 "UV400-certified interchangeable lenses, built-in anti-fog, "
+                 "30-day trial, from 69 EUR. Symmetric wording per row, no verdict.",
+    },
     {
         "keyword": "SunGod vs Velluto cycling glasses",
         "volume": 150, "phase": 1,

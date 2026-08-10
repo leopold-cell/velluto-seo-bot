@@ -29,6 +29,7 @@ Usage:
   python3 scripts/geo_gaps.py --propose-paa # paste-ready paa_seed.json block
 """
 import json
+import re
 import os
 import sys
 
@@ -185,6 +186,41 @@ _Q_OPENERS = (
 )
 
 
+_COVERAGE_STOP = {"cycling", "glasses", "sunglasses", "vs", "the", "for", "and", "a", "in"}
+
+
+def _split_by_coverage(keywords: list[str]) -> tuple[list[tuple[str, str]], list[str]]:
+    """([(keyword, handle)] already covered, [keyword] uncovered).
+
+    Matches against the handles in data/content_state.json — an offline snapshot,
+    so this never depends on Shopify credentials or the network. A keyword counts
+    as covered when all but one of its distinctive words appear in some handle;
+    the domain words above are dropped first because every handle contains them.
+    """
+    state = load_json(os.path.join("data", "content_state.json"), {})
+    handles = [(m or {}).get("handle", "") for m in (state.get("articles") or {}).values()]
+    handles = [h for h in handles if h]
+    if not handles:
+        return [], list(keywords)
+
+    covered, missing = [], []
+    for kw in keywords:
+        toks = {w for w in re.findall(r"[a-z0-9]+", kw.lower()) if w not in _COVERAGE_STOP}
+        if not toks:
+            missing.append(kw)
+            continue
+        best, score = "", 0
+        for h in handles:
+            n = len(toks & set(h.replace("-", " ").split()))
+            if n > score:
+                best, score = h, n
+        if score >= max(1, len(toks) - 1):
+            covered.append((kw, best))
+        else:
+            missing.append(kw)
+    return covered, missing
+
+
 def _is_question(text: str) -> bool:
     """A paa_seed entry must be a real question, not a search keyword.
 
@@ -269,10 +305,25 @@ def propose_paa(gaps: dict[str, list[dict]]) -> str:
     kw = sorted({r["question"] for rows in gaps.values() for r in rows
                  if "AI Overview" in r.get("surfaces", []) and not _is_question(r["question"])})
     if kw:
-        L.append("Keywords aus den AI Overviews — gehören in die Keyword-Queue, nicht in paa_seed:")
-        for k in kw[:10]:
-            L.append(f"  · {k}")
-        L.append("")
+        # Split by whether an article already targets the keyword. Nine of the
+        # first ten AIO keywords turned out to be covered already — queueing those
+        # would have produced duplicates competing with our own pages, which makes
+        # rankings worse, not better. When the content exists and the AI Overview
+        # still cites someone else, the problem is authority and extractability,
+        # not a missing article.
+        covered, missing = _split_by_coverage(kw)
+        if missing:
+            L.append("Keywords OHNE Artikel — Kandidaten für die Keyword-Queue:")
+            for k in missing[:10]:
+                L.append(f"  · {k}")
+            L.append("")
+        if covered:
+            L.append("Keywords MIT Artikel — nicht neu schreiben, sonst Kannibalisierung.")
+            L.append("Hier fehlt Sichtbarkeit, nicht Inhalt (interne Links, Rankings):")
+            for k, h in covered[:10]:
+                L.append(f"  · {k}")
+                L.append(f"      → {h}")
+            L.append("")
     if dropped:
         L.append(f"Gefiltert ({len(dropped)}):")
         for q, why in dropped[:6]:
