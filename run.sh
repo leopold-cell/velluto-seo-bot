@@ -44,6 +44,7 @@ step "legal watchdog (7d gate)"    python3 scripts/legal_watchdog.py
 step "reddit worklist (daily)"     python3 scripts/reddit_daily.py
 step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py
 step "meta ads weekly report"      python3 scripts/meta_ads_report.py
+step "seo sales report (monatlich)" python3 scripts/seo_sales_report.py --gated
 step "api cost watchdog"           python3 scripts/api_cost_monitor.py
 step "dashboard"                   python3 dashboard.py
 

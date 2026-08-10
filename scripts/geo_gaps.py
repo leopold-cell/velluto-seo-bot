@@ -26,7 +26,9 @@ A human picks from the list; the plumbing after that is automatic.
 Usage:
   python3 scripts/geo_gaps.py              # print the report
   python3 scripts/geo_gaps.py --markdown   # markdown (for the weekly digest)
+  python3 scripts/geo_gaps.py --propose-paa # paste-ready paa_seed.json block
 """
+import json
 import os
 import sys
 
@@ -120,8 +122,82 @@ def format_report(gaps: dict[str, list[dict]], markdown: bool = False) -> str:
     return "\n".join(lines).rstrip()
 
 
+def propose_paa(gaps: dict[str, list[dict]]) -> str:
+    """Turn the gaps into a paste-ready data/paa_seed.json block.
+
+    The loop was designed to end at "here are the questions" and leave the
+    curation by hand, which meant it never actually closed — the questions sat in
+    a weekly digest while the article pipeline kept drawing from the same static
+    keyword queue. This does the mechanical part of the curation: drops what
+    Velluto cannot honestly answer (photochromic, polarised, prescription — the
+    is_compatible() list), drops what the legal gate would reject, and prints the
+    rest as JSON to paste in.
+
+    Still a proposal, deliberately. A question that survives both filters can
+    still be off-brand or a duplicate of an existing cluster, and that call needs
+    eyes. What changes is that the manual step is now "read 8 lines and paste"
+    rather than "re-derive the list".
+
+    Why it matters for AI Overviews: a question that reaches paa_seed becomes a
+    verbatim H2 with a 40-70 word direct answer and a FAQPage entry — the
+    extractable form answer engines quote. Ranking still decides whether they
+    look, but this decides whether there is anything quotable when they do.
+    """
+    try:
+        from en_keyword_queue import is_compatible
+    except Exception:
+        def is_compatible(_q):    # noqa: E306 — fall open rather than block the report
+            return True
+    try:
+        from briefs.quality_gate import check_compliance
+    except Exception:
+        check_compliance = None
+
+    seed = load_json(os.path.join("data", "paa_seed.json"), {})
+    out: dict[str, list[str]] = {}
+    dropped: list[tuple[str, str]] = []
+
+    for market, rows in gaps.items():
+        known = {q.lower()
+                 for cluster in (seed.get(market) or {}).values()
+                 for q in (cluster if isinstance(cluster, list) else [])}
+        for r in rows:
+            q = r["question"]
+            if q.lower() in known:
+                continue
+            if not is_compatible(q):
+                dropped.append((q, "Produkt bietet das nicht an"))
+                continue
+            if check_compliance and check_compliance({"title": q, "body_html": q}):
+                dropped.append((q, "Legal-Gate"))
+                continue
+            out.setdefault(market, []).append(q)
+
+    L = ["Vorschlag für data/paa_seed.json — geprüft auf Produkt-Fit und Legal-Gate", ""]
+    if not out:
+        L.append("  (nichts Neues — alle Lückenfragen stehen schon drin oder wurden gefiltert)")
+    for market, qs in out.items():
+        L.append(f'  "{market}": {{ "<cluster>": [')
+        for q in qs[:8]:
+            L.append(f'      {json.dumps(q, ensure_ascii=False)},')
+        L.append("  ]}")
+        L.append("")
+    if dropped:
+        L.append(f"Gefiltert ({len(dropped)}):")
+        for q, why in dropped[:6]:
+            L.append(f"  · {q[:64]} — {why}")
+    L.append("")
+    L.append("Cluster-Schlüssel selbst wählen (best-cycling, anti-fog, fit, price-value …) "
+             "und in die passende Sprache einsortieren.")
+    return "\n".join(L)
+
+
 def main() -> None:
-    print(format_report(collect_gaps(), markdown="--markdown" in sys.argv))
+    gaps = collect_gaps()
+    if "--propose-paa" in sys.argv:
+        print(propose_paa(gaps))
+        return
+    print(format_report(gaps, markdown="--markdown" in sys.argv))
 
 
 if __name__ == "__main__":
