@@ -37,7 +37,9 @@
       "How do you clean cycling sunglasses without scratching the lenses?",
       "Do cheap cycling glasses protect your eyes as well as expensive ones?",
       "What are the best cycling glasses brands in 2026?",
-      "What are the best cycling glasses for winter riding?"
+      "What are the best cycling glasses for winter riding?",
+      "What are the best cycling glasses in 2026?",
+      "What are the best lightweight cycling sunglasses?"
     ],
     "anti-fog": [
       "Do anti-fog glasses really work?",
@@ -48,19 +50,21 @@
       "Do anti-fog glasses really work?"
     ],
     "lens": [
-      "Why do cyclists wear yellow glasses?"
+      "Why do cyclists wear yellow glasses?",
+      "Which cycling glasses have interchangeable lenses?"
     ],
     "oakley": [
       "Is Oakley or Ray-Bans better?",
       "Are Oakley glasses high end?",
       "What's better, Prizm or polarized?",
       "Are Shady Rays as good as Oakley?",
-      "Is Oakley overpriced?",
+      "What do Oakley cycling glasses cost?",
       "Are Oakleys made in China now?",
       "What country owns Oakley?",
       "What glasses are on trend in 2026?",
       "What glasses are hot right now?",
-      "What sunglasses do navy seals use?"
+      "What sunglasses do navy seals use?",
+      "What are the best Oakley alternatives for road cycling?"
     ]
   },
   "de": {
@@ -74,14 +78,16 @@
       "Wie viel sollte eine gute Fahrradbrille wiegen?",
       "Welche Marken für Fahrradbrillen sind 2026 empfehlenswert?",
       "Ist eine Shield-Brille besser als eine mit zwei Gläsern?",
-      "Welche Fahrradbrille für den Winter?"
+      "Welche Fahrradbrille für den Winter?",
+      "Was ist die beste leichte Rennradbrille?"
     ],
     "oakley": [
       "Lohnt sich eine Oakley-Sonnenbrille zum Radfahren?",
       "Welche Brille trägt Pogacar?",
       "Welche Marke ist ähnlich wie Oakley?",
       "Ist Oakley überteuert?",
-      "Werden Oakleys inzwischen in China hergestellt?"
+      "Werden Oakleys inzwischen in China hergestellt?",
+      "Was ist die beste Alternative zu Oakley Fahrradbrillen?"
     ],
     "expensive": [
       "Was kostet eine gute Fahrradbrille?",
@@ -109,7 +115,8 @@
       "Warum tragen Radfahrer gelbe Brillengläser?",
       "Welche Glasfarbe eignet sich für bewölktes Wetter?",
       "Welche Tönungskategorie brauche ich zum Rennradfahren?",
-      "Wie reinigt man Brillengläser, ohne sie zu zerkratzen?"
+      "Wie reinigt man Brillengläser, ohne sie zu zerkratzen?",
+      "Welche Rennradbrille hat Wechselgläser?"
     ],
     "sungod": [
       "Sind SunGod Fahrradbrillen ihr Geld wert?",
@@ -128,12 +135,15 @@
       "Wat zijn de top 10 beste fietsbrillen?",
       "Welke categorie fietsbril heb ik nodig?",
       "Wat is de beste zonnebril voor wielrennen?",
-      "Welke fietsbril is goed tegen tranende ogen?"
+      "Welke fietsbril is goed tegen tranende ogen?",
+      "Wat is de beste lichte wielrenbril?",
+      "Wat is de beste wielrenbril in 2026?"
     ],
     "oakley": [
       "Welke fietsbril heeft Pogacar?",
       "Welke bril draagt Mathieu van der Poel?",
-      "Wat is de beste Oakley fietsbril?"
+      "Wat is de beste Oakley fietsbril?",
+      "Wat is het beste alternatief voor een Oakley wielrenbril?"
     ],
     "budget": [
       "Wat is de beste betaalbare fietsbril?"
@@ -141,6 +151,9 @@
     "expensive": [
       "Is een dure bril beter dan een goedkope?",
       "Is er een verschil tussen dure en goedkope brillen?"
+    ],
+    "lens": [
+      "Welke fietsbril heeft verwisselbare glazen?"
     ]
   },
   "fr": {
@@ -150,7 +163,9 @@
       "Pourquoi lunettes à l'envers sur casque vélo ?",
       "Quelles sont les meilleures lunettes de soleil pour le cyclisme ?",
       "Quelles lunettes pour le cyclisme ?",
-      "Quelle est la meilleure marque de lunettes pour vélo ?"
+      "Quelle est la meilleure marque de lunettes pour vélo ?",
+      "Quelles sont les meilleures lunettes de vélo en 2026 ?",
+      "Quelles sont les meilleures lunettes de vélo légères ?"
     ],
     "anti-fog": [
       "Comment éviter la buée sur les lunettes pendant la course à pied ?",
@@ -160,12 +175,16 @@
     "oakley": [
       "Quelle marque de lunettes est similaire à Oakley ?",
       "Les lunettes Oakley valent-elles le coup pour le cyclisme ?",
-      "Quelles sont les lunettes de Pogacar ?"
+      "Quelles sont les lunettes de Pogacar ?",
+      "Quelle est la meilleure alternative aux lunettes Oakley pour le vélo ?"
     ],
     "expensive": [
       "Existe-t-il une différence entre des lunettes chères et des lunettes bon marché ?",
       "Les lunettes de VTT valent-elles l'investissement ?",
       "Les lunettes de cyclisme font-elles une différence ?"
+    ],
+    "lens": [
+      "Quelles lunettes de cyclisme ont des verres interchangeables ?"
     ]
   },
   "es": {},
