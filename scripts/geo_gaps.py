@@ -47,6 +47,38 @@ def _runs(rel_path: str, surface: str) -> list[dict]:
     return [{"surface": surface, **r} for r in hist if isinstance(r, dict)]
 
 
+def _aio_run() -> list[dict]:
+    """Google AI Overviews, reshaped into the same {by_market: {details}} form.
+
+    This surface was missing from the roadmap entirely, and it is the largest one
+    we measure: ~115 AIO SERPs a day against 40 Perplexity questions a week. The
+    monitor already records, per query, whether Velluto was cited and which
+    domains were cited instead (research/ai_overview_monitor.py) — the data was
+    there, nothing read it. With the citation rate sitting at 0.0% across ten
+    consecutive days, this is the signal that matters most.
+
+    Note the unit differs: AIO entries are KEYWORDS, not natural-language
+    questions. They still belong in the same list — a keyword Google answers
+    without citing us is exactly a topic we have nothing quotable for — but they
+    read as search terms in the report, which is correct rather than a bug.
+    """
+    snap = load_json(os.path.join("data", "processed", "ai_overview_snapshots.json"), {})
+    entries = snap.get("ai_overviews") or []
+    if not entries:
+        return []
+    by_market: dict[str, dict] = {}
+    for e in entries:
+        if not e.get("keyword"):
+            continue
+        market = (e.get("market") or "en").lower()[:2]
+        by_market.setdefault(market, {"details": []})["details"].append({
+            "question": e["keyword"],
+            "velluto_cited": bool(e.get("velluto_cited")),
+            "top_domains": [c.get("domain", "") for c in (e.get("cited_sources") or [])][:5],
+        })
+    return [{"surface": "AI Overview", "date": snap.get("date", ""), "by_market": by_market}]
+
+
 def collect_gaps(max_runs: int = 6) -> dict[str, list[dict]]:
     """{market: [{question, misses, runs, surfaces, rivals}]} — worst first.
 
@@ -54,7 +86,8 @@ def collect_gaps(max_runs: int = 6) -> dict[str, list[dict]]:
     ago doesn't linger in the report forever.
     """
     runs = (_runs("data/chatgpt_geo.json", "ChatGPT")[-max_runs:]
-            + _runs("data/perplexity_geo.json", "Perplexity")[-max_runs:])
+            + _runs("data/perplexity_geo.json", "Perplexity")[-max_runs:]
+            + _aio_run())
 
     # (market, question) -> stats
     acc: dict[tuple[str, str], dict] = {}
@@ -79,7 +112,14 @@ def collect_gaps(max_runs: int = 6) -> dict[str, list[dict]]:
 
     out: dict[str, list[dict]] = {m: [] for m in GEO_MARKETS}
     for (market, _q), st in acc.items():
-        if st["runs"] < MIN_RUNS or st["misses"] < st["runs"]:
+        # MIN_RUNS suppresses noise from a single unlucky sample, which is right
+        # for the chat surfaces — a model can phrase one answer differently. An AI
+        # Overview is not a sample: Google answered that query and listed its
+        # sources, and we were not among them. One observation is the fact.
+        # (The snapshot file only ever holds the latest run, so requiring two
+        # would drop every AIO entry regardless.)
+        floor = 1 if "AI Overview" in st["surfaces"] else MIN_RUNS
+        if st["runs"] < floor or st["misses"] < st["runs"]:
             continue  # cited at least once → not a persistent gap
         rivals = sorted(st["rivals"].items(), key=lambda kv: -kv[1])[:3]
         out.setdefault(market, []).append({
@@ -120,6 +160,27 @@ def format_report(gaps: dict[str, list[dict]], markdown: bool = False) -> str:
                          f"({r['misses']}/{r['runs']} Läufe, {'+'.join(r['surfaces'])}){rivals}")
         lines.append("")
     return "\n".join(lines).rstrip()
+
+
+# Question openers across the 11 shop languages — a paa_seed entry has to read as
+# a question, because the prompt turns it into a verbatim H2 with a direct answer.
+_Q_OPENERS = (
+    "what", "which", "how", "why", "are", "is", "do", "does", "can", "should",
+    "was", "welche", "welcher", "welches", "wie", "warum", "sind", "ist", "kann", "lohnt",
+    "wat", "welke", "hoe", "waarom", "zijn", "kan",
+    "quelle", "quelles", "quel", "quels", "comment", "pourquoi", "est", "les",
+    "quale", "quali", "come", "perché", "sono",
+    "qué", "cuál", "cuáles", "cómo", "por", "son",
+    "vilken", "vilka", "hur", "varför", "är",
+    "hvilken", "hvilke", "hvordan", "hvorfor", "er",
+    "jaki", "jaka", "jakie", "czy", "ile",
+    "qual", "quais", "como", "porque",
+)
+
+
+def _is_question(text: str) -> bool:
+    t = (text or "").strip().lower()
+    return t.endswith("?") or t.split(" ")[0].strip("¿") in _Q_OPENERS
 
 
 def propose_paa(gaps: dict[str, list[dict]]) -> str:
@@ -165,6 +226,12 @@ def propose_paa(gaps: dict[str, list[dict]]) -> str:
             q = r["question"]
             if q.lower() in known:
                 continue
+            # paa_seed entries become verbatim H2s with a 40-70 word answer, so
+            # only question-shaped items belong here. AI Overview gaps are search
+            # KEYWORDS ("beste fahrradbrille 2026") — real signal, wrong container;
+            # they belong in the keyword queue and are listed separately below.
+            if not _is_question(q):
+                continue
             if not is_compatible(q):
                 dropped.append((q, "Produkt bietet das nicht an"))
                 continue
@@ -181,6 +248,13 @@ def propose_paa(gaps: dict[str, list[dict]]) -> str:
         for q in qs[:8]:
             L.append(f'      {json.dumps(q, ensure_ascii=False)},')
         L.append("  ]}")
+        L.append("")
+    kw = sorted({r["question"] for rows in gaps.values() for r in rows
+                 if "AI Overview" in r.get("surfaces", []) and not _is_question(r["question"])})
+    if kw:
+        L.append("Keywords aus den AI Overviews — gehören in die Keyword-Queue, nicht in paa_seed:")
+        for k in kw[:10]:
+            L.append(f"  · {k}")
         L.append("")
     if dropped:
         L.append(f"Gefiltert ({len(dropped)}):")
