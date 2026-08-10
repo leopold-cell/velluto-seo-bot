@@ -233,6 +233,44 @@ def page_stats(token: str, url: str, start: datetime.date, end: datetime.date) -
             "position": round(float(r.get("position", 0)), 1)}
 
 
+# A retrofit is judged on TRAFFIC, not on CTR alone.
+#
+# The previous rule was `improved if after.clicks > before.clicks OR after.ctr >
+# before.ctr`, and the `or` short-circuited: a page that fell from 35 clicks to 6
+# still reported "improved" because its CTR ticked from 1.73% to 1.82%. The
+# regressed branch was unreachable whenever CTR moved up at all. That is not a
+# tuning detail — it let the most expensive optimisation path report a near-total
+# traffic loss as a success, so nobody knew whether expanding articles works.
+#
+# Impressions are checked first because they measure EXPOSURE, not performance.
+# If they collapse, the page was offline, deindexed or seasonally dropped, and a
+# CTR comparison across that window means nothing. Saying "unmeasurable" is the
+# honest answer; "improved" would be a fabricated one.
+IMPRESSION_COLLAPSE = 0.5     # after/before below this → exposure changed, not quality
+CLICK_REGRESSION    = 0.8     # clicks below this share of baseline → regressed
+CTR_LIFT            = 1.10    # CTR must move this much to count on its own
+
+
+def classify_effect(before: dict, after: dict) -> str:
+    """improved | no_lift | regressed | unmeasurable | no_baseline."""
+    b_impr, a_impr = before.get("impressions", 0), after.get("impressions", 0)
+    b_clicks, a_clicks = before.get("clicks", 0), after.get("clicks", 0)
+
+    if b_impr == 0:
+        # Nothing to compare against — a page with no prior exposure cannot show
+        # a lift, only a starting point.
+        return "improved" if a_clicks > 0 else "no_baseline"
+    if a_impr < b_impr * IMPRESSION_COLLAPSE:
+        return "unmeasurable"
+    if a_clicks < b_clicks * CLICK_REGRESSION:
+        return "regressed"
+    if a_clicks > b_clicks:
+        return "improved"
+    if before.get("ctr", 0) > 0 and after.get("ctr", 0) > before["ctr"] * CTR_LIFT:
+        return "improved"      # same clicks, better CTR at comparable exposure
+    return "no_lift"
+
+
 def measure_due(state: dict, token: str, ctr_state: dict,
                 today: datetime.date) -> list[str]:
     """Measure articles changed >=28d ago that have no result yet."""
@@ -258,15 +296,17 @@ def measure_due(state: dict, token: str, ctr_state: dict,
                 overlap = d <= INTERVAL_DAYS
             except Exception:
                 pass
-        outcome = ("improved" if after["clicks"] > before["clicks"]
-                   or after["ctr"] > before["ctr"] else
-                   "regressed" if after["clicks"] < before["clicks"] * 0.8 else "no_lift")
+        outcome = classify_effect(before, after)
         entry["measured"] = {"date": today.isoformat(), "before": before, "after": after,
                              "outcome": outcome, "ctr_optimizer_overlap": overlap}
-        icon = {"improved": "🟢", "no_lift": "⚪", "regressed": "🔴"}[outcome]
+        icon = {"improved": "🟢", "no_lift": "⚪", "regressed": "🔴",
+                "unmeasurable": "⚠️", "no_baseline": "🆕"}[outcome]
         note = " (⚠️ CTR-Optimizer im selben Fenster)" if overlap else ""
+        if outcome == "unmeasurable":
+            note += " — Impressionen eingebrochen, Artikel war vermutlich offline"
         lines.append(f"{icon} {entry.get('handle', url.rsplit('/', 1)[-1])[:40]} "
                      f"[{entry.get('action')}]: Klicks {before['clicks']}→{after['clicks']}, "
+                     f"Impr {before['impressions']}→{after['impressions']}, "
                      f"CTR {before['ctr']}%→{after['ctr']}%{note}")
     return lines
 
@@ -703,6 +743,16 @@ def main() -> None:
 
     ctr_state = _load(CTR_STATE_PATH, {})
     token = _gsc_token()
+
+    # Verdicts stored before the classify_effect() fix can be wrong — the old rule
+    # called a page "improved" when its CTR ticked up even as clicks collapsed.
+    # --remeasure clears them so they are judged again on traffic.
+    if "--remeasure" in sys.argv:
+        n = 0
+        for entry in (state.get("articles") or {}).values():
+            if entry.pop("measured", None) is not None:
+                n += 1
+        print(f"   ↻ {n} gespeicherte Bewertung(en) verworfen — werden neu gemessen")
 
     # 1. MEASURE last cycle
     measure_lines: list[str] = []

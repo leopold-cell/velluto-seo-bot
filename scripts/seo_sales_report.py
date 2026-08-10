@@ -132,9 +132,28 @@ def main():
     ap.add_argument("--month", help="YYYY-MM (default: previous calendar month)")
     ap.add_argument("--no-email", "--no-telegram", dest="no_email",
                     action="store_true", help="print only, don't send the email")
+    ap.add_argument("--gated", action="store_true",
+                    help="no-op unless the previous month has not been reported yet "
+                         "(for a daily run.sh step)")
     args = ap.parse_args()
 
     today = dt.date.today()
+
+    # Self-gate so this can sit in the daily pipeline instead of a separate cron
+    # that was documented but never installed — which is why August had no figures
+    # until it was run by hand. One report per calendar month, on the first run
+    # after that month closes.
+    if args.gated and not args.month:
+        py, pm = _prev_month(today.year, today.month)
+        want = f"{py}-{pm:02d}"
+        try:
+            with open(HISTORY, encoding="utf-8") as f:
+                done = {e.get("month") for e in json.load(f) if isinstance(e, dict)}
+        except Exception:
+            done = set()
+        if want in done:
+            print(f"   SEO sales report: {want} already reported — nothing to do")
+            return
     if args.month:
         y, m = map(int, args.month.split("-"))
     else:
