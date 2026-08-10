@@ -60,10 +60,64 @@ EN_KEYWORDS = [
     {
         "keyword": "SunGod alternative cycling glasses",
         "volume": 350, "phase": 1,
-        "angle": "Mirror of the proven Oakley-alternatives winner: honest look at "
-                 "what SunGod does well (custom colours, lifetime guarantee) and "
-                 "where Velluto beats it — 25g weight, interchangeable lens system, "
-                 "30-day risk-free trial, from 69 EUR vs SunGod's premium tiers.",
+        # Reworded 2026-08: said "where Velluto beats it", which briefs the model
+        # to write the exact § 6 UWG claim the gate then blocks.
+        "angle": "Mirror of the proven Oakley-alternatives structure: honest look "
+                 "at what SunGod does well (custom colours, lifetime guarantee), "
+                 "then Velluto's own measurable specs alongside — 25 g, "
+                 "interchangeable lens system, 30-day trial, from 69 EUR. Same "
+                 "level of detail per column; let the reader draw the conclusion.",
+    },
+    # ── Problem-first searches ────────────────────────────────────────────────
+    # These were planned long ago: config/seed_keywords.yml lists them under
+    # phase4_5_problem_keywords and config/problem_solution_map.yml already holds
+    # the USP + guarantee text for each. But only research/serp_fetcher.py ever
+    # read that file — to MEASURE. The article pipeline reads this queue, which
+    # never contained them, so not one article was written for any of them.
+    #
+    # The AI-Overview gap analysis rediscovered the same set independently: Google
+    # answers every one of these with a cited AI Overview and Velluto is not a
+    # source, because there is nothing of ours to cite. Unlike the brand-comparison
+    # keywords it also surfaced, these have no existing article to cannibalise.
+    #
+    # They are also the earliest point in the journey we can meet a buyer — someone
+    # searching "burning eyes when cycling" has the problem right now and does not
+    # yet know the product category. _match_problem_solution() injects the mapped
+    # USP and the 30-day guarantee automatically.
+    {
+        "keyword": "cycling glasses don't fit with helmet",
+        "volume": 400, "phase": 1,
+        "angle": "The fit problem every cyclist hits. Explain why arm geometry and "
+                 "temple thickness decide helmet compatibility, how to test it in "
+                 "30 seconds, and what to look for. StradaPro fits the criteria "
+                 "(adjustable nosepad, 25 g) — state it as a spec, not a verdict. "
+                 "Maps to problem_solution_map: helmet_fit.",
+    },
+    {
+        "keyword": "burning eyes when cycling",
+        "volume": 500, "phase": 1,
+        "angle": "Symptom-first: why wind at 30 km/h dries the cornea, why watering "
+                 "makes it worse, and which frame properties actually stop it "
+                 "(coverage, wrap, ventilation that does not draw air across the "
+                 "eye). Answer the question in the first two sentences so it is "
+                 "quotable. Maps to problem_solution_map: wind_eyes.",
+    },
+    {
+        "keyword": "blurry vision at high speed cycling",
+        "volume": 250, "phase": 2,
+        "angle": "Separate the causes — wind-induced tearing, lens distortion at "
+                 "the edge, fogging, fatigue — and say which is which, because the "
+                 "fix differs. Cover optical clarity and base curve honestly; do "
+                 "not attribute prescription correction to Velluto. Maps to "
+                 "problem_solution_map: vision_distorted.",
+    },
+    {
+        "keyword": "cycling sunglasses for bugs and insects",
+        "volume": 200, "phase": 2,
+        "angle": "Small, underserved, and genuinely about eye safety at speed. "
+                 "Coverage geometry and lens height are the whole answer. Include "
+                 "what to do when something gets behind the lens. Maps to "
+                 "problem_solution_map: insects_bugs.",
     },
     # From the AI-Overview gap analysis (scripts/geo_gaps.py): Google answers this
     # query with a cited AI Overview and Velluto is not among the sources. The
@@ -182,8 +236,12 @@ EN_KEYWORDS = [
     {
         "keyword": "cycling glasses review 2026",
         "volume": 480, "phase": 2,
-        "angle": "Hands-on testing criteria: optical clarity (newspaper test), "
-                 "frame flex, sweat resistance, fogging in 5°C descents.",
+        # Reworded 2026-08: "hands-on testing" briefed a test nobody ran
+        # (§ 5/5a UWG, EU fake-review ban).
+        "angle": "The criteria that decide quality, explained so a reader can "
+                 "judge any pair themselves: optical clarity, frame flex, sweat "
+                 "resistance, fogging on cold descents. Say what to look for and "
+                 "cite published specs; no first-hand trial may be implied.",
     },
     {
         "keyword": "cycling sunglasses buying guide",
