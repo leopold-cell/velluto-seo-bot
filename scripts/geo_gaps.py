@@ -66,11 +66,18 @@ def _aio_run() -> list[dict]:
     entries = snap.get("ai_overviews") or []
     if not entries:
         return []
+    # AIO snapshots are keyed by SEARCH MARKET (us, gb, da, pl …) while paa_seed
+    # and the monitors are keyed by LANGUAGE (en, de, nl, fr). Passing the market
+    # through unmapped filed English keywords under "pl" and invented a "us"
+    # bucket that no downstream consumer knows.
+    MARKET_LANG = {"us": "en", "gb": "en", "uk": "en", "au": "en", "ca": "en",
+                   "ie": "en", "at": "de", "ch": "de", "be": "nl"}
     by_market: dict[str, dict] = {}
     for e in entries:
         if not e.get("keyword"):
             continue
         market = (e.get("market") or "en").lower()[:2]
+        market = MARKET_LANG.get(market, market)
         by_market.setdefault(market, {"details": []})["details"].append({
             "question": e["keyword"],
             "velluto_cited": bool(e.get("velluto_cited")),
@@ -179,8 +186,18 @@ _Q_OPENERS = (
 
 
 def _is_question(text: str) -> bool:
-    t = (text or "").strip().lower()
-    return t.endswith("?") or t.split(" ")[0].strip("¿") in _Q_OPENERS
+    """A paa_seed entry must be a real question, not a search keyword.
+
+    The opener word alone is not enough: "are expensive cycling sunglasses worth
+    it" opens with "are" and is a keyword, while every question in the curated
+    bank ends with "?". Requiring the mark is what separates them — and it also
+    keeps AI Overview entries out of paa_seed entirely, which is correct, since
+    those are search terms and belong in the keyword queue.
+    """
+    t = (text or "").strip()
+    if not t.endswith("?"):
+        return False
+    return t[0].isupper() or t.lower().split(" ")[0].strip("¿") in _Q_OPENERS
 
 
 def propose_paa(gaps: dict[str, list[dict]]) -> str:
