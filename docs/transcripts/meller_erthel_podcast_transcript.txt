@@ -1,0 +1,925 @@
+This episode is brought to you in part by SWIM.
+Here's the thing about wishlist apps.
+Most of them just sit there.
+A customer saves a product, and then nothing happens.
+SWIM actually activates that data.
+When someone wishlists a product, you could trigger price drop or back in stock alerts
+and feed that intent directly into Clavio or your CRM.
+You're not guessing what people want because they've told you.
+Plus, customers can share wishlists for gifts,
+and your team can view them to offer personalized service online or in-store.
+And unlike cart abandonment, wishlist data is permission-based.
+These are people raising their hand saying,
+Hey, I want this. Just not right now.
+SWIM's been around for over a decade.
+It powers 45,000 stores and installs in about five minutes.
+You could try it for free today at getswim.com slash curt.
+That's G-E-T-S-W-Y-M dot com slash curt.
+Today on the unofficial Shopify podcast, I'm joined by a serial entrepreneur who has the rare
+distinction of, well, he had a $330 million exit.
+And we're joined by Christian Earthle, who sold Hello Body, a German Shopify store.
+And then also is running now, Melor Sunglasses, Melor Brand dot com.
+That store sells a pair of sunglasses roughly every 28 seconds.
+So really very successful European entrepreneur, rare for the show.
+You know, we're very North American focused.
+So but happy to unpack this and adhere.
+What that level of success looks like?
+How did you get there?
+So we're joined now by Christian Earthle.
+Christian, how are you doing?
+I'm doing very, very good.
+Thank you.
+And all of you, you'll hear a lot of German accent in the show.
+Very happy to bring a bit of German spirit to this North American podcast.
+And I'm currently here in Spain and doing very good.
+I moved to Spain 11 years ago because as I can argument, you all, Spain has great life quality.
+All right.
+You're a serial entrepreneur.
+The business you sold is Hello Body.
+Just give me that story quickly.
+Hellobody.eu.
+Yeah, exactly.
+So we may take it.
+It was like when I moved 11 years ago to Spain, I first looked for a job and then realized,
+okay, it actually is much cool to start company.
+So then every month I did a new company.
+And some of them failed.
+Some of them worked out.
+Mela, one of them, it got sold just a few months ago.
+And also Hellobody got sold three years ago to Hangtor as a billion euro company.
+And the business one, I was consulting them for two years.
+I was the outside CMO.
+They were like, we have hyper growth.
+They contacted me when they were at 30 million.
+They were like, we're at hyper growth, but we have an agency.
+And we cannot do it for agency.
+We need in-house.
+We want you to be on it 30 hours per week.
+So I was going between Berlin and Barcelona,
+flying every two weeks back and forth.
+I was very, very worth it.
+And then we could go from 30 million to a hundred million.
+And then we got a three hundred, 30 million euro exit on it.
+Three hundred, 30 million euro.
+It's a huge sum of money.
+I would always think that it's not so much for the US.
+I think it's like for German exit, this is a high one,
+but I think in America, you have even crazier Shopify stories.
+So, but yeah, for us, it was a big thing.
+Yeah, so we are happy.
+Nothing to sneeze at for sure.
+I would be happy with it.
+So what do you then tell me about Mela?
+Mela sunglasses?
+Yes.
+Yeah, so this one, we are really like,
+kept on testing things.
+And at one point, we saw that sunglasses is a very hot, hot market.
+It actually developed because the neighbor of a friend of mine,
+he started to do sports sunglasses.
+And online 11 years ago, and it was going really, really well.
+And so we asked him of like,
+Hey, would you mind if we do fashion sunglasses?
+And he was like, no, I don't mind them doing sports sunglasses.
+But my niche, you can do fashion sunglasses.
+And then yeah, started selling 12 and so on.
+And when he went bigger, we had this big, big problem every winter, right?
+Because every winter was like, okay, we can, it's so hard.
+We were only in Europe.
+And it's so hard to sell in February.
+We were always like, oh, we have to close the company.
+We were like so close, like two or three times, we were like, okay, that's it.
+Good. Goodbye.
+Goodbye company.
+And it was a lot of stress and panic everywhere,
+because winter was just very hard.
+At one point, we decided to do watches.
+So we also had like,
+Mela, Mela watches on top of that.
+But our investors were against it.
+And they ultimately proved to be right.
+It was a good move for three or four years to have both,
+because we could survive for winter is more easier.
+And because we would sell more watches in winter.
+But ultimately, now we, if you go to MelaBran.com,
+you'll see it's only sunglasses.
+We went back to our roots of being very, very good at one,
+one single thing.
+And you will see like,
+there's way over 400 pairs for a very, very fair price of $49.
+And if everyone wants, you see my name here, Chris Erful.
+We just put it in at Mela discount,
+and you will get the highest discount ever.
+So you'll be very, very happy with your price.
+And you will see like, our idea was always to beat Raybann in quality,
+but to be at a fair price.
+So like it was a clearly beating Raybann,
+a beating Luxotica, the company behind it.
+In quality, that was our ambition since always,
+but having a way, way fairer price.
+And I am pretty certainly made it to everyone who is wearing it.
+And I get every day on my WhatsApp,
+I get pictures sent from friends of like,
+ah, I'm here in, I'm here in Brazil,
+and I'm seeing Mela's sunglasses.
+Oh, I'm here Indonesia.
+Like all around the world,
+you will see Mela's on just now.
+And the customers are really happy.
+Like actually check out Trustpilot.
+That's what we are very proud of.
+And Trustpilot, we are super highly ranked with,
+I think 40, 50,000 reviews plus.
+And people really love loving us.
+So you're certainly not the,
+or the first sunglass brand we've had on here.
+And the others were very successful too.
+It talked to me about why you like sunglasses.
+Cause everyone struggles with the seasonality of it.
+But then like the unit economics of it must be amazing
+versus to put up with the seasonality of it.
+What I've been seeing the market in many, many years now,
+and I was seeing with different timings for different products.
+Like now it's impossible to start a sunglass brand
+because there are so many big established players in it.
+And before Facebook ads or meta ads,
+it wasn't possible to do it.
+And that was just with very short gap of timing
+where it worked to start a sunglass brand.
+And everyone who did it then,
+or a lot of them who went executed well,
+it could get so successful.
+Because most people don't know this,
+but sunglass has a more, more not poorly on it.
+Like if you buy an, maybe you know,
+Oakley, Raybann, all these brands.
+And you go to a also called sunglass hat in the US,
+we stores.
+Yeah.
+You go into a sunglass hat and you feel like you have a lot of choice.
+But actually it's one brand to take our owning all of it.
+So like it doesn't matter what you buy.
+And obviously it costs eight US dollars to produce one of these pairs.
+But they give you this market markup and make you think it's $250.
+I don't know how much you're paying in Chicago over there.
+But here is around 190 to 150 euros.
+So we just get this heavy markup because we can't because we have an
+monopoly on it.
+And you could not break it until Facebook ads came around.
+So that's why the sunglass became one of the first big things.
+Later was jewelry.
+When skincare became the hot thing,
+like that was like six, seven years ago.
+Currently I see fashion.
+What I'm seeing right now is like fashion is the hottest thing.
+Like when I'm helping brands right now,
+we once are skating crazy is fashion.
+Also I'm helping Uniqlo in Japan.
+So they have probably a way higher budget than like the budget of Uniqlo.
+A mita ads is higher.
+Yeah, you have Uniqlo as a client.
+And the budget of Uniqlo is higher than what what HelloBuddy was sold for.
+What do you what we said before?
+So I just imagine the budget per year.
+So okay.
+This Miller brand sunglasses your German man in Spain with EU experience.
+But I'm on this Beller brand website.
+I'm in the US and it appears I could buy.
+If I were to order on the site,
+would I can I get sunglasses in the US?
+Yeah, you can get them fast.
+You'll get them in 24 hours or less.
+We have couple of warehouses in the US.
+Like we are really fast is very important to leave very,
+very quick in every market.
+I think we have two or three warehouses in the US.
+We have one in Mexico.
+Mexico's also a great, great market.
+Yeah, we are all around the world and we try to always deliver.
+People get shocked like 24 hours or less.
+Yeah.
+So Miller brand when it when you started those, there's no way it was global.
+Did you was it available in the US at the start?
+Only only in Spain.
+How long how long ago did this this get started?
+11 years ago.
+And then when did you launch in the US?
+I think it was like 60 years ago where we launched and failed.
+So we launched and failed and retreated.
+And then we launched again because we're like such a big market.
+And everywhere else was working.
+We're like, we're getting all the markets working.
+And then we relaunched two years later again.
+And when we got it, we got it running.
+All right.
+You said the first time it didn't work.
+Where did it go wrong the first time?
+So we just we were like surprised with the higher CPM.
+We didn't expect the CPMs of that much higher.
+So that made it everything a bit harder.
+And also we wait.
+It's cheaper to run ads in the EU than here.
+Much cheaper, much, much cheaper.
+It's pretty much everywhere in the world is cheaper than in the US,
+especially like Florida, California.
+Yeah, it's like it's a good market.
+And but I would say there's even better ones.
+We just like to make high profits.
+Whereas like, let's compare.
+Like let's see what our people see.
+But like if we are a lot have to do it in euros,
+but like it would be in dollars, I think it would be eight.
+Like in Germany to everyone's listening,
+we're seeing very frequently, we're seeing a six to eight US dollar CPM.
+So for every 1000 people viewing your ad,
+you're paying just six to eight dollars.
+For me, you will be way way above it.
+Depends on the product then, but you'll be way above it.
+One dollar one US dollar gets you 0.85 euro at the moment.
+So yeah, if you're going euro to US,
+how'd you make it work the second time around?
+So we had to dial the ads up a bit, you know, like in,
+we always seeing that what works in German is to have a bit more with more serious ads.
+And you know, like it's not over high.
+Like, you know, not going like one good example is like for one product,
+we said like a life changing product best thing ever, you know,
+like and you wouldn't say these things in Germany or in Europe so much.
+But I mean, US these things work.
+So we didn't know it.
+We have exaggerated in a way a little bit that like that
+dial things a bit more up.
+We were not used to that style.
+So that was one of the biggest.
+And we also made ads like our content now is way funnier.
+Like, because I believe a lot in making people laugh, you know,
+everyone's going to buy your product.
+But a lot of people then may scroll very a bit sad and they're like,
+you know, they're having a hard day and then just to cheer them up,
+you know, you're just giving something back.
+So we love just making people laugh at that.
+And we just try to make very, very funny content.
+So that's a lot about that.
+So you think humor is content, you think that is somewhat universal in its appeal.
+Yeah, because I've seen some really funny ads come out of Europe.
+It happened more and more.
+We should also talk about this.
+Like nowadays, don't believe everything you see in your feeds.
+Because I would say now for me, what I'm seeing is like,
+when you actually look at it, like 40% is AI and just increasing.
+Like I love times friends sent me with crazy cool golf shots.
+And I'm like, yeah, but you know, but this is AI or like there was like a friend,
+my best friend sent me yesterday, a news feed story.
+And it was like a very funny thing.
+I would see an end and I'm like, yeah, it would be very funny.
+But you know, this is AI, you can tell.
+And he was like, oh shit, it's getting so close.
+And obviously we're getting to a point where we will no longer see.
+So we might actually go from the feed.
+You might go to a phase where just no one believes anything anymore, what they see.
+People believe what they see in real.
+But it's like nowadays, I'm just like, okay, could be real, could be fake.
+And we're living in very, very weird times when maybe the phone news will go down,
+because it's just boring to see mostly like made up content,
+which is actually a good thing, you know, we should be more.
+We should be more in the now.
+Like I love is what you know, like the power of now, like being connected and not being
+on the phone and seeing other things.
+And maybe that's the AI is finally the thing that can, you know, weirdly gets us to put down social media.
+We'll just get boring, you know, it just will be everything will be fake.
+And you're like, okay, so what?
+Yeah, what point is like the entire timeline just programmatically generated specifically for you,
+and nothing is real.
+Exactly.
+You'll see like that's a disturbing user.
+Like triple four times backflips of snowboards, which looks very cool first, but then you're like,
+okay, it's not real.
+So yeah, my, yeah, my teenager, my oldest, he was like, he's making fun of us.
+My wife and I just like, oh, yeah, he's like calling us boomers because we fell for an AI,
+you know, video, something or other.
+He's like, I never fall for a I, at which point I sent him a photo that I had generated
+of our Christmas decorations that were, it was AI.
+Like I was just trying to play and some stuff out.
+I sent it to him.
+He's like, oh, man, I walked right past this.
+How did I miss it?
+I said, cause it's AI and you didn't know.
+And it was like within, you know, a minute of him accusing us of being boomers for not recognizing
+a guy, he immediately fell for it.
+But like at this point, it's good enough where, you know, it's especially just scrolling quickly
+through a feed 100% you're going to get got by AI.
+Exactly.
+And it's obviously it's just just getting better.
+It's just getting better.
+I was just, and you can do so like for the power it gives you, you can do so cool things.
+I was just now thing like just before our call now, I had a two hour call with this
+underdio German company and we're doing that batch sheets.
+But like we had to wear bare bare bare and venters off the fitted batch sheets.
+So basically we were like trying to make this look cool.
+So we just put it into VV, which is a tool which is very like an AI Swiss knife where you have
+everything in and we use Google B or three and so and made made it made the batch sheet fly.
+And you can see it from all, all, all, all things.
+And so for this to showcase a product better, it's amazing because like how long would it take
+until we actually have in the studio a batch sheets and filming it from all sides.
+And so it would be doable, but it would take super long and like it took me 10 minutes to make it.
+So in this, it's a cool, cool thing.
+This episode is brought to you in part by zipify one click upsell.
+Hey, you still guessing which products to upsell?
+Yeah, look, that's how upsells worked like five years ago, but that kind of guess work,
+it's just losing your revenue.
+One click upsell by zipify uses AI to recommend the best upsells and cross sells based on your
+actual sales data live in real time.
+Yeah, it's smart, automatic and way more effective than the old school.
+I hope this works method.
+So just install the app, launch your first upsell funnel with one click, no code, no testing,
+and no more generic offers.
+You could upsell across the entire customer journey, the whole funnel product pages,
+cart, check out post purchase, thank you pages, even the shop app.
+And now they're tossing in a free cart drawer just for installing.
+Cart drawer is the best over 50,000 Shopify merchants trust one click upsell.
+And it's already driven nearly a billion dollars in extra revenue.
+So go to zipify.com slash curd to start your 30 day free trial that's
+zip ify.com slash k-r-t which which AI tool did you say you were using?
+We V.
+We V.
+Okay.
+We V.
+And that's like one of those ones where you could pick your.
+Yeah.
+So it has different models.
+Yeah.
+It's like you have like a hundred different models and it took us for me.
+I get lazy, you know, like maybe people can relate.
+I don't want to use 11 labs and then top us labs and then like V or three.
+And like every time taking one image, editing one thing, downloading it,
+putting it to the next tool like because I have a lot of steps in the process.
+Now so I want, yep, I want one tool where I have all of them.
+I can just connect to them.
+So it's like imagine like a Figma board and I just have all of them in and they just connect,
+connect the dots.
+And they also actually is another cool exit case story.
+And they just get actually sold to Figma after 11 months of running.
+So they took seven months of programming it four months on the market and the people,
+it went so crazy that they got sold for 200 million also.
+That was another.
+That's crazy.
+Free big exits today to talk about.
+Yeah, that's crazy.
+Yeah.
+Yeah.
+I mean, you take Adobe Firefly, which is similar where it's like, you know,
+you could pick the different models.
+It's already loaded in.
+Exactly.
+It's convenient because it's in my Adobe account.
+But we V sounds really good and a Figma owns it.
+That's great.
+Yeah.
+Yeah.
+Because my team uses Figma.
+Yeah, perfect.
+Yeah.
+Okay.
+It will be integrated into that.
+That's going to be good.
+You, you know, you have experience growing these really successful international brands.
+You have experience getting them, you know, brands outside the US getting them into the US.
+You also have experience in vice versa going getting, you've helped launch four US brands in
+Germany successfully.
+Yeah.
+Yes.
+Okay.
+I want to know, I want the 30 day playbook.
+Like what, what's kind of, what are the things you're, you're doing to successfully launch
+in Germany that, you know, me as an American who has been to Germany one time in my life.
+It just wouldn't understand.
+Normally in all of these cases, I would first have like a call with a founder and like,
+let's, let's have like one example.
+There's like a company as a real example.
+They're doing video courses, right?
+So I would have these video courses of doing a certain, certain task.
+And, and I would like talk to the founder first to really understand what's behind it.
+You know, like what, what, what they explain me everything in a world to company.
+So that I understand it really well.
+And then I would look at where US ads and I would try to translate them into German ads,
+you know, being like, okay, mess habits, how they're marketing there.
+And when I'm thinking like, because obviously my whole life, I'm a German, you know, like it's
+very easy for me to see, okay, how does this, this fit to my culture.
+And normally we would tone it down.
+Like we would, we would look into it and like, how can we market it more?
+Like, okay, what's the practical point of it?
+Like, how can you like, like saving in this case, we market a lot of like, saving time,
+you know, you could use, you could learn the skill, watching a lot of YouTube videos.
+But like this, you're saving time and you have it very precise in one course.
+It's high, like premium is very high quality recorded.
+And you, you see it.
+And also then explaining to them very, very clearly of like, look, and you can even like Germans
+love it if they can, what really worked in this case, like you can cheat the system,
+like the ad even invites you to be like, hey, the first year cost you this and it was very
+small amount.
+And then if you keep ongoing customer, it costs more.
+But if you're smart and they even explain them, if you're smart, you take the tool,
+you pay with small first year subscription.
+And then you cancel and the Germans love it.
+Like if you love trust, but then a lot of them ended up liking the tool so much.
+They were like, oh, no, they actually deserve it.
+Like Germans, then they are really, we love paying for things where we see is worth it.
+But then they are like, oh, we actually plan to cancel, but actually brings us so much value
+and we can keep on using it.
+And so that they continue.
+So this is something that this, I think this ad wouldn't translate so well to the US and in Germany,
+it does.
+And in German also, it's like, we really, we really check the comments section before we buy it.
+Like we would overthink, like, I think Germany is a very, very rich country and we also market
+total and which is country with wealth pretty much in terms of this.
+But they always question a bit more before buying something online.
+So it's a bit hard to get the first buy, but if you get to their trust once, they will buy a lot.
+That's something that really works, but also seeing people in
+in Germany, it's crazy, the retention rate.
+Like people buy again and again and again, it's like, it's not unheard of of someone in
+their lifetime history having 15 or 20 plus melas and glasses over last years.
+Like that's quite a and then they give it a spread.
+And so it's like, that's, that's quite a thing.
+So once you have the trust, it's a, it really works and the market is really, really rich.
+Let's assume I'm using Shopify as my platform in North America.
+Shopify is the default for e-commerce.
+What about Germany?
+Like Tobias Luke, Shopify CEO is German Canadian.
+Exactly.
+Yeah, yeah, it's crazy.
+And you have the same accent.
+Yeah, 100%.
+He speaks probably a bit better than me even, but exactly he is.
+And he's actually very nice.
+I like his, I like his podcast.
+So in Germany, what happened is like another German quickly saw, oh, this is something
+that's growing and Tobias made it.
+So then he copied it.
+So there's shop where I made a two-gemel market.
+So Mela is a Shopifyer because we are smart, but most German companies, like I would say,
+the split I have to see, but what I'm seeing, like I don't have official data,
+but what I'm seeing when I see a lot of brands, I would say 80, 20.
+So 80% shop where, which is just pretty much a one-to-one copy and when Shopify.
+So we are really struggling in Germany where our company built a lot of trust and
+market share.
+And this is another thing, you know, when we talk about Germany, we need much more trust in the ads
+to sell. That's why like we check right away, we right away have the comment section filled
+with people who love the product, like real bias.
+But I just asked my friends, well, real bias like, hey, can you quickly comment something
+with a new ad as life?
+So then people, people would, before they buy, they would check this and then they would check
+they would check trust pilot.
+And we always have trust pilot in the ads.
+We do a lot of image ads with trust pilot in it.
+And if you actually look at Mela brand and the checkout page, you see before, when you put your
+credit card in, you again see trust pilot with a score of 4.4 on 38,000 reviews.
+And that that's really, really helpful.
+And then obviously like we're really focusing on Germany itself.
+It is some of these same purchasing patterns.
+I assume this would extend to Austria.
+Yeah, yeah.
+For any US e-com owner who is listening to this, I can tell you to enter in Europe,
+we have two easy steps, very, very two easy steps.
+The first step is you keep your ads in English, change your currency, change the dollar to the euro.
+And you make, but you make the ads, like you would make it for Germany, but in English, okay?
+But you take it like this and you go to Nordics.
+So Nordics, I call them, it's taking a bit wrong, but every time they make an ad container called
+Nordics would be Finland, Denmark, Sweden, Belgium, and the Netherlands.
+These are five small countries for you, for us, we are medium-sized in Europe, but for you,
+we are small countries, but very, very rich, and all of them watch TV in English.
+So there's no problem at all to make the ads in English.
+So even I don't bother to translate them always in English.
+Oh, wow.
+So like, yeah.
+I mean, I knew English fluency was prevalent.
+Is it, you know, often it's part of high school education.
+And in these countries, like Germans, we don't speak so good.
+But as you can hear, but these countries, they speak amazing English.
+Always business, but everyone listening to me from the US, please go to Europe.
+It's a crazy market, crazy profit margins.
+Go to a Nordics first, step number one.
+Step number two is you go to a Dak region.
+So Dak region is what we call Germany, Austria, and Switzerland.
+And you target German, and people who speak German in this area,
+which is like a crazy, like, I think must be Germany's 82 million plus 10 million plus 10.
+So around 100 million people, which you can target there, which are all richer than Americans.
+Sorry to say that.
+We've let less amount of that.
+So, and yeah, that's the thing.
+And also for this region, you want to have Klarna.
+Do you know Klarna?
+It's like, I think a Swedish company.
+Yeah.
+You really.
+I'll pay later.
+Yeah.
+You really want to have that for the younger generation,
+the older's not.
+So you need to know a couple of things about the European markets.
+Like you want to have.
+I wanted to ask about payment providers.
+How do payment providers change?
+It's mostly like, it's mostly people pay credit card or Klarna or pay people.
+So I think it's nothing, nothing too new for you.
+Okay.
+But here comes a big thing.
+So you have an again, I'm going to share a couple more market nuggets for all of you.
+Because now I helped 144 companies.
+I've seen a lot.
+So the next thing is after those, you would want to go to England.
+Probably it's an easy one.
+You have a language.
+So it's easy.
+Ireland also easy.
+You have Euroswear English.
+You have a pound.
+And then France, you would want to have France,
+Monaco, Luxembourg in French.
+Okay.
+That's easy.
+But there you have to have in French.
+Then Poland, you need Polish ads.
+It can be English sometimes.
+In another, it's not such a rich country.
+But people are so used to e-commerce, people buy everything online.
+So it's a crazy, like for HelloBuddy, and so it was a crazy market.
+No Poland.
+Again, also it's quite easy.
+And like here you will see like three, four Euro CPM,
+which I think for people who add the blow in mind.
+They trust me.
+They give a blow in mind.
+And then you have Italy, which is also working okay.
+Not the best market was working okay.
+And it's no competition because everyone enters where it doesn't work for anyone.
+Why?
+And with this trick, you will not get it to work.
+You need, initially you need to offer cash on delivery.
+If not, it doesn't work.
+People are super used.
+People are super used to buy.
+And then once they get to prodding their hands, they give cash.
+So we didn't know this.
+But we learned pretty quick.
+Took us only a couple of weeks.
+We are not so stupid.
+We figured it out fast.
+But there's something in Italy, that's why there's also no competition.
+Because most US brands don't know that and they run ads.
+It doesn't work.
+And they're like, oh shit.
+But once they see that they need COD, cash on delivery.
+They'll win there.
+So that's another good one.
+So this is the one on one to Europe by Chris.
+No, it's all just fabulous advice.
+I want to go back to your Hello Body story that we talked.
+You know, we mentioned at the top of the show.
+Sold for $330 million.
+And it might know it's, I know that's a 3X multiple.
+Because when you joined, they were doing only $30 million.
+And then it at exit $107 million sold for $330, so $330, so $3,
+X multiple.
+That's exceptional all around.
+What?
+How much of that was you?
+I mean, how do they go from $30 to $107?
+No, this is I have to be humble.
+Like I was already a great, great team.
+So like, I mean, getting from $30 to $30, that was a big, big step.
+So the team did such a good job.
+The two founders were did a crazy, crazy, good, good job.
+And I was just like, what happened is like,
+as founders, we always helped each other.
+So they were helping us have met, we were helping them.
+And then there's no trust.
+And then they just came in and they were like, Chris,
+they're going to make you an offer.
+You cannot refuse.
+We have big plan to fellow body.
+And we have an agency running our ads.
+And we want to sell.
+And if you sell and you have an agency,
+you always get a lower multiplier.
+Because you know, people want to buy me know-how.
+And we're like, we want you to come here.
+We have influencer marketing.
+We're also working well in the US, I guess, on many parts.
+We have this part.
+We're rocking it.
+We are really good at it.
+We have a lot of influencers who say our skin is really good
+because of these creams.
+And we have no microplastic, you know, there's like no animal testing.
+Like everything that Germans love at the time,
+like Germans love the environment.
+So another thing for US brands,
+you always want a market with the environment in Germany.
+Like the green party is super strong here.
+Like Germans love it.
+There's no animal testing.
+And so no microplastic in it.
+Like super important points.
+But so then what my job was just to go there,
+hire the right people and train the right people.
+So I was like, my job was to replace the agency.
+So I came in, I hired the right people.
+Also, like I found also, I looked in the company who's already good.
+Like for example, the assistant of the boss, she was amazing.
+And I was like, hey, can I have her 20 hours?
+And you have to 20 hours and he was like, yes.
+So she was also running ads and coming up with ads.
+And she knew the company well already.
+So she is amazing.
+So like, yeah, I just hired eight, nine good people,
+trained them.
+And then we took over and then we quickly surpassed the numbers of agency
+just by creative output.
+Now we looked how many ads we're doing right now.
+And how can we triple that?
+Like how can we go from, we were like,
+we're doing 15 new ads every week.
+We're like, okay, how can we go to 45 new ads every weekend?
+And we went on top of that.
+So here what I can share with all the ads.
+Yeah, but you need that.
+But here what I can share my value nogget here for your audience.
+Because I hope many of them are Shopify Ecom owners.
+That would be perfect when I can help you most.
+But here, my idea, what do you want to do?
+For ads, you make every week.
+It's a year of 100%.
+I would tell you, do you divide this?
+40% you make video ads.
+They are harder to make, but you have longer content to show.
+And you can convince people more.
+And then 60% you have image ads because they have a higher conversion rate.
+And they're easier to make.
+So 60, 40.
+And then these two blocks, we divide again into three categories.
+Into completely new ads.
+And you fully sit down with a blank paper and come up with new funny or cool
+added ideas, or like from different angles of like every angle the customer could think like.
+You come up with new ads.
+Then the second category is you make a competitor ads.
+Inspiration, so you get inspired.
+You use like tools like Forplay, which is by a cool Canadian or US guy,
+a site who made this.
+And use some tools, look at competitor ads or other people's ads at works.
+Like for example, Hello Body, we looked at some ads of L'Orealie, from Paris,
+or from some Australian brand that we liked.
+Right?
+And we're like, okay, how can we translate this?
+And how can we get inspired by what's working for them?
+You don't fully copy, but you get aspirations and then make ads all of this.
+And then one third is ads that you do winning iterations.
+Right?
+And you would make this and then depending on how many ads you make.
+So if you say you make 100 ads a month and you would make 60, 40, and then you'll
+do one third in each.
+And then you know exactly what to do every week.
+But that's really important to follow a certain structure and to make sure to get
+the crowd content machine running.
+Right? Like obviously, UGC is still working good in many, many parts.
+And you just check, you know, like what ads I want.
+And another thing I can really tell to all of you,
+because I really want to give a lot of value to your audience,
+is to not always, let's say now you're the founder of Gymshark and you're listening.
+Okay? Don't always do the ads as Gymshark.
+You know, it's cool. People like a brand is good.
+But why people don't trust it too much if they say, okay, Gymshark says,
+okay, we make the best quality in pullovers.
+Of course we're going to save it.
+But now if I use a passion page and it's called a UK's Best Sports Apparel.
+And then in this page, they recommend different pages and they just recommend
+Gymshark is much cooler. That's one part, passion pages.
+The second part is now they would do a collaboration with Lumel and Messi.
+They could do a whitelisting where it's just running through Messi's content,
+like through Messi's page.
+And it's getting published there.
+Like in the ad, it's just Messi up there, like whichever people they chose.
+And that's working really, really good.
+And it doesn't matter.
+It can also be a non-famous person, but just going from a private profile.
+And then there, whitelisting is great.
+And then there's partnership ads where you actually have like
+Messi with Gymshark and you have both together.
+This is what Facebook is pushing the most.
+But all of these work better than just putting Gymshark.
+Because Gymshark and it's a sport surfer, people know it's an ad and people get blind to ads.
+Like 11 years ago, it was easy, but now people get blind to ads.
+So you have to avoid that.
+So you try to, I'm trying to be more smart and creative around it.
+I've never had a customer cancel an order because they were shopping well high or because they broke up
+with their significant other.
+Those are real reasons customers could cancel.
+And there are a real headache for both you and your customers.
+Why should they have to email support to change, cancel, or update an order?
+Enter Cleverific.
+With Cleverific, your customers can edit their orders themselves through a self service portal.
+That means fewer support tickets, faster shipping, and fewer returns.
+Everybody wins.
+Peter Manning, New York, cut their order support by 99% with Cleverific.
+Now it's your turn.
+Listeners of the unofficial Shopify podcast get 50% off the Pro plan.
+Just $49 a month.
+Go to Cleverific.com slash unofficial and use promo code CERT50 at checkout.
+It's less hassle, happier customers with Cleverific.
+That was interesting.
+You mentioned Trustpilot repeatedly.
+I don't feel strongly about Trustpilot either way.
+But clearly you do.
+Why do you love Trustpilot?
+It's just, I love data.
+I love data.
+As a German, we love, I love AV testing.
+I made over 3,500, actually 3,500, 52 AV tests.
+I currently checked it.
+And I love data.
+And the data clearly shows like we make tests.
+And if you put Trustpilot on a Shopify or not, the conversion rate is crazy different.
+Like we're talking 23% uptick.
+So it's clearly that Trustpilot, especially, and this is again a little bit why I made it
+as much as me.
+In Europe, trust is even more important.
+So we really, people really hate spending money and then it would not arrive.
+Like with risk, like, for example, I had a conversation.
+The biggest spender on Amita ads is Timo right now.
+Okay.
+We are spending way over a billion.
+Like they actually, when you look at it, I think it's like 2.5%
+of the total Facebook ad spending is Timo.
+It's one company.
+You know that, right?
+And the other day I had like a serious whale client for them.
+Yeah.
+It's too big.
+They have worried.
+Honestly, they have worried they're telling me like they don't like it.
+That one company is spending so much.
+But basically here, a lot of times now I'm currently in Spain.
+A lot of people ask me like, when it's over, have you ever ordered
+Timo?
+They can see the ads everywhere.
+But I'm like worried that I spent 10 euros and it wouldn't arrive.
+And it's not about that they're worried, but it's 10 euros, very loose.
+But it's about the feeling of like I paid and it didn't arrive.
+Like there's something that's a stronger thing.
+In America, people would be like, okay, I tried.
+It's like, it's more risk taking.
+You see also in startups, people here failing is seen as worse.
+I give for example, a lot of like one of my companies, for example, I recently made a new
+company at Universe, which I thought was a genius SaaS idea.
+Started it.
+We put half a million in with me, me and three, three, three, three, three, and co-founders.
+And we failed.
+And that's okay.
+You know, but in the US, you're like, okay, cool.
+You started something and you failed and you realized and you do other things.
+But we had this idea of like, we SaaS could be worth three million.
+We went for it.
+And after 11 months, we were like, close.
+It was growing and it was growing slower.
+And we don't want a slow growing company.
+But in Europe, it's like, oh my God, you failed something.
+And it's like the shame of failing is bigger.
+You know, so that's something that people have to understand is like,
+they're getting them through the amount of trust that you need in everything is higher.
+Yeah.
+I mean, those are serious cultural differences that just would not be obvious.
+And from the outside looking in, you mentioned running 3,500 split tests.
+Yeah.
+Oh my gosh, I love split testing.
+Is there any things where you went like, wow, that is really the opposite of what I thought would happen.
+Yeah, I would say, let me give you an easy example.
+There was this ad for snowboard jackets.
+Like I'm telling you, fashion is going really good right now.
+This ad for snowboard jackets.
+And I know with Brent and know whatever four bestsellers.
+But now above there's a cool, cool video, a guy doing double backflip, you know,
+and this like, and when you see the jacket, super cool, you get it, get it, get any attention.
+Below, we have, we have, we upload one file by the way.
+We upload one file, which is half video, half images, which is also a heck I like.
+But then you have these four images below.
+And now you can choose to a show before bestsellers, which were everyone buys.
+Or do I show four very different colored jackets, like one which is yellow, one which is red, you know, like.
+And I was like, look, I know people come and buy these and these are by far,
+they always sold off, they have a bestsellers.
+So I was very sure that the bestsellers would be working best.
+But now we see clearly that people want the contrast.
+People want to see that all they have yellow, all they have a bright, bright green, they have this.
+Then they click on it and they still buy the normal beige, they buy the normal boring colors.
+But people to click, you want to show how much variation you have, which also makes sense and think about it.
+So I also now for today in the call two hours ago, I told them with a bed sheets.
+Let's start a market yellow bed sheets.
+You know, it's like something different and it looks more happy.
+And so I'm like, people will still click and buy the white bed sheets, you know.
+But we're going to market different color variations.
+Now you have, let's say you have a company selling, what are you selling?
+Backpack, diaper bags.
+So now you have two variations, right?
+You either you have with one product in black, let's say.
+Another add showing the black product.
+Now if you click what most people do, they bring them to the black product, to the product page.
+And then they're complaining of like, oh, our average audio value is not very high,
+version rate could be better and so on.
+Why? What happens? People come there and they assume, oh my god, this brand, maybe it just has this,
+you know, like it could be a small startup that has this and I would like it.
+No. Okay. I'm going to go back.
+Whereas you set the traffic to a collection page where you see like 400 different products,
+you seem like a super old big, big, big brand, which is always important.
+And obviously you make it easy for the customer.
+So you make it that this product that they just saw is on the left top.
+So they can easily buy and find the one that they might be interested in.
+But also now if they don't buy this, obviously, okay, we have this and this other products and
+they can mix and they can buy more.
+So always send it to a collection page.
+That was something that's a bit counterintuitive because it's one more click and only always
+want to have it very fast and very good. But yeah, that's it.
+All right. So the discovery you're making here is like, hey, send them to a good collection page
+versus, you know, the default might be the home page.
+Or if we're doing these catalog ads, they're going to go to the product page.
+You're saying collection outperforms counterintuitive because we're adding click debt.
+I got to browse the collection and then go to the product page.
+Exactly.
+But I'm giving them a different starting point and maybe that's I'm starting them with Hage's
+browse and you can see more of what is in the catalog with starting on a collection page.
+And also like big shout out to Marco and Vocha because in Nella, these two current co CEOs and
+they're also the head of speed at Nella.
+They're constantly finding tools like tools for Shopify and ways to make the page faster.
+So now when I just help, like straight up just performance load time.
+Exactly. And like it's so like I'm very proud of it now. Like when you actually
+if anyone wants to go to Mella, bring to comment change colors, change products,
+I think now it could still be better. But it's like way faster than nearly over other e-commerce
+and we really see that every speed change helped a lot in terms of revenue.
+So that's crazy.
+Yeah, because it's a really beautiful site. These product detail pages are really nice,
+but it has to load a ton of images. And you've gone through the effort of like if I pick
+a different frame and lens, it's going to reload. And so there's just a lot to load and a lot of page
+loading just to browse. So I could see where on a site set up like that,
+having reducing page load in between all of those clicks, really you could have an outsized
+impact on your bottom line. It's so important. And another thing, another example, what I want to
+quickly share is like how sometimes META doesn't care about your company and you have to be careful.
+Like we made something very cool. We took a lot of time to really make a crazy good Instagram filter.
+And then it took the time to put every sunglasses ever to scan it and put into a filter. So you could
+have this Instagram filter. The ads will go to the filter like Bosco have this idea, but the ads will
+go to the filter. And then you don't go to a website, but you try on other sunglasses and you find one
+that fits you very well. You try it on and you're like, ah, this is perfect for my shape. And you buy
+it very certain of like this is the one. And then at one point, Instagram just decided to discontinue
+filters. So from one day to the other, with no announcing like we're spending good money there,
+we are a good customer, nothing just out. And yeah, we have to re-refind it like that's something
+that's yeah, it's always big changes and things happening. But yeah, well, I just part of it.
+You play in someone else's sandbox. Exactly. Would be the US expression for that.
+That's a good expression. I never heard it, but I like it. I'm going to start using it.
+Oh, have you ever done this filter essentially that you're describing for Instagram was essentially
+a virtual try on exactly just like try on the sunglasses exactly on my phone virtually. Have you
+ever done that on the Miller Shopify store? No, no, we didn't. It's like, it's a thing of load times
+and you have to accept camera permission. Like is all of these things when you our Instagram has
+it already integrated. So it was just it has to be smooth. So we I've smart we tried it, but it didn't
+work. So that's right. Like, but we love that it was so cool. Like it was really cool. And like,
+yeah, at parties, we always tried it out like this. But yeah, it's things. It happens.
+Yeah, before we go, any other favorite tools or resources?
+You know, with Mita ads, you always get a lot of traffic to a page and you can help companies grow,
+but you don't you might get like four or five rowers or ROI, but you don't wouldn't get higher
+if you get higher, you just push more, right? But you need to have some tools or some some channels
+where you have like 60 plus ROIs. So you have like crazy, crazy ROIs. And for us, this is here,
+I think Clavio Clavio was like a US company, I think if I'm all right, I'm out to check it.
+But we used first MailChimp and we used when to Clavio for email marketing. But then what we did,
+we checked the Bells, a European company coming up omni-cent like omni-channel omni-cent because
+it sends everything notifications as an email. And when we changed to them and our ROAs got up a
+lot, if now we are at the 68 ROI, thanks to them because we have more channels, we have better
+farmers, we could integrate everything. And also in terms of the cost effectiveness, it's more
+cost effective than Clavio, which helps a lot to getting. So I tell every European econ company,
+also US wants to like really have one tool, which is just like a cash, cash call.
+They are having a good e-marketing tool, which really has a fair price. And then you can really
+do anything you want and market your audience well, it really helps. And then shout out to
+a friend of mine, Ezra Fieston, like Ezra and Nick Nick.
+Oh, I love Ezra.
+Nick Nick Shekler Ford, we are like my speaking buddies like eight years ago when I gave my
+first speech, I was nervous, we were calming me down. And since when we've been at so many conferences
+together and I heard about his two, we checked it out and we love it. Like for us, the landing
+page is where and the upsell is really good. So for us, this is like a tool that we love.
+Because I saw it thanks to him. And actually I have to give shout out. I think also Omni
+sent, I saw it thanks to him. He was also recommending me this. And the VV tool, I found it thanks to
+Robry Flynn, which if you don't know him yet, go follow him on LinkedIn. He has like 110,000 followers.
+Because he posts the coolest AI content like Rory Flynn, another very, very cool public speaker on
+marketing. Okay. Final thing, you mentioned a coupon code for Miller sunglasses. Remind me what it was.
+Yeah, you just type in my name, Chris Erful, and then everything together.
+Beautiful. Okay. I will include that in the show notes. Chris Erthel,
+Miller brand. Thank you so much. This has been great. That was really fun. I hope I could give
+a low value and really when you're rocking it in the US, like if you make more than 10 million
+revenue US, it's time to also step over to Europe. And the same, I'm telling all the German brands
+who make more than 10 million, it's time to step over to us because it's just a bit more work for
+double revenue. So it's like, it's such a good deal to to market in both places because you know,
+you just need one market to make both ads. And yeah, it's also worth it. So I think I hope there's
+more collaboration. And in general, I wish for more collaborations again with between European
+Union and US like we used to be very, very good. And let's go back to that. We have very good,
+I still love all my US friends. So that's good. But like, you know, let's go back to
+collaborating really good together again. Yeah, figures crossed. Chris, thank you so much.
+Cheers. All the best. Hey, before you go.
+I was hoping you would check out our new app promo party pro. It is what I want to be the single
+best, easiest way to run a free gift with purchase promo on Shopify. We just put it live in the app
+store. We've got less than 50 users. We want your feedback. So if you need to run a free gift with
+purchase promo in the near future, install it, try it. There's a live chat. I check that all the time.
+And so if you have any issues at all, you know, or any suggestions on how we can make it even
+easier to use, let us know. We're happy to help. If you want to try it, search promo party in the app
+store, promo party pros the app, give it a shot. It's got a free trial. Thanks.
