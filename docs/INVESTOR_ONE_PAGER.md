@@ -18,7 +18,7 @@
 |---|---|---|
 | **B2B gesamt** | **~15,1 T€** | Ordertool + Rechnungen |
 | — davon Fachhandel (10 Türen, DE/AT) | 4,1 T€ / 89 Brillen / 17 Orders | Ordertool 02–07/2026 |
-| — davon Anker-Order EYB ⬜ | ~11 T€ / 280 Brillen (~39 €/Stück) | ⬜ Konditionen & Abverkaufsstatus ergänzen |
+| — davon Anker-Order EYB | ~11 T€ / 280 Brillen (~39 €/Stück) | Fester Kauf, vollständig fakturiert (kein Kommissionsgeschäft); Abverkaufsdaten ausstehend — Nachbestellung ist der nächste Meilenstein |
 | **DTC (Shopify)** | 6,9 T€ seit März 2026 | Shopify Analytics |
 | — davon August-Forecast | 4–5 T€/Monat | laufender Monat |
 
@@ -48,7 +48,7 @@
 
 **Ursache:** Ein einziges Brillenmodell (in 4 Farben). Wer das Modell nicht mag, hat keine Alternative.
 
-**These:** 2–3 zusätzliche Modelle heben die CVR auf >1 %. Da CAC = Werbekosten ÷ (Traffic × CVR), **halbiert sich der CAC bei Verdopplung der CVR** — von heute ~60–70 € auf 30–35 €, unter den Break-even jedes Kits. ⬜ Vorab-Belege ergänzen: Exit-Intent-Umfrage, Warteliste Modell 2.
+**These:** 2–3 zusätzliche Modelle heben die CVR auf >1 %. Da CAC = Werbekosten ÷ (Traffic × CVR), **halbiert sich der CAC bei Verdopplung der CVR** — von heute ~60–70 € auf 30–35 €, unter den Break-even jedes Kits. Validierung startet im August: Exit-Intent-Befragung bei Checkout-Abbrechern + Warteliste für Modell 2; Ergebnisse liegen zum Gespräch im September vor.
 
 **Das Funding finanziert exakt die Beseitigung dieses Engpasses:**
 
@@ -58,7 +58,7 @@
 | Marketing (CAC-Beweis & Skalierung) | 50–60 T€ |
 | Gründergehalt (Vollzeit-Fokus, 12 Monate) | 50 T€ |
 
-**Struktur:** Wandeldarlehen, Cap ⬜ ~500 T€, Discount ⬜ 20 %, optional in Meilenstein-Tranchen (z. B. Tranche 2 bei CVR ≥ 1 % über 60 Tage oder CAC ≤ 45 €).
+**Struktur:** Wandeldarlehen über 150 T€ · **Cap 550 T€ (pre-money) · Discount 20 % · Zins 5 % p. a.** (endfällig, wird mitgewandelt) · Laufzeit 30 Monate · Wandlung bei qualifizierter Finanzierungsrunde (≥ 250 T€) oder spätestens zum Laufzeitende zum Cap · qualifizierter Rangrücktritt · optional in zwei Tranchen à 75 T€ (Tranche 2 bei CVR ≥ 1 % über 60 Tage oder CAC ≤ 45 €).
 
 ---
 
