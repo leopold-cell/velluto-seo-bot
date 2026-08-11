@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-10": 11
+   "2026-08-11": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1739,5 +1739,49 @@
  "sv|vägsykelglasögon jämförelse": {
   "volume": 0,
   "date": "2026-08-10"
+ },
+ "de|radbrille passt nicht unter helm": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "en|cycling glasses fit under helmet": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "nl|fietsbril onder fietshelm": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "fr|lunettes cyclisme casque vélo": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "es|gafas ciclismo casco bicicleta": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "it|occhiali ciclismo casco bici": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "da|cykelbriller der passer til cykelhjælm": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "nb|sykkelbrilller som passer under sykkelhjel": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "pl|okulary rowerowe pod kask": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "pt-PT|óculos ciclismo debaixo capacete": {
+  "volume": 0,
+  "date": "2026-08-11"
+ },
+ "sv|cykelglasögon under cykelhjälm": {
+  "volume": 0,
+  "date": "2026-08-11"
  }
 }

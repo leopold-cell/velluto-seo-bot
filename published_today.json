@@ -1,61 +1,61 @@
 [
   {
-    "title": "Road Bike Glasses 2026",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/road-bike-glasses-2026",
-    "topic": "road bike glasses comparison",
-    "keyword": "road bike glasses comparison",
+    "title": "Cycling Glasses Don't Fit With Helmet? Here's Why",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-dont-fit-with-helmet-heres-why",
+    "topic": "cycling glasses don't fit with helmet",
+    "keyword": "cycling glasses don't fit with helmet",
     "lang": "en",
-    "phase": 2,
+    "phase": 1,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Rennrad Sonnenbrille Vergleich",
-        "intent": "Cyclist seeking side-by-side comparison of road cycling eyewear options to make an informed purchase decision.",
+        "keyword": "Radbrille passt nicht unter Helm",
+        "intent": "Finding cycling glasses that fit comfortably under a helmet without gaps or pressure.",
         "volume": 0
       },
       "nl": {
-        "keyword": "wielrennen zonnebril vergelijken",
-        "intent": "Cyclist looking to compare different road cycling sunglasses to find the best option for their needs.",
+        "keyword": "fietsbril onder fietshelm",
+        "intent": "Looking for cycling glasses that sit properly and comfortably underneath a bicycle helmet.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes v\u00e9lo route comparatif",
-        "intent": "Cyclist searching for a comparative review of road cycling glasses to evaluate different models and brands.",
+        "keyword": "lunettes cyclisme casque v\u00e9lo",
+        "intent": "Finding cycling glasses that work well with a helmet for secure, comfortable fit.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo carretera comparativa",
-        "intent": "Cyclist wanting to compare road cycling eyewear options to select the most suitable pair.",
+        "keyword": "gafas ciclismo casco bicicleta",
+        "intent": "Searching for cycling glasses compatible with a bike helmet that don't cause discomfort.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali bicicletta strada confronto",
-        "intent": "Cyclist seeking a comparison of road bike glasses to evaluate features and make a purchasing decision.",
+        "keyword": "occhiali ciclismo casco bici",
+        "intent": "Looking for cycling glasses that fit properly with a bicycle helmet without gaps or pressure.",
         "volume": 0
       },
       "da": {
-        "keyword": "landevejscykelbriller sammenligning",
-        "intent": "Cyclist looking to compare different road cycling glasses to find the best fit and performance.",
+        "keyword": "cykelbriller der passer til cykelhj\u00e6lm",
+        "intent": "Finding cycling glasses that fit comfortably and securely under a bike helmet.",
         "volume": 0
       },
       "nb": {
-        "keyword": "veisykkelsykler solbriller sammenligning",
-        "intent": "Cyclist searching for a comparison of road cycling sunglasses to evaluate different options.",
+        "keyword": "sykkelbrilller som passer under sykkelhjel",
+        "intent": "Seeking cycling glasses that accommodate a helmet without causing fit or comfort problems.",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary do kolarstwa szosowego por\u00f3wnanie",
-        "intent": "Cyclist wanting to compare road cycling glasses to identify the best product for their requirements.",
+        "keyword": "okulary rowerowe pod kask",
+        "intent": "Finding cycling glasses that work well with a bike helmet for comfortable wearing.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos ciclismo estrada compara\u00e7\u00e3o",
-        "intent": "Cyclist seeking to compare road cycling eyewear options to make an informed purchase choice.",
+        "keyword": "\u00f3culos ciclismo debaixo capacete",
+        "intent": "Looking for cycling glasses that fit properly underneath a bike helmet without discomfort.",
         "volume": 0
       },
       "sv": {
-        "keyword": "v\u00e4gsykelglas\u00f6gon j\u00e4mf\u00f6relse",
-        "intent": "Cyclist looking to compare different road cycling glasses to find the most suitable option.",
+        "keyword": "cykelglas\u00f6gon under cykelhj\u00e4lm",
+        "intent": "Seeking cycling glasses that fit comfortably and securely with a bicycle helmet.",
         "volume": 0
       }
     }
