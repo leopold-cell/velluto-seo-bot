@@ -1,0 +1,234 @@
+{
+  "review_date": "2026-08-12",
+  "inventory": {
+    "total_articles": 76,
+    "bot_articles": 0
+  },
+  "quality": {
+    "articles_checked": 0,
+    "avg_llm_score": null,
+    "with_issues": 0,
+    "weak": 0,
+    "results": []
+  },
+  "performance": {
+    "window": [
+      "2026-07-15",
+      "2026-08-12"
+    ],
+    "totals": {
+      "curr_impressions": 16669,
+      "curr_clicks": 511,
+      "prev_impressions": 21229,
+      "prev_clicks": 433,
+      "impr_delta_pct": -21.5,
+      "clicks_delta_pct": 18.0
+    },
+    "buckets": {
+      "dead": 0,
+      "weak": 0,
+      "low_ctr": 0,
+      "performing": 0,
+      "no_data": 0
+    },
+    "articles_checked": 0,
+    "has_gsc_data": true,
+    "results": []
+  },
+  "translations": {
+    "target_locales": [
+      "de",
+      "nl",
+      "fr",
+      "es",
+      "it",
+      "da",
+      "nb",
+      "pl",
+      "pt-PT",
+      "sv"
+    ],
+    "articles_checked": 0,
+    "fully_complete": 0,
+    "avg_completeness_pct": 0,
+    "missing_by_locale": {},
+    "articles_needing_fix": [],
+    "results": []
+  },
+  "ui": {
+    "skipped": false,
+    "targets": 0,
+    "broken": 0,
+    "minor": 0,
+    "results": []
+  },
+  "seo_geo": {
+    "technical": {
+      "pages": {
+        "home": {
+          "url": "https://velluto-shop.com/",
+          "ok": true,
+          "status": 200,
+          "title": "Velluto StradaPro | Ultra High Contrast Road Cycling Glasses",
+          "title_len": 60,
+          "meta_description_len": 153,
+          "h1_count": 1,
+          "canonical": true,
+          "canonical_href": "https://velluto-shop.com/",
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "Answer",
+            "BreadcrumbList",
+            "FAQPage",
+            "ListItem",
+            "Organization",
+            "Question",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 62,
+            "missing_alt": 0
+          },
+          "internal_links": 74,
+          "issues": [
+            "hreflang missing for: pt-PT"
+          ]
+        },
+        "collection": {
+          "url": "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses",
+          "ok": true,
+          "status": 200,
+          "title": "Road Cycling Glasses | Velluto StradaPro",
+          "title_len": 40,
+          "meta_description_len": 131,
+          "h1_count": 1,
+          "canonical": true,
+          "canonical_href": "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses",
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "BreadcrumbList",
+            "ListItem",
+            "Organization",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 36,
+            "missing_alt": 0
+          },
+          "internal_links": 62,
+          "issues": [
+            "hreflang missing for: pt-PT"
+          ]
+        },
+        "blog": {
+          "url": "https://velluto-shop.com/blogs/velluto-the-magazine",
+          "ok": true,
+          "status": 200,
+          "title": "Velluto - The Magazine",
+          "title_len": 22,
+          "meta_description_len": 0,
+          "h1_count": 1,
+          "canonical": true,
+          "canonical_href": "https://velluto-shop.com/blogs/velluto-the-magazine",
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "BreadcrumbList",
+            "ListItem",
+            "Organization",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 29,
+            "missing_alt": 0
+          },
+          "internal_links": 56,
+          "issues": [
+            "meta description missing (want ≤160)",
+            "hreflang missing for: pt-PT"
+          ]
+        }
+      },
+      "robots_txt": true,
+      "sitemap_xml": true,
+      "sitemap_references_articles": true
+    },
+    "technical_issues": [
+      "home: hreflang missing for: pt-PT",
+      "collection: hreflang missing for: pt-PT",
+      "blog: meta description missing (want ≤160)",
+      "blog: hreflang missing for: pt-PT"
+    ],
+    "geo": {
+      "geo_score": 38,
+      "seo_score": 62,
+      "top_geo_gaps": [
+        "No article HTML sample provided — impossible to verify sourceable answer blocks, definitional summaries, or inline citations that AI engines extract for grounding",
+        "Blog index page lacks meta description entirely, signaling low editorial authority to AI crawlers that weight page-level signals before indexing content for citation pools",
+        "Collection and blog pages have no Article, Product, or FAQPage structured data — AI engines (especially Google AI Overviews) heavily favour pages with explicit schema types to extract factual claims",
+        "No visible Q&A or FAQ schema on collection or blog pages; FAQ schema on homepage alone is insufficient — answer-engine citations spike when individual articles carry their own FAQPage or HowTo markup",
+        "No evidence of named expert authors, publication dates, or review/citation sources in the article content — E-E-A-T signals are a primary filter for whether AI engines trust and surface a source",
+        "Entity disambiguation is weak: 'Velluto StradaPro' is not linked to a Wikidata/Knowledge Graph entity, reducing the probability an LLM confidently attributes claims to this brand",
+        "No comparison tables detected — structured comparative content (lens tints vs. light conditions, frame fit vs. competitor) is one of the highest-cited content formats in AI Overviews for product categories",
+        "Freshness signals absent: no visible lastmod dates surfaced in structured data or visible bylines, reducing ranking confidence for AI systems that weight recency for gear/product queries"
+      ],
+      "top_seo_fixes": [
+        "Add meta description to the blog index page (currently 0 chars) — keep it ≤160 chars with primary keyword and value proposition",
+        "Add hreflang pt-PT tag across all pages (home, collection, blog) to fix the recurring locale gap and avoid hreflang validation errors",
+        "Extend collection page structured data to include ItemList and Product schema with aggregateRating — this unlocks rich results and improves crawl signal quality",
+        "Title tag for the blog index ('Velluto - The Magazine', 22 chars) is too short and keyword-free; rewrite to ~55 chars, e.g. 'Road Cycling Eyewear Tips & Guides | Velluto Magazine'",
+        "Add Article schema (with author, datePublished, dateModified, publisher) to every individual blog post to qualify for Google's Top Stories and AI Overview citation pools",
+        "Audit internal linking depth — 74 links on the homepage risks PageRank dilution; consolidate to fewer, higher-authority links and ensure pillar blog articles receive crawl priority"
+      ],
+      "quick_wins": [
+        "Write and deploy a meta description for the blog index immediately — single-file Shopify theme edit, zero dev cost, fixes both SEO and AI-crawl authority gap",
+        "Add pt-PT hreflang to the existing hreflang block site-wide — one-line addition per page template, eliminates the recurring validation issue across all three audited pages",
+        "Add FAQPage schema to the top 3 blog articles (can be injected via Shopify metafields or a JSON-LD snippet in the article template) — directly increases AI Overview citation eligibility within days of re-crawl",
+        "Create a single 'lens tint comparison' table article (e.g. 'Best Lens Tints for Road Cycling in Different Light Conditions') with HowTo or Table schema — high-intent query format that AI engines cite frequently for gear categories",
+        "Add datePublished and dateModified to article structured data using Shopify's built-in article.published_at liquid variable — zero-cost freshness signal for both Google and AI answer engines"
+      ]
+    }
+  },
+  "autofix": {}
+}

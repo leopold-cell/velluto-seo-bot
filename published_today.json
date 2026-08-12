@@ -1,61 +1,61 @@
 [
   {
-    "title": "Cycling Glasses Don't Fit With Helmet? Here's Why",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-dont-fit-with-helmet-heres-why",
-    "topic": "cycling glasses don't fit with helmet",
-    "keyword": "cycling glasses don't fit with helmet",
+    "title": "Burning Eyes When Cycling: Causes and Fixes",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/burning-eyes-when-cycling-causes-and-fixes",
+    "topic": "burning eyes when cycling",
+    "keyword": "burning eyes when cycling",
     "lang": "en",
     "phase": 1,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Radbrille passt nicht unter Helm",
-        "intent": "Finding cycling glasses that fit comfortably under a helmet without gaps or pressure.",
+        "keyword": "augen brennen beim radfahren",
+        "intent": "Cyclist seeking solutions for eye irritation and burning sensations during riding.",
         "volume": 0
       },
       "nl": {
-        "keyword": "fietsbril onder fietshelm",
-        "intent": "Looking for cycling glasses that sit properly and comfortably underneath a bicycle helmet.",
+        "keyword": "brandende ogen fietsen",
+        "intent": "Dutch cyclist experiencing eye irritation and seeking protective solutions.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes cyclisme casque v\u00e9lo",
-        "intent": "Finding cycling glasses that work well with a helmet for secure, comfortable fit.",
+        "keyword": "yeux qui br\u00fblent v\u00e9lo",
+        "intent": "French cyclist looking for ways to prevent and treat burning eyes during cycling.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo casco bicicleta",
-        "intent": "Searching for cycling glasses compatible with a bike helmet that don't cause discomfort.",
+        "keyword": "ojos irritados ciclismo",
+        "intent": "Spanish cyclist seeking relief from eye irritation caused by cycling conditions.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali ciclismo casco bici",
-        "intent": "Looking for cycling glasses that fit properly with a bicycle helmet without gaps or pressure.",
+        "keyword": "occhi che bruciano in bicicletta",
+        "intent": "Italian cyclist wanting to understand and prevent eye burning during rides.",
         "volume": 0
       },
       "da": {
-        "keyword": "cykelbriller der passer til cykelhj\u00e6lm",
-        "intent": "Finding cycling glasses that fit comfortably and securely under a bike helmet.",
+        "keyword": "\u00f8jne br\u00e6nder cykling",
+        "intent": "Danish cyclist looking for solutions to eye irritation while cycling.",
         "volume": 0
       },
       "nb": {
-        "keyword": "sykkelbrilller som passer under sykkelhjel",
-        "intent": "Seeking cycling glasses that accommodate a helmet without causing fit or comfort problems.",
+        "keyword": "brennende \u00f8yne sykling",
+        "intent": "Norwegian cyclist seeking ways to prevent and manage eye discomfort during biking.",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary rowerowe pod kask",
-        "intent": "Finding cycling glasses that work well with a bike helmet for comfortable wearing.",
+        "keyword": "piek\u0105ce oczy jazda na rowerze",
+        "intent": "Polish cyclist looking for remedies and protective eyewear for burning eye sensation.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos ciclismo debaixo capacete",
-        "intent": "Looking for cycling glasses that fit properly underneath a bike helmet without discomfort.",
+        "keyword": "olhos a queimar ciclismo",
+        "intent": "Portuguese cyclist seeking solutions for eye irritation during cycling activities.",
         "volume": 0
       },
       "sv": {
-        "keyword": "cykelglas\u00f6gon under cykelhj\u00e4lm",
-        "intent": "Seeking cycling glasses that fit comfortably and securely with a bicycle helmet.",
+        "keyword": "br\u00e4nnande \u00f6gon cykling",
+        "intent": "Swedish cyclist wanting to address and prevent eye burning while riding.",
         "volume": 0
       }
     }

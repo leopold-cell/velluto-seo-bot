@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-11": 11
+   "2026-08-12": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1783,5 +1783,49 @@
  "sv|cykelglasögon under cykelhjälm": {
   "volume": 0,
   "date": "2026-08-11"
+ },
+ "de|augen brennen beim radfahren": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "en|burning eyes while cycling": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "nl|brandende ogen fietsen": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "fr|yeux qui brûlent vélo": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "es|ojos irritados ciclismo": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "it|occhi che bruciano in bicicletta": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "da|øjne brænder cykling": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "nb|brennende øyne sykling": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "pl|piekące oczy jazda na rowerze": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "pt-PT|olhos a queimar ciclismo": {
+  "volume": 0,
+  "date": "2026-08-12"
+ },
+ "sv|brännande ögon cykling": {
+  "volume": 0,
+  "date": "2026-08-12"
  }
 }

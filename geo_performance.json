@@ -2305,7 +2305,61 @@
         }
       ],
       "serps_scanned": 87
+    },
+    "2026-08-12": {
+      "aio_serps": 45,
+      "velluto_cited": 0,
+      "competitor_cited": 0,
+      "velluto_gap": 4,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 0.0,
+      "total_citations": 44,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 10
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 5
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 4
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 2
+        },
+        {
+          "domain": "indrider.com",
+          "citations": 2
+        },
+        {
+          "domain": "220triathlon.com",
+          "citations": 1
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 1
+        },
+        {
+          "domain": "m.joybuy.co.uk",
+          "citations": 1
+        },
+        {
+          "domain": "velo.outsideonline.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 95
     }
   },
-  "latest": "2026-08-11"
+  "latest": "2026-08-12"
 }
