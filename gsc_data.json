@@ -1,59 +1,59 @@
 {
-  "date": "2026-08-12",
+  "date": "2026-08-13",
   "top_queries": [
     {
       "keys": [
         "velluto"
       ],
-      "clicks": 78,
-      "impressions": 1091,
-      "ctr": 0.07149404216315307,
-      "position": 4.3904674610449135
+      "clicks": 87,
+      "impressions": 1109,
+      "ctr": 0.07844905320108206,
+      "position": 4.329125338142471
     },
     {
       "keys": [
         "velluto bril"
       ],
-      "clicks": 21,
-      "impressions": 38,
-      "ctr": 0.5526315789473685,
-      "position": 1.0263157894736843
+      "clicks": 23,
+      "impressions": 40,
+      "ctr": 0.575,
+      "position": 1.025
     },
     {
       "keys": [
         "velluto stradapro"
       ],
-      "clicks": 6,
+      "clicks": 7,
       "impressions": 21,
-      "ctr": 0.2857142857142857,
-      "position": 1.9523809523809523
+      "ctr": 0.3333333333333333,
+      "position": 1.8095238095238095
     },
     {
       "keys": [
         "vellutto"
       ],
       "clicks": 6,
-      "impressions": 59,
-      "ctr": 0.1016949152542373,
-      "position": 3.8983050847457625
+      "impressions": 63,
+      "ctr": 0.09523809523809523,
+      "position": 3.8253968253968256
     },
     {
       "keys": [
         "rennradbrillen test 2026"
       ],
       "clicks": 5,
-      "impressions": 21,
-      "ctr": 0.23809523809523808,
-      "position": 1.4285714285714286
+      "impressions": 22,
+      "ctr": 0.22727272727272727,
+      "position": 1.4090909090909092
     },
     {
       "keys": [
         "oakley alternatives"
       ],
       "clicks": 4,
-      "impressions": 121,
-      "ctr": 0.03305785123966942,
-      "position": 7.289256198347108
+      "impressions": 124,
+      "ctr": 0.03225806451612903,
+      "position": 7.25
     },
     {
       "keys": [
@@ -69,18 +69,18 @@
         "bedste cykelbriller"
       ],
       "clicks": 2,
-      "impressions": 42,
-      "ctr": 0.047619047619047616,
-      "position": 11.476190476190476
+      "impressions": 52,
+      "ctr": 0.038461538461538464,
+      "position": 12.673076923076923
     },
     {
       "keys": [
         "best cycling glasses 2026"
       ],
       "clicks": 2,
-      "impressions": 114,
-      "ctr": 0.017543859649122806,
-      "position": 7.271929824561403
+      "impressions": 112,
+      "ctr": 0.017857142857142856,
+      "position": 7.348214285714286
     },
     {
       "keys": [
@@ -98,7 +98,7 @@
       "clicks": 2,
       "impressions": 27,
       "ctr": 0.07407407407407407,
-      "position": 7.444444444444445
+      "position": 7.518518518518518
     },
     {
       "keys": [
@@ -114,18 +114,18 @@
         "sykkelbriller best i test"
       ],
       "clicks": 2,
-      "impressions": 61,
-      "ctr": 0.03278688524590164,
-      "position": 9.163934426229508
+      "impressions": 59,
+      "ctr": 0.03389830508474576,
+      "position": 8.932203389830509
     },
     {
       "keys": [
         "velutto"
       ],
       "clicks": 2,
-      "impressions": 20,
-      "ctr": 0.1,
-      "position": 5.15
+      "impressions": 17,
+      "ctr": 0.11764705882352941,
+      "position": 5.823529411764706
     },
     {
       "keys": [
@@ -141,27 +141,27 @@
         "alternatives to oakley sunglasses"
       ],
       "clicks": 1,
-      "impressions": 6,
-      "ctr": 0.16666666666666666,
-      "position": 5.5
+      "impressions": 4,
+      "ctr": 0.25,
+      "position": 5.75
     },
     {
       "keys": [
         "ar cycling glasses"
       ],
       "clicks": 1,
-      "impressions": 20,
-      "ctr": 0.05,
-      "position": 15.35
+      "impressions": 19,
+      "ctr": 0.05263157894736842,
+      "position": 15
     },
     {
       "keys": [
         "best cycling glasses"
       ],
       "clicks": 1,
-      "impressions": 20,
-      "ctr": 0.05,
-      "position": 6.05
+      "impressions": 16,
+      "ctr": 0.0625,
+      "position": 6.0625
     },
     {
       "keys": [
@@ -177,9 +177,9 @@
         "best cycling sunglasses 2026"
       ],
       "clicks": 1,
-      "impressions": 226,
-      "ctr": 0.004424778761061947,
-      "position": 7.539823008849558
+      "impressions": 222,
+      "ctr": 0.0045045045045045045,
+      "position": 7.59009009009009
     },
     {
       "keys": [
@@ -197,7 +197,7 @@
       "clicks": 1,
       "impressions": 34,
       "ctr": 0.029411764705882353,
-      "position": 10.558823529411764
+      "position": 10.5
     },
     {
       "keys": [
@@ -222,9 +222,9 @@
         "cycling glasses for small faces"
       ],
       "clicks": 1,
-      "impressions": 36,
-      "ctr": 0.027777777777777776,
-      "position": 6
+      "impressions": 37,
+      "ctr": 0.02702702702702703,
+      "position": 6.162162162162162
     }
   ],
   "top_pages": [
@@ -232,73 +232,73 @@
       "keys": [
         "https://velluto-shop.com/"
       ],
-      "clicks": 76,
-      "impressions": 1979,
-      "ctr": 0.03840323395654371,
-      "position": 5.2374936836786254
+      "clicks": 79,
+      "impressions": 1987,
+      "ctr": 0.03975842979365878,
+      "position": 5.238550578761953
     },
     {
       "keys": [
         "https://velluto-shop.com/nl"
       ],
-      "clicks": 71,
-      "impressions": 222,
-      "ctr": 0.31981981981981983,
-      "position": 2.1396396396396398
+      "clicks": 78,
+      "impressions": 234,
+      "ctr": 0.3333333333333333,
+      "position": 2.106837606837607
     },
     {
       "keys": [
         "https://velluto-shop.com/de"
       ],
-      "clicks": 51,
-      "impressions": 276,
-      "ctr": 0.18478260869565216,
-      "position": 2.5144927536231885
+      "clicks": 55,
+      "impressions": 282,
+      "ctr": 0.1950354609929078,
+      "position": 2.471631205673759
     },
     {
       "keys": [
         "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-narrow-faces-2026-the-complete-buyers-guide"
       ],
-      "clicks": 34,
-      "impressions": 572,
-      "ctr": 0.05944055944055944,
-      "position": 5.505244755244755
+      "clicks": 35,
+      "impressions": 583,
+      "ctr": 0.060034305317324184,
+      "position": 5.540308747855918
     },
     {
       "keys": [
         "https://velluto-shop.com/de/blogs/velluto-the-magazine/best-cycling-glasses-2026-tested-ranked-compared"
       ],
-      "clicks": 34,
-      "impressions": 410,
-      "ctr": 0.08292682926829269,
-      "position": 5.1414634146341465
+      "clicks": 32,
+      "impressions": 399,
+      "ctr": 0.08020050125313283,
+      "position": 5.175438596491228
     },
     {
       "keys": [
         "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-for-tour-de-france-conditions-2026"
       ],
       "clicks": 20,
-      "impressions": 358,
-      "ctr": 0.055865921787709494,
-      "position": 5.902234636871508
+      "impressions": 351,
+      "ctr": 0.05698005698005698,
+      "position": 5.866096866096866
     },
     {
       "keys": [
         "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-2026-the-complete-buying-guide"
       ],
-      "clicks": 14,
-      "impressions": 524,
-      "ctr": 0.026717557251908396,
-      "position": 7.1393129770992365
+      "clicks": 15,
+      "impressions": 535,
+      "ctr": 0.028037383177570093,
+      "position": 7.218691588785047
     },
     {
       "keys": [
         "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch"
       ],
-      "clicks": 10,
-      "impressions": 1452,
-      "ctr": 0.006887052341597796,
-      "position": 7.46763085399449
+      "clicks": 12,
+      "impressions": 1387,
+      "ctr": 0.008651766402307137,
+      "position": 7.501802451333814
     },
     {
       "keys": [
@@ -307,28 +307,19 @@
       "clicks": 7,
       "impressions": 917,
       "ctr": 0.007633587786259542,
-      "position": 8.179934569247546
+      "position": 8.310796074154853
     },
     {
       "keys": [
         "https://velluto-shop.com/collections/all"
       ],
       "clicks": 7,
-      "impressions": 614,
-      "ctr": 0.011400651465798045,
-      "position": 5.324104234527687
+      "impressions": 632,
+      "ctr": 0.011075949367088608,
+      "position": 5.1835443037974684
     }
   ],
   "daily_trend": [
-    {
-      "keys": [
-        "2026-07-15"
-      ],
-      "clicks": 11,
-      "impressions": 729,
-      "ctr": 0.015089163237311385,
-      "position": 6.924554183813443
-    },
     {
       "keys": [
         "2026-07-16"
@@ -553,6 +544,15 @@
       "impressions": 970,
       "ctr": 0.03402061855670103,
       "position": 7.018556701030928
+    },
+    {
+      "keys": [
+        "2026-08-10"
+      ],
+      "clicks": 32,
+      "impressions": 1140,
+      "ctr": 0.028070175438596492,
+      "position": 7.770175438596492
     }
   ],
   "by_country": {
@@ -562,19 +562,28 @@
           "keys": [
             "velluto"
           ],
-          "clicks": 36,
-          "impressions": 135,
-          "ctr": 0.26666666666666666,
-          "position": 5.029629629629629
+          "clicks": 41,
+          "impressions": 139,
+          "ctr": 0.2949640287769784,
+          "position": 4.956834532374101
         },
         {
           "keys": [
             "velluto bril"
           ],
-          "clicks": 17,
-          "impressions": 33,
-          "ctr": 0.5151515151515151,
-          "position": 1.0303030303030303
+          "clicks": 19,
+          "impressions": 35,
+          "ctr": 0.5428571428571428,
+          "position": 1.0285714285714285
+        },
+        {
+          "keys": [
+            "velluto stradapro"
+          ],
+          "clicks": 2,
+          "impressions": 8,
+          "ctr": 0.25,
+          "position": 1
         },
         {
           "keys": [
@@ -590,9 +599,9 @@
             "best cycling glasses 2026"
           ],
           "clicks": 1,
-          "impressions": 10,
-          "ctr": 0.1,
-          "position": 4.4
+          "impressions": 8,
+          "ctr": 0.125,
+          "position": 4.625
         },
         {
           "keys": [
@@ -619,15 +628,6 @@
           "clicks": 1,
           "impressions": 2,
           "ctr": 0.5,
-          "position": 1
-        },
-        {
-          "keys": [
-            "velluto stradapro"
-          ],
-          "clicks": 1,
-          "impressions": 6,
-          "ctr": 0.16666666666666666,
           "position": 1
         },
         {
@@ -664,16 +664,16 @@
           "clicks": 0,
           "impressions": 22,
           "ctr": 0,
-          "position": 6.090909090909091
+          "position": 6.136363636363637
         },
         {
           "keys": [
             "best cycling glasses"
           ],
           "clicks": 0,
-          "impressions": 4,
+          "impressions": 2,
           "ctr": 0,
-          "position": 6
+          "position": 7
         },
         {
           "keys": [
@@ -699,19 +699,28 @@
           "keys": [
             "https://velluto-shop.com/nl"
           ],
-          "clicks": 47,
-          "impressions": 138,
-          "ctr": 0.34057971014492755,
-          "position": 1.8768115942028984
+          "clicks": 53,
+          "impressions": 144,
+          "ctr": 0.3680555555555556,
+          "position": 1.8125
         },
         {
           "keys": [
             "https://velluto-shop.com/"
           ],
           "clicks": 8,
-          "impressions": 58,
-          "ctr": 0.13793103448275862,
-          "position": 4.206896551724138
+          "impressions": 61,
+          "ctr": 0.13114754098360656,
+          "position": 4.295081967213115
+        },
+        {
+          "keys": [
+            "https://velluto-shop.com/nl/products/velluto-performance-vision-kit-nero"
+          ],
+          "clicks": 2,
+          "impressions": 16,
+          "ctr": 0.125,
+          "position": 1.5625
         },
         {
           "keys": [
@@ -745,9 +754,9 @@
             "https://velluto-shop.com/nl/blogs/velluto-the-magazine/best-cycling-glasses-2026-what-actually-makes-them-good"
           ],
           "clicks": 1,
-          "impressions": 33,
-          "ctr": 0.030303030303030304,
-          "position": 7.2727272727272725
+          "impressions": 35,
+          "ctr": 0.02857142857142857,
+          "position": 6.914285714285715
         },
         {
           "keys": [
@@ -763,9 +772,9 @@
             "https://velluto-shop.com/nl/products/velluto-stradapro-cycling-glasses-viola"
           ],
           "clicks": 1,
-          "impressions": 33,
-          "ctr": 0.030303030303030304,
-          "position": 2.4242424242424243
+          "impressions": 36,
+          "ctr": 0.027777777777777776,
+          "position": 2.361111111111111
         },
         {
           "keys": [
@@ -781,9 +790,9 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/anti-fog-cycling-sunglasses-what-actually-works-in-2026"
           ],
           "clicks": 0,
-          "impressions": 2,
+          "impressions": 1,
           "ctr": 0,
-          "position": 8
+          "position": 7
         },
         {
           "keys": [
@@ -799,16 +808,16 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-2026-guide-velluto"
           ],
           "clicks": 0,
-          "impressions": 19,
+          "impressions": 21,
           "ctr": 0,
-          "position": 6.2105263157894735
+          "position": 6.095238095238095
         },
         {
           "keys": [
             "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-honest-answer"
           ],
           "clicks": 0,
-          "impressions": 2,
+          "impressions": 1,
           "ctr": 0,
           "position": 10
         },
@@ -817,18 +826,18 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-the-real-answer"
           ],
           "clicks": 0,
-          "impressions": 2,
+          "impressions": 1,
           "ctr": 0,
-          "position": 4.5
+          "position": 4
         },
         {
           "keys": [
             "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-sunglasses-worth-it-2026-guide-velluto"
           ],
           "clicks": 0,
-          "impressions": 2,
+          "impressions": 1,
           "ctr": 0,
-          "position": 5.5
+          "position": 6
         },
         {
           "keys": [
@@ -844,18 +853,18 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-2026-what-actually-makes-them-good"
           ],
           "clicks": 0,
-          "impressions": 3,
+          "impressions": 1,
           "ctr": 0,
-          "position": 3.3333333333333335
+          "position": 3
         },
         {
           "keys": [
             "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-sunglasses-2026-tested-ranked-compared"
           ],
           "clicks": 0,
-          "impressions": 7,
+          "impressions": 4,
           "ctr": 0,
-          "position": 6.714285714285714
+          "position": 7.75
         },
         {
           "keys": [
@@ -865,19 +874,10 @@
           "impressions": 1,
           "ctr": 0,
           "position": 13
-        },
-        {
-          "keys": [
-            "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternatives-for-cyclists-2026"
-          ],
-          "clicks": 0,
-          "impressions": 2,
-          "ctr": 0,
-          "position": 8
         }
       ],
-      "clicks": 61,
-      "impressions": 235
+      "clicks": 69,
+      "impressions": 239
     },
     "DE": {
       "queries": [
@@ -885,19 +885,19 @@
           "keys": [
             "velluto"
           ],
-          "clicks": 22,
-          "impressions": 154,
-          "ctr": 0.14285714285714285,
-          "position": 1.7142857142857144
+          "clicks": 24,
+          "impressions": 161,
+          "ctr": 0.14906832298136646,
+          "position": 1.7080745341614907
         },
         {
           "keys": [
             "rennradbrillen test 2026"
           ],
           "clicks": 5,
-          "impressions": 19,
-          "ctr": 0.2631578947368421,
-          "position": 1.263157894736842
+          "impressions": 20,
+          "ctr": 0.25,
+          "position": 1.25
         },
         {
           "keys": [
@@ -931,9 +931,9 @@
             "velluto stradapro"
           ],
           "clicks": 1,
-          "impressions": 8,
-          "ctr": 0.125,
-          "position": 3.5
+          "impressions": 7,
+          "ctr": 0.14285714285714285,
+          "position": 3.4285714285714284
         },
         {
           "keys": [
@@ -985,9 +985,18 @@
             "are expensive cycling sunglasses worth it"
           ],
           "clicks": 0,
-          "impressions": 26,
+          "impressions": 25,
           "ctr": 0,
-          "position": 6.1923076923076925
+          "position": 6.28
+        },
+        {
+          "keys": [
+            "aufsatz"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 7
         },
         {
           "keys": [
@@ -1006,15 +1015,6 @@
           "impressions": 1,
           "ctr": 0,
           "position": 5
-        },
-        {
-          "keys": [
-            "best cycling glasses 2026"
-          ],
-          "clicks": 0,
-          "impressions": 5,
-          "ctr": 0,
-          "position": 4.6
         }
       ],
       "pages": [
@@ -1022,28 +1022,28 @@
           "keys": [
             "https://velluto-shop.com/de"
           ],
-          "clicks": 21,
-          "impressions": 159,
-          "ctr": 0.1320754716981132,
-          "position": 1.7924528301886793
+          "clicks": 24,
+          "impressions": 168,
+          "ctr": 0.14285714285714285,
+          "position": 1.7916666666666665
         },
         {
           "keys": [
             "https://velluto-shop.com/de/blogs/velluto-the-magazine/best-cycling-glasses-2026-tested-ranked-compared"
           ],
           "clicks": 6,
-          "impressions": 63,
-          "ctr": 0.09523809523809523,
-          "position": 6.666666666666667
+          "impressions": 65,
+          "ctr": 0.09230769230769231,
+          "position": 6.615384615384615
         },
         {
           "keys": [
             "https://velluto-shop.com/"
           ],
-          "clicks": 3,
-          "impressions": 103,
-          "ctr": 0.02912621359223301,
-          "position": 8.242718446601941
+          "clicks": 2,
+          "impressions": 98,
+          "ctr": 0.02040816326530612,
+          "position": 8.622448979591837
         },
         {
           "keys": [
@@ -1059,18 +1059,18 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch"
           ],
           "clicks": 1,
-          "impressions": 44,
-          "ctr": 0.022727272727272728,
-          "position": 6.681818181818182
+          "impressions": 39,
+          "ctr": 0.02564102564102564,
+          "position": 6.512820512820513
         },
         {
           "keys": [
             "https://velluto-shop.com/de/products/velluto-ultimate-vision-kit-arancia"
           ],
           "clicks": 1,
-          "impressions": 17,
-          "ctr": 0.058823529411764705,
-          "position": 1.8235294117647058
+          "impressions": 15,
+          "ctr": 0.06666666666666667,
+          "position": 1.9333333333333333
         },
         {
           "keys": [
@@ -1086,34 +1086,25 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-2026-guide-velluto"
           ],
           "clicks": 0,
-          "impressions": 23,
+          "impressions": 25,
           "ctr": 0,
-          "position": 5.521739130434782
+          "position": 5.48
         },
         {
           "keys": [
             "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-honest-answer"
           ],
           "clicks": 0,
-          "impressions": 2,
-          "ctr": 0,
-          "position": 11
-        },
-        {
-          "keys": [
-            "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-the-real-answer"
-          ],
-          "clicks": 0,
           "impressions": 1,
           "ctr": 0,
-          "position": 4
+          "position": 11
         },
         {
           "keys": [
             "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-sunglasses-worth-it-2026-guide-velluto"
           ],
           "clicks": 0,
-          "impressions": 3,
+          "impressions": 1,
           "ctr": 0,
           "position": 5
         },
@@ -1122,9 +1113,9 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-2026-tested-ranked-compared"
           ],
           "clicks": 0,
-          "impressions": 2,
+          "impressions": 1,
           "ctr": 0,
-          "position": 2
+          "position": 1
         },
         {
           "keys": [
@@ -1158,18 +1149,18 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternative-cycling-sunglasses-2026-velluto"
           ],
           "clicks": 0,
-          "impressions": 1,
+          "impressions": 2,
           "ctr": 0,
-          "position": 1
+          "position": 5
         },
         {
           "keys": [
             "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternatives-for-cyclists-2026-tested-ranked"
           ],
           "clicks": 0,
-          "impressions": 5,
+          "impressions": 4,
           "ctr": 0,
-          "position": 6.8
+          "position": 6.75
         },
         {
           "keys": [
@@ -1197,10 +1188,19 @@
           "impressions": 1,
           "ctr": 0,
           "position": 9
+        },
+        {
+          "keys": [
+            "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-big-head-fit-guide-2026"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 5
         }
       ],
-      "clicks": 33,
-      "impressions": 259
+      "clicks": 35,
+      "impressions": 261
     },
     "BE": {
       "queries": [
@@ -1263,9 +1263,9 @@
             "best cycling glasses"
           ],
           "clicks": 0,
-          "impressions": 5,
+          "impressions": 4,
           "ctr": 0,
-          "position": 6.2
+          "position": 6.5
         },
         {
           "keys": [
@@ -1287,6 +1287,15 @@
         },
         {
           "keys": [
+            "best road bike glasses"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 8
+        },
+        {
+          "keys": [
             "beste fietsbril 2026"
           ],
           "clicks": 0,
@@ -1305,6 +1314,15 @@
         },
         {
           "keys": [
+            "oakley look alike sunglasses"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 4
+        },
+        {
+          "keys": [
             "oakley radar alternative"
           ],
           "clicks": 0,
@@ -1314,30 +1332,12 @@
         },
         {
           "keys": [
-            "oakley radar ev path alternative"
-          ],
-          "clicks": 0,
-          "impressions": 1,
-          "ctr": 0,
-          "position": 6
-        },
-        {
-          "keys": [
             "oakley sutro alternative"
           ],
           "clicks": 0,
           "impressions": 1,
           "ctr": 0,
           "position": 5
-        },
-        {
-          "keys": [
-            "oakley sutro vs radar"
-          ],
-          "clicks": 0,
-          "impressions": 2,
-          "ctr": 0,
-          "position": 6.5
         }
       ],
       "pages": [
@@ -1409,9 +1409,18 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-sunglasses-2026-tested-ranked-compared"
           ],
           "clicks": 0,
-          "impressions": 4,
+          "impressions": 3,
           "ctr": 0,
-          "position": 6.5
+          "position": 7
+        },
+        {
+          "keys": [
+            "https://velluto-shop.com/blogs/velluto-the-magazine/best-road-bike-sunglasses-2026-buyers-guide"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 8
         },
         {
           "keys": [
@@ -1445,9 +1454,9 @@
             "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch"
           ],
           "clicks": 0,
-          "impressions": 7,
+          "impressions": 6,
           "ctr": 0,
-          "position": 6.142857142857143
+          "position": 6.166666666666667
         },
         {
           "keys": [
@@ -1496,34 +1505,25 @@
         },
         {
           "keys": [
+            "https://velluto-shop.com/nl/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 4
+        },
+        {
+          "keys": [
             "https://velluto-shop.com/nl/blogs/velluto-the-magazine/smart-cycling-glasses-worth-it-2026-oakley-vs-smith-vs-velluto"
           ],
           "clicks": 0,
           "impressions": 1,
           "ctr": 0,
           "position": 6
-        },
-        {
-          "keys": [
-            "https://velluto-shop.com/nl/products/velluto-performance-vision-kit-arancia"
-          ],
-          "clicks": 0,
-          "impressions": 1,
-          "ctr": 0,
-          "position": 3
-        },
-        {
-          "keys": [
-            "https://velluto-shop.com/nl/products/velluto-performance-vision-kit-viola"
-          ],
-          "clicks": 0,
-          "impressions": 1,
-          "ctr": 0,
-          "position": 12
         }
       ],
       "clicks": 6,
-      "impressions": 33
+      "impressions": 31
     },
     "AT": {
       "queries": [
@@ -1556,6 +1556,15 @@
         },
         {
           "keys": [
+            "oakley radar look alikes"
+          ],
+          "clicks": 1,
+          "impressions": 1,
+          "ctr": 1,
+          "position": 4
+        },
+        {
+          "keys": [
             "best cycling sunglasses"
           ],
           "clicks": 0,
@@ -1566,6 +1575,15 @@
         {
           "keys": [
             "best cycling sunglasses 2026"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 3
+        },
+        {
+          "keys": [
+            "best oakley alternatives"
           ],
           "clicks": 0,
           "impressions": 1,
@@ -1610,6 +1628,15 @@
         },
         {
           "keys": [
+            "fahrradbrille damen schmales gesicht"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 9
+        },
+        {
+          "keys": [
             "oakley alternative"
           ],
           "clicks": 0,
@@ -1634,33 +1661,6 @@
           "impressions": 1,
           "ctr": 0,
           "position": 7
-        },
-        {
-          "keys": [
-            "oakley m2 alternative"
-          ],
-          "clicks": 0,
-          "impressions": 1,
-          "ctr": 0,
-          "position": 4
-        },
-        {
-          "keys": [
-            "oakley sutro alternative"
-          ],
-          "clicks": 0,
-          "impressions": 2,
-          "ctr": 0,
-          "position": 8
-        },
-        {
-          "keys": [
-            "velluto deutsch"
-          ],
-          "clicks": 0,
-          "impressions": 1,
-          "ctr": 0,
-          "position": 10
         }
       ],
       "pages": [
@@ -1678,9 +1678,18 @@
             "https://velluto-shop.com/"
           ],
           "clicks": 2,
-          "impressions": 10,
-          "ctr": 0.2,
-          "position": 2.7
+          "impressions": 11,
+          "ctr": 0.18181818181818182,
+          "position": 3
+        },
+        {
+          "keys": [
+            "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch"
+          ],
+          "clicks": 1,
+          "impressions": 9,
+          "ctr": 0.1111111111111111,
+          "position": 7.777777777777778
         },
         {
           "keys": [
@@ -1711,21 +1720,21 @@
         },
         {
           "keys": [
+            "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternatives-for-cyclists-2026"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 3
+        },
+        {
+          "keys": [
             "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-narrow-faces-2026-the-complete-buyers-guide"
           ],
           "clicks": 0,
           "impressions": 1,
           "ctr": 0,
           "position": 5
-        },
-        {
-          "keys": [
-            "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch"
-          ],
-          "clicks": 0,
-          "impressions": 9,
-          "ctr": 0,
-          "position": 7.777777777777778
         },
         {
           "keys": [
@@ -1771,6 +1780,15 @@
           "impressions": 3,
           "ctr": 0,
           "position": 1.6666666666666665
+        },
+        {
+          "keys": [
+            "https://velluto-shop.com/de/blogs/velluto-the-magazine/cycling-glasses-small-face-fit-guide-for-2026"
+          ],
+          "clicks": 0,
+          "impressions": 1,
+          "ctr": 0,
+          "position": 9
         },
         {
           "keys": [
@@ -1825,28 +1843,10 @@
           "impressions": 1,
           "ctr": 0,
           "position": 1
-        },
-        {
-          "keys": [
-            "https://velluto-shop.com/de/products/velluto-ultimate-vision-kit-espresso"
-          ],
-          "clicks": 0,
-          "impressions": 2,
-          "ctr": 0,
-          "position": 2
-        },
-        {
-          "keys": [
-            "https://velluto-shop.com/pages/about-us"
-          ],
-          "clicks": 0,
-          "impressions": 1,
-          "ctr": 0,
-          "position": 1
         }
       ],
-      "clicks": 6,
-      "impressions": 33
+      "clicks": 7,
+      "impressions": 32
     }
   }
 }

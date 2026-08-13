@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-12": 11
+   "2026-08-13": 6
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1827,5 +1827,29 @@
  "sv|brännande ögon cykling": {
   "volume": 0,
   "date": "2026-08-12"
+ },
+ "en|rudy project alternative cycling glasses": {
+  "volume": 0,
+  "date": "2026-08-13"
+ },
+ "nl|alternatieven voor rudy project fietsenbril": {
+  "volume": 0,
+  "date": "2026-08-13"
+ },
+ "es|gafas ciclismo alternativos a rudy project": {
+  "volume": 0,
+  "date": "2026-08-13"
+ },
+ "it|occhiali ciclismo alternativi rudy project": {
+  "volume": 0,
+  "date": "2026-08-13"
+ },
+ "nb|sykkelbrilealternativer til rudy project": {
+  "volume": 0,
+  "date": "2026-08-13"
+ },
+ "pl|okulary rowerowe alternatywa do rudy project": {
+  "volume": 0,
+  "date": "2026-08-13"
  }
 }
