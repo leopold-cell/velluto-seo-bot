@@ -12,8 +12,6 @@ import json
 import os
 from typing import Any
 
-import requests
-
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Load the repo .env so standalone entry points (blog_review.py) get the same
@@ -30,9 +28,13 @@ STATE_PATH = os.path.join(REVIEW_DIR, "state.json")
 BLOG_HANDLE = "velluto-the-magazine"
 SITE = "https://velluto-shop.com"
 
-# Models — match the ids used across the codebase (seo_bot.py).
-HAIKU = "claude-haiku-4-5-20251001"
-SONNET = "claude-sonnet-4-6"
+# Models and the guarded Claude client live in ops/llm.py so other projects can
+# reuse them without importing seo_bot. Re-exported here so every review/* call
+# site keeps importing them from review._common unchanged.
+from ops.llm import (  # noqa: E402,F401
+    HAIKU, SONNET, have_anthropic, parse_json_block, http_get,
+)
+from ops import llm as _llm  # noqa: E402
 
 # Locales the bot localizes into (mirror seo_bot.SHOP_LOCALES).
 SHOP_LOCALES = ["de", "nl", "fr", "es", "it", "da", "nb", "pl", "pt-PT", "sv"]
@@ -61,28 +63,10 @@ def review_config() -> dict:
 
 
 # ── Anthropic (lazy + guarded) ──────────────────────────────────────────────────
-
-_client = None
-
-
-def have_anthropic() -> bool:
-    """True only if a key is set AND the anthropic SDK is importable."""
-    if not os.getenv("ANTHROPIC_API_KEY"):
-        return False
-    try:
-        import anthropic  # noqa: F401
-        return True
-    except Exception:
-        return False
-
-
-def _anthropic():
-    global _client
-    if _client is None:
-        from anthropic import Anthropic
-        _client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-    return _client
-
+# have_anthropic / parse_json_block / http_get come from ops.llm (imported above).
+# Only the Velluto-specific part stays here: cost logging into token_usage.json.
+# ops.llm takes the logger as a parameter precisely so it never has to import
+# seo_bot — that import is what would drag Shopify config into any other project.
 
 def _log_cost(inp: int, out: int, model: str) -> None:
     """Record token usage via seo_bot.log_usage if available; never raise."""
@@ -100,53 +84,8 @@ def complete(system: str, user: str, model: str = HAIKU, max_tokens: int = 800,
     {"media_type": "image/png", "data": "<base64>"} for vision.
     Returns "" if no API key (so callers can no-op in dry-run).
     """
-    if not have_anthropic():
-        return ""
-    content: list[dict] = []
-    for img in (images or []):
-        content.append({
-            "type": "image",
-            "source": {"type": "base64", "media_type": img["media_type"], "data": img["data"]},
-        })
-    content.append({"type": "text", "text": user})
-    resp = _anthropic().messages.create(
-        model=model, max_tokens=max_tokens, system=system,
-        messages=[{"role": "user", "content": content}],
-    )
-    try:
-        _log_cost(resp.usage.input_tokens, resp.usage.output_tokens, model)
-    except Exception:
-        pass
-    return "".join(getattr(b, "text", "") for b in resp.content).strip()
-
-
-def parse_json_block(text: str) -> Any:
-    """Best-effort extraction of a JSON object/array from an LLM response."""
-    if not text:
-        return None
-    import re
-    # strip ```json fences
-    text = re.sub(r"^```(?:json)?|```$", "", text.strip(), flags=re.MULTILINE).strip()
-    try:
-        return json.loads(text)
-    except Exception:
-        m = re.search(r"[\{\[].*[\}\]]", text, re.DOTALL)
-        if m:
-            try:
-                return json.loads(m.group(0))
-            except Exception:
-                return None
-    return None
-
-
-# ── http ────────────────────────────────────────────────────────────────────────
-
-def http_get(url: str, timeout: int = 12) -> requests.Response | None:
-    try:
-        return requests.get(url, timeout=timeout,
-                            headers={"User-Agent": "Velluto-Review/1.0 (+seo-audit)"})
-    except Exception:
-        return None
+    return _llm.complete(system, user, model=model, max_tokens=max_tokens,
+                         images=images, usage_logger=_log_cost)
 
 
 # ── state / io ────────────────────────────────────────────────────────────────

@@ -26,10 +26,10 @@ import os
 import time
 from typing import Any
 
-import requests
 from dotenv import load_dotenv
 
 import config_loader
+from ops import dataforseo
 
 load_dotenv(
     dotenv_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"),
@@ -90,29 +90,25 @@ def fetch_one(keyword: str, market_code: str) -> dict | None:
     m = config_loader.market(market_code)
     if not m:
         return None
-    try:
-        r = requests.post(
-            f"{BASE}/serp/google/organic/live/advanced",
-            json=[{
-                "keyword":       keyword,
-                "language_code": m["language_code"],
-                "location_code": m["dataforseo_location_code"],
-                "device":        "desktop",
-                "os":            "windows",
-                "depth":         10,
-            }],
-            auth=(DATAFORSEO_LOGIN, DATAFORSEO_PASS),
-            timeout=45,
-        )
-        r.raise_for_status()
-        tasks = r.json().get("tasks") or []
-        if not tasks:
-            return None
-        results = tasks[0].get("result") or []
-        return results[0] if results else None
-    except Exception as e:
-        print(f"      ⚠️  SERP fetch failed for '{keyword}' [{market_code}]: {e}")
+    # Goes through ops.dataforseo so this spend lands in the shared ledger.
+    # Until now SERP tasks were counted nowhere, so nothing could tell how much
+    # of the account balance this pipeline was using versus anything else.
+    tasks = dataforseo.post(
+        "serp/google/organic/live/advanced",
+        [{
+            "keyword":       keyword,
+            "language_code": m["language_code"],
+            "location_code": m["dataforseo_location_code"],
+            "device":        "desktop",
+            "os":            "windows",
+            "depth":         10,
+        }],
+        project="velluto",
+    )
+    if not tasks:
         return None
+    results = tasks[0].get("result") or []
+    return results[0] if results else None
 
 
 def run() -> dict:

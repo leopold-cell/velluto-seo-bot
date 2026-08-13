@@ -12,21 +12,17 @@ since all posts share the magazine template, this catches template regressions.
 """
 from __future__ import annotations
 
-import base64
 import datetime as _dt
 import re
 
+from ops import vision as ops_vision
 from review._common import SONNET, complete, parse_json_block, have_anthropic, review_config
 
 VIEWPORTS = {"mobile": (390, 844), "desktop": (1440, 900)}
 
 
 def playwright_available() -> bool:
-    try:
-        import playwright  # noqa: F401
-        return True
-    except Exception:
-        return False
+    return ops_vision.playwright_available()
 
 
 def _heuristic_flag(article: dict) -> bool:
@@ -70,27 +66,7 @@ def select_targets(articles: list[dict]) -> list[dict]:
 
 def _screenshot(url: str) -> dict[str, str]:
     """Return {viewport: base64_png}. Empty dict on failure."""
-    shots: dict[str, str] = {}
-    try:
-        from playwright.sync_api import sync_playwright
-        with sync_playwright() as p:
-            browser = p.chromium.launch(args=["--no-sandbox"])
-            for name, (w, h) in VIEWPORTS.items():
-                page = browser.new_page(viewport={"width": w, "height": h},
-                                        device_scale_factor=1)
-                try:
-                    page.goto(url, wait_until="networkidle", timeout=30000)
-                    page.wait_for_timeout(800)
-                    png = page.screenshot(full_page=True)
-                    shots[name] = base64.b64encode(png).decode("ascii")
-                except Exception as e:
-                    print(f"   ⚠️  ui: screenshot {name} failed for {url}: {e}")
-                finally:
-                    page.close()
-            browser.close()
-    except Exception as e:
-        print(f"   ⚠️  ui: playwright unavailable: {e}")
-    return shots
+    return ops_vision.screenshot(url, VIEWPORTS, log_prefix="ui")
 
 
 _UI_SYSTEM = (

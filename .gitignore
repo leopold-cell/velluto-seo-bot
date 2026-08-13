@@ -40,3 +40,9 @@ credentials*.json
 output/reels/
 # Resource-monitor throttle state
 resource_monitor_state.json
+
+# Hermes (side project): never commit captured content from third-party sites,
+# and keep its token accounting out of Velluto's token_usage.json.
+out/hermes/shots/
+out/hermes/evidence/raw/
+data/hermes/token_usage.json
