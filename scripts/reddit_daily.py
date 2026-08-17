@@ -57,6 +57,20 @@ SUB_RULES = {
 }
 
 
+# Only these subreddits count. The unfiltered search returned r/enail (a vaping
+# sub — "eyesmoke glassware incycler" matched on "glass") and r/Anbennar (a
+# Europa Universalis mod). A generic question like "Do I need cycling glasses?"
+# pulls anything containing the words, so relevance has to be asserted, not hoped
+# for. An off-topic post is worse than no post: it gets removed and marks the
+# account as a spammer.
+ALLOWED_SUBS = {
+    "cycling", "bicycling", "RoadCycling", "gravelcycling", "Velo", "bikewrench",
+    "cyclocross", "MTB", "bicycletouring", "brompton", "xbiking", "peloton",
+    "Zwift", "TrainerRoad", "triathlon", "wielrennen", "Fahrrad", "velo",
+    "glasses", "optometry",          # eyewear-specific, on-topic for lens questions
+}
+
+
 def _threads_for(question: str, limit: int = 3) -> list[dict]:
     """Open Reddit threads on this topic, via public web search."""
     try:
@@ -71,6 +85,8 @@ def _threads_for(question: str, limit: int = 3) -> list[dict]:
                 m = re.search(r"reddit\.com/r/([A-Za-z0-9_]+)/comments/", url)
                 if not m:
                     continue
+                if m.group(1).lower() not in {x.lower() for x in ALLOWED_SUBS}:
+                    continue      # off-topic sub — see ALLOWED_SUBS
                 out.append({"url": url.split("?")[0], "sub": m.group(1),
                             "title": (hit.get("title") or "").strip()[:110]})
                 if len(out) >= limit:
@@ -80,13 +96,32 @@ def _threads_for(question: str, limit: int = 3) -> list[dict]:
     return out
 
 
+# Features Velluto does not sell. check_brand_facts() only flags them when the
+# same SENTENCE attributes them to Velluto, which is the right call for an article
+# — discussing photochromic lenses informatively is legitimate. A Reddit reply is
+# shorter and comes from the maker, so "decide if you want photochromic…" two
+# lines above "I ride Velluto" reads as a spec claim even across sentences.
+# Too ambiguous to block (it would flag honest comparisons), too risky to ignore:
+# it becomes a note on the human's read-check, which is what this list is for.
+_ABSENT_FEATURES = ("photochrom", "polari", "prescription", "varifocal", "mirrored")
+
+
+def _feature_proximity(body: str) -> list[str]:
+    low = (body or "").lower()
+    if "velluto" not in low:
+        return []
+    return [f"erwähnt „{f}“ — Velluto bietet das nicht an; sicherstellen, dass der "
+            f"Satz es nicht Velluto zuschreibt"
+            for f in _ABSENT_FEATURES if f in low]
+
+
 def build(count: int = DEFAULT_COUNT) -> list[dict]:
     from geo_gaps import collect_gaps
     from reddit_drafts import _draft_text, _live_article_for
     try:
-        from briefs.quality_gate import check_compliance
+        from briefs.quality_gate import check_compliance, check_brand_facts
     except Exception:
-        check_compliance = None
+        check_compliance = check_brand_facts = None
 
     # Only questions where AI cites Reddit and not us — that is the whole point.
     gaps = collect_gaps()
@@ -108,10 +143,19 @@ def build(count: int = DEFAULT_COUNT) -> list[dict]:
         url = _live_article_for(q)
         title, body = _draft_text(q, url)
         body = f"{body}\n\n{DISCLOSURE}"
+        # check_compliance covers the advertising-law rules but NOT the product
+        # facts. The first live run produced drafts mentioning "polarized" and
+        # "photochromic" a line away from "I've been riding some Velluto frames" —
+        # features Velluto does not sell. On Reddit that reads as a spec claim from
+        # the maker, which is worse than on the blog: it is a direct answer to a
+        # buyer. check_brand_facts() is the gate that catches it.
         issues = check_compliance({"title": title, "body_html": body}) if check_compliance else []
+        if check_brand_facts:
+            issues += check_brand_facts({"body_html": body})
+        notes = _feature_proximity(body)
         items.append({"question": q, "market": gap["market"], "misses": gap["misses"],
                       "threads": threads, "draft_title": title, "draft_body": body,
-                      "source": url, "legal_issues": issues})
+                      "source": url, "legal_issues": issues, "notes": notes})
     return items
 
 
@@ -134,6 +178,8 @@ def render(items: list[dict], markdown: bool = False) -> str:
             L.append("   ⛔ NICHT POSTEN — Legal-Gate:")
             for x in it["legal_issues"]:
                 L.append(f"      {x[:110]}")
+        for n in it.get("notes", []):
+            L.append(f"   ⚠️  PRÜFEN: {n}")
         L.append("   Entwurf:")
         for line in (it["draft_body"] or "").splitlines():
             L.append(f"      {line}")

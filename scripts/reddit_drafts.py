@@ -91,9 +91,16 @@ def _live_article_for(question: str) -> str:
     arts = state.get("articles") if isinstance(state, dict) else None
     if not isinstance(arts, dict):
         return ""
-    stop = {"what", "which", "there", "these", "those", "about", "should", "cycling"}
+    # "glasses"/"sunglasses" appear in nearly every handle, so they carry no
+    # information. Without them "Is $600 a lot for glasses?" reduced to {"glasses"}
+    # and matched the first article containing the word — which is how two
+    # unrelated questions both linked to cycling-glasses-review-2026.
+    stop = {"what", "which", "there", "these", "those", "about", "should",
+            "cycling", "glasses", "sunglasses", "bril", "brille"}
     words = {w.strip("?.,") for w in question.lower().split()
              if len(w) > 4 and w.strip("?.,") not in stop}
+    if not words:
+        return ""      # nothing distinctive left — no source beats a wrong source
     best_url, best_score = "", 0
     for url, meta in arts.items():
         if not isinstance(meta, dict):
