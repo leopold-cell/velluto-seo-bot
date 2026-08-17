@@ -38,6 +38,35 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+def _ensure_shopify_token() -> None:
+    """Mint a token if the shell has none — MUST run before seo_bot is imported.
+
+    Shopify issues ~24h tokens from client credentials; there is no static one.
+    run.sh mints one and exports it, so every script it starts inherits a valid
+    token. Run by hand from a normal shell there is nothing to inherit, and
+    seo_bot builds SHOPIFY_HEADERS from the env var at import time — so the
+    header goes out as None and Shopify answers 401. This script is meant to be
+    run by hand, so it fetches its own.
+    """
+    if os.getenv("SHOPIFY_TOKEN"):
+        return
+    import subprocess
+    try:
+        tok = subprocess.run([sys.executable, os.path.join(ROOT, "mint_shopify_token.py")],
+                             capture_output=True, text=True, timeout=45).stdout.strip()
+    except Exception as e:
+        tok = ""
+        print(f"   ⚠️  Token-Prägung fehlgeschlagen: {str(e)[:70]}")
+    if tok:
+        os.environ["SHOPIFY_TOKEN"] = tok
+        print(f"   ✓ Shopify-Token geprägt ({tok[:6]}…)")
+    else:
+        print("   ⚠️  Kein Shopify-Token — SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET "
+              "in der .env prüfen")
+
+
+_ensure_shopify_token()
+
 # HERO_WHITELIST, not WHITELIST: the latter still holds UI graphics
 # (purplestats, offerpurple, visioneexplained) and images too small for a
 # 1200x800 cover. Drawing from it would swap an AI photo for a stats chart.
@@ -109,7 +138,19 @@ def main() -> None:
     print(f"🖼️  {len(ai_stems)} KI-Bild(er), {len(pool)} geprüfte Ersatzfotos: "
           f"{', '.join(pool[:4])}{' …' if len(pool) > 4 else ''}\n")
 
-    articles = _list_articles()
+    try:
+        articles = _list_articles()
+    except requests.HTTPError as e:
+        code = getattr(e.response, "status_code", 0)
+        if code in (401, 403):
+            print("⛔ Shopify lehnt den Zugriff ab (401/403). Der Token wird zur Laufzeit "
+                  "geprägt und ist ~24 h gültig:\n"
+                  "     export SHOPIFY_TOKEN=\"$(python3 mint_shopify_token.py)\"\n"
+                  "   Schlägt auch das fehl, fehlen SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET "
+                  "in der .env.")
+        else:
+            print(f"⛔ Shopify-API nicht erreichbar: {str(e)[:110]}")
+        return
     todo = []
     for a in articles:
         src = ((a.get("image") or {}).get("src") or "")
