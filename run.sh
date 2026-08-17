@@ -41,6 +41,7 @@ step "geo monitor"                 python3 geo_monitor.py
 step "perplexity geo (7d gate)"    python3 scripts/perplexity_monitor.py
 step "chatgpt geo (7d gate)"       python3 scripts/chatgpt_monitor.py
 step "legal watchdog (7d gate)"    python3 scripts/legal_watchdog.py
+step "gsc mail watch (7d gate)"    python3 scripts/gsc_mail_watch.py
 step "reddit worklist (daily)"     python3 scripts/reddit_daily.py
 step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py
 step "meta ads weekly report"      python3 scripts/meta_ads_report.py

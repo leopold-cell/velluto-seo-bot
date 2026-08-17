@@ -230,6 +230,19 @@ def build() -> tuple[str, str]:
         L.append("   • ChatGPT: noch keine Messung (läuft wöchentlich, 7-Tage-Gate)")
     L.append("")
 
+    # Search Console alerts — read from Gmail weekly and re-verified against the
+    # live site, so a stale alert does not become a task.
+    gsc_w = _load("data/gsc_mail_watch.json", [])
+    if gsc_w and (gsc_w[-1].get("findings")):
+        g = gsc_w[-1]
+        L.append(f"🔎 SEARCH CONSOLE ({g.get('date','?')}) — "
+                 f"{len(g['findings'])} offene(r) Punkt(e) von {g.get('alerts',0)} Meldungen")
+        for f in g["findings"][:4]:
+            mark = "✋" if f.get("state") == "MANUAL" else "⚠️"
+            L.append(f"   {mark} {f.get('subject','')[:78]}")
+            L.append(f"       {f.get('note','')[:150]}")
+        L.append("")
+
     # Legal watchdog — checks PUBLISHED text on every surface in every language.
     # Belongs near the top of the mail: a live legal claim outranks a ranking dip.
     law = _load("data/legal_watchdog.json", [])
