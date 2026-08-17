@@ -115,9 +115,91 @@ def _feature_proximity(body: str) -> list[str]:
             for f in _ABSENT_FEATURES if f in low]
 
 
+# link_builder's prompt was written for the automated poster that never ran. It
+# says the post must "feel like a real cyclist ASKING or sharing" and to mention
+# Velluto — which produced a draft opening "I'm looking for recommendations…" and
+# closing "Has anyone found a sweet spot?" while plugging the StradaPro. The maker
+# pretending to seek advice is astroturfing, and the disclosure line does not cure
+# it: the framing itself is the lie.
+#
+# A disclosed reply from the maker has exactly one honest shape: answer the
+# question that was asked, say who you are, and stop.
+_DRAFT_PROMPT = """You are the founder of Velluto, replying in a Reddit thread on r/{sub}.
+Your affiliation is disclosed at the end, so write as yourself — never as a
+neutral cyclist, and NEVER ask for recommendations or opinions: you make the
+product, so asking would be dishonest.
+
+The thread question: {question}
+
+Write a reply of 120-180 words that:
+- answers that question directly in the first two sentences, useful even to
+  someone who never buys anything
+- names the criteria that actually decide it (weight, coverage, ventilation,
+  lens standard, fit) so the reader can judge any pair, not just ours
+- mentions Velluto at most once, only with specs we can evidence: 25 g,
+  UV400-certified, tool-free interchangeable lenses, built-in anti-fog,
+  30-day trial, from 69 EUR
+- NEVER mentions photochromic, polarised, prescription or mirrored lenses in any
+  way that could read as a Velluto feature — we do not sell them
+- never claims a test, ranking or comparison we did not run
+- makes no superiority claim over a named brand
+
+Output EXACTLY:
+TITLE: <short title>
+BODY:
+<body text>"""
+
+
+def _draft_text(question: str, url: str, sub: str) -> tuple[str, str]:
+    key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not key:
+        title = question
+        body = ("[Rohentwurf — ohne ANTHROPIC_API_KEY nicht ausformuliert]\n"
+                f"Frage: {question}\n"
+                "Aufbau: Frage direkt beantworten → Kriterien nennen → Velluto einmal, "
+                "nur mit belegbaren Specs → Offenlegung.")
+        if url:
+            body += f"\n\nMehr Details dazu habe ich hier aufgeschrieben: {url}"
+        return title, body
+    try:
+        from anthropic import Anthropic
+        r = Anthropic(api_key=key).messages.create(
+            model="claude-haiku-4-5-20251001", max_tokens=600,
+            messages=[{"role": "user",
+                       "content": _DRAFT_PROMPT.format(sub=sub, question=question)}])
+        raw = r.content[0].text.strip()
+        t = re.search(r"TITLE:\s*(.+)", raw)
+        b = re.search(r"BODY:\s*([\s\S]+)", raw)
+        title = t.group(1).strip() if t else question
+        body = b.group(1).strip() if b else raw
+    except Exception as e:
+        return question, f"[Entwurf fehlgeschlagen: {e}]"
+    # Only link a real article. The old fallback linked the shop homepage when no
+    # article matched — a bare shop link in r/cycling is removed as advertising.
+    if url:
+        body += f"\n\nMehr Details dazu habe ich hier aufgeschrieben: {url}"
+    return title, body
+
+
+# Asking for advice while selling the thing is the astroturf pattern, and it is
+# invisible to the legal gate — every individual sentence is true.
+_ASKING_RE = re.compile(
+    r"\b(looking for recommendations|any recommendations|what do you (?:use|recommend)"
+    r"|has anyone (?:found|tried)|curious what|suggestions\?|thoughts\?)", re.I)
+
+
+def _sounds_like_asking(body: str) -> list[str]:
+    if not re.search(r"\bvelluto\b", body or "", re.I):
+        return []
+    m = _ASKING_RE.search(body or "")
+    return ([f"fragt nach Empfehlungen („{m.group(0)}“) und nennt zugleich Velluto — "
+             f"das wirkt wie ein gestellter Beitrag; umformulieren als offene Antwort"]
+            if m else [])
+
+
 def build(count: int = DEFAULT_COUNT) -> list[dict]:
     from geo_gaps import collect_gaps
-    from reddit_drafts import _draft_text, _live_article_for
+    from reddit_drafts import _live_article_for
     try:
         from briefs.quality_gate import check_compliance, check_brand_facts
     except Exception:
@@ -141,7 +223,7 @@ def build(count: int = DEFAULT_COUNT) -> list[dict]:
         if not threads:
             continue
         url = _live_article_for(q)
-        title, body = _draft_text(q, url)
+        title, body = _draft_text(q, url, threads[0]["sub"])
         body = f"{body}\n\n{DISCLOSURE}"
         # check_compliance covers the advertising-law rules but NOT the product
         # facts. The first live run produced drafts mentioning "polarized" and
@@ -152,7 +234,7 @@ def build(count: int = DEFAULT_COUNT) -> list[dict]:
         issues = check_compliance({"title": title, "body_html": body}) if check_compliance else []
         if check_brand_facts:
             issues += check_brand_facts({"body_html": body})
-        notes = _feature_proximity(body)
+        notes = _feature_proximity(body) + _sounds_like_asking(body)
         items.append({"question": q, "market": gap["market"], "misses": gap["misses"],
                       "threads": threads, "draft_title": title, "draft_body": body,
                       "source": url, "legal_issues": issues, "notes": notes})
