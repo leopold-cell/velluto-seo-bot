@@ -28,6 +28,7 @@ Usage:
   python3 scripts/reddit_drafts.py --count 3   # more
 """
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -80,40 +81,66 @@ def _gap_questions(limit: int) -> list[dict]:
     return out[:limit] if out else []
 
 
+# A shared word only tells you something if it is rare. "cycling" sits in 69 of
+# 72 handles and "glasses" in 62 — matching on them is how two unrelated questions
+# both linked to cycling-glasses-review-2026. The previous fix deleted such words
+# from a hand-written stop list, which over-corrected: it also deleted them from
+# "best road cycling sunglasses" and "Do I need cycling glasses?", leaving nothing
+# to match on, so both reported "kein passender Artikel" while the right article
+# (best-road-bike-sunglasses-2026-buyers-guide) sat in the corpus.
+#
+# Weighting by inverse document frequency does the same job without a list to
+# maintain: over our own 72 articles "cycling" scores 0.03 and "glasses" 0.13,
+# while "sunglasses" and "road" score 1.97 and "small"/"face"/"mtb" 3.58. Generic
+# words stop deciding matches without ceasing to exist, and the weights follow the
+# corpus as it grows.
+_IDF_CACHE: dict | None = None
+_MIN_SCORE = 1.5      # at least one genuinely distinctive shared word
+_STRONG = 4.0         # above this the match stands even if another article ties
+_MARGIN = 1.15        # near the floor, demand a clear winner or abstain
+
+
+def _corpus() -> tuple[dict, dict]:
+    """(url → token set, token → idf), built once per process."""
+    global _IDF_CACHE
+    if _IDF_CACHE is None:
+        import collections
+        import math
+        state = load_json(os.path.join("data", "content_state.json"), {})
+        arts = state.get("articles") if isinstance(state, dict) else {}
+        docs = {u: set(re.findall(r"[a-z]{2,}",
+                                  f"{m.get('handle', '')} {m.get('title', '')}".lower()))
+                for u, m in (arts or {}).items() if isinstance(m, dict)}
+        n = len(docs)
+        df = collections.Counter()
+        for toks in docs.values():
+            df.update(toks)
+        _IDF_CACHE = (docs, {w: math.log(n / (1 + c)) for w, c in df.items()} if n else {})
+    return _IDF_CACHE
+
+
 def _live_article_for(question: str) -> str:
     """A published article that already answers this — the draft links to it,
     never to a product page (that reads as an ad and gets removed).
 
-    data/content_state.json["articles"] is keyed by full URL, value carries
-    handle/title/words.
+    Returns "" when nothing fits well enough. On Reddit a wrong link is worse
+    than no link: it reads as a drive-by promo and gets the comment removed.
     """
-    state = load_json(os.path.join("data", "content_state.json"), {})
-    arts = state.get("articles") if isinstance(state, dict) else None
-    if not isinstance(arts, dict):
+    docs, idf = _corpus()
+    if not docs:
         return ""
-    # "glasses"/"sunglasses" appear in nearly every handle, so they carry no
-    # information. Without them "Is $600 a lot for glasses?" reduced to {"glasses"}
-    # and matched the first article containing the word — which is how two
-    # unrelated questions both linked to cycling-glasses-review-2026.
-    stop = {"what", "which", "there", "these", "those", "about", "should",
-            "cycling", "glasses", "sunglasses", "bril", "brille"}
-    words = {w.strip("?.,") for w in question.lower().split()
-             if len(w) > 4 and w.strip("?.,") not in stop}
-    if not words:
-        return ""      # nothing distinctive left — no source beats a wrong source
-    best_url, best_score = "", 0
-    for url, meta in arts.items():
-        if not isinstance(meta, dict):
-            continue
-        haystack = f"{meta.get('handle', '')} {meta.get('title', '')}".lower()
-        tokens = set(haystack.replace("-", " ").replace(":", " ").split())
-        score = len(words & tokens)
-        if score > best_score:
-            best_url, best_score = url, score
-    # Short questions ("Do I need cycling glasses?") carry only one distinctive
-    # word after stop-word removal — demanding two would never match them.
-    need = 2 if len(words) >= 3 else 1
-    return best_url if best_score >= need else ""
+    qt = set(re.findall(r"[a-z]{2,}", question.lower()))
+    if not qt:
+        return ""
+    ranked = sorted(((sum(idf.get(w, 0.0) for w in qt & toks), url)
+                     for url, toks in docs.items()), reverse=True)
+    best = ranked[0]
+    runner = ranked[1][0] if len(ranked) > 1 else 0.0
+    if best[0] < _MIN_SCORE:
+        return ""
+    if best[0] < _STRONG and best[0] <= runner * _MARGIN:
+        return ""      # two articles fit equally and neither is strong — abstain
+    return best[1]
 
 
 def _draft_text(question: str, url: str) -> tuple[str, str]:

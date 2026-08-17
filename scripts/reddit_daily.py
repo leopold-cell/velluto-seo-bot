@@ -43,6 +43,16 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from dotenv import load_dotenv  # noqa: E402
+
+# Not optional. The draft path used to import link_builder, which loads the .env
+# as a side effect of being imported; writing our own prompt removed that import
+# and with it the credentials. The run then picked up a stale ANTHROPIC_API_KEY
+# from the shell environment and every draft came back 401. override=True because
+# that stale value is exactly what has to lose.
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"),
+            override=True)
+
 DEFAULT_COUNT = 3
 DISCLOSURE = "Disclosure: I build Velluto, so take this with the appropriate pinch of salt."
 
@@ -71,6 +81,26 @@ ALLOWED_SUBS = {
 }
 
 
+# The right subreddit is not yet the right thread. "Do I need cycling glasses?"
+# returned r/cycling/comments/…/how_do_i_stop_my_balls_from_hurting_so_much_on/ —
+# correct sub, and about saddle discomfort. Answering there with an eyewear reply
+# is the drive-by promo that gets comments removed, so the thread itself has to be
+# about eyewear.
+_EYEWEAR = ("glasses", "sunglass", "sunnies", "shades", "eyewear", "goggle",
+            "lens", "lenses", "visor", "optic", "bril", "brille", "occhiali",
+            "lunettes", "gafas")
+
+
+def _is_eyewear_thread(title: str, url: str) -> bool:
+    """Search titles are unreliable — two of the hits came back as the literal
+    string "Link to reddit.com". The URL slug carries the real thread title
+    (…/comments/1dsxotd/how_do_i_stop_my_balls_from_hurting_so_much_on/), so read
+    both and let either one qualify the thread."""
+    slug = re.sub(r"[^a-z]+", " ", url.rsplit("/comments/", 1)[-1].lower())
+    blob = f"{(title or '').lower()} {slug}"
+    return any(w in blob for w in _EYEWEAR)
+
+
 def _threads_for(question: str, limit: int = 3) -> list[dict]:
     """Open Reddit threads on this topic, via public web search."""
     try:
@@ -80,15 +110,19 @@ def _threads_for(question: str, limit: int = 3) -> list[dict]:
     out = []
     try:
         with DDGS() as d:
-            for hit in d.text(f"site:reddit.com {question}", max_results=limit * 3):
+            for hit in d.text(f"site:reddit.com {question}", max_results=limit * 4):
                 url = hit.get("href") or hit.get("url") or ""
                 m = re.search(r"reddit\.com/r/([A-Za-z0-9_]+)/comments/", url)
                 if not m:
                     continue
                 if m.group(1).lower() not in {x.lower() for x in ALLOWED_SUBS}:
                     continue      # off-topic sub — see ALLOWED_SUBS
+                title = (hit.get("title") or "").strip()[:110]
+                if not _is_eyewear_thread(title, url):
+                    continue      # right sub, wrong topic — see _is_eyewear_thread
                 out.append({"url": url.split("?")[0], "sub": m.group(1),
-                            "title": (hit.get("title") or "").strip()[:110]})
+                            "title": title or url.rsplit("/comments/", 1)[-1]
+                                              .split("/")[-1].replace("_", " ")[:110]})
                 if len(out) >= limit:
                     break
     except Exception as e:
@@ -150,17 +184,32 @@ BODY:
 <body text>"""
 
 
+def _skeleton(question: str, url: str, reason: str) -> tuple[str, str]:
+    """A structured draft the human can finish by hand. Better than the raw API
+    error the run pasted into both drafts — that made the worklist useless on the
+    one day it was needed."""
+    body = (f"[Rohentwurf — {reason}]\n"
+            f"Frage: {question}\n"
+            "Aufbau: Frage direkt beantworten → Kriterien nennen (Gewicht, Abdeckung, "
+            "Belüftung, Linsennorm, Passform) → Velluto einmal, nur mit belegbaren "
+            "Specs → Offenlegung.")
+    if url:
+        body += f"\n\nMehr Details dazu habe ich hier aufgeschrieben: {url}"
+    return question, body
+
+
+# One dead key must not produce one error per draft. Once auth has failed the key
+# will not recover mid-run, so the rest of the list skips the API entirely.
+_AUTH_DEAD = False
+
+
 def _draft_text(question: str, url: str, sub: str) -> tuple[str, str]:
+    global _AUTH_DEAD
     key = os.getenv("ANTHROPIC_API_KEY", "")
     if not key:
-        title = question
-        body = ("[Rohentwurf — ohne ANTHROPIC_API_KEY nicht ausformuliert]\n"
-                f"Frage: {question}\n"
-                "Aufbau: Frage direkt beantworten → Kriterien nennen → Velluto einmal, "
-                "nur mit belegbaren Specs → Offenlegung.")
-        if url:
-            body += f"\n\nMehr Details dazu habe ich hier aufgeschrieben: {url}"
-        return title, body
+        return _skeleton(question, url, "kein ANTHROPIC_API_KEY gesetzt")
+    if _AUTH_DEAD:
+        return _skeleton(question, url, "ANTHROPIC_API_KEY ungültig")
     try:
         from anthropic import Anthropic
         r = Anthropic(api_key=key).messages.create(
@@ -173,7 +222,13 @@ def _draft_text(question: str, url: str, sub: str) -> tuple[str, str]:
         title = t.group(1).strip() if t else question
         body = b.group(1).strip() if b else raw
     except Exception as e:
-        return question, f"[Entwurf fehlgeschlagen: {e}]"
+        msg = str(e)
+        if "authentication" in msg.lower() or "401" in msg:
+            _AUTH_DEAD = True
+            print("   ⚠️  ANTHROPIC_API_KEY wird abgelehnt (401) — Entwürfe bleiben "
+                  "Rohentwürfe. Key in .env prüfen; danach erneut laufen lassen.")
+            return _skeleton(question, url, "ANTHROPIC_API_KEY ungültig")
+        return _skeleton(question, url, f"Entwurf fehlgeschlagen: {msg[:90]}")
     # Only link a real article. The old fallback linked the shop homepage when no
     # article matched — a bare shop link in r/cycling is removed as advertising.
     if url:
@@ -195,6 +250,24 @@ def _sounds_like_asking(body: str) -> list[str]:
     return ([f"fragt nach Empfehlungen („{m.group(0)}“) und nennt zugleich Velluto — "
              f"das wirkt wie ein gestellter Beitrag; umformulieren als offene Antwort"]
             if m else [])
+
+
+def _thread_traps(threads: list[dict]) -> list[str]:
+    """A thread can be on-topic and still be the wrong place for us. The search
+    surfaced "does anybody ride with photochromic sunglasses" — eyewear, r/cycling,
+    and about the one thing we do not sell. Answering it as the maker means either
+    going off-topic or implying we offer it. Worth knowing before you open the tab;
+    an honest "we don't do photochromic, here is what decides it" is a fine reply,
+    a careless one is a false product claim."""
+    out = []
+    for t in threads:
+        blob = f"{t.get('title', '')} {t.get('url', '')}".lower()
+        for f in _ABSENT_FEATURES:
+            if f in blob:
+                out.append(f"Thread dreht sich um „{f}…“ — das führen wir nicht. "
+                           f"Nur antworten, wenn die Antwort das offen sagt: {t['url']}")
+                break
+    return out
 
 
 def build(count: int = DEFAULT_COUNT) -> list[dict]:
@@ -234,7 +307,7 @@ def build(count: int = DEFAULT_COUNT) -> list[dict]:
         issues = check_compliance({"title": title, "body_html": body}) if check_compliance else []
         if check_brand_facts:
             issues += check_brand_facts({"body_html": body})
-        notes = _feature_proximity(body) + _sounds_like_asking(body)
+        notes = _feature_proximity(body) + _sounds_like_asking(body) + _thread_traps(threads)
         items.append({"question": q, "market": gap["market"], "misses": gap["misses"],
                       "threads": threads, "draft_title": title, "draft_body": body,
                       "source": url, "legal_issues": issues, "notes": notes})
