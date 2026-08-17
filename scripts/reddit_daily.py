@@ -77,12 +77,24 @@ LINK_LINE = {
 
 # Standing rules per subreddit — shown with every thread so the read-check is quick.
 SUB_RULES = {
-    "cycling":       "No self-promotion. Only answer if the reply works without the link.",
-    "bicycling":     "As r/cycling — promotional posts get removed.",
-    "RoadCycling":   "Smaller, tolerant of detail. Experience before link.",
-    "gravelcycling": "Genuine gravel topics only.",
-    "wielrennen":    "Write Dutch. Small community, promotion is obvious.",
-    "Velo":          "Technical questions welcome, disclose affiliation.",
+    "cycling":        "No self-promotion. Only answer if the reply works without the link.",
+    "bicycling":      "As r/cycling — promotional posts get removed.",
+    "RoadCycling":    "Smaller, tolerant of detail. Experience before link.",
+    "gravelcycling":  "Genuine gravel topics only.",
+    "wielrennen":     "Write Dutch. Small community, promotion is obvious.",
+    "Fahrrad":        "Auf Deutsch schreiben. Werbung fällt sofort auf.",
+    "Velo":           "Technical questions welcome, disclose affiliation.",
+    "velo":           "Technical questions welcome, disclose affiliation.",
+    "MTB":            "Off-road context. A road-eyewear answer is off-topic here.",
+    "cyclocross":     "Small and expert. Mud/fog specifics or nothing.",
+    "bicycletouring": "Long-distance context; day-racing answers miss the point.",
+    "bikewrench":     "Repair questions. Eyewear is almost always off-topic.",
+    "brompton":       "Folding bikes, commuting. Rarely an eyewear thread.",
+    "xbiking":        "Anti-consumerist by temperament — a brand mention lands badly.",
+    "peloton":        "Indoor training. Outdoor eyewear is usually off-topic.",
+    "Zwift":          "Indoor training. Outdoor eyewear is usually off-topic.",
+    "TrainerRoad":    "Training methodology, not gear shopping.",
+    "triathlon":      "Fit under a helmet and in transition is what matters here.",
 }
 
 
@@ -92,12 +104,24 @@ SUB_RULES = {
 # pulls anything containing the words, so relevance has to be asserted, not hoped
 # for. An off-topic post is worse than no post: it gets removed and marks the
 # account as a spammer.
+#
+# r/glasses and r/optometry were in this list — my mistake. They are eyewear subs,
+# but for PRESCRIPTION and optical eyewear, which we do not make. They pulled in
+# "Spent 600$ on two pairs of glasses" and "Just paid $600 for prescription ray
+# bans", and a €69 sport-sunglasses maker answering those is a price-anchoring
+# pitch in a category we cannot serve. Same subreddit, different product.
 ALLOWED_SUBS = {
     "cycling", "bicycling", "RoadCycling", "gravelcycling", "Velo", "bikewrench",
     "cyclocross", "MTB", "bicycletouring", "brompton", "xbiking", "peloton",
     "Zwift", "TrainerRoad", "triathlon", "wielrennen", "Fahrrad", "velo",
-    "glasses", "optometry",          # eyewear-specific, on-topic for lens questions
 }
+
+# The r/glasses hits showed "Regel: Subreddit-Regeln vor dem Posten prüfen" — a
+# non-answer where the standing rule belongs, because the allowlist and the rule
+# table were maintained separately and drifted. This makes the drift loud.
+_NO_RULE = sorted(s for s in ALLOWED_SUBS if s not in SUB_RULES)
+if _NO_RULE:
+    print(f"   ⚠️  Subreddits ohne Regel-Eintrag: {', '.join(_NO_RULE)}")
 
 
 # The right subreddit is not yet the right thread. "Do I need cycling glasses?"
@@ -200,6 +224,9 @@ Write a reply of 120-180 words that:
 - makes no superiority claim over a named brand
 - contains NO disclosure, disclaimer or "I founded Velluto" line. One is appended
   for you; writing your own produces two.
+- ends on the answer. Do NOT close by asking the reader what matters to them or
+  what they are looking for — from the maker that reads as lead qualification,
+  not conversation.
 
 Output EXACTLY:
 TITLE: <short title>
@@ -219,8 +246,12 @@ _SELF_DISCLOSURE = re.compile(
 
 
 def _strip_self_disclosure(body: str) -> str:
+    """Also drops the horizontal rule the model puts above its disclosure — the
+    first cleaned draft ended on a bare "---" once the line beneath it was gone."""
     lines = (body or "").rstrip().splitlines()
-    while lines and (not lines[-1].strip() or _SELF_DISCLOSURE.search(lines[-1])):
+    while lines and (not lines[-1].strip()
+                     or _SELF_DISCLOSURE.search(lines[-1])
+                     or re.fullmatch(r"\s*[-*_]{3,}\s*", lines[-1])):
         lines.pop()
     return "\n".join(lines).rstrip()
 

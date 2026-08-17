@@ -98,6 +98,45 @@ _IDF_CACHE: dict | None = None
 _MIN_SCORE = 1.5      # at least one genuinely distinctive shared word
 _STRONG = 4.0         # above this the match stands even if another article ties
 _MARGIN = 1.15        # near the floor, demand a clear winner or abstain
+_MIN_COVER = 0.60     # the article must cover most of what the question is about
+
+# A word absent from all 72 articles is not weightless — it is the most
+# informative word in the question, because it marks a topic we have never
+# written about. Scoring it 0 is why "wind protection cycling glasses" linked
+# cycling-glasses-uv-protection-uv400-vs-uv380-explained: "wind" appears in no
+# article, so the match rested entirely on "protection", and a UV explainer went
+# under a wind question.
+#
+# Function words are the exception. They are also absent from the corpus and mean
+# nothing anywhere, so they must not count as unmet topic. This list is safe in a
+# way the earlier "cycling/glasses" stop list was not: those words carry meaning
+# and merely happen to be common — idf handles them. These carry none.
+_FUNCTION = {
+    # Short ones matter most: the regex keeps anything from two letters up, so a
+    # missing "do" scored as an unseen topic word and sank "Do I need cycling
+    # glasses?" from a correct match to no match at all.
+    "do", "be", "is", "am", "an", "as", "at", "by", "if", "in", "it", "me", "my",
+    "no", "of", "on", "or", "so", "to", "up", "us", "we", "yes",
+    "the", "and", "for", "are", "was", "were", "you", "your", "our", "with",
+    "that", "this", "there", "these", "those", "from", "have", "has", "had",
+    "what", "which", "when", "where", "how", "why", "who", "does", "did", "not",
+    "but", "all", "any", "can", "get", "got", "out", "about", "into", "than",
+    "then", "them", "they", "its", "it's", "lot", "much", "many", "some", "more",
+    "most", "very", "really", "just", "like", "would", "should", "could",
+    # Generic verbs. "use" is not a topic, but it is absent from all 72 titles,
+    # so at full unseen weight it sank "Why would I use cycling glasses?" to a
+    # 4% coverage score and no link.
+    "use", "used", "using", "make", "makes", "want", "know", "think", "see",
+    "say", "go", "goes", "will", "may", "might", "must", "been", "being",
+    "der", "die", "das", "und", "ist", "sind", "für", "mit", "auf", "ich", "wie",
+    "was", "man", "ein", "eine", "einen", "nicht", "auch", "noch", "sich",
+    "het", "een", "van", "voor", "met", "zijn", "wat", "hoe", "dat", "niet",
+    "les", "des", "une", "pour", "avec", "est", "sont", "que", "qui", "pas",
+}
+
+
+def _informative(question: str) -> set[str]:
+    return {w for w in re.findall(r"[a-z]{2,}", question.lower()) if w not in _FUNCTION}
 
 
 def _corpus() -> tuple[dict, dict]:
@@ -115,7 +154,10 @@ def _corpus() -> tuple[dict, dict]:
         df = collections.Counter()
         for toks in docs.values():
             df.update(toks)
-        _IDF_CACHE = (docs, {w: math.log(n / (1 + c)) for w, c in df.items()} if n else {})
+        idf = {w: math.log(n / (1 + c)) for w, c in df.items()} if n else {}
+        # Weight for a word the corpus has never seen — the ceiling of the scale.
+        idf[""] = math.log(n) if n > 1 else 0.0
+        _IDF_CACHE = (docs, idf)
     return _IDF_CACHE
 
 
@@ -129,10 +171,12 @@ def _live_article_for(question: str) -> str:
     docs, idf = _corpus()
     if not docs:
         return ""
-    qt = set(re.findall(r"[a-z]{2,}", question.lower()))
+    qt = _informative(question)
     if not qt:
         return ""
-    ranked = sorted(((sum(idf.get(w, 0.0) for w in qt & toks), url)
+    unseen = idf.get("", 0.0)
+    total = sum(idf.get(w, unseen) for w in qt)     # unseen words count in full
+    ranked = sorted(((sum(idf.get(w, unseen) for w in qt & toks), url)
                      for url, toks in docs.items()), reverse=True)
     best = ranked[0]
     runner = ranked[1][0] if len(ranked) > 1 else 0.0
@@ -140,6 +184,8 @@ def _live_article_for(question: str) -> str:
         return ""
     if best[0] < _STRONG and best[0] <= runner * _MARGIN:
         return ""      # two articles fit equally and neither is strong — abstain
+    if total and best[0] / total < _MIN_COVER:
+        return ""      # the article answers a different part of the question
     return best[1]
 
 
