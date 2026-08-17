@@ -3,24 +3,24 @@
 Replace AI-generated cover images on published articles with real photographs.
 
 WHY
-Six images in the cover pool are OpenAI gpt-image 2.0 output, not photographs —
-see data/ai_media_inventory.json and the Phase 4.6 note in seo_bot.py. They were
-removed from the pool on 2026-08-17, which stops NEW articles from drawing them.
-It does nothing for the articles already published with one, and those are the
-ones the public sees.
+Eight of the ten images filed in seo_bot.py as the "May 2026 outdoor shoot" are
+not photographs. Six carry a C2PA manifest naming OpenAI gpt-image 2.0; _2 and
+_10 were confirmed by hand, their metadata having been stripped so the file could
+not testify either way. Only _1 and _4 came out of a camera. All eight left the
+pool on 2026-08-17, which stops NEW articles from drawing them and does nothing
+for the ones already published — and those are what the public sees.
 
-Nine articles carry such a cover. Each file still ships its C2PA manifest from
-our own CDN, so the AI origin is verifiable by anyone at
+Eleven articles carry such a cover. The six with a manifest still ship it from
+our own CDN, so their AI origin is verifiable by anyone at
 contentcredentials.org/verify — Art. 50(4) AI Act (image content that appears
 authentic) and § 5a UWG (a photorealistic AI image suggesting a real riding
 situation). Swapping the image settles both without a disclosure label.
 
 WHAT IT PICKS
 A camera-verified photo from the same visual category, so the page keeps its
-look. Only images the scan classified "photo" are eligible: an UNKNOWN image
-would just move the problem, since Shopify strips the metadata that would have
-proven its origin. Assignment is round-robin so nine articles do not all end up
-with the same cover.
+look. Only images classified "photo" are eligible — never UNKNOWN, which would
+risk swapping an AI image for another AI image and reporting success. Assignment
+is round-robin so the eleven do not all end up with the same cover.
 
 Dry-run by default. --apply writes.
 
@@ -38,7 +38,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from seo_bot import BLOG_ID, SHOPIFY_HEADERS, SHOPIFY_STORE, WHITELIST  # noqa: E402
+# HERO_WHITELIST, not WHITELIST: the latter still holds UI graphics
+# (purplestats, offerpurple, visioneexplained) and images too small for a
+# 1200x800 cover. Drawing from it would swap an AI photo for a stats chart.
+from seo_bot import (BLOG_ID, HERO_WHITELIST, SHOPIFY_HEADERS,  # noqa: E402
+                     SHOPIFY_STORE)
 
 API = f"https://{SHOPIFY_STORE}/admin/api/2024-01"
 INVENTORY = os.path.join(ROOT, "data", "ai_media_inventory.json")
@@ -66,11 +70,13 @@ def _stems(inv: dict, verdict: str) -> dict:
 def _replacements(inv: dict) -> list[str]:
     """Camera-verified pool keys, closest in character first.
 
-    UNKNOWN images are deliberately excluded. 47 of them are unclassified only
-    because Shopify stripped their metadata, so picking one could silently swap
-    an AI image for another AI image and report success.
+    UNKNOWN images are deliberately excluded. An unclassified image is unclassified
+    because Shopify stripped the metadata that would have proven its origin, so
+    picking one could silently swap an AI image for another AI image and report
+    success. The pool held 47 such images until they were classified by hand on
+    2026-08-17; the exclusion stays for whatever is added next.
     """
-    photos = [k for k in _stems(inv, "photo") if k in WHITELIST]
+    photos = [k for k in _stems(inv, "photo") if k in HERO_WHITELIST]
     return sorted(photos, key=lambda k: (not k.startswith(_PREFER), k))
 
 
@@ -119,7 +125,7 @@ def main() -> None:
     ok = fail = 0
     for i, (a, hit) in enumerate(todo):
         new_key = pool[i % len(pool)]
-        new_url = WHITELIST[new_key]
+        new_url = HERO_WHITELIST[new_key]
         print(f"\n  {a['handle'][:66]}")
         print(f"     {hit}  →  {new_key}")
         if not apply:

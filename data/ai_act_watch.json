@@ -38,5 +38,15 @@
     "note": "47 Pool-Bild(er) ohne Metadaten — Shopify entfernt sie beim Recodieren, das ist also keine Entwarnung. Einordnen mit `scripts/ai_image_scan.py --set 002=ai|photo`"
    }
   ]
+ },
+ {
+  "date": "2026-08-17",
+  "findings": [
+   {
+    "state": "WATCH",
+    "topic": "Veröffentlichte Cover",
+    "note": "8 KI-Bild(er) sind aus dem Pool entfernt — das gilt aber nur für neue Artikel. Ob bereits veröffentlichte sie noch als Cover tragen, prüft `python3 scripts/replace_ai_covers.py` (Probelauf, schreibt nichts)."
+   }
+  ]
  }
 ]

@@ -383,12 +383,12 @@ WHITELIST = {
     # manifest ships with the file on our CDN. Only _1 and _4 have camera EXIF.
     # See data/ai_media_inventory.json and scripts/ai_image_scan.py.
     "Shooting_Outdoors_May_2026_1":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_1.png?v=1779885436",
-    "Shooting_Outdoors_May_2026_2":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_2.png?v=1779885435",
     "Shooting_Outdoors_May_2026_4":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_4.png?v=1779885436",
-    "Shooting_Outdoors_May_2026_10": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_10.png?v=1779885436",
-    # _3, _6, _7, _8, _9, _11 removed 2026-08-17: OpenAI gpt-image 2.0, not
-    # photographs (see the Phase 4.6 note above). Do not restore them — the
-    # inventory guard below drops them again anyway.
+    # Only _1 and _4 of the "May 2026 outdoor shoot" are photographs. _3, _6, _7,
+    # _8, _9 and _11 were removed 2026-08-17 on their own C2PA evidence; _2 and
+    # _10 followed the same day, confirmed by hand — their metadata was stripped,
+    # so the file could not testify either way. Do not restore any of them; the
+    # inventory guard below drops them again regardless.
 }
 
 # ── AI-generated media may not enter the pool ────────────────────────────────
@@ -439,10 +439,9 @@ IMAGE_CATEGORIES = {
                   "FooterExports_Female","Lifestylestudiomobile","Lifestyle_mobileUGC",
                   "Lifestyle_1x1","LifestyleSection_Transparent","LifestyleSection_Orange",
                   "Velluto_BuilttoPerform_Violet","Hero-mobile-v2","Hero-mobile","brown1",
-                  # Phase 4.6 — the camera frames from the May 2026 set; the six
-                  # gpt-image ones are gone (see WHITELIST).
-                  "Shooting_Outdoors_May_2026_1","Shooting_Outdoors_May_2026_2",
-                  "Shooting_Outdoors_May_2026_4","Shooting_Outdoors_May_2026_10"],
+                  # Phase 4.6 — the two camera frames from the May 2026 set; the
+                  # other eight are AI and gone (see WHITELIST).
+                  "Shooting_Outdoors_May_2026_1","Shooting_Outdoors_May_2026_4"],
     "product":   ["productblack","productblackmale","productorange","productorangemale",
                   "productbrown","productbrownfemale","AllGlasses","BuildtoPerform",
                   "VellutoAboutUs","002","003","004"],
