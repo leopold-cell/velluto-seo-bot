@@ -18,7 +18,6 @@ Usage:
 """
 import json
 import os
-import subprocess
 import sys
 
 import requests
@@ -27,22 +26,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 
-def _ensure_shopify_token() -> None:
-    """Must run before seo_bot is imported — it reads the token at import time."""
-    if os.getenv("SHOPIFY_TOKEN"):
-        return
-    try:
-        tok = subprocess.run([sys.executable, os.path.join(ROOT, "mint_shopify_token.py")],
-                             capture_output=True, text=True, timeout=45).stdout.strip()
-    except Exception as e:
-        tok, _ = "", print(f"   ⚠️  Token-Prägung fehlgeschlagen: {str(e)[:70]}")
-    if tok:
-        os.environ["SHOPIFY_TOKEN"] = tok
-        print(f"   ✓ Shopify-Token geprägt ({tok[:6]}…)")
-
-
-_ensure_shopify_token()
-
+# Token minting lives in seo_bot — importing it is enough.
 from seo_bot import BLOG_ID, SHOPIFY_HEADERS, SHOPIFY_STORE  # noqa: E402
 
 API = f"https://{SHOPIFY_STORE}/admin/api/2024-01"

@@ -32,6 +32,14 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from dotenv import load_dotenv  # noqa: E402
+
+# Reads ANTHROPIC_API_KEY via link_builder. It used to inherit the .env as a side
+# effect of importing link_builder; relying on that is how reddit_daily ended up
+# sending a stale key and getting 401 on every draft. Loaded here explicitly.
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"),
+            override=True)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from geo_questions import GEO_MARKETS, load_json  # noqa: E402

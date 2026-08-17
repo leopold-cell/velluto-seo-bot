@@ -38,35 +38,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-def _ensure_shopify_token() -> None:
-    """Mint a token if the shell has none — MUST run before seo_bot is imported.
-
-    Shopify issues ~24h tokens from client credentials; there is no static one.
-    run.sh mints one and exports it, so every script it starts inherits a valid
-    token. Run by hand from a normal shell there is nothing to inherit, and
-    seo_bot builds SHOPIFY_HEADERS from the env var at import time — so the
-    header goes out as None and Shopify answers 401. This script is meant to be
-    run by hand, so it fetches its own.
-    """
-    if os.getenv("SHOPIFY_TOKEN"):
-        return
-    import subprocess
-    try:
-        tok = subprocess.run([sys.executable, os.path.join(ROOT, "mint_shopify_token.py")],
-                             capture_output=True, text=True, timeout=45).stdout.strip()
-    except Exception as e:
-        tok = ""
-        print(f"   ⚠️  Token-Prägung fehlgeschlagen: {str(e)[:70]}")
-    if tok:
-        os.environ["SHOPIFY_TOKEN"] = tok
-        print(f"   ✓ Shopify-Token geprägt ({tok[:6]}…)")
-    else:
-        print("   ⚠️  Kein Shopify-Token — SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET "
-              "in der .env prüfen")
-
-
-_ensure_shopify_token()
-
+# Token minting lives in seo_bot now — one place for all fifteen scripts that
+# import it, instead of a copy in each. The local helper this file carried was
+# the second such copy and is gone.
+#
 # HERO_WHITELIST, not WHITELIST: the latter still holds UI graphics
 # (purplestats, offerpurple, visioneexplained) and images too small for a
 # 1200x800 cover. Drawing from it would swap an AI photo for a stats chart.

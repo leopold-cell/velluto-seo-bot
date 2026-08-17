@@ -34,6 +34,21 @@ def retry(max_attempts=3, delay=8, label=""):
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
 
 SHOPIFY_TOKEN = os.getenv("SHOPIFY_TOKEN")
+if not SHOPIFY_TOKEN:
+    # Shopify issues ~24h tokens from client credentials; there is no static one.
+    # run.sh mints one and exports it, so anything it starts inherits a valid
+    # token — but fifteen scripts import this module for SHOPIFY_HEADERS and are
+    # meant to be run BY HAND (content_retrofit, fix_slugs, backfill_*, …). Those
+    # inherited nothing, sent the header as None, and died on an unexplained 401.
+    # Minting here fixes all of them at once instead of fifteen times over.
+    from mint_shopify_token import mint
+    SHOPIFY_TOKEN = mint()
+    if SHOPIFY_TOKEN:
+        os.environ["SHOPIFY_TOKEN"] = SHOPIFY_TOKEN   # subprocesses inherit it too
+        print(f"   ✓ Shopify-Token geprägt ({SHOPIFY_TOKEN[:6]}…)")
+    else:
+        print("   ⚠️  Kein Shopify-Token — SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET "
+              "in der .env prüfen")
 SHOPIFY_STORE = os.getenv("SHOPIFY_STORE", "velluto-brand.myshopify.com")
 BLOG_ID       = os.getenv("BLOG_ID", "127785959765")
 API_KEY       = os.getenv("ANTHROPIC_API_KEY")
