@@ -57,11 +57,28 @@ HISTORY = os.path.join(ROOT, "data", "gsc_mail_watch.json")
 SENDER = "sc-noreply@google.com"
 DOMAIN = "velluto-shop.com"          # the account also receives mail for other properties
 GATE_DAYS = 7
-DAYS = 14
-if "--days" in sys.argv:
-    i = sys.argv.index("--days")
-    if i + 1 < len(sys.argv):
-        DAYS = max(1, int(sys.argv[i + 1]))
+def _int_arg(flag: str, default: int) -> int:
+    """Numeric CLI flag that tolerates a typo instead of dying on it.
+
+    int(sys.argv[i+1]) raised ValueError on "--count 2." — a stray period copied
+    out of prose. A tracebacked script reads like a broken tool; it is not, and
+    the run should continue with the default.
+    """
+    if flag not in sys.argv:
+        return default
+    i = sys.argv.index(flag)
+    if i + 1 >= len(sys.argv):
+        print(f"   ⚠️  {flag} without a value — using {default}")
+        return default
+    raw = sys.argv[i + 1].strip().rstrip(".,;")
+    try:
+        return max(1, int(raw))
+    except ValueError:
+        print(f"   ⚠️  {flag} expects a number, got {sys.argv[i + 1]!r} — using {default}")
+        return default
+
+
+DAYS = _int_arg("--days", 14)
 
 # Google's WNC-xxxx message-type codes are stable, so they classify far more
 # reliably than the localised subject line (this account receives German).

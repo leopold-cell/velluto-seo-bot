@@ -48,11 +48,28 @@ from briefs.quality_gate import _rel_tokens
 from seo_bot import SHOPIFY_STORE, SHOPIFY_HEADERS, BLOG_ID
 
 APPLY = "--apply" in sys.argv
-MAX_SOURCES = 2
-if "--max-sources" in sys.argv:
-    i = sys.argv.index("--max-sources")
-    if i + 1 < len(sys.argv):
-        MAX_SOURCES = max(1, int(sys.argv[i + 1]))
+def _int_arg(flag: str, default: int) -> int:
+    """Numeric CLI flag that tolerates a typo instead of dying on it.
+
+    int(sys.argv[i+1]) raised ValueError on "--count 2." — a stray period copied
+    out of prose. A tracebacked script reads like a broken tool; it is not, and
+    the run should continue with the default.
+    """
+    if flag not in sys.argv:
+        return default
+    i = sys.argv.index(flag)
+    if i + 1 >= len(sys.argv):
+        print(f"   ⚠️  {flag} without a value — using {default}")
+        return default
+    raw = sys.argv[i + 1].strip().rstrip(".,;")
+    try:
+        return max(1, int(raw))
+    except ValueError:
+        print(f"   ⚠️  {flag} expects a number, got {sys.argv[i + 1]!r} — using {default}")
+        return default
+
+
+MAX_SOURCES = _int_arg("--max-sources", 2)
 
 # A single shared title word is not a topic match. Live data showed exactly why:
 # "worth", "specs", "complete" — and "amp", harvested from a &amp; entity — paired

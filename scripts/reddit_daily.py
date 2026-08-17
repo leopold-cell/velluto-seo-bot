@@ -148,12 +148,29 @@ OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                    "output", "reddit_daily.txt")
 
 
+def _int_arg(flag: str, default: int) -> int:
+    """Numeric CLI flag that tolerates a typo instead of dying on it.
+
+    Hand-rolled int(sys.argv[i+1]) raised ValueError on "--count 2." — a stray
+    period copied out of prose. A tracebacked script reads like a broken tool;
+    it is not, and the run should continue with the default.
+    """
+    if flag not in sys.argv:
+        return default
+    i = sys.argv.index(flag)
+    if i + 1 >= len(sys.argv):
+        print(f"   ⚠️  {flag} without a value — using {default}")
+        return default
+    raw = sys.argv[i + 1].strip().rstrip(".,;")
+    try:
+        return max(1, int(raw))
+    except ValueError:
+        print(f"   ⚠️  {flag} expects a number, got {sys.argv[i + 1]!r} — using {default}")
+        return default
+
+
 def main() -> None:
-    count = DEFAULT_COUNT
-    if "--count" in sys.argv:
-        i = sys.argv.index("--count")
-        if i + 1 < len(sys.argv):
-            count = max(1, int(sys.argv[i + 1]))
+    count = _int_arg("--count", DEFAULT_COUNT)
     text = render(build(count), markdown="--markdown" in sys.argv)
     print(text)
     # Written to disk so the daily mail can include it without re-running the
