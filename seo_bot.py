@@ -384,15 +384,41 @@ WHITELIST = {
     # See data/ai_media_inventory.json and scripts/ai_image_scan.py.
     "Shooting_Outdoors_May_2026_1":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_1.png?v=1779885436",
     "Shooting_Outdoors_May_2026_2":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_2.png?v=1779885435",
-    "Shooting_Outdoors_May_2026_3":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_3.png?v=1779885435",
     "Shooting_Outdoors_May_2026_4":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_4.png?v=1779885436",
-    "Shooting_Outdoors_May_2026_6":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_6.png?v=1779885435",
-    "Shooting_Outdoors_May_2026_7":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_7.png?v=1779885435",
-    "Shooting_Outdoors_May_2026_8":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_8.png?v=1779885435",
-    "Shooting_Outdoors_May_2026_9":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_9.png?v=1779885436",
     "Shooting_Outdoors_May_2026_10": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_10.png?v=1779885436",
-    "Shooting_Outdoors_May_2026_11": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_11.png?v=1779885436",
+    # _3, _6, _7, _8, _9, _11 removed 2026-08-17: OpenAI gpt-image 2.0, not
+    # photographs (see the Phase 4.6 note above). Do not restore them — the
+    # inventory guard below drops them again anyway.
 }
+
+# ── AI-generated media may not enter the pool ────────────────────────────────
+# Removing keys by hand is not enough on its own: the pool is edited by hand, and
+# an image whose origin is discovered later would otherwise have to be chased
+# through two separate lists. This reads the verdicts in
+# data/ai_media_inventory.json (written by scripts/ai_image_scan.py) and drops
+# anything classified "ai", wherever it appears.
+#
+# Art. 50(4) AI Act requires disclosure for AI image content that appears
+# authentic, and § 5a UWG independently makes a photorealistic AI image
+# suggesting a real riding situation misleading by omission. Not publishing them
+# settles both without a label under every hero image.
+def _ai_generated_keys() -> set:
+    try:
+        import json as _json
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "data", "ai_media_inventory.json"), encoding="utf-8") as f:
+            return {k for k, v in (_json.load(f) or {}).items()
+                    if isinstance(v, dict) and v.get("verdict") == "ai"}
+    except Exception:
+        return set()
+
+
+_AI_KEYS = _ai_generated_keys()
+_still_listed = sorted(_AI_KEYS & set(WHITELIST))
+if _still_listed:
+    print(f"   ⚠️  KI-Bilder aus dem Pool entfernt: {', '.join(_still_listed)}")
+    for _k in _still_listed:
+        WHITELIST.pop(_k, None)
 
 # Images that should NOT be used as blog hero (stats, offers, UI graphics)
 _EXCLUDE_AS_HERO = {"purplestats", "offerpurple", "visioneexplained"}
@@ -413,12 +439,10 @@ IMAGE_CATEGORIES = {
                   "FooterExports_Female","Lifestylestudiomobile","Lifestyle_mobileUGC",
                   "Lifestyle_1x1","LifestyleSection_Transparent","LifestyleSection_Orange",
                   "Velluto_BuilttoPerform_Violet","Hero-mobile-v2","Hero-mobile","brown1",
-                  # Phase 4.6 — May 2026 outdoor shoot
+                  # Phase 4.6 — the camera frames from the May 2026 set; the six
+                  # gpt-image ones are gone (see WHITELIST).
                   "Shooting_Outdoors_May_2026_1","Shooting_Outdoors_May_2026_2",
-                  "Shooting_Outdoors_May_2026_3","Shooting_Outdoors_May_2026_4",
-                  "Shooting_Outdoors_May_2026_6","Shooting_Outdoors_May_2026_7",
-                  "Shooting_Outdoors_May_2026_8","Shooting_Outdoors_May_2026_9",
-                  "Shooting_Outdoors_May_2026_10","Shooting_Outdoors_May_2026_11"],
+                  "Shooting_Outdoors_May_2026_4","Shooting_Outdoors_May_2026_10"],
     "product":   ["productblack","productblackmale","productorange","productorangemale",
                   "productbrown","productbrownfemale","AllGlasses","BuildtoPerform",
                   "VellutoAboutUs","002","003","004"],

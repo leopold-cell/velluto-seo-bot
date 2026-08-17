@@ -82,12 +82,26 @@ def check() -> list[tuple[str, str, str]]:
                     "Pool-Bilder ist unbekannt. `python3 scripts/ai_image_scan.py`"))
     else:
         if known_ai:
-            out.append(("ACTION", "KI-Bilder ohne Kennzeichnung",
-                        f"{len(known_ai)} Pool-Bild(er) sind belegt KI-generiert und laufen "
-                        f"ohne Hinweis: {', '.join(known_ai[:4])}"
-                        f"{' …' if len(known_ai) > 4 else ''}. Art. 50 Abs. 4 AI Act "
-                        "(Bildinhalt, der authentisch wirkt) und § 5a UWG. Entweder "
-                        "kennzeichnen oder aus WHITELIST entfernen."))
+            # Whether they are still in WHITELIST decides which half of the job is
+            # left. Removing them stops new articles; it does nothing for the ones
+            # already published, and those are what the public sees.
+            try:
+                from ai_image_scan import whitelist
+                still_pooled = sorted(set(known_ai) & set(whitelist()))
+            except Exception:
+                still_pooled = []
+            if still_pooled:
+                out.append(("ACTION", "KI-Bilder im Pool",
+                            f"{len(still_pooled)} belegt KI-generierte Bild(er) stehen noch in "
+                            f"seo_bot.WHITELIST: {', '.join(still_pooled[:4])}"
+                            f"{' …' if len(still_pooled) > 4 else ''}. Art. 50 Abs. 4 AI Act "
+                            "und § 5a UWG — entfernen oder kennzeichnen."))
+            else:
+                out.append(("WATCH", "Veröffentlichte Cover",
+                            f"{len(known_ai)} KI-Bild(er) sind aus dem Pool entfernt — das gilt "
+                            "aber nur für neue Artikel. Ob bereits veröffentlichte sie noch als "
+                            "Cover tragen, prüft `python3 scripts/replace_ai_covers.py` "
+                            "(Probelauf, schreibt nichts)."))
         if unknown:
             out.append(("WATCH", "Bilder ohne Einordnung",
                         f"{len(unknown)} Pool-Bild(er) ohne Metadaten — Shopify entfernt sie "
