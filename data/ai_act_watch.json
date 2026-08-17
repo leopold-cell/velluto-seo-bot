@@ -1,0 +1,27 @@
+[
+ {
+  "date": "2026-08-17",
+  "findings": [
+   {
+    "state": "WATCH",
+    "topic": "Bild-Inventar",
+    "note": "data/ai_media_inventory.json fehlt oder ist leer — die Herkunft der Pool-Bilder ist unbekannt. `python3 scripts/ai_image_scan.py`"
+   }
+  ]
+ },
+ {
+  "date": "2026-08-17",
+  "findings": [
+   {
+    "state": "ACTION",
+    "topic": "KI-Bilder ohne Kennzeichnung",
+    "note": "6 Pool-Bild(er) sind belegt KI-generiert und laufen ohne Hinweis: Shooting_Outdoors_May_2026_11, Shooting_Outdoors_May_2026_3, Shooting_Outdoors_May_2026_6, Shooting_Outdoors_May_2026_7 …. Art. 50 Abs. 4 AI Act (Bildinhalt, der authentisch wirkt) und § 5a UWG. Entweder kennzeichnen oder aus WHITELIST entfernen."
+   },
+   {
+    "state": "WATCH",
+    "topic": "Bilder ohne Einordnung",
+    "note": "47 Pool-Bild(er) ohne Metadaten — Shopify entfernt sie beim Recodieren, das ist also keine Entwarnung. Einordnen mit `scripts/ai_image_scan.py --set 002=ai|photo`"
+   }
+  ]
+ }
+]

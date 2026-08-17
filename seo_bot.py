@@ -375,7 +375,13 @@ WHITELIST = {
     "LifestyleSection_Transparent": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Transparent.webp?v=1774975640",
     "LifestyleSection_Orange":   "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Orange.webp?v=1774975205",
     "Velluto_BuilttoPerform_Violet": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Velluto_BuilttoPerform_Mobile_Violet.webp?v=1774970814",
-    # Phase 4.6 — May 2026 outdoor shoot (10 lifestyle photos, _5 intentionally omitted)
+    # Phase 4.6 — "May 2026 outdoor shoot" (_5 intentionally omitted). The name is
+    # misleading and was believed until scanned: 6 of these 10 are NOT photographs.
+    # _3, _6, _7, _8, _9 and _11 carry a C2PA manifest naming OpenAI gpt-image 2.0
+    # with IPTC digitalSourceType = trainedAlgorithmicMedia — AI-generated, and
+    # publicly verifiable by anyone at contentcredentials.org/verify since the
+    # manifest ships with the file on our CDN. Only _1 and _4 have camera EXIF.
+    # See data/ai_media_inventory.json and scripts/ai_image_scan.py.
     "Shooting_Outdoors_May_2026_1":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_1.png?v=1779885436",
     "Shooting_Outdoors_May_2026_2":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_2.png?v=1779885435",
     "Shooting_Outdoors_May_2026_3":  "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_3.png?v=1779885435",

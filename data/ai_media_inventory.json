@@ -1,0 +1,344 @@
+{
+ "002": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/002.webp?v=1776868548",
+  "verdict": "unknown"
+ },
+ "003": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/003.webp?v=1776868548",
+  "verdict": "unknown"
+ },
+ "004": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/004_1462e923-4e9b-497f-a0a0-0f58cb98b84a.webp?v=1776868548",
+  "verdict": "unknown"
+ },
+ "AllGlasses": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/AllGlasses.webp?v=1774979597",
+  "verdict": "unknown"
+ },
+ "BuildtoPerform": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/BuildtoPerformEditedv2Mobile.webp?v=1775081368",
+  "verdict": "unknown"
+ },
+ "FooterExportsPeople": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/FooterExportsPeople.webp?v=1775212054",
+  "verdict": "unknown"
+ },
+ "FooterExports_Female": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/FooterExports_Female.webp?v=1775138042",
+  "verdict": "unknown"
+ },
+ "Hero-mobile": {
+  "evidence": "Kamerahersteller",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Hero-mobile.webp?v=1776355362",
+  "verdict": "photo"
+ },
+ "Hero-mobile-v2": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Hero-mobile-v2.webp?v=1776419818",
+  "verdict": "unknown"
+ },
+ "LifestyleSection_Orange": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Orange.webp?v=1774975205",
+  "verdict": "unknown"
+ },
+ "LifestyleSection_Transparent": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/LifestyleSection_Transparent.webp?v=1774975640",
+  "verdict": "unknown"
+ },
+ "Lifestyle_1x1": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestyle_1x1_fe573806-27fe-4b9d-8be3-be91c2f1aadb.webp?v=1775581088",
+  "verdict": "unknown"
+ },
+ "Lifestyle_mobileUGC": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestyle_mobileUGC.webp?v=1775138102",
+  "verdict": "unknown"
+ },
+ "Lifestylestudiomobile": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Lifestylestudiomobile.webp?v=1775138516",
+  "verdict": "unknown"
+ },
+ "Review_1": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_1.webp?v=1776851050",
+  "verdict": "unknown"
+ },
+ "Review_10": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_10.webp?v=1776851050",
+  "verdict": "unknown"
+ },
+ "Review_12": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_12.webp?v=1776851049",
+  "verdict": "unknown"
+ },
+ "Review_13": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_13.webp?v=1776851048",
+  "verdict": "unknown"
+ },
+ "Review_14": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_14.webp?v=1776851049",
+  "verdict": "unknown"
+ },
+ "Review_16": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_16.webp?v=1776851056",
+  "verdict": "unknown"
+ },
+ "Review_17": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_17.webp?v=1776851053",
+  "verdict": "unknown"
+ },
+ "Review_18": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_18.jpg?v=1776852440",
+  "verdict": "unknown"
+ },
+ "Review_19": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_19.webp?v=1776854998",
+  "verdict": "unknown"
+ },
+ "Review_2": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_2.webp?v=1776851048",
+  "verdict": "unknown"
+ },
+ "Review_3": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_3.webp?v=1776851050",
+  "verdict": "unknown"
+ },
+ "Review_4": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_4.webp?v=1776851048",
+  "verdict": "unknown"
+ },
+ "Review_5": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_5.webp?v=1776851050",
+  "verdict": "unknown"
+ },
+ "Review_6": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_6.webp?v=1776851050",
+  "verdict": "unknown"
+ },
+ "Review_7": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_7.webp?v=1776851050",
+  "verdict": "unknown"
+ },
+ "Review_9": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Review_9.webp?v=1776851049",
+  "verdict": "unknown"
+ },
+ "Rick_Arancia": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Rick_Arancia.webp?v=1776855699",
+  "verdict": "unknown"
+ },
+ "Shooting_Outdoors_May_2026_1": {
+  "evidence": "Kamerahersteller",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_1.png?v=1779885436",
+  "verdict": "photo"
+ },
+ "Shooting_Outdoors_May_2026_10": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_10.png?v=1779885436",
+  "verdict": "unknown"
+ },
+ "Shooting_Outdoors_May_2026_11": {
+  "evidence": "IPTC digitalSourceType: trainedAlgorithmicMedia",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_11.png?v=1779885436",
+  "verdict": "ai"
+ },
+ "Shooting_Outdoors_May_2026_2": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_2.png?v=1779885435",
+  "verdict": "unknown"
+ },
+ "Shooting_Outdoors_May_2026_3": {
+  "evidence": "IPTC digitalSourceType: trainedAlgorithmicMedia",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_3.png?v=1779885435",
+  "verdict": "ai"
+ },
+ "Shooting_Outdoors_May_2026_4": {
+  "evidence": "Kamerahersteller",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_4.png?v=1779885436",
+  "verdict": "photo"
+ },
+ "Shooting_Outdoors_May_2026_6": {
+  "evidence": "IPTC digitalSourceType: trainedAlgorithmicMedia",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_6.png?v=1779885435",
+  "verdict": "ai"
+ },
+ "Shooting_Outdoors_May_2026_7": {
+  "evidence": "IPTC digitalSourceType: trainedAlgorithmicMedia",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_7.png?v=1779885435",
+  "verdict": "ai"
+ },
+ "Shooting_Outdoors_May_2026_8": {
+  "evidence": "IPTC digitalSourceType: trainedAlgorithmicMedia",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_8.png?v=1779885435",
+  "verdict": "ai"
+ },
+ "Shooting_Outdoors_May_2026_9": {
+  "evidence": "IPTC digitalSourceType: trainedAlgorithmicMedia",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Shooting_Outdoors_May_2026_9.png?v=1779885436",
+  "verdict": "ai"
+ },
+ "TransparentMale": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/TransparentMale.webp?v=1775574512",
+  "verdict": "unknown"
+ },
+ "VellutoAboutUs": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/VellutoAboutUs.webp?v=1775037042",
+  "verdict": "unknown"
+ },
+ "VellutoModelMale002": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/VellutoModelMale002.webp?v=1775213817",
+  "verdict": "unknown"
+ },
+ "Velluto_BuilttoPerform_Violet": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/Velluto_BuilttoPerform_Mobile_Violet.webp?v=1774970814",
+  "verdict": "unknown"
+ },
+ "brown1": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/brown1.webp?v=1776868549",
+  "verdict": "unknown"
+ },
+ "image00012": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/image00012.jpg?v=1776695290",
+  "verdict": "unknown"
+ },
+ "offerpurple": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/offerpurple.webp?v=1776851522",
+  "verdict": "unknown"
+ },
+ "productblack": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productblack.webp?v=1776792135",
+  "verdict": "unknown"
+ },
+ "productblackmale": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productblackmale.webp?v=1776792135",
+  "verdict": "unknown"
+ },
+ "productbrown": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productbrown.webp?v=1776792355",
+  "verdict": "unknown"
+ },
+ "productbrownfemale": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productbrownfemale.webp?v=1776792355",
+  "verdict": "unknown"
+ },
+ "productorange": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productorange.webp?v=1776792409",
+  "verdict": "unknown"
+ },
+ "productorangemale": {
+  "evidence": "Kamerahersteller",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/productorangemale.webp?v=1776792409",
+  "verdict": "photo"
+ },
+ "purplestats": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/purplestats.webp?v=1776851523",
+  "verdict": "unknown"
+ },
+ "testimonialmob7": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/testimonialmob7.webp?v=1776794573",
+  "verdict": "unknown"
+ },
+ "visioneexplained": {
+  "evidence": "keine Metadaten (Shopify entfernt sie beim WebP-Recodieren)",
+  "source": "scan",
+  "url": "https://cdn.shopify.com/s/files/1/0621/5607/9275/files/visioneexplained.webp?v=1776851525",
+  "verdict": "unknown"
+ }
+}
