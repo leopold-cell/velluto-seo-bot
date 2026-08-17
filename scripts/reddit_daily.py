@@ -54,7 +54,26 @@ load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file_
             override=True)
 
 DEFAULT_COUNT = 3
-DISCLOSURE = "Disclosure: I build Velluto, so take this with the appropriate pinch of salt."
+
+# geo_gaps normalises every market to a language code (us/gb/au → en, at/ch → de,
+# be → nl), so gap["market"] IS the language the reply has to be written in. The
+# first working run appended a German link sentence to an English r/cycling post —
+# in a sub where a non-native-looking promo line is exactly what gets removed.
+LANG_NAME = {"en": "English", "de": "German", "nl": "Dutch", "fr": "French"}
+
+DISCLOSURE = {
+    "en": "Disclosure: I build Velluto, so take this with the appropriate pinch of salt.",
+    "de": "Offenlegung: Ich baue Velluto — entsprechend einzuordnen.",
+    "nl": "Openheid: ik maak Velluto, dus neem dit met een korrel zout.",
+    "fr": "Transparence : je fabrique Velluto, à prendre avec le recul qui s'impose.",
+}
+
+LINK_LINE = {
+    "en": "I wrote the details up here: {url}",
+    "de": "Die Details habe ich hier aufgeschrieben: {url}",
+    "nl": "De details heb ik hier opgeschreven: {url}",
+    "fr": "J'ai détaillé tout ça ici : {url}",
+}
 
 # Standing rules per subreddit — shown with every thread so the read-check is quick.
 SUB_RULES = {
@@ -159,9 +178,9 @@ def _feature_proximity(body: str) -> list[str]:
 # A disclosed reply from the maker has exactly one honest shape: answer the
 # question that was asked, say who you are, and stop.
 _DRAFT_PROMPT = """You are the founder of Velluto, replying in a Reddit thread on r/{sub}.
-Your affiliation is disclosed at the end, so write as yourself — never as a
-neutral cyclist, and NEVER ask for recommendations or opinions: you make the
-product, so asking would be dishonest.
+Write in {language}. Your affiliation is disclosed automatically, so write as
+yourself — never as a neutral cyclist, and NEVER ask for recommendations or
+opinions: you make the product, so asking would be dishonest.
 
 The thread question: {question}
 
@@ -170,13 +189,17 @@ Write a reply of 120-180 words that:
   someone who never buys anything
 - names the criteria that actually decide it (weight, coverage, ventilation,
   lens standard, fit) so the reader can judge any pair, not just ours
-- mentions Velluto at most once, only with specs we can evidence: 25 g,
-  UV400-certified, tool-free interchangeable lenses, built-in anti-fog,
-  30-day trial, from 69 EUR
+- mentions Velluto in ONE sentence, 25 words at most, and only with specs we can
+  evidence: 25 g, UV400-certified, tool-free interchangeable lenses, built-in
+  anti-fog, 30-day trial, from 69 EUR. Delete that sentence and the reply must
+  still fully answer the question — that is r/{sub}'s actual rule, and a
+  paragraph-long product pitch gets the comment removed.
 - NEVER mentions photochromic, polarised, prescription or mirrored lenses in any
   way that could read as a Velluto feature — we do not sell them
 - never claims a test, ranking or comparison we did not run
 - makes no superiority claim over a named brand
+- contains NO disclosure, disclaimer or "I founded Velluto" line. One is appended
+  for you; writing your own produces two.
 
 Output EXACTLY:
 TITLE: <short title>
@@ -184,17 +207,40 @@ BODY:
 <body text>"""
 
 
-def _skeleton(question: str, url: str, reason: str) -> tuple[str, str]:
+# The model wrote "*Full disclosure: I founded Velluto.*" on top of the appended
+# line, so the first working drafts carried two. The prompt now forbids it, but a
+# prompt is a request, not a guarantee — and a doubled disclosure is the kind of
+# detail that makes a post read as machine-written. Only the last few lines are
+# considered, so an identical phrase mid-argument survives.
+_SELF_DISCLOSURE = re.compile(
+    r"^\s*[*_>\s]*(?:full\s+)?(?:disclosure|disclaimer|offenlegung|transparence|openheid)\b"
+    r"|^\s*[*_>\s]*i(?:'m| am)?\s+(?:the\s+)?(?:founded|found|founder|build|make|run|own)\b[^.]{0,40}velluto",
+    re.I)
+
+
+def _strip_self_disclosure(body: str) -> str:
+    lines = (body or "").rstrip().splitlines()
+    while lines and (not lines[-1].strip() or _SELF_DISCLOSURE.search(lines[-1])):
+        lines.pop()
+    return "\n".join(lines).rstrip()
+
+
+def _skeleton(question: str, url: str, reason: str, lang: str) -> tuple[str, str]:
     """A structured draft the human can finish by hand. Better than the raw API
     error the run pasted into both drafts — that made the worklist useless on the
-    one day it was needed."""
+    one day it was needed.
+
+    The scaffolding stays German: it is a note to you, not part of the post. The
+    link line does not, because that one gets posted.
+    """
     body = (f"[Rohentwurf — {reason}]\n"
             f"Frage: {question}\n"
+            f"Sprache: {LANG_NAME.get(lang, 'English')}\n"
             "Aufbau: Frage direkt beantworten → Kriterien nennen (Gewicht, Abdeckung, "
-            "Belüftung, Linsennorm, Passform) → Velluto einmal, nur mit belegbaren "
-            "Specs → Offenlegung.")
+            "Belüftung, Linsennorm, Passform) → Velluto in EINEM Satz, nur mit "
+            "belegbaren Specs.")
     if url:
-        body += f"\n\nMehr Details dazu habe ich hier aufgeschrieben: {url}"
+        body += "\n\n" + LINK_LINE.get(lang, LINK_LINE["en"]).format(url=url)
     return question, body
 
 
@@ -203,36 +249,38 @@ def _skeleton(question: str, url: str, reason: str) -> tuple[str, str]:
 _AUTH_DEAD = False
 
 
-def _draft_text(question: str, url: str, sub: str) -> tuple[str, str]:
+def _draft_text(question: str, url: str, sub: str, lang: str = "en") -> tuple[str, str]:
     global _AUTH_DEAD
     key = os.getenv("ANTHROPIC_API_KEY", "")
     if not key:
-        return _skeleton(question, url, "kein ANTHROPIC_API_KEY gesetzt")
+        return _skeleton(question, url, "kein ANTHROPIC_API_KEY gesetzt", lang)
     if _AUTH_DEAD:
-        return _skeleton(question, url, "ANTHROPIC_API_KEY ungültig")
+        return _skeleton(question, url, "ANTHROPIC_API_KEY ungültig", lang)
     try:
         from anthropic import Anthropic
         r = Anthropic(api_key=key).messages.create(
             model="claude-haiku-4-5-20251001", max_tokens=600,
             messages=[{"role": "user",
-                       "content": _DRAFT_PROMPT.format(sub=sub, question=question)}])
+                       "content": _DRAFT_PROMPT.format(
+                           sub=sub, question=question,
+                           language=LANG_NAME.get(lang, "English"))}])
         raw = r.content[0].text.strip()
         t = re.search(r"TITLE:\s*(.+)", raw)
         b = re.search(r"BODY:\s*([\s\S]+)", raw)
         title = t.group(1).strip() if t else question
-        body = b.group(1).strip() if b else raw
+        body = _strip_self_disclosure(b.group(1).strip() if b else raw)
     except Exception as e:
         msg = str(e)
         if "authentication" in msg.lower() or "401" in msg:
             _AUTH_DEAD = True
             print("   ⚠️  ANTHROPIC_API_KEY wird abgelehnt (401) — Entwürfe bleiben "
                   "Rohentwürfe. Key in .env prüfen; danach erneut laufen lassen.")
-            return _skeleton(question, url, "ANTHROPIC_API_KEY ungültig")
-        return _skeleton(question, url, f"Entwurf fehlgeschlagen: {msg[:90]}")
+            return _skeleton(question, url, "ANTHROPIC_API_KEY ungültig", lang)
+        return _skeleton(question, url, f"Entwurf fehlgeschlagen: {msg[:90]}", lang)
     # Only link a real article. The old fallback linked the shop homepage when no
     # article matched — a bare shop link in r/cycling is removed as advertising.
     if url:
-        body += f"\n\nMehr Details dazu habe ich hier aufgeschrieben: {url}"
+        body += "\n\n" + LINK_LINE.get(lang, LINK_LINE["en"]).format(url=url)
     return title, body
 
 
@@ -295,9 +343,10 @@ def build(count: int = DEFAULT_COUNT) -> list[dict]:
         threads = _threads_for(q, limit=2)
         if not threads:
             continue
+        lang = gap["market"] if gap["market"] in LANG_NAME else "en"
         url = _live_article_for(q)
-        title, body = _draft_text(q, url, threads[0]["sub"])
-        body = f"{body}\n\n{DISCLOSURE}"
+        title, body = _draft_text(q, url, threads[0]["sub"], lang)
+        body = f"{body}\n\n{DISCLOSURE.get(lang, DISCLOSURE['en'])}"
         # check_compliance covers the advertising-law rules but NOT the product
         # facts. The first live run produced drafts mentioning "polarized" and
         # "photochromic" a line away from "I've been riding some Velluto frames" —
