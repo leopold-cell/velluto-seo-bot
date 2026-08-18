@@ -1,0 +1,16 @@
+[
+ {
+  "date": "2026-08-18",
+  "alerts": 1,
+  "findings": [
+   {
+    "date": "Thu, 13 Aug 2026",
+    "subject": "Neue Probleme vom Typ „Produkt-Snippets für strukturierte Daten“ für velluto-shop.com erkannt",
+    "code": "WNC-10030322",
+    "kind": "structured_data",
+    "state": "MANUAL",
+    "note": "2 Produkt(e) ohne Bewertungsfelder: , velluto-chromo. NICHT automatisch ergänzen — ein erfundenes Rating verstößt gegen § 5 UWG und das EU-Fake-Review-Verbot. Nur eintragen, wenn es echte Rezensionen gibt; sonst ist das Weglassen korrekt und die Warnung bleibt bewusst stehen."
+   }
+  ]
+ }
+]

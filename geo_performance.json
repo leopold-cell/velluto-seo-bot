@@ -2629,7 +2629,45 @@
         }
       ],
       "serps_scanned": 237
+    },
+    "2026-08-18": {
+      "aio_serps": 38,
+      "velluto_cited": 0,
+      "competitor_cited": 0,
+      "velluto_gap": 1,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 0.0,
+      "total_citations": 8,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 3
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 1
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 1
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 1
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 1
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 82
     }
   },
-  "latest": "2026-08-17"
+  "latest": "2026-08-18"
 }

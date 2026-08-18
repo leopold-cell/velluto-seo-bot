@@ -1,6 +1,6 @@
 {
- "last_run": "2026-08-08",
- "cycle": 2,
+ "last_run": "2026-08-17",
+ "cycle": 3,
  "articles": {
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-sunglasses-2026-tested-ranked-compared": {
    "cycle": 1,
@@ -51,7 +51,23 @@
     "ctr": 3.75,
     "position": 5.9
    },
-   "measured": null
+   "measured": {
+    "date": "2026-08-17",
+    "before": {
+     "clicks": 19,
+     "impressions": 507,
+     "ctr": 3.75,
+     "position": 5.9
+    },
+    "after": {
+     "clicks": 0,
+     "impressions": 0,
+     "ctr": 0.0,
+     "position": 0.0
+    },
+    "outcome": "unmeasurable",
+    "ctr_optimizer_overlap": false
+   }
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-2026-guide": {
    "cycle": 1,
@@ -158,6 +174,22 @@
     "impressions": 154,
     "ctr": 0.0,
     "position": 7.6
+   },
+   "measured": null
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-narrow-faces-2026-the-complete-buyers-guide": {
+   "cycle": 3,
+   "date": "2026-08-17",
+   "action": "expand",
+   "handle": "cycling-glasses-for-narrow-faces-2026-the-complete-buyers-guide",
+   "added_words": 2122,
+   "native_markets": [],
+   "before": {
+    "words": 1259,
+    "clicks": 39,
+    "impressions": 659,
+    "ctr": 5.92,
+    "position": 5.8
    },
    "measured": null
   }
