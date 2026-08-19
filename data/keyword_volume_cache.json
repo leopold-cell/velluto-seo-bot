@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-18": 4
+   "2026-08-19": 2
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1911,5 +1911,13 @@
  "da|cykelbril som rudy project": {
   "volume": 0,
   "date": "2026-08-18"
+ },
+ "nl|fietsenbril alternatief rudy project": {
+  "volume": 0,
+  "date": "2026-08-19"
+ },
+ "nb|sykkelbrillar alternativ rudy project": {
+  "volume": 0,
+  "date": "2026-08-19"
  }
 }
