@@ -2721,7 +2721,61 @@
         }
       ],
       "serps_scanned": 186
+    },
+    "2026-08-20": {
+      "aio_serps": 44,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 5,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 2.3,
+      "total_citations": 46,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 11
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 6
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 5
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 4
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 1
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 1
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 1
+        },
+        {
+          "domain": "cyclist.co.uk",
+          "citations": 1
+        },
+        {
+          "domain": "revantoptics.com",
+          "citations": 1
+        },
+        {
+          "domain": "rudyprojectna.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 88
     }
   },
-  "latest": "2026-08-19"
+  "latest": "2026-08-20"
 }
