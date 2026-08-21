@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-20": 2
+   "2026-08-21": 2
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1927,5 +1927,13 @@
  "it|occhiali ciclismo alternativi a rudy project": {
   "volume": 0,
   "date": "2026-08-20"
+ },
+ "da|rudy project alternativer cykelbriller": {
+  "volume": 0,
+  "date": "2026-08-21"
+ },
+ "nb|rudy project alternativer sykkelbriller": {
+  "volume": 0,
+  "date": "2026-08-21"
  }
 }

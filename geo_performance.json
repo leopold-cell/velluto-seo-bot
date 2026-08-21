@@ -2775,7 +2775,61 @@
         }
       ],
       "serps_scanned": 88
+    },
+    "2026-08-21": {
+      "aio_serps": 38,
+      "velluto_cited": 0,
+      "competitor_cited": 3,
+      "velluto_gap": 6,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 7.9,
+      "total_citations": 69,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 13
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 6
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 6
+        },
+        {
+          "domain": "evileye.com",
+          "citations": 3
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 2
+        },
+        {
+          "domain": "trainerroad.com",
+          "citations": 2
+        },
+        {
+          "domain": "bicyclewarehouse.com",
+          "citations": 2
+        },
+        {
+          "domain": "liberia.ubuy.com",
+          "citations": 2
+        },
+        {
+          "domain": "ubuy.mq",
+          "citations": 2
+        },
+        {
+          "domain": "safetyeyeglasses.com",
+          "citations": 2
+        }
+      ],
+      "serps_scanned": 86
     }
   },
-  "latest": "2026-08-20"
+  "latest": "2026-08-21"
 }
