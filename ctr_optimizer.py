@@ -74,15 +74,28 @@ LEGAL_FIX = "--legal-fix" in sys.argv
 
 # ── benchmarks ───────────────────────────────────────────────────────────────
 
+# Measured against our own GSC data on 2026-08-21, the old four-step benchmark
+# (5.0 / 3.0 / 1.5 / 0.8) was 5-10x too low: our queries at position 1 average
+# 53.8% CTR where it claimed 5.0%, and at position 4 we see 25% where it claimed
+# 3.0%. The consequence was not a cosmetic inaccuracy — combined with the
+# `ctr >= bench * 0.5` rule it made the optimizer blind. Every blog page,
+# including one sitting at 917 impressions and 1.1% CTR, scored as "fine" and was
+# never rewritten. The tool ran daily and selected almost nothing.
+#
+# This is the standard organic CTR curve by position. Brand queries run far above
+# it (ours reach 30-50% at the top spots), which is why it must NOT be calibrated
+# on our own averages — those are brand-inflated. Blog pages compete on non-brand
+# terms, where this curve is the honest reference.
+_CTR_CURVE = ((1, 28.0), (2, 15.0), (3, 11.0), (4, 8.0), (5, 6.5), (6, 5.0),
+              (7, 4.0), (8, 3.2), (9, 2.8), (10, 2.5), (15, 1.5), (20, 1.0))
+
+
 def expected_ctr(position: float) -> float:
-    """Rough organic CTR benchmark (%) by average position."""
-    if position <= 3:
-        return 5.0
-    if position <= 5:
-        return 3.0
-    if position <= 10:
-        return 1.5
-    return 0.8
+    """Organic CTR benchmark (%) for an average position."""
+    for pos, ctr in _CTR_CURVE:
+        if position <= pos:
+            return ctr
+    return 0.5
 
 
 # ── GSC ──────────────────────────────────────────────────────────────────────
