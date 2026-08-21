@@ -62,6 +62,11 @@ _STRIP = {
     # Stripping "vs" is safe: comparisons stay distinct through the competitor
     # NAMES, which are never stripped.
     "vs", "specs", "same", "better", "value", "performance", "velluto",
+    # "real" hid the third "are expensive glasses worth it" variant: the 2026-08-21
+    # run merged two of them while …-worth-it-the-real-answer sat in the near-miss
+    # list. With "real" stripped it reduces to the same core and the next run
+    # folds it into the winner.
+    "real",
 }
 
 

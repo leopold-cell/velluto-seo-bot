@@ -50,6 +50,9 @@ step "orphan links (daily)"        python3 scripts/fix_orphan_links.py --apply -
 # Idempotent (HTML marker); targets follow gsc_data.json, so a page that climbs
 # into the top spots gets its card on the next morning run automatically.
 step "product module (daily)"      python3 scripts/product_module.py --apply
+# Renames and merges compose into redirect chains over time; this keeps every
+# 301 pointing at its final destination. Idempotent, no LLM, 3 REST calls.
+step "flatten redirects (daily)"   python3 scripts/flatten_redirect_chains.py --apply
 step "ai act watch (7d gate)"     python3 scripts/ai_act_watch.py
 step "reddit worklist (daily)"     python3 scripts/reddit_daily.py
 step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py
