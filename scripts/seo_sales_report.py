@@ -82,6 +82,7 @@ def _is_seo(o: dict) -> bool:
 def analyze(start: str, end: str) -> dict:
     orders = _fetch_orders(start, end)
     seo_orders, seo_rev = 0, 0.0
+    blog_orders, blog_rev = 0, 0.0
     by_page: dict[str, dict] = {}
     for o in orders:
         try:
@@ -95,11 +96,42 @@ def analyze(start: str, end: str) -> dict:
         seo_orders += 1
         seo_rev += rev
         lp = (((o.get("customerJourneySummary") or {}).get("firstVisit")) or {}).get("landingPage") or "(unknown)"
+        # The blog/shop split is the number the conversion work is judged by:
+        # brand searches land on / or /de and convert around 2.5%, article
+        # readers landed at 0.64% in July. Whether the product card and the
+        # orphan links move THIS number is the whole question.
+        if "/blogs/" in lp:
+            blog_orders += 1
+            blog_rev += rev
         b = by_page.setdefault(lp, {"orders": 0, "revenue": 0.0})
         b["orders"] += 1
         b["revenue"] = round(b["revenue"] + rev, 2)
     top = sorted(by_page.items(), key=lambda kv: kv[1]["revenue"], reverse=True)[:5]
-    return {"orders": seo_orders, "revenue": round(seo_rev, 2), "top_pages": top}
+    return {"orders": seo_orders, "revenue": round(seo_rev, 2), "top_pages": top,
+            "blog_orders": blog_orders, "blog_revenue": round(blog_rev, 2)}
+
+
+def _blog_clicks(start: str, end: str) -> int | None:
+    """Blog clicks for the exact report month, straight from GSC. None when the
+    OAuth creds are absent — the report then shows the split without a rate
+    rather than inventing a denominator from a mismatched window."""
+    try:
+        import sys
+        sys.path.insert(0, ROOT)
+        from ctr_optimizer import _gsc_query, _gsc_token
+        token = _gsc_token()
+        if not token:
+            return None
+        rows = _gsc_query(token, {
+            "startDate": start, "endDate": end,
+            "dimensionFilterGroups": [{"filters": [
+                {"dimension": "page", "operator": "contains", "expression": "/blogs/"}]}],
+            "rowLimit": 1,
+        })
+        return int(rows[0].get("clicks", 0)) if rows else 0
+    except Exception as e:
+        print(f"   ⚠️  GSC blog clicks unavailable: {str(e)[:70]}")
+        return None
 
 
 def _send_email(subject: str, text: str) -> None:
@@ -170,11 +202,20 @@ def main():
     bar   = "█" * bar_n + "░" * (10 - bar_n)
     status = "🎯 GOAL HIT" if cur["orders"] >= GOAL else f"{pct:.0f}% of goal"
 
+    start, end = _month_range(y, m)
+    clicks = _blog_clicks(start, end)
+    blog_line = (f"Blog-Einstiege: {cur['blog_orders']} von {cur['orders']} SEO-Orders "
+                 f"({cur['blog_revenue']} EUR)")
+    if clicks:
+        cr = cur["blog_orders"] / clicks * 100
+        blog_line += f" — {clicks} Blog-Klicks → Conversion {cr:.2f}%"
+
     lines = [
         f"📈 Velluto SEO Sales — {label}",
         "",
         f"Organic-search sales: {cur['orders']}  ({delta:+d} vs {calendar.month_name[pm]})",
         f"SEO revenue: {cur['revenue']} EUR  (prev {prv['revenue']})",
+        blog_line,
         f"Goal: {cur['orders']}/{GOAL}  {bar}  {status}",
     ]
     if cur["top_pages"]:
@@ -189,6 +230,9 @@ def main():
     _save_history({
         "month": f"{y:04d}-{m:02d}", "seo_orders": cur["orders"],
         "seo_revenue": cur["revenue"], "goal": GOAL,
+        "blog_orders": cur["blog_orders"], "blog_revenue": cur["blog_revenue"],
+        "blog_clicks": clicks,
+        "blog_cr_pct": round(cur["blog_orders"] / clicks * 100, 2) if clicks else None,
         "generated_at": dt.datetime.utcnow().isoformat() + "Z",
     })
     if not args.no_email:
