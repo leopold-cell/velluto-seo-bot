@@ -42,6 +42,14 @@ step "perplexity geo (7d gate)"    python3 scripts/perplexity_monitor.py
 step "chatgpt geo (7d gate)"       python3 scripts/chatgpt_monitor.py
 step "legal watchdog (7d gate)"    python3 scripts/legal_watchdog.py
 step "gsc mail watch (7d gate)"    python3 scripts/gsc_mail_watch.py
+# Orphan repair is mechanical (no LLM, no cost), idempotent, and self-limiting:
+# once an orphan has inbound links it stops being an orphan, so a daily run is a
+# cheap no-op except right after a repair/publish changed the link graph.
+step "orphan links (daily)"        python3 scripts/fix_orphan_links.py --apply --max-sources 2
+# Conversion door: a compact StradaPro card early in the top-traffic articles.
+# Idempotent (HTML marker); targets follow gsc_data.json, so a page that climbs
+# into the top spots gets its card on the next morning run automatically.
+step "product module (daily)"      python3 scripts/product_module.py --apply
 step "ai act watch (7d gate)"     python3 scripts/ai_act_watch.py
 step "reddit worklist (daily)"     python3 scripts/reddit_daily.py
 step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py
