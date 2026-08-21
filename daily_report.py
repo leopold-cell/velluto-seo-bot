@@ -89,8 +89,36 @@ def build() -> tuple[str, str]:
     if isinstance(pub, dict):
         pub = pub.get("articles", []) if "articles" in pub else [pub]
     pub_titles = [p.get("title", "?") for p in pub] if isinstance(pub, list) else []
-    if not pub_titles:
-        notes.append("Heute wurde kein neuer Artikel veröffentlicht (evtl. Keyword-Pool leer oder Generierung fehlgeschlagen).")
+    # Publishing stopped on 2026-08-12 and nobody noticed for nine days, because
+    # this was a note: the quiet section, under a subject line that still read "✅".
+    # A pipeline whose whole purpose is publishing must not report a nine-day
+    # standstill as a footnote. One quiet day is normal; two is a fault.
+    pw_path = os.path.join(BASE, "data", "publish_watch.json")
+    pw = _load("data/publish_watch.json", {}) or {}
+    if pub_titles:
+        pw = {"last_published": TODAY_S}
+    else:
+        last = pw.get("last_published")
+        gap = None
+        if last:
+            try:
+                gap = (TODAY - datetime.date.fromisoformat(last)).days
+            except Exception:
+                gap = None
+        if gap is not None and gap >= 2:
+            problems.append(
+                f"Seit {gap} Tagen kein Artikel veröffentlicht (zuletzt {last}). "
+                "Der Zähler article_num läuft weiter, es entsteht aber nichts — "
+                "Ursache steht in output/quality_gate_failures.json.")
+        else:
+            notes.append("Heute wurde kein neuer Artikel veröffentlicht "
+                         "(evtl. Keyword-Pool leer oder Generierung fehlgeschlagen).")
+    try:
+        os.makedirs(os.path.dirname(pw_path), exist_ok=True)
+        with open(pw_path, "w", encoding="utf-8") as _f:
+            json.dump(pw, _f, ensure_ascii=False, indent=1)
+    except Exception:
+        pass
 
     # ── GSC ─────────────────────────────────────────────────────────────────
     gsc = _load("gsc_data.json", {})
@@ -124,7 +152,22 @@ def build() -> tuple[str, str]:
     qg = _load("output/quality_gate_failures.json", [])
     qg_today = [q for q in qg if isinstance(q, dict) and str(q.get("checked_at", "")).startswith(TODAY_S)] if isinstance(qg, list) else []
     if qg_today:
-        notes.append(f"{len(qg_today)} Artikel hat/haben heute das Quality-Gate nicht bestanden (nicht veröffentlicht).")
+        # The count alone is not actionable — it said "3 failed" for nine days
+        # without ever naming the keyword or the check. The reasons are already in
+        # the file; they just were not being read out.
+        reasons, kws = [], []
+        for q in qg_today:
+            kws.append(str(q.get("primary_keyword") or q.get("title") or "?"))
+            for h in (q.get("hard_issues") or []):
+                if h not in reasons:
+                    reasons.append(str(h))
+        line = (f"{len(qg_today)} Artikel hat/haben heute das Quality-Gate nicht "
+                f"bestanden (nicht veröffentlicht)")
+        if kws:
+            line += f" — Keyword: {kws[0][:60]}"
+        notes.append(line + ".")
+        for r in reasons[:4]:
+            notes.append(f"    ↳ {r[:150]}")
 
     # ── Token cost ──────────────────────────────────────────────────────────
     usage = _load("token_usage.json", {})
