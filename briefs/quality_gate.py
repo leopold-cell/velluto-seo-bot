@@ -396,22 +396,6 @@ def _is_velluto_price_context(body: str, match_start: int, match_end: int,
     competitor_tokens.update({"oakley", "poc", "uvex", "rudy", "tifosi",
                               "scicon", "alba", "rapha", "evil eye", "100%"})
 
-    def _sentence_bounds(text: str, pos: int) -> tuple[int, int]:
-        """Find the sentence boundaries (period, ?, !, or <p> tag) around pos."""
-        # Scan backwards for sentence start
-        start = 0
-        for end_token in [". ", "? ", "! ", "<p>", "</p>", "<br>", "<h1>", "<h2>"]:
-            i = text.rfind(end_token, 0, pos)
-            if i > start:
-                start = i + len(end_token)
-        # Scan forwards for sentence end
-        end = len(text)
-        for end_token in [". ", "? ", "! ", "</p>", "<br>", "</h1>", "</h2>"]:
-            i = text.find(end_token, pos)
-            if i != -1 and i < end:
-                end = i
-        return start, end
-
     body_lower = body.lower()
     s_start, s_end = _sentence_bounds(body_lower, match_start)
     sentence = body_lower[s_start:s_end]
@@ -431,6 +415,23 @@ def _is_velluto_price_context(body: str, match_start: int, match_end: int,
     if any(t in snippet for t in VELLUTO_CONTEXT_TOKENS):
         return True
     return False  # market context
+
+
+def _sentence_bounds(text: str, pos: int) -> tuple[int, int]:
+    """Find the sentence boundaries (period, ?, !, or <p> tag) around pos.
+    Module-level so check_brand_facts judges the SAME sentence the attribution
+    check judged — the negation exemption must not look at different text."""
+    start = 0
+    for end_token in [". ", "? ", "! ", "<p>", "</p>", "<br>", "<h1>", "<h2>"]:
+        i = text.rfind(end_token, 0, pos)
+        if i > start:
+            start = i + len(end_token)
+    end = len(text)
+    for end_token in [". ", "? ", "! ", "</p>", "<br>", "</h1>", "</h2>"]:
+        i = text.find(end_token, pos)
+        if i != -1 and i < end:
+            end = i
+    return start, end
 
 
 def check_commercial_config(post: dict, market_code: str, commercial: dict | None) -> list[str]:
@@ -509,20 +510,45 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
 # Articles may discuss these features in competitor or informational context, but
 # must NEVER attribute them to Velluto products. Sentence-based attribution
 # (reusing _is_velluto_price_context) distinguishes the two cases.
+# Third field: whether an honest DENIAL of the feature is allowed. The
+# generation prompt's own rule 7 tells the model to "reframe honestly: explain
+# the category, then show how Velluto's actual lenses solve the need" — which
+# produces sentences like "Instead of photochromic tech, the StradaPro relies on
+# two dedicated lenses". That sentence carries the feature token and Velluto with
+# no competitor, so the attribution check read it as a claim, and the model was
+# regenerated into the same wall three times a day from 2026-08-13 on: the prompt
+# recommended exactly what the gate blocked. A negated feature is not a claim.
+#
+# over-glasses stays strict (negatable=False): BRAND_FACTS bans that phrasing
+# entirely, even negated — "does not fit over your glasses" is still the
+# forbidden framing.
 FORBIDDEN_FEATURE_TOKENS = [
-    ("photochrom", "claims photochromic lenses — Velluto doesn't offer these"),
-    ("polari",     "claims polarized lenses — Velluto doesn't offer these"),
+    ("photochrom", "claims photochromic lenses — Velluto doesn't offer these", True),
+    ("polari",     "claims polarized lenses — Velluto doesn't offer these", True),
     # 'polari' prefix matches both 'polarized' (US) and 'polarised' (UK)
     # Feature-specific tokens (not bare words) so "mirror finish" / "prescription
     # for" prose doesn't hit; sentence-aware attribution still lets competitor and
     # informational mentions through (see check_brand_facts / _is_velluto_price_context).
     (r"mirror(ed)?\s+(lens|lense|coating|finish|tint)",
-                   "claims mirrored lenses — Velluto doesn't offer these"),
+                   "claims mirrored lenses — Velluto doesn't offer these", True),
     (r"prescription\s+(lens|lenses|insert|inserts|version|option|frame)",
-                   "claims prescription lenses — Velluto doesn't offer these"),
+                   "claims prescription lenses — Velluto doesn't offer these", True),
     (r"over[\s-]glasses|fits?\s+over\s+(your\s+|normal\s+|prescription\s+)?(glasses|spectacles|prescription)",
-                   "claims StradaPro fits over prescription glasses — it does not"),
+                   "claims StradaPro fits over prescription glasses — it does not", False),
 ]
+
+# Negation and contrast markers, per shop language. "not only" is excluded — it
+# introduces a POSITIVE claim ("not only photochromic, but also…").
+_NEGATION_RE = re.compile(
+    r"\b(?:not|no|never|without|lacks?|instead of|rather than|doesn'?t|does not|"
+    r"nicht|kein\w*|ohne|statt|anstelle|verzichtet|"
+    r"niet|geen|zonder|sans|pas|aucun\w*|senza|niente|sin|ningun\w*)\b", re.I)
+
+
+def _sentence_has_denial(sentence: str) -> bool:
+    if re.search(r"\bnot only\b", sentence, re.I):
+        return False
+    return bool(_NEGATION_RE.search(sentence))
 
 
 def check_image_alt_text(post: dict) -> list[str]:
@@ -561,12 +587,24 @@ def check_brand_facts(post: dict) -> list[str]:
     """
     body = (post.get("body_html") or "").lower()
     issues: list[str] = []
-    for token, msg in FORBIDDEN_FEATURE_TOKENS:
+    for token, msg, negatable in FORBIDDEN_FEATURE_TOKENS:
         # one flag per token type is enough — break after first hit
         for m in re.finditer(token, body):
-            if _is_velluto_price_context(body, m.start(), m.end()):
-                issues.append(f"[FACT] {msg}")
-                break
+            if not _is_velluto_price_context(body, m.start(), m.end()):
+                continue
+            s0, s1 = _sentence_bounds(body, m.start())
+            sentence = body[s0:s1]
+            # An honest denial is not a claim — see FORBIDDEN_FEATURE_TOKENS.
+            if negatable and _sentence_has_denial(sentence):
+                continue
+            # Quote the sentence: "3 attempts failed" with no text to look at
+            # kept publishing stalled for days. The quote flows into the retry
+            # feedback (the model sees exactly what to remove), the failure log
+            # and the daily mail.
+            quote = re.sub(r"<[^>]+>", " ", sentence)
+            quote = re.sub(r"\s+", " ", quote).strip()[:110]
+            issues.append(f"[FACT] {msg} — Satz: „{quote}…“")
+            break
     return issues
 
 
