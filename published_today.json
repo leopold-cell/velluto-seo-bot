@@ -1,1 +1,63 @@
-[]
+[
+  {
+    "title": "Rudy Project Alternative Cycling Glasses: StradaPro vs Rydon",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/rudy-project-alternative-cycling-glasses-stradapro-vs-rydon",
+    "topic": "Rudy Project alternative cycling glasses",
+    "keyword": "Rudy Project alternative cycling glasses",
+    "lang": "en",
+    "phase": 1,
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "Radsportbrille Alternative zu Rudy Project",
+        "intent": "Cyclists searching for comparable performance eyewear brands to Rudy Project with similar quality and features.",
+        "volume": 0
+      },
+      "nl": {
+        "keyword": "Rudy Project alternatieven fietsenbril",
+        "intent": "Dutch cyclists looking for equivalent cycling glasses brands as alternatives to Rudy Project.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "lunettes cyclisme \u00e9quivalent Rudy Project",
+        "intent": "French cyclists searching for cycling eyewear brands comparable to Rudy Project in quality and performance.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "gafas ciclismo similares a Rudy Project",
+        "intent": "Spanish cyclists seeking comparable cycling glasses brands as alternatives to Rudy Project.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "occhiali da ciclismo alternativi a Rudy Project",
+        "intent": "Italian cyclists looking for equivalent cycling eyewear brands to replace or compare with Rudy Project.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "cykelbriller som Rudy Project",
+        "intent": "Danish cyclists searching for comparable cycling glasses brands with similar features to Rudy Project.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "sykkelbriller alternativ til Rudy Project",
+        "intent": "Norwegian cyclists seeking equivalent cycling eyewear brands as alternatives to Rudy Project.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "okulary rowerowe alternatywa Rudy Project",
+        "intent": "Polish cyclists looking for cycling glasses brands comparable to Rudy Project in quality and performance.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "\u00f3culos ciclismo similares Rudy Project",
+        "intent": "Portuguese cyclists searching for equivalent cycling eyewear brands as alternatives to Rudy Project.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "cykelglas\u00f6gon alternativ till Rudy Project",
+        "intent": "Swedish cyclists seeking comparable cycling glasses brands with similar performance to Rudy Project.",
+        "volume": 0
+      }
+    }
+  }
+]

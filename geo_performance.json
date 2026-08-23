@@ -2883,7 +2883,61 @@
         }
       ],
       "serps_scanned": 170
+    },
+    "2026-08-23": {
+      "aio_serps": 39,
+      "velluto_cited": 0,
+      "competitor_cited": 2,
+      "velluto_gap": 2,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 5.1,
+      "total_citations": 18,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 3
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 2
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 1
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 1
+        },
+        {
+          "domain": "oakley.com",
+          "citations": 1
+        },
+        {
+          "domain": "trainerroad.com",
+          "citations": 1
+        },
+        {
+          "domain": "evileye.com",
+          "citations": 1
+        },
+        {
+          "domain": "bicyclewarehouse.com",
+          "citations": 1
+        },
+        {
+          "domain": "liberia.ubuy.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 79
     }
   },
-  "latest": "2026-08-22"
+  "latest": "2026-08-23"
 }
