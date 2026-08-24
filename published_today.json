@@ -1,61 +1,61 @@
 [
   {
-    "title": "Rudy Project Alternative Cycling Glasses: StradaPro vs Rydon",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/rudy-project-alternative-cycling-glasses-stradapro-vs-rydon",
-    "topic": "Rudy Project alternative cycling glasses",
-    "keyword": "Rudy Project alternative cycling glasses",
+    "title": "Blurry Vision at High Speed Cycling: Causes and Fixes",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/blurry-vision-at-high-speed-cycling-causes-and-fixes",
+    "topic": "blurry vision at high speed cycling",
+    "keyword": "blurry vision at high speed cycling",
     "lang": "en",
-    "phase": 1,
+    "phase": 2,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Radsportbrille Alternative zu Rudy Project",
-        "intent": "Cyclists searching for comparable performance eyewear brands to Rudy Project with similar quality and features.",
+        "keyword": "verschwommenes Sehen beim Rennradfahren",
+        "intent": "Finding solutions for blurred vision experienced during high-speed road cycling",
         "volume": 0
       },
       "nl": {
-        "keyword": "Rudy Project alternatieven fietsenbril",
-        "intent": "Dutch cyclists looking for equivalent cycling glasses brands as alternatives to Rudy Project.",
+        "keyword": "wazig zien snel fietsen",
+        "intent": "Looking for ways to fix visual clarity issues when cycling at high speeds",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes cyclisme \u00e9quivalent Rudy Project",
-        "intent": "French cyclists searching for cycling eyewear brands comparable to Rudy Project in quality and performance.",
+        "keyword": "vision trouble haute vitesse cyclisme",
+        "intent": "Finding eyewear solutions for blurred vision during fast-paced cycling",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo similares a Rudy Project",
-        "intent": "Spanish cyclists seeking comparable cycling glasses brands as alternatives to Rudy Project.",
+        "keyword": "visi\u00f3n borrosa ciclismo velocidad",
+        "intent": "Seeking eyewear products to improve visual clarity while cycling fast",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali da ciclismo alternativi a Rudy Project",
-        "intent": "Italian cyclists looking for equivalent cycling eyewear brands to replace or compare with Rudy Project.",
+        "keyword": "visione offuscata ciclismo ad alta velocit\u00e0",
+        "intent": "Looking for cycling eyewear to eliminate blurry vision at high speeds",
         "volume": 0
       },
       "da": {
-        "keyword": "cykelbriller som Rudy Project",
-        "intent": "Danish cyclists searching for comparable cycling glasses brands with similar features to Rudy Project.",
+        "keyword": "sl\u00f8ret syn h\u00f8j hastighed cykling",
+        "intent": "Finding cycling glasses to prevent blurred vision during fast riding",
         "volume": 0
       },
       "nb": {
-        "keyword": "sykkelbriller alternativ til Rudy Project",
-        "intent": "Norwegian cyclists seeking equivalent cycling eyewear brands as alternatives to Rudy Project.",
+        "keyword": "uskarpt syn h\u00f8y fart sykling",
+        "intent": "Seeking eyewear solutions for visual clarity during fast-paced cycling",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary rowerowe alternatywa Rudy Project",
-        "intent": "Polish cyclists looking for cycling glasses brands comparable to Rudy Project in quality and performance.",
+        "keyword": "rozmyta wizja szybka jazda rower",
+        "intent": "Looking for cycling eyewear to improve vision clarity at high speeds",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos ciclismo similares Rudy Project",
-        "intent": "Portuguese cyclists searching for equivalent cycling eyewear brands as alternatives to Rudy Project.",
+        "keyword": "vis\u00e3o desfocada ciclismo alta velocidade",
+        "intent": "Finding specialized eyewear to prevent blurred vision when cycling fast",
         "volume": 0
       },
       "sv": {
-        "keyword": "cykelglas\u00f6gon alternativ till Rudy Project",
-        "intent": "Swedish cyclists seeking comparable cycling glasses brands with similar performance to Rudy Project.",
+        "keyword": "suddigt seende h\u00f6gt tempo cykling",
+        "intent": "Seeking cycling glasses to improve visual acuity during high-speed riding",
         "volume": 0
       }
     }

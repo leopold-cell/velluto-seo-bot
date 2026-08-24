@@ -107,16 +107,16 @@
   "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-sunglasses-uv400-what-the-standard-really-means": {
-  "last_optimized": "2026-08-10",
+  "last_optimized": "2026-08-24",
   "article_id": 618288054613,
   "before": {
-   "ctr": 0.0,
-   "position": 10.5,
-   "impressions": 168,
+   "ctr": 0.38,
+   "position": 10.0,
+   "impressions": 264,
    "title": "Cycling Sunglasses UV400: What the Standard Really Means"
   },
-  "seo_title": "UV400 Cycling Sunglasses: What It Really Blocks",
-  "meta_description": "UV400 blocks all UV rays up to 400nm wavelength. Learn what the standard means for eye protection on rides, plus spec comparisons.",
+  "seo_title": "UV400 Cycling Glasses: What It Really Blocks",
+  "meta_description": "UV400 blocks 99% of harmful rays up to 400nm. Learn the standard, why it matters for cycling, and how to choose lenses that protect your eyes.",
   "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/road-cycling-glasses-vs-regular-sunglasses-2026-velluto": {
@@ -234,6 +234,19 @@
   },
   "seo_title": "Best Road Bike Sunglasses 2026: UV400 Guide",
   "meta_description": "Compare lightweight cycling glasses with UV400 protection and lens swap options. Find your fit by frame weight, price, and durability ratings.",
+  "measured": null
+ },
+ "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-road-cycling-glasses-2026-guide": {
+  "last_optimized": "2026-08-24",
+  "article_id": 616863629653,
+  "before": {
+   "ctr": 1.14,
+   "position": 8.4,
+   "impressions": 176,
+   "title": "Oakley Alternative Road Cycling Glasses: 2026 Guide"
+  },
+  "seo_title": "Oakley Cycling Glasses Alternatives - Lightweight Options",
+  "meta_description": "Find lightweight, UV400 cycling glasses with swappable lenses as Oakley alternatives. German engineering, competitive pricing. Explore specs.",
   "measured": null
  }
 }

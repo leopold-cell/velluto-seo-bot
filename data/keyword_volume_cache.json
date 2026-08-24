@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-23": 4
+   "2026-08-24": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -1967,5 +1967,49 @@
  "pt-PT|óculos ciclismo similares rudy project": {
   "volume": 0,
   "date": "2026-08-23"
+ },
+ "de|verschwommenes sehen beim rennradfahren": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "en|blurry vision cycling at speed": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "nl|wazig zien snel fietsen": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "fr|vision trouble haute vitesse cyclisme": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "es|visión borrosa ciclismo velocidad": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "it|visione offuscata ciclismo ad alta velocità": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "da|sløret syn høj hastighed cykling": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "nb|uskarpt syn høy fart sykling": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "pl|rozmyta wizja szybka jazda rower": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "pt-PT|visão desfocada ciclismo alta velocidade": {
+  "volume": 0,
+  "date": "2026-08-24"
+ },
+ "sv|suddigt seende högt tempo cykling": {
+  "volume": 0,
+  "date": "2026-08-24"
  }
 }
