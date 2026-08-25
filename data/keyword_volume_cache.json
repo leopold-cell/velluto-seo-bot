@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-24": 11
+   "2026-08-25": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -2011,5 +2011,49 @@
  "sv|suddigt seende högt tempo cykling": {
   "volume": 0,
   "date": "2026-08-24"
+ },
+ "de|fahrradbrille insektenschutz": {
+  "volume": 10,
+  "date": "2026-08-25"
+ },
+ "en|cycling sunglasses bug protection": {
+  "volume": 0,
+  "date": "2026-08-25"
+ },
+ "nl|fietsenbril insecten": {
+  "volume": 0,
+  "date": "2026-08-25"
+ },
+ "fr|lunettes cyclisme insectes": {
+  "volume": 0,
+  "date": "2026-08-25"
+ },
+ "es|gafas ciclismo protección insectos": {
+  "volume": 0,
+  "date": "2026-08-25"
+ },
+ "it|occhiali ciclismo insetti": {
+  "volume": 0,
+  "date": "2026-08-25"
+ },
+ "da|cykelbriller insektbeskyttelse": {
+  "volume": 0,
+  "date": "2026-08-25"
+ },
+ "nb|sykkelbriller insektbeskyttelse": {
+  "volume": 0,
+  "date": "2026-08-25"
+ },
+ "pl|okulary rowerowe ochrona owady": {
+  "volume": 0,
+  "date": "2026-08-25"
+ },
+ "pt-PT|óculos ciclismo proteção insetos": {
+  "volume": 0,
+  "date": "2026-08-25"
+ },
+ "sv|cykelglasögon insektskydd": {
+  "volume": 0,
+  "date": "2026-08-25"
  }
 }
