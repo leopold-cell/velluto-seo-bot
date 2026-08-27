@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-26": 11
+   "2026-08-27": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -2099,5 +2099,49 @@
  "sv|bästa cykelsolglasögon": {
   "volume": 0,
   "date": "2026-08-26"
+ },
+ "de|radbrille oder sonnenbrille": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "en|cycling glasses vs sunglasses": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "nl|fietsbrille of zonnebril": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "fr|lunettes de cyclisme ou lunettes de soleil": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "es|gafas de ciclismo vs gafas de sol": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "it|occhiali da ciclismo o occhiali da sole": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "da|cykelbriller eller solbriller": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "nb|sykkelbriller eller solbriller": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "pl|okulary rowerowe czy okulary przeciwsłoneczne": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "pt-PT|óculos de ciclismo ou óculos de sol": {
+  "volume": 0,
+  "date": "2026-08-27"
+ },
+ "sv|cykelglasögon eller solglasögon": {
+  "volume": 0,
+  "date": "2026-08-27"
  }
 }

@@ -1,61 +1,61 @@
 [
   {
-    "title": "Best Glasses for Cycling in Sun: Smoke, Brown or Orange?",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/best-glasses-for-cycling-in-sun-smoke-brown-or-orange",
-    "topic": "best glasses for cycling in sun",
-    "keyword": "best glasses for cycling in sun",
+    "title": "Cycling Glasses vs Sunglasses: 5 Key Differences",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-vs-sunglasses-5-key-differences",
+    "topic": "cycling glasses vs sunglasses",
+    "keyword": "cycling glasses vs sunglasses",
     "lang": "en",
     "phase": 2,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "beste Fahrradbrille Sonne",
-        "intent": "Find high-quality cycling sunglasses that provide optimal sun protection and visibility.",
+        "keyword": "Radbrille oder Sonnenbrille",
+        "intent": "Cyclists want to understand the functional differences between specialized cycling glasses and regular sunglasses for their riding needs.",
         "volume": 0
       },
       "nl": {
-        "keyword": "beste fietsenzonnebril",
-        "intent": "Find the best cycling sunglasses that offer sun protection and performance.",
+        "keyword": "fietsbrille of zonnebril",
+        "intent": "Dutch cyclists seek clarity on whether specialized cycling eyewear offers advantages over standard sunglasses for biking.",
         "volume": 0
       },
       "fr": {
-        "keyword": "meilleure lunette de soleil cyclisme",
-        "intent": "Find premium cycling sunglasses with excellent sun protection for road riding.",
+        "keyword": "lunettes de cyclisme ou lunettes de soleil",
+        "intent": "French cyclists want to compare specialized cycling glasses with regular sunglasses to determine which is better for riding.",
         "volume": 0
       },
       "es": {
-        "keyword": "mejores gafas de sol ciclismo",
-        "intent": "Find high-quality cycling sunglasses that provide sun protection and optical clarity.",
+        "keyword": "gafas de ciclismo vs gafas de sol",
+        "intent": "Spanish cyclists seek to understand the differences between dedicated cycling eyewear and standard sunglasses for their sport.",
         "volume": 0
       },
       "it": {
-        "keyword": "migliori occhiali da sole ciclismo",
-        "intent": "Find top cycling sunglasses with superior sun protection and lens technology.",
+        "keyword": "occhiali da ciclismo o occhiali da sole",
+        "intent": "Italian cyclists want to know if specialized cycling glasses are better than regular sunglasses for their riding activities.",
         "volume": 0
       },
       "da": {
-        "keyword": "bedste cykelsolbriller",
-        "intent": "Find the best cycling sunglasses with optimal sun protection for Danish cyclists.",
+        "keyword": "cykelbriller eller solbriller",
+        "intent": "Danish cyclists want to compare specialized cycling eyewear with regular sunglasses to see which suits their needs best.",
         "volume": 0
       },
       "nb": {
-        "keyword": "beste sykkelsolbriller",
-        "intent": "Find high-quality cycling sunglasses that offer excellent sun protection and durability.",
+        "keyword": "sykkelbriller eller solbriller",
+        "intent": "Norwegian cyclists seek to understand the practical differences between cycling-specific glasses and standard sunglasses.",
         "volume": 0
       },
       "pl": {
-        "keyword": "najlepsze okulary przeciws\u0142oneczne rowerowe",
-        "intent": "Find premium cycling sunglasses with sun protection suitable for Polish cyclists.",
+        "keyword": "okulary rowerowe czy okulary przeciws\u0142oneczne",
+        "intent": "Polish cyclists want to compare specialized cycling glasses with regular sunglasses to determine the best choice for cycling.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "melhores \u00f3culos de sol ciclismo",
-        "intent": "Find top-rated cycling sunglasses with sun protection for Portuguese cyclists.",
+        "keyword": "\u00f3culos de ciclismo ou \u00f3culos de sol",
+        "intent": "Portuguese cyclists want to understand whether specialized cycling eyewear offers advantages over regular sunglasses.",
         "volume": 0
       },
       "sv": {
-        "keyword": "b\u00e4sta cykelsolglas\u00f6gon",
-        "intent": "Find the best cycling sunglasses with excellent sun protection for Swedish cyclists.",
+        "keyword": "cykelglas\u00f6gon eller solglas\u00f6gon",
+        "intent": "Swedish cyclists seek to compare specialized cycling eyewear with standard sunglasses for their riding needs.",
         "volume": 0
       }
     }
