@@ -209,15 +209,19 @@ CHECKS = [check_anthropic, check_openai, check_google_drive, check_instagram,
 
 
 def _should_email(signature: str) -> bool:
-    """Throttle: same warning set re-sends at most every REMONITOR_REPEAT_DAYS days."""
-    repeat = int(os.getenv("REMONITOR_REPEAT_DAYS", "3"))
-    today = datetime.date.today()
+    """Each distinct problem set mails ONCE — never again while it stays the same.
+
+    The old rule re-sent the identical warning every REMONITOR_REPEAT_DAYS days,
+    which turned one known, deliberately-parked problem (the dead OpenAI key)
+    into a permanent nag the user asked to have stopped. Repetition adds no
+    information: the mail already said what to do. A NEW or CHANGED problem set
+    has a different signature and still alerts immediately, and recovery is
+    announced once by main().
+    """
     try:
         st = json.load(open(STATE))
         if st.get("last_sig") == signature:
-            last = datetime.date.fromisoformat(st.get("last_sent", "2000-01-01"))
-            if (today - last).days < repeat:
-                return False
+            return False
     except Exception:
         pass
     return True
@@ -249,7 +253,19 @@ def main():
         return
 
     if not attention and not force:
-        return  # all healthy → stay silent
+        # All healthy. If the previous run had an open warning, say so ONCE —
+        # otherwise the last mail the user ever saw claims a problem that is
+        # long gone — then go back to silence.
+        try:
+            st = json.load(open(STATE))
+        except Exception:
+            st = {}
+        if st.get("last_sig"):
+            mailer.send_email("✅ Velluto Automation — wieder alles ok",
+                              "Alle Ressourcen-Checks sind wieder grün:\n\n"
+                              + "\n".join(lines))
+            _save_state("")
+        return
 
     signature = hashlib.sha1(
         "|".join(f"{n}:{l}" for n, l, _ in sorted(attention)).encode()).hexdigest()
