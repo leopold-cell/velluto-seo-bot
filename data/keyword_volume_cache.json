@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-27": 11
+   "2026-08-28": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -2143,5 +2143,49 @@
  "sv|cykelglasögon eller solglasögon": {
   "volume": 0,
   "date": "2026-08-27"
+ },
+ "de|fahrradbrille gläser farben": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "en|cycling glasses lens colors guide": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "nl|fietsenbril glazen kleuren gids": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "fr|guide couleurs verres lunettes vélo": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "es|guía colores lentes gafas ciclismo": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "it|guida colori lenti occhiali bici": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "da|cykelbriller linsefarver guide": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "nb|sykkelbriller linsefarge guide": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "pl|okulary rowerowe kolory soczewek poradnik": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "pt-PT|guia cores lentes óculos ciclismo": {
+  "volume": 0,
+  "date": "2026-08-28"
+ },
+ "sv|cykelglasögon linsfärger guide": {
+  "volume": 0,
+  "date": "2026-08-28"
  }
 }

@@ -3117,7 +3117,25 @@
         }
       ],
       "serps_scanned": 93
+    },
+    "2026-08-28": {
+      "aio_serps": 71,
+      "velluto_cited": 0,
+      "competitor_cited": 0,
+      "velluto_gap": 6,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 0.0,
+      "total_citations": 48,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 48
+        }
+      ],
+      "serps_scanned": 186
     }
   },
-  "latest": "2026-08-27"
+  "latest": "2026-08-28"
 }
