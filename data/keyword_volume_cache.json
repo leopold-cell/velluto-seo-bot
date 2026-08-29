@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-28": 11
+   "2026-08-29": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -2187,5 +2187,49 @@
  "sv|cykelglasögon linsfärger guide": {
   "volume": 0,
   "date": "2026-08-28"
+ },
+ "de|fahrradbrille unter 200 euro": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "en|cycling glasses under 200 euros": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "nl|wielrenbril tot 200 euro": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "fr|lunettes cyclisme moins de 200 euros": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "es|gafas ciclismo baratas menos de 200 euros": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "it|occhiali ciclismo sotto 200 euro": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "da|cykelbriller under 200 euro": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "nb|sykkelbriller under 200 euro": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "pl|okulary rowerowe poniżej 200 euro": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "pt-PT|óculos ciclismo menos de 200 euros": {
+  "volume": 0,
+  "date": "2026-08-29"
+ },
+ "sv|cykelglasögon under 200 euro": {
+  "volume": 0,
+  "date": "2026-08-29"
  }
 }

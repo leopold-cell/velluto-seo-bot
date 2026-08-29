@@ -104,7 +104,12 @@
   },
   "seo_title": "Are Cycling Glasses Worth It? Cost vs. Performance",
   "meta_description": "Find out if premium cycling glasses justify their price. Compare UV400 protection, lens durability, and comfort benefits. Real specs, no hype.",
-  "measured": null
+  "measured": {
+   "date": "2026-08-29",
+   "ctr_before": 0.4,
+   "ctr_after": 0.0,
+   "outcome": "no_lift"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-sunglasses-uv400-what-the-standard-really-means": {
   "last_optimized": "2026-08-24",
@@ -133,16 +138,16 @@
   "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternative-cycling-sunglasses-2026-velluto": {
-  "last_optimized": "2026-08-15",
+  "last_optimized": "2026-08-29",
   "article_id": 617969647957,
   "before": {
-   "ctr": 0.0,
-   "position": 7.6,
-   "impressions": 154,
+   "ctr": 0.41,
+   "position": 8.1,
+   "impressions": 493,
    "title": "Best Oakley Alternative Cycling Sunglasses 2026 | Velluto"
   },
   "seo_title": "Oakley Alternative Cycling Sunglasses 2026",
-  "meta_description": "Lightweight cycling shades that won't slip after hours of riding. UV400, swappable lenses, German quality. Find your perfect fit.",
+  "meta_description": "Premium cycling sunglasses with UV400, lightweight frames, swappable lenses. German-engineered alternatives starting under €150.",
   "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/sungod-vs-velluto-cycling-glasses-full-2026-comparison": {
