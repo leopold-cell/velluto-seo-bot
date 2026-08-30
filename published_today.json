@@ -1,61 +1,61 @@
 [
   {
-    "title": "Cycling Glasses Under 200 Euros: Where Value Breaks",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-under-200-euros-where-value-breaks",
-    "topic": "cycling glasses under 200 euros",
-    "keyword": "cycling glasses under 200 euros",
+    "title": "How to Choose Cycling Glasses: A Step-by-Step Guide",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/how-to-choose-cycling-glasses-a-step-by-step-guide",
+    "topic": "how to choose cycling glasses",
+    "keyword": "how to choose cycling glasses",
     "lang": "en",
-    "phase": 2,
+    "phase": 3,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Fahrradbrille unter 200 Euro",
-        "intent": "Find affordable cycling glasses within a specific budget for German-speaking cyclists.",
+        "keyword": "Radsportbrille kaufen Tipps",
+        "intent": "Cyclist seeking guidance on selecting and purchasing appropriate cycling glasses for their needs.",
         "volume": 0
       },
       "nl": {
-        "keyword": "wielrenbril tot 200 euro",
-        "intent": "Search for reasonably priced cycling glasses within a \u20ac200 budget for Dutch cyclists.",
+        "keyword": "fietsbril kiezen welke",
+        "intent": "Dutch cyclist searching for guidance on which cycling glasses to select based on features and personal requirements.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes cyclisme moins de 200 euros",
-        "intent": "Find affordable cycling glasses under \u20ac200 for French-speaking cyclists.",
+        "keyword": "comment choisir lunettes cyclisme",
+        "intent": "French cyclist seeking advice on selecting appropriate cycling glasses for their riding style and conditions.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas ciclismo baratas menos de 200 euros",
-        "intent": "Discover budget cycling glasses under \u20ac200 for Spanish-speaking cyclists.",
+        "keyword": "gafas ciclismo c\u00f3mo elegir",
+        "intent": "Spanish cyclist looking for guidance on choosing the right cycling glasses based on performance and comfort.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali ciclismo sotto 200 euro",
-        "intent": "Search for affordable cycling glasses under \u20ac200 for Italian cyclists.",
+        "keyword": "come scegliere occhiali ciclismo",
+        "intent": "Italian cyclist seeking advice on selecting cycling glasses that match their needs and riding conditions.",
         "volume": 0
       },
       "da": {
-        "keyword": "cykelbriller under 200 euro",
-        "intent": "Find budget-friendly cycling glasses within a \u20ac200 price range for Danish cyclists.",
+        "keyword": "cykelbriller guide valg",
+        "intent": "Danish cyclist searching for guidance on choosing the best cycling glasses for their requirements.",
         "volume": 0
       },
       "nb": {
-        "keyword": "sykkelbriller under 200 euro",
-        "intent": "Discover affordable cycling glasses under \u20ac200 for Norwegian-speaking cyclists.",
+        "keyword": "sykkelbriller valg guide",
+        "intent": "Norwegian cyclist looking for advice on selecting appropriate cycling eyewear.",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary rowerowe poni\u017cej 200 euro",
-        "intent": "Search for affordable cycling glasses under \u20ac200 for Polish cyclists.",
+        "keyword": "okulary rowerowe jaki wybra\u0107",
+        "intent": "Polish cyclist seeking recommendation on which cycling glasses to choose.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos ciclismo menos de 200 euros",
-        "intent": "Find budget cycling glasses under \u20ac200 for Portuguese-speaking cyclists.",
+        "keyword": "\u00f3culos ciclismo como escolher",
+        "intent": "Portuguese cyclist looking for guidance on selecting the right cycling glasses.",
         "volume": 0
       },
       "sv": {
-        "keyword": "cykelglas\u00f6gon under 200 euro",
-        "intent": "Search for affordable cycling glasses within a \u20ac200 budget for Swedish cyclists.",
+        "keyword": "cykelglas\u00f6gon v\u00e4lja guide",
+        "intent": "Swedish cyclist searching for advice on choosing appropriate cycling eyewear.",
         "volume": 0
       }
     }
