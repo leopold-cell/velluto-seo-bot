@@ -58,5 +58,15 @@
     "note": "8 KI-Bild(er) sind aus dem Pool entfernt — das gilt aber nur für neue Artikel. Ob bereits veröffentlichte sie noch als Cover tragen, prüft `python3 scripts/replace_ai_covers.py` (Probelauf, schreibt nichts)."
    }
   ]
+ },
+ {
+  "date": "2026-08-31",
+  "findings": [
+   {
+    "state": "WATCH",
+    "topic": "Veröffentlichte Cover",
+    "note": "8 KI-Bild(er) sind aus dem Pool entfernt — das gilt aber nur für neue Artikel. Ob bereits veröffentlichte sie noch als Cover tragen, prüft `python3 scripts/replace_ai_covers.py` (Probelauf, schreibt nichts)."
+   }
+  ]
  }
 ]

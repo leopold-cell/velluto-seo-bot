@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-30": 10
+   "2026-08-31": 4
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -2271,5 +2271,21 @@
  "sv|cykelglasögon välja guide": {
   "volume": 0,
   "date": "2026-08-30"
+ },
+ "en|cycling sunglasses uv protection": {
+  "volume": 10,
+  "date": "2026-08-31"
+ },
+ "fr|lunettes vélo protection uv": {
+  "volume": 0,
+  "date": "2026-08-31"
+ },
+ "es|gafas de ciclismo protección uv": {
+  "volume": 0,
+  "date": "2026-08-31"
+ },
+ "da|cykelbrilller uv-beskyttelse": {
+  "volume": 0,
+  "date": "2026-08-31"
  }
 }
