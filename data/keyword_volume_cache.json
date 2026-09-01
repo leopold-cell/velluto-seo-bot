@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-08-31": 4
+   "2026-09-01": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -2287,5 +2287,49 @@
  "da|cykelbrilller uv-beskyttelse": {
   "volume": 0,
   "date": "2026-08-31"
+ },
+ "de|fahrradbrille richtige passform": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "en|cycling glasses fit guide": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "nl|fietsenbril juiste maat": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "fr|lunettes vélo comment bien ajuster": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "es|gafas ciclismo talla correcta": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "it|occhiali bici come scegliere la taglia": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "da|cykelbriller rigtig størrelse": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "nb|sykkelbriller riktig størrelse": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "pl|okulary rowerowe dobór rozmiaru": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "pt-PT|óculos de ciclismo como escolher tamanho": {
+  "volume": 0,
+  "date": "2026-09-01"
+ },
+ "sv|cykelglasögon rätt storlek": {
+  "volume": 0,
+  "date": "2026-09-01"
  }
 }

@@ -1,61 +1,61 @@
 [
   {
-    "title": "UV Protection for Cyclists Eyes: The Complete 2026 Guide",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/uv-protection-for-cyclists-eyes-the-complete-2026-guide",
-    "topic": "UV protection for cyclists eyes",
-    "keyword": "UV protection for cyclists eyes",
+    "title": "Cycling Glasses Fit Guide: 3 Points That Matter",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-fit-guide-3-points-that-matter",
+    "topic": "cycling glasses fit guide",
+    "keyword": "cycling glasses fit guide",
     "lang": "en",
     "phase": 3,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Fahrradbrille UV-Schutz",
-        "intent": "Cyclist searching for eyewear with UV protection specifically for cycling.",
-        "volume": 20
+        "keyword": "Fahrradbrille richtige Passform",
+        "intent": "Cyclist seeking guidance on proper fit and comfort for cycling eyewear.",
+        "volume": 0
       },
       "nl": {
-        "keyword": "fietsbril UV bescherming",
-        "intent": "Dutch cyclist seeking eyewear with UV protection for cycling activities.",
+        "keyword": "fietsenbril juiste maat",
+        "intent": "Dutch cyclist wanting to understand sizing and fit for cycling glasses.",
         "volume": 0
       },
       "fr": {
-        "keyword": "lunettes v\u00e9lo protection UV",
-        "intent": "French cyclist searching for cycling glasses with UV protection features.",
+        "keyword": "lunettes v\u00e9lo comment bien ajuster",
+        "intent": "French cyclist seeking practical advice on adjusting and fitting cycling glasses properly.",
         "volume": 0
       },
       "es": {
-        "keyword": "gafas de ciclismo protecci\u00f3n UV",
-        "intent": "Spanish cyclist looking for cycling glasses that protect against ultraviolet rays.",
+        "keyword": "gafas ciclismo talla correcta",
+        "intent": "Spanish cyclist looking for guidance on selecting the right size and fit for cycling glasses.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali ciclismo protezione UV",
-        "intent": "Italian cyclist seeking cycling eyewear with UV protection.",
+        "keyword": "occhiali bici come scegliere la taglia",
+        "intent": "Italian cyclist wanting to learn how to choose the correct size and fit for cycling eyewear.",
         "volume": 0
       },
       "da": {
-        "keyword": "cykelbrilller UV-beskyttelse",
-        "intent": "Danish cyclist searching for cycling glasses with UV protection.",
+        "keyword": "cykelbriller rigtig st\u00f8rrelse",
+        "intent": "Danish cyclist seeking advice on proper sizing and fit for cycling glasses.",
         "volume": 0
       },
       "nb": {
-        "keyword": "sykkelbriller UV-beskyttelse",
-        "intent": "Norwegian cyclist looking for cycling eyewear with UV filtering.",
+        "keyword": "sykkelbriller riktig st\u00f8rrelse",
+        "intent": "Norwegian cyclist looking for guidance on correct sizing and fitting of cycling eyewear.",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary rowerowe ochrona UV",
-        "intent": "Polish cyclist searching for cycling glasses with UV protection.",
+        "keyword": "okulary rowerowe dob\u00f3r rozmiaru",
+        "intent": "Polish cyclist wanting to understand how to select the proper size for cycling glasses.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "\u00f3culos ciclismo prote\u00e7\u00e3o UV",
-        "intent": "Portuguese cyclist seeking cycling eyewear with UV protection.",
+        "keyword": "\u00f3culos de ciclismo como escolher tamanho",
+        "intent": "Portuguese cyclist seeking advice on selecting and fitting cycling glasses correctly.",
         "volume": 0
       },
       "sv": {
-        "keyword": "cykelglas\u00f6gon UV-skydd",
-        "intent": "Swedish cyclist looking for cycling glasses with UV protection.",
+        "keyword": "cykelglas\u00f6gon r\u00e4tt storlek",
+        "intent": "Swedish cyclist looking for guidance on choosing the correct fit and size for cycling eyewear.",
         "volume": 0
       }
     }
