@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-09-03": 11
+   "2026-09-04": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -2419,5 +2419,49 @@
  "sv|cykelglasögon långdistans": {
   "volume": 0,
   "date": "2026-09-03"
+ },
+ "de|radbrille reinigen und pflegen": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "en|how to clean cycling glasses": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "nl|fietsenbril schoonmaken": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "fr|nettoyer lunettes cyclisme": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "es|limpiar gafas de ciclismo": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "it|pulire occhiali ciclismo": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "da|rengøring cykelbriller": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "nb|rengjøring av sykkelbriller": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "pl|czyszczenie okularów rowerowych": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "pt-PT|limpar óculos de ciclismo": {
+  "volume": 0,
+  "date": "2026-09-04"
+ },
+ "sv|rengöring cykelglasögon": {
+  "volume": 0,
+  "date": "2026-09-04"
  }
 }
