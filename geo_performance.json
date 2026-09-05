@@ -3513,7 +3513,61 @@
         }
       ],
       "serps_scanned": 95
+    },
+    "2026-09-05": {
+      "aio_serps": 46,
+      "velluto_cited": 0,
+      "competitor_cited": 2,
+      "velluto_gap": 7,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 4.3,
+      "total_citations": 50,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 14
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 7
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 6
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 5
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 4
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 3
+        },
+        {
+          "domain": "bicyclewarehouse.com",
+          "citations": 3
+        },
+        {
+          "domain": "evileye.com",
+          "citations": 2
+        },
+        {
+          "domain": "safetyglassesusa.com",
+          "citations": 2
+        },
+        {
+          "domain": "rudyprojectna.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 94
     }
   },
-  "latest": "2026-09-04"
+  "latest": "2026-09-05"
 }
