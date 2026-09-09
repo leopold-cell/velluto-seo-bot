@@ -1,0 +1,206 @@
+{
+  "review_date": "2026-09-09",
+  "inventory": {
+    "total_articles": 90,
+    "bot_articles": 0
+  },
+  "quality": {
+    "articles_checked": 0,
+    "avg_llm_score": null,
+    "with_issues": 0,
+    "weak": 0,
+    "results": []
+  },
+  "performance": {
+    "window": [
+      "2026-08-12",
+      "2026-09-09"
+    ],
+    "totals": {
+      "curr_impressions": 25315,
+      "curr_clicks": 753,
+      "prev_impressions": 18630,
+      "prev_clicks": 562,
+      "impr_delta_pct": 35.9,
+      "clicks_delta_pct": 34.0
+    },
+    "buckets": {
+      "dead": 0,
+      "weak": 0,
+      "low_ctr": 0,
+      "performing": 0,
+      "no_data": 0
+    },
+    "articles_checked": 0,
+    "has_gsc_data": true,
+    "results": []
+  },
+  "translations": {
+    "target_locales": [
+      "de",
+      "nl",
+      "fr",
+      "es",
+      "it",
+      "da",
+      "nb",
+      "pl",
+      "pt-PT",
+      "sv"
+    ],
+    "articles_checked": 0,
+    "fully_complete": 0,
+    "avg_completeness_pct": 0,
+    "missing_by_locale": {},
+    "articles_needing_fix": [],
+    "results": []
+  },
+  "ui": {
+    "skipped": false,
+    "targets": 0,
+    "broken": 0,
+    "minor": 0,
+    "results": []
+  },
+  "seo_geo": {
+    "technical": {
+      "pages": {
+        "home": {
+          "url": "https://velluto-shop.com/",
+          "ok": true,
+          "status": 200,
+          "title": "Velluto StradaPro | Ultra High Contrast Road Cycling Glasses",
+          "title_len": 60,
+          "meta_description_len": 153,
+          "h1_count": 1,
+          "canonical": true,
+          "canonical_href": "https://velluto-shop.com/",
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "Answer",
+            "BreadcrumbList",
+            "FAQPage",
+            "ListItem",
+            "Organization",
+            "Question",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 64,
+            "missing_alt": 0
+          },
+          "internal_links": 77,
+          "issues": [
+            "hreflang missing for: pt-PT"
+          ]
+        },
+        "collection": {
+          "url": "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses",
+          "ok": true,
+          "status": 200,
+          "title": "Road Cycling Glasses | Velluto StradaPro",
+          "title_len": 40,
+          "meta_description_len": 131,
+          "h1_count": 1,
+          "canonical": true,
+          "canonical_href": "https://velluto-shop.com/collections/velluto-stradapro-cycling-glasses",
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "BreadcrumbList",
+            "ListItem",
+            "Organization",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 28,
+            "missing_alt": 0
+          },
+          "internal_links": 52,
+          "issues": [
+            "hreflang missing for: pt-PT"
+          ]
+        },
+        "blog": {
+          "url": "https://velluto-shop.com/blogs/velluto-the-magazine",
+          "ok": true,
+          "status": 200,
+          "title": "Velluto - The Magazine",
+          "title_len": 22,
+          "meta_description_len": 0,
+          "h1_count": 1,
+          "canonical": true,
+          "canonical_href": "https://velluto-shop.com/blogs/velluto-the-magazine",
+          "hreflang_locales": [
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "sv",
+            "x-default"
+          ],
+          "structured_data_types": [
+            "BreadcrumbList",
+            "ListItem",
+            "Organization",
+            "SearchAction",
+            "WebSite"
+          ],
+          "images": {
+            "total": 29,
+            "missing_alt": 0
+          },
+          "internal_links": 57,
+          "issues": [
+            "meta description missing (want ≤160)",
+            "hreflang missing for: pt-PT"
+          ]
+        }
+      },
+      "robots_txt": true,
+      "sitemap_xml": true,
+      "sitemap_references_articles": true
+    },
+    "technical_issues": [
+      "home: hreflang missing for: pt-PT",
+      "collection: hreflang missing for: pt-PT",
+      "blog: meta description missing (want ≤160)",
+      "blog: hreflang missing for: pt-PT"
+    ],
+    "geo": null
+  },
+  "autofix": {}
+}

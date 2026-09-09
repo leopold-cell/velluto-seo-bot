@@ -3729,7 +3729,61 @@
         }
       ],
       "serps_scanned": 94
+    },
+    "2026-09-09": {
+      "aio_serps": 78,
+      "velluto_cited": 0,
+      "competitor_cited": 0,
+      "velluto_gap": 7,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 0.0,
+      "total_citations": 48,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 15
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 7
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 6
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 4
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 3
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 2
+        },
+        {
+          "domain": "bikerumor.com",
+          "citations": 1
+        },
+        {
+          "domain": "bicyclewarehouse.com",
+          "citations": 1
+        },
+        {
+          "domain": "almart.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 188
     }
   },
-  "latest": "2026-09-08"
+  "latest": "2026-09-09"
 }
