@@ -153,7 +153,12 @@
   },
   "seo_title": "Oakley Alternative Cycling Sunglasses 2026",
   "meta_description": "Premium cycling sunglasses with UV400, lightweight frames, swappable lenses. German-engineered alternatives starting under €150.",
-  "measured": null
+  "measured": {
+   "date": "2026-09-12",
+   "ctr_before": 0.41,
+   "ctr_after": 0.7,
+   "outcome": "improved"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/sungod-vs-velluto-cycling-glasses-full-2026-comparison": {
   "last_optimized": "2026-08-30",
