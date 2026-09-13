@@ -1,1 +1,63 @@
-[]
+[
+  {
+    "title": "Cycling Glasses 2026: Complete Buying Guide",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-2026-complete-buying-guide",
+    "topic": "cycling glasses",
+    "keyword": "cycling glasses",
+    "lang": "en",
+    "phase": "decision-extra",
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "Fahrradbrille",
+        "intent": "A cyclist searching for protective eyewear specifically designed for cycling.",
+        "volume": 8100
+      },
+      "nl": {
+        "keyword": "fietsenbril",
+        "intent": "A Dutch cyclist seeking eyewear protection and sun shielding for cycling activities.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "lunettes v\u00e9lo",
+        "intent": "A French cyclist looking for specialized eyewear for cycling comfort and eye protection.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "gafas de ciclismo",
+        "intent": "A Spanish cyclist searching for sport-specific cycling eyewear with UV protection.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "occhiali da ciclismo",
+        "intent": "An Italian cyclist seeking specialized glasses for cycling performance and eye safety.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "cykelbriller",
+        "intent": "A Danish cyclist looking for eyewear designed to protect eyes during cycling activities.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "sykkelbriller",
+        "intent": "A Norwegian cyclist searching for protective glasses suitable for biking conditions.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "okulary rowerowe",
+        "intent": "A Polish cyclist seeking eyewear specifically designed for cycling protection and visibility.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "\u00f3culos de ciclismo",
+        "intent": "A Portuguese cyclist looking for specialized eyewear for cycling performance and protection.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "cykelglas\u00f6gon",
+        "intent": "A Swedish cyclist searching for protective eyewear designed for cycling activities.",
+        "volume": 0
+      }
+    }
+  }
+]

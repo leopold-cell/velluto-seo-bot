@@ -1,6 +1,6 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-09-12",
+  "date": "2026-09-13",
   "locale": "de-DE",
   "locale_short": "de",
   "market_code": "DE",
@@ -9,9 +9,9 @@
   "local_secondary_keywords": [
     "Who makes the best cycling glasses?",
     "What glasses are best for cycling?",
-    "Are SunGod glasses better than Oakley glasses?",
-    "Who makes the best cycling glasses?",
-    "Which sunglasses are better than Oakley?"
+    "What are the best brands for cycling glasses?",
+    "What are the best glasses for bike riding?",
+    "Are SunGod glasses better than Oakley glasses?"
   ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -31,7 +31,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-09-12",
+    "last_updated": "2026-09-13",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
