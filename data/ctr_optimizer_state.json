@@ -189,7 +189,12 @@
   },
   "seo_title": "UV400 Cycling Glasses: Impact Resistance & Lens Swaps",
   "meta_description": "UV400 protection, impact-resistant lenses, anti-fog optical clarity. Find cycling eyewear specs that match your needs. German engineering, Italian design.",
-  "measured": null
+  "measured": {
+   "date": "2026-09-16",
+   "ctr_before": 0.0,
+   "ctr_after": 0.0,
+   "outcome": "no_lift"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-sunglasses-2026": {
   "last_optimized": "2026-09-03",
