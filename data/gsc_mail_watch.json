@@ -17,5 +17,10 @@
   "date": "2026-09-03",
   "alerts": 1,
   "findings": []
+ },
+ {
+  "date": "2026-09-17",
+  "alerts": 1,
+  "findings": []
  }
 ]

@@ -197,16 +197,16 @@
   }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-sunglasses-2026": {
-  "last_optimized": "2026-09-03",
+  "last_optimized": "2026-09-17",
   "article_id": 616863760725,
   "before": {
-   "ctr": 0.77,
-   "position": 7.8,
-   "impressions": 518,
+   "ctr": 0.83,
+   "position": 6.9,
+   "impressions": 482,
    "title": "Best Cycling Sunglasses 2026"
   },
-  "seo_title": "Best Cycling Sunglasses 2026 - UV400, Lightweight",
-  "meta_description": "Cycling sunglasses with UV400 protection, lightweight frames, swappable lenses. German engineering, Italian design. Find your fit.",
+  "seo_title": "Best Cycling Sunglasses 2026: UV400, Lightweight",
+  "meta_description": "Expert guide to top cycling sunglasses. UV400 protection, lightweight frames, swappable lenses. Find your perfect fit for road, gravel, MTB.",
   "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-dont-fit-with-helmet-heres-why": {
@@ -220,7 +220,12 @@
   },
   "seo_title": "Cycling Glasses Don't Fit With Helmet: 5 Solutions",
   "meta_description": "Glasses press into your helmet? Learn why it happens and 5 practical fixes to wear them comfortably. Plus, what positioning actually works.",
-  "measured": null
+  "measured": {
+   "date": "2026-09-17",
+   "ctr_before": 1.53,
+   "ctr_after": 1.48,
+   "outcome": "no_lift"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/anti-fog-cycling-glasses-what-actually-works-in-2026": {
   "last_optimized": "2026-09-04",
@@ -303,6 +308,19 @@
   },
   "seo_title": "Oakley Alternatives 2026, UV400 Cycling Glasses",
   "meta_description": "Premium cycling sunglasses with UV400, interchangeable lenses, German engineering. Find your fit beyond Oakley, from €89.",
+  "measured": null
+ },
+ "https://velluto-shop.com/blogs/velluto-the-magazine/rudy-project-alternative-cycling-glasses-stradapro-vs-rydon": {
+  "last_optimized": "2026-09-17",
+  "article_id": 618568417621,
+  "before": {
+   "ctr": 0.49,
+   "position": 5.9,
+   "impressions": 204,
+   "title": "Rudy Project Alternative Cycling Glasses: StradaPro vs Rydon"
+  },
+  "seo_title": "Rudy Project Alternative Cycling Glasses: Compare",
+  "meta_description": "StradaPro vs Rydon: UV400 protection, interchangeable lenses, weight specs, and warranty. Find your ideal Rudy Project alternative.",
   "measured": null
  }
 }
