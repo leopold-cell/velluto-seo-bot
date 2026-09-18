@@ -79,10 +79,27 @@ def _is_seo(o: dict) -> bool:
     return (fv.get("sourceType") or "").upper() == "SEO"
 
 
+def _is_brand_harvest(landing_page: str) -> bool:
+    """A homepage/locale-root landing from organic search is almost always a
+    BRAND search ('velluto', 'velluto bril'): the visitor already knew the name,
+    demand created by Meta/social/word-of-mouth, not by SEO. Shopify still counts
+    it as sourceType SEO, which inflates the headline. A deep landing (a specific
+    article, product or collection) is where SEO actually DISCOVERED a buyer.
+
+    Confirmed against August: /nl and /de (both homepage) carried 8 of 11 orders;
+    the real SEO-acquisition landings were two blog articles and one product page.
+    """
+    from urllib.parse import urlparse
+    path = urlparse(landing_page).path.rstrip("/")
+    # "", "/de", "/nl", "/fr", "/en" … — root or a bare locale prefix
+    return path == "" or bool(re.fullmatch(r"/[a-z]{2}(-[a-z]{2,4})?", path))
+
+
 def analyze(start: str, end: str) -> dict:
     orders = _fetch_orders(start, end)
     seo_orders, seo_rev = 0, 0.0
     blog_orders, blog_rev = 0, 0.0
+    acq_orders, acq_rev = 0, 0.0        # SEO DISCOVERED the buyer (deep landing)
     by_page: dict[str, dict] = {}
     for o in orders:
         try:
@@ -96,10 +113,15 @@ def analyze(start: str, end: str) -> dict:
         seo_orders += 1
         seo_rev += rev
         lp = (((o.get("customerJourneySummary") or {}).get("firstVisit")) or {}).get("landingPage") or "(unknown)"
+        # Acquisition vs harvest: the number that says whether SEO is actually
+        # GROWING. Headline seo_orders is kept for continuity, but a homepage
+        # landing is brand demand SEO only harvested — it rises and falls with ad
+        # spend, not with anything this bot does.
+        if not _is_brand_harvest(lp):
+            acq_orders += 1
+            acq_rev += rev
         # The blog/shop split is the number the conversion work is judged by:
-        # brand searches land on / or /de and convert around 2.5%, article
-        # readers landed at 0.64% in July. Whether the product card and the
-        # orphan links move THIS number is the whole question.
+        # article readers landed at 0.64% in July.
         if "/blogs/" in lp:
             blog_orders += 1
             blog_rev += rev
@@ -108,7 +130,9 @@ def analyze(start: str, end: str) -> dict:
         b["revenue"] = round(b["revenue"] + rev, 2)
     top = sorted(by_page.items(), key=lambda kv: kv[1]["revenue"], reverse=True)[:5]
     return {"orders": seo_orders, "revenue": round(seo_rev, 2), "top_pages": top,
-            "blog_orders": blog_orders, "blog_revenue": round(blog_rev, 2)}
+            "blog_orders": blog_orders, "blog_revenue": round(blog_rev, 2),
+            "acq_orders": acq_orders, "acq_revenue": round(acq_rev, 2),
+            "harvest_orders": seo_orders - acq_orders}
 
 
 def _blog_clicks(start: str, end: str) -> int | None:
@@ -197,14 +221,20 @@ def main():
 
     label = f"{calendar.month_name[m]} {y}"
     delta = cur["orders"] - prv["orders"]
-    pct   = (cur["orders"] / GOAL * 100) if GOAL else 0
-    bar_n = min(10, round(cur["orders"] / GOAL * 10)) if GOAL else 0
+    # The GOAL now tracks ACQUISITION, not the headline. "11/20, 55%" told us SEO
+    # was on track while the real engine sat at 3 — the headline is inflated by
+    # brand-search harvest that moves with ad spend. The bar measures the number
+    # this bot can actually change.
+    acq, acq_prev = cur["acq_orders"], prv["acq_orders"]
+    acq_delta = acq - acq_prev
+    pct   = (acq / GOAL * 100) if GOAL else 0
+    bar_n = min(10, round(acq / GOAL * 10)) if GOAL else 0
     bar   = "█" * bar_n + "░" * (10 - bar_n)
-    status = "🎯 GOAL HIT" if cur["orders"] >= GOAL else f"{pct:.0f}% of goal"
+    status = "🎯 GOAL HIT" if acq >= GOAL else f"{pct:.0f}% of goal"
 
     start, end = _month_range(y, m)
     clicks = _blog_clicks(start, end)
-    blog_line = (f"Blog-Einstiege: {cur['blog_orders']} von {cur['orders']} SEO-Orders "
+    blog_line = (f"Blog-Einstiege: {cur['blog_orders']} von {acq} SEO-Akquise-Orders "
                  f"({cur['blog_revenue']} EUR)")
     if clicks:
         cr = cur["blog_orders"] / clicks * 100
@@ -213,10 +243,12 @@ def main():
     lines = [
         f"📈 Velluto SEO Sales — {label}",
         "",
-        f"Organic-search sales: {cur['orders']}  ({delta:+d} vs {calendar.month_name[pm]})",
-        f"SEO revenue: {cur['revenue']} EUR  (prev {prv['revenue']})",
+        f"SEO-Akquise (echte Neukunden, tiefe Landung): {acq}  ({acq_delta:+d} vs {calendar.month_name[pm]})",
+        f"   + Brand-Search-Ernte (Homepage, Nachfrage von Ads/Marke): {cur['harvest_orders']}",
+        f"   = Organic-search gesamt: {cur['orders']}  ({delta:+d})",
+        f"SEO revenue: {cur['revenue']} EUR  (prev {prv['revenue']}); Akquise-Umsatz {cur['acq_revenue']} EUR",
         blog_line,
-        f"Goal: {cur['orders']}/{GOAL}  {bar}  {status}",
+        f"Goal (Akquise): {acq}/{GOAL}  {bar}  {status}",
     ]
     if cur["top_pages"]:
         lines.append("")
@@ -230,6 +262,8 @@ def main():
     _save_history({
         "month": f"{y:04d}-{m:02d}", "seo_orders": cur["orders"],
         "seo_revenue": cur["revenue"], "goal": GOAL,
+        "acq_orders": acq, "acq_revenue": cur["acq_revenue"],
+        "harvest_orders": cur["harvest_orders"],
         "blog_orders": cur["blog_orders"], "blog_revenue": cur["blog_revenue"],
         "blog_clicks": clicks,
         "blog_cr_pct": round(cur["blog_orders"] / clicks * 100, 2) if clicks else None,
