@@ -210,22 +210,17 @@
   "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-dont-fit-with-helmet-heres-why": {
-  "last_optimized": "2026-09-03",
+  "last_optimized": "2026-09-18",
   "article_id": 618392453461,
   "before": {
-   "ctr": 1.53,
-   "position": 6.9,
-   "impressions": 326,
+   "ctr": 1.52,
+   "position": 6.0,
+   "impressions": 264,
    "title": "Cycling Glasses Don't Fit With Helmet? Here's Why"
   },
-  "seo_title": "Cycling Glasses Don't Fit With Helmet: 5 Solutions",
-  "meta_description": "Glasses press into your helmet? Learn why it happens and 5 practical fixes to wear them comfortably. Plus, what positioning actually works.",
-  "measured": {
-   "date": "2026-09-17",
-   "ctr_before": 1.53,
-   "ctr_after": 1.48,
-   "outcome": "no_lift"
-  }
+  "seo_title": "Cycling Glasses & Helmet Fit: 5 Quick Solutions",
+  "meta_description": "Why cycling glasses press into your helmet and exact fixes, plus how UV400 lenses stay secure. Find your comfortable setup now.",
+  "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/anti-fog-cycling-glasses-what-actually-works-in-2026": {
   "last_optimized": "2026-09-04",
@@ -238,7 +233,12 @@
   },
   "seo_title": "Anti Fog Cycling Glasses: Ventilation + Coating Guide",
   "meta_description": "How vents, coatings & frame design stop fogging in heat and cold. Durability specs, humidity solutions for cyclists. Find what actually works.",
-  "measured": null
+  "measured": {
+   "date": "2026-09-18",
+   "ctr_before": 0.26,
+   "ctr_after": 0.76,
+   "outcome": "improved"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/burning-eyes-when-cycling-causes-and-fixes": {
   "last_optimized": "2026-09-06",

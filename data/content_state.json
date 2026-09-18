@@ -1,17 +1,136 @@
 {
- "date": "2026-08-21",
+ "date": "2026-09-18",
  "articles": {
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-buying-guide-2026-road-optics-that-deliver": {
+   "handle": "cycling-glasses-buying-guide-2026-road-optics-that-deliver",
+   "title": "Cycling Glasses Buying Guide 2026: Road Optics That Deliver",
+   "words": 6114,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternatives-for-cyclists-2026-lighter-smarter": {
+   "handle": "best-oakley-alternatives-for-cyclists-2026-lighter-smarter",
+   "title": "Best Oakley Alternatives for Cyclists 2026 (Lighter & Smarter)",
+   "words": 4915,
+   "has_table": true,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-2026-complete-buying-guide": {
+   "handle": "cycling-glasses-2026-complete-buying-guide",
+   "title": "Cycling Glasses 2026: Complete Buying Guide",
+   "words": 6010,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-eye-protection-importance-what-every-rider-must-know": {
+   "handle": "cycling-eye-protection-importance-what-every-rider-must-know",
+   "title": "Cycling Eye Protection Importance: What Every Rider Must Know",
+   "words": 4786,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-care-and-cleaning-the-complete-guide": {
+   "handle": "cycling-glasses-care-and-cleaning-the-complete-guide",
+   "title": "Cycling Glasses Care and Cleaning: The Complete Guide",
+   "words": 4802,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-long-distance-rides-comfort-at-hour-4": {
+   "handle": "cycling-glasses-for-long-distance-rides-comfort-at-hour-4",
+   "title": "Cycling Glasses for Long Distance Rides: Comfort at Hour 4+",
+   "words": 4808,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/why-wear-cycling-glasses-the-real-reasons-that-matter": {
+   "handle": "why-wear-cycling-glasses-the-real-reasons-that-matter",
+   "title": "Why Wear Cycling Glasses: The Real Reasons That Matter",
+   "words": 4829,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-fit-guide-3-points-that-matter": {
+   "handle": "cycling-glasses-fit-guide-3-points-that-matter",
+   "title": "Cycling Glasses Fit Guide: 3 Points That Matter",
+   "words": 4861,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/uv-protection-for-cyclists-eyes-the-complete-2026-guide": {
+   "handle": "uv-protection-for-cyclists-eyes-the-complete-2026-guide",
+   "title": "UV Protection for Cyclists Eyes: The Complete 2026 Guide",
+   "words": 4693,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/how-to-choose-cycling-glasses-a-step-by-step-guide": {
+   "handle": "how-to-choose-cycling-glasses-a-step-by-step-guide",
+   "title": "How to Choose Cycling Glasses: A Step-by-Step Guide",
+   "words": 4045,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-under-200-euros-where-value-breaks": {
+   "handle": "cycling-glasses-under-200-euros-where-value-breaks",
+   "title": "Cycling Glasses Under 200 Euros: Where Value Breaks",
+   "words": 5021,
+   "has_table": true,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-lens-colors-guide-which-tint-wins": {
+   "handle": "cycling-glasses-lens-colors-guide-which-tint-wins",
+   "title": "Cycling Glasses Lens Colors Guide: Which Tint Wins?",
+   "words": 4355,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-vs-sunglasses-5-key-differences": {
+   "handle": "cycling-glasses-vs-sunglasses-5-key-differences",
+   "title": "Cycling Glasses vs Sunglasses: 5 Key Differences",
+   "words": 5649,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/best-glasses-for-cycling-in-sun-smoke-brown-or-orange": {
+   "handle": "best-glasses-for-cycling-in-sun-smoke-brown-or-orange",
+   "title": "Best Glasses for Cycling in Sun: Smoke, Brown or Orange?",
+   "words": 5781,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-sunglasses-for-bugs-and-insects-what-works": {
+   "handle": "cycling-sunglasses-for-bugs-and-insects-what-works",
+   "title": "Cycling Sunglasses for Bugs and Insects: What Works",
+   "words": 4825,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/blurry-vision-at-high-speed-cycling-causes-and-fixes": {
+   "handle": "blurry-vision-at-high-speed-cycling-causes-and-fixes",
+   "title": "Blurry Vision at High Speed Cycling: Causes and Fixes",
+   "words": 4576,
+   "has_table": false,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/rudy-project-alternative-cycling-glasses-stradapro-vs-rydon": {
+   "handle": "rudy-project-alternative-cycling-glasses-stradapro-vs-rydon",
+   "title": "Rudy Project Alternative Cycling Glasses: StradaPro vs Rydon",
+   "words": 5225,
+   "has_table": true,
+   "has_faq_schema": true
+  },
   "https://velluto-shop.com/blogs/velluto-the-magazine/burning-eyes-when-cycling-causes-and-fixes": {
    "handle": "burning-eyes-when-cycling-causes-and-fixes",
    "title": "Burning Eyes When Cycling: Causes and Fixes",
-   "words": 5682,
+   "words": 5693,
    "has_table": false,
    "has_faq_schema": true
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-dont-fit-with-helmet-heres-why": {
    "handle": "cycling-glasses-dont-fit-with-helmet-heres-why",
    "title": "Cycling Glasses Don't Fit With Helmet? Here's Why",
-   "words": 6509,
+   "words": 6517,
    "has_table": false,
    "has_faq_schema": true
   },
@@ -60,7 +179,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-small-face-fit-guide-for-2026": {
    "handle": "cycling-glasses-small-face-fit-guide-for-2026",
    "title": "Cycling Glasses Small Face: Fit Guide for 2026",
-   "words": 6045,
+   "words": 6053,
    "has_table": false,
    "has_faq_schema": true
   },
@@ -74,14 +193,14 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-sunglasses-uv400-what-the-standard-really-means": {
    "handle": "cycling-sunglasses-uv400-what-the-standard-really-means",
    "title": "Cycling Sunglasses UV400: What the Standard Really Means",
-   "words": 5594,
+   "words": 5605,
    "has_table": true,
    "has_faq_schema": true
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-big-head-fit-guide-2026": {
    "handle": "cycling-glasses-for-big-head-fit-guide-2026",
    "title": "Cycling Glasses for Big Head: Fit Guide 2026",
-   "words": 6309,
+   "words": 6317,
    "has_table": false,
    "has_faq_schema": true
   },
@@ -123,7 +242,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-uv-protection-uv400-vs-uv380-explained": {
    "handle": "cycling-glasses-uv-protection-uv400-vs-uv380-explained",
    "title": "Cycling Glasses UV Protection: UV400 vs UV380 Explained",
-   "words": 5975,
+   "words": 5986,
    "has_table": false,
    "has_faq_schema": true
   },
@@ -144,7 +263,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-value-2026-oakley-vs-velluto-vs-decathlon": {
    "handle": "best-cycling-glasses-value-2026-oakley-vs-velluto-vs-decathlon",
    "title": "Cycling Glasses 2026: Oakley vs Decathlon vs Velluto",
-   "words": 7209,
+   "words": 7223,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -158,7 +277,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/sungod-alternative-cycling-glasses-velluto-stradapro-tested": {
    "handle": "sungod-alternative-cycling-glasses-velluto-stradapro-tested",
    "title": "SunGod Alternative Cycling Glasses: Velluto StradaPro",
-   "words": 5189,
+   "words": 5203,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -186,14 +305,14 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternatives-for-cyclists-2026": {
    "handle": "best-oakley-alternatives-for-cyclists-2026",
    "title": "Best Oakley Alternatives for Cyclists 2026",
-   "words": 6305,
+   "words": 6335,
    "has_table": true,
    "has_faq_schema": true
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-2026-the-complete-buying-guide": {
    "handle": "best-cycling-glasses-2026-the-complete-buying-guide",
    "title": "Best Cycling Glasses 2026: The Complete Buying Guide",
-   "words": 3837,
+   "words": 6332,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -207,7 +326,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternatives-for-cyclists-2026-lighter-cheaper": {
    "handle": "best-oakley-alternatives-for-cyclists-2026-lighter-cheaper",
    "title": "Best Oakley Alternatives for Cyclists 2026 (Lighter & Cheaper)",
-   "words": 3496,
+   "words": 3505,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -242,7 +361,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/sigma-vs-velluto-cycling-glasses-which-wins-in-2026": {
    "handle": "sigma-vs-velluto-cycling-glasses-which-wins-in-2026",
    "title": "Sigma vs Velluto Cycling Glasses: Specs (2026)",
-   "words": 1309,
+   "words": 1316,
    "has_table": true,
    "has_faq_schema": false
   },
@@ -256,14 +375,14 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-under-150-vs-premium-worth-the-upgrade-velluto": {
    "handle": "cycling-glasses-under-150-vs-premium-worth-the-upgrade-velluto",
    "title": "Cycling Glasses Under €150 vs Premium: Worth the Upgrade? | Velluto",
-   "words": 1122,
+   "words": 1142,
    "has_table": false,
    "has_faq_schema": false
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-fit-without-pressure-points-velluto": {
    "handle": "cycling-glasses-fit-without-pressure-points-velluto",
    "title": "Cycling Glasses Fit Without Pressure Points | Velluto",
-   "words": 1248,
+   "words": 1258,
    "has_table": false,
    "has_faq_schema": false
   },
@@ -277,21 +396,21 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/budget-vs-premium-cycling-glasses-2026-how-much-to-spend": {
    "handle": "budget-vs-premium-cycling-glasses-2026-how-much-to-spend",
    "title": "Budget vs Premium Cycling Glasses 2026: How Much to Spend?",
-   "words": 1091,
+   "words": 1101,
    "has_table": false,
    "has_faq_schema": false
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-for-tour-de-france-conditions-2026": {
    "handle": "best-cycling-glasses-for-tour-de-france-conditions-2026",
    "title": "Best Cycling Glasses for Tour de France Conditions 2026",
-   "words": 3657,
+   "words": 3678,
    "has_table": true,
    "has_faq_schema": false
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/velluto-vs-endurasport-cycling-glasses-specs-2026": {
    "handle": "velluto-vs-endurasport-cycling-glasses-specs-2026",
    "title": "Velluto vs Endurasport Cycling Glasses: Specs 2026",
-   "words": 1112,
+   "words": 1121,
    "has_table": false,
    "has_faq_schema": false
   },
@@ -333,14 +452,14 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-alternatives-to-oakley-cycling-glasses-in-2026": {
    "handle": "best-alternatives-to-oakley-cycling-glasses-in-2026",
    "title": "Best Alternatives to Oakley Cycling Glasses in 2026",
-   "words": 3156,
+   "words": 3177,
    "has_table": true,
    "has_faq_schema": true
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/lightweight-cycling-glasses-for-long-rides-2026": {
    "handle": "lightweight-cycling-glasses-for-long-rides-2026",
    "title": "Lightweight Cycling Glasses for Long Rides 2026",
-   "words": 1196,
+   "words": 1208,
    "has_table": true,
    "has_faq_schema": false
   },
@@ -375,14 +494,14 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-fit-for-long-rides-how-to-get-it-right-in-2026": {
    "handle": "cycling-glasses-fit-for-long-rides-how-to-get-it-right-in-2026",
    "title": "Cycling Glasses Fit for Long Rides: How to Get It Right in 2026",
-   "words": 1379,
+   "words": 1391,
    "has_table": false,
    "has_faq_schema": false
   },
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-narrow-faces-2026-the-complete-buyers-guide": {
    "handle": "cycling-glasses-for-narrow-faces-2026-the-complete-buyers-guide",
    "title": "Cycling Glasses for Narrow Faces 2026: The Complete Buyer's Guide",
-   "words": 3381,
+   "words": 3402,
    "has_table": false,
    "has_faq_schema": false
   },
@@ -480,7 +599,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-sunglasses-worth-it-2026-guide-velluto": {
    "handle": "are-expensive-cycling-sunglasses-worth-it-2026-guide-velluto",
    "title": "Are Expensive Cycling Sunglasses Worth It? 2026 Guide | Velluto",
-   "words": 3040,
+   "words": 3052,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -501,7 +620,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch": {
    "handle": "oakley-alternative-cycling-sunglasses-why-riders-switch",
    "title": "Oakley Alternative Cycling Sunglasses: Why Riders Switch",
-   "words": 3034,
+   "words": 3055,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -534,6 +653,6 @@
    "has_faq_schema": false
   }
  },
- "faq_schema_coverage": 0.54,
- "tables_on_comparison_pages": 17
+ "faq_schema_coverage": 0.62,
+ "tables_on_comparison_pages": 19
 }

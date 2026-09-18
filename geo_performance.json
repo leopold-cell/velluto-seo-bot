@@ -4211,7 +4211,61 @@
         }
       ],
       "serps_scanned": 94
+    },
+    "2026-09-18": {
+      "aio_serps": 64,
+      "velluto_cited": 0,
+      "competitor_cited": 2,
+      "velluto_gap": 6,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 3.1,
+      "total_citations": 44,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 11
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 6
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 5
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 3
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 3
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 3
+        },
+        {
+          "domain": "bikerumor.com",
+          "citations": 2
+        },
+        {
+          "domain": "rockbrosbike.us",
+          "citations": 2
+        },
+        {
+          "domain": "evileye.com",
+          "citations": 2
+        },
+        {
+          "domain": "intheknowcycling.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 182
     }
   },
-  "latest": "2026-09-17"
+  "latest": "2026-09-18"
 }
