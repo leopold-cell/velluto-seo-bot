@@ -4319,7 +4319,61 @@
         }
       ],
       "serps_scanned": 89
+    },
+    "2026-09-20": {
+      "aio_serps": 37,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 7,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 2.7,
+      "total_citations": 52,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 13
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 13
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 5
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 2
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 2
+        },
+        {
+          "domain": "rockbrosbike.us",
+          "citations": 2
+        },
+        {
+          "domain": "rockbrosus.com",
+          "citations": 2
+        },
+        {
+          "domain": "safetyglassesusa.com",
+          "citations": 2
+        },
+        {
+          "domain": "goodr.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 88
     }
   },
-  "latest": "2026-09-19"
+  "latest": "2026-09-20"
 }
