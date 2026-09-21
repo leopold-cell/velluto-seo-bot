@@ -4373,7 +4373,61 @@
         }
       ],
       "serps_scanned": 88
+    },
+    "2026-09-21": {
+      "aio_serps": 100,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 6,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 1.0,
+      "total_citations": 45,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 13
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 6
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 4
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 3
+        },
+        {
+          "domain": "rockbrosus.com",
+          "citations": 2
+        },
+        {
+          "domain": "oakley.com",
+          "citations": 1
+        },
+        {
+          "domain": "rudyprojectna.com",
+          "citations": 1
+        },
+        {
+          "domain": "outdoormaster.com",
+          "citations": 1
+        },
+        {
+          "domain": "piketrail.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 331
     }
   },
-  "latest": "2026-09-20"
+  "latest": "2026-09-21"
 }
