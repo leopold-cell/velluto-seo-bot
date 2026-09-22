@@ -2885,6 +2885,19 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
     json.dump(published, open(PUBLISHED_LOG, "w"), indent=2)
 
 
+def _dynamic_fallback_allowed() -> bool:
+    """Whether the bot may invent a topic when the curated queue is empty.
+    Default False — see the gated fallback in main() and publishing_rules.yml."""
+    try:
+        import yaml
+        rules = yaml.safe_load(open(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "config", "publishing_rules.yml"),
+            encoding="utf-8")) or {}
+        return bool((rules.get("content") or {}).get("dynamic_topic_fallback", False))
+    except Exception:
+        return False      # unreadable config → stay safe, do not generate
+
+
 def main():
     print(f"\n🚴 Velluto SEO Bot — {datetime.date.today()} (EN-primary, quality-compounding, multilingual via Shopify Translate & Adapt)")
     print("=" * 55)
@@ -3113,8 +3126,15 @@ def main():
             print(f"   ❌ EN primary post failed: {e}")
             import traceback; traceback.print_exc()
 
-    # ── Fallback: classic multi-language post ────────────────────────────────
-    if published == 0:
+    # ── Fallback: classic multi-language post (GATED) ────────────────────────
+    # Off by default since 2026-09-22 (config/publishing_rules.yml content.
+    # dynamic_topic_fallback). With the curated queue empty, this path invented
+    # topics and produced 25 near-duplicate comparison articles in a month — seven
+    # rival "oakley alternative" pages that re-created the cannibalisation a merge
+    # had just fixed, and kept tripping the § 6 UWG superiority gate. New articles
+    # now come ONLY from en_keyword_queue.py; an empty queue means no new post
+    # today, and the improve-existing steps carry the day instead.
+    if published == 0 and _dynamic_fallback_allowed():
         print("\n📡 Searching trends + researching new topics (fallback mode)...")
         trends = search_trends()
         try:
@@ -3127,6 +3147,10 @@ def main():
             published += 1
         except Exception as e:
             print(f"   ❌ Fallback post failed: {e}")
+    elif published == 0:
+        print("\n⏸  EN queue leer und dynamischer Fallback aus (publishing_rules.yml) — "
+              "heute kein neuer Artikel; Optimierung der Bestandsartikel läuft weiter. "
+              "Queue in en_keyword_queue.py auffüllen, um fortzufahren.")
 
     print_usage()
     print(f"\n✅ {published}/1 post published today.\n")

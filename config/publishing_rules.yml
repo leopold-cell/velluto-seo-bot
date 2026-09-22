@@ -109,3 +109,13 @@ optimization_timeline:
   day_28: Optimize title/meta/PAA blocks if impressions exist but CTR/ranking is weak.
   day_60: Expand content based on actual queries and SERP movement.
   day_90: Decide whether to expand, consolidate, internally link more, or leave stable.
+
+# Content generation policy (added 2026-09-22). New EN articles come ONLY from the
+# curated en_keyword_queue.py. When that queue is empty the bot must NOT invent a
+# dynamic topic — that path generated 25 near-duplicate comparison articles between
+# late Aug and Sep (seven competing "oakley alternative" pages), which re-created
+# the exact cannibalisation a merge had just cleaned up, and fed the § 6 UWG
+# superiority gate that stalled publishing. Empty queue → publish nothing new,
+# run the improve-existing steps instead. Refill the queue to resume.
+content:
+  dynamic_topic_fallback: false
