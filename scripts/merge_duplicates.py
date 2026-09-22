@@ -138,11 +138,54 @@ def main() -> None:
     print(f"=== merge_duplicates [{'APPLY' if APPLY else 'PLAN'}] — "
           f"{len(arts)} veröffentlichte Artikel ===\n")
 
-    groups: dict[frozenset, list[dict]] = {}
-    for a in arts:
-        if a.get("handle"):
-            groups.setdefault(core(a["handle"]), []).append(a)
-    dupes = {k: v for k, v in groups.items() if len(v) > 1 and k}
+    # Two ways two handles are the same page. (1) EQUAL core after stripping
+    # year/format/claim words. (2) One handle IS another plus a suffix — e.g.
+    # best-oakley-alternatives-for-cyclists-2026 and its -lighter-cheaper /
+    # -lighter-smarter variants. The suffix rule is deliberately narrow (B must
+    # start with A + "-", A a real published handle), so it catches spun variants
+    # of one page without merging genuinely-distinct sub-intent: the three
+    # anti-fog pages (…-for-cold-climbs / -for-summer / -for-wet-weather) share no
+    # such prefix and are left alone. Union-find joins both relations into groups.
+    handled = [a for a in arts if a.get("handle")]
+    parent: dict[str, str] = {a["handle"]: a["handle"] for a in handled}
+
+    def find(x: str) -> str:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(x: str, y: str) -> None:
+        parent[find(x)] = find(y)
+
+    groups: dict[frozenset, list[dict]] = {}       # by core, for the near-miss report
+    by_core: dict[frozenset, str] = {}
+    for a in handled:
+        c = core(a["handle"])
+        if not c:
+            continue
+        groups.setdefault(c, []).append(a)
+        if c in by_core:
+            union(a["handle"], by_core[c])
+        else:
+            by_core[c] = a["handle"]
+
+    handles_sorted = sorted((a["handle"] for a in handled), key=len)
+    for i, short in enumerate(handles_sorted):
+        for longer in handles_sorted[i + 1:]:
+            if longer.startswith(short + "-"):
+                union(short, longer)
+
+    by_handle_obj = {a["handle"]: a for a in handled}
+    comp: dict[str, list[dict]] = {}
+    for h in parent:
+        comp.setdefault(find(h), []).append(by_handle_obj[h])
+    # Key each group by the shared core of its longest-covered member, for display.
+    dupes = {}
+    for root, members in comp.items():
+        if len(members) > 1:
+            key = core(min((m["handle"] for m in members), key=len)) or frozenset({root})
+            dupes[key] = members
 
     # Near-misses: big overlap but not equal. Reported, never acted on.
     keys = [k for k in groups if k]
