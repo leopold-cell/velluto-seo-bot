@@ -54,6 +54,40 @@ def is_compatible(keyword: str) -> bool:
 # angle = optional content angle / unique hook for the article.
 
 EN_KEYWORDS = [
+    # ── Phase 1: GENUINE GAPS only (added 2026-09-22) ─────────────────────────
+    # The blog is saturated (93 articles: 7 rival "oakley alternative" pages, 5
+    # anti-fog, 6 fit guides). Adding more of a covered angle just deepens the
+    # cannibalisation, so these three target buyer-intent competitor/price spaces
+    # with NO existing article — verified against data/content_state.json. Angles
+    # are deliberately neutral: same detail on both sides, evidenced Velluto specs
+    # only, no "beats/better value/superior" — that phrasing is the § 6 UWG claim
+    # the gate blocks and it stalled publishing twice.
+    {
+        "keyword": "tifosi alternative cycling glasses",
+        "volume": 210, "phase": 1,
+        "angle": "Tifosi is the default US budget pick. Objective side-by-side: what "
+                 "Tifosi offers (price, wide model range) next to Velluto's evidenced "
+                 "specs — 25 g, UV400-certified, tool-free interchangeable lenses, "
+                 "built-in anti-fog, 30-day trial, from 69 EUR. Equal detail per side; "
+                 "the reader decides. No superiority claim.",
+    },
+    {
+        "keyword": "bliz cycling glasses alternative",
+        "volume": 140, "phase": 1,
+        "angle": "Bliz is a mid-budget cycling-native brand rarely compared head to "
+                 "head. Neutral spec comparison; state each brand's facts, Velluto's "
+                 "only where evidenced (25 g, UV400, click-in lenses, anti-fog, 30-day "
+                 "trial, from 69 EUR). Never claim Velluto is better — let specs stand.",
+    },
+    {
+        "keyword": "cycling sunglasses under 70 euro",
+        "volume": 190, "phase": 1,
+        "angle": "The sub-70-EUR tier where Velluto actually sits — a bracket the blog "
+                 "does not yet cover (existing pieces are under-150 / under-200). What "
+                 "a rider realistically gets at this price: the specs that matter "
+                 "(weight, lens standard, ventilation, fit) and where Velluto lands on "
+                 "each, objectively. No competitor-superiority framing.",
+    },
     # ── Phase 1: Core commercial ──────────────────────────────────────────────
     # SunGod is being hyped as "The Oakley Replacement" (YouTube/Runner's World,
     # Jul 2026) and we have NO SunGod content yet — operator-prioritized.
