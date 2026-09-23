@@ -1,15 +1,15 @@
 {
  "https://velluto-shop.com/blogs/velluto-the-magazine/oakley-alternative-cycling-sunglasses-why-riders-switch": {
-  "last_optimized": "2026-09-09",
+  "last_optimized": "2026-09-23",
   "article_id": 616562819413,
   "before": {
-   "ctr": 1.13,
+   "ctr": 0.57,
    "position": 8.9,
-   "impressions": 1237,
+   "impressions": 878,
    "title": "Oakley Alternative Cycling Sunglasses: Why Riders Switch"
   },
-  "seo_title": "Oakley Alternatives: 7 Cycling Sunglasses Compared",
-  "meta_description": "Find cycling sunglasses with UV400, lens swaps, and lightweight design. Compare specs, features, and price. Discover options beyond Oakley today.",
+  "seo_title": "Oakley Alternatives: 5 Cycling Brands with UV400 & Lens Swap",
+  "meta_description": "Discover cycling sunglasses like Oakley, Velluto, Rudy Project & more. Compare specs, lens options, and prices. Find your perfect fit.",
   "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/anti-fog-cycling-sunglasses-what-actually-works-in-2026": {
@@ -300,7 +300,12 @@
   },
   "seo_title": "Oakley Alternatives for Cyclists, Save 40-60%",
   "meta_description": "Premium cycling eyewear with UV400, interchangeable lenses, German engineering. Find your fit without the premium price tag.",
-  "measured": null
+  "measured": {
+   "date": "2026-09-23",
+   "ctr_before": 1.32,
+   "ctr_after": 1.42,
+   "outcome": "improved"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/best-alternatives-to-oakley-cycling-glasses-in-2026": {
   "last_optimized": "2026-09-14",

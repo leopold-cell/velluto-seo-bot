@@ -1,0 +1,27 @@
+[
+  {
+    "month": "2026-06",
+    "seo_orders": 0,
+    "seo_revenue": 0.0,
+    "goal": 20,
+    "generated_at": "2026-07-01T05:00:02.476556Z"
+  },
+  {
+    "month": "2026-07",
+    "seo_orders": 9,
+    "seo_revenue": 675.9,
+    "goal": 20,
+    "generated_at": "2026-08-03T13:10:52.327778Z"
+  },
+  {
+    "month": "2026-08",
+    "seo_orders": 0,
+    "seo_revenue": 0.0,
+    "goal": 20,
+    "blog_orders": 0,
+    "blog_revenue": 0.0,
+    "blog_clicks": 382,
+    "blog_cr_pct": 0.0,
+    "generated_at": "2026-09-01T05:00:10.058502Z"
+  }
+]
