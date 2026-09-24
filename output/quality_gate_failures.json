@@ -2690,5 +2690,52 @@
     "checked_at": "2026-09-23T04:17:54.094254Z",
     "title": "Tifosi Alternative Cycling Glasses: StradaPro vs Tifosi 2026",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — Velluto doesn't offer these — Satz: „photochromic lenses, scandinavian brand heritage, and a wide tint range point toward investigating bliz furthe…“"
+    ],
+    "primary_keyword": "bliz cycling glasses alternative",
+    "market": "US",
+    "checked_at": "2026-09-24T04:36:33.415283Z",
+    "title": "Bliz Cycling Glasses Alternative: StradaPro Compared",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — Velluto doesn't offer these — Satz: „both bliz (with their photochromic option on selected models) and velluto (with the vellutopuro and vellutovis…“"
+    ],
+    "primary_keyword": "bliz cycling glasses alternative",
+    "market": "US",
+    "checked_at": "2026-09-24T04:40:00.381708Z",
+    "title": "Bliz Cycling Glasses Alternative: StradaPro vs Bliz Compared",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[LEGAL] Velluto mis-described by nationality — Velluto is a GERMAN brand (Italian design); no false origin (§ 5 UWG)"
+    ],
+    "primary_keyword": "bliz cycling glasses alternative",
+    "market": "US",
+    "checked_at": "2026-09-24T04:43:28.652468Z",
+    "title": "Bliz Cycling Glasses Alternative: StradaPro vs Bliz Compared",
+    "brief_topic": null
   }
 ]
