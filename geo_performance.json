@@ -4589,7 +4589,61 @@
         }
       ],
       "serps_scanned": 177
+    },
+    "2026-09-25": {
+      "aio_serps": 30,
+      "velluto_cited": 0,
+      "competitor_cited": 0,
+      "velluto_gap": 4,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 0.0,
+      "total_citations": 24,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 5
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 3
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 2
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 2
+        },
+        {
+          "domain": "goodr.com",
+          "citations": 1
+        },
+        {
+          "domain": "bikerumor.com",
+          "citations": 1
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 1
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 1
+        },
+        {
+          "domain": "aerotechdesigns.com",
+          "citations": 1
+        },
+        {
+          "domain": "pearlizumi.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 90
     }
   },
-  "latest": "2026-09-24"
+  "latest": "2026-09-25"
 }

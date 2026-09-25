@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-09-24": 11
+   "2026-09-25": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -2699,5 +2699,49 @@
  "sv|cykelglasögon alternativ till bliz": {
   "volume": 0,
   "date": "2026-09-24"
+ },
+ "de|fahrradbrille unter 70 euro": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "en|cycling sunglasses under 70 euro": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "nl|fietsenbril goedkoop onder 70 euro": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "fr|lunettes cyclisme moins de 70 euros": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "es|gafas ciclismo baratas menos de 70 euros": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "it|occhiali ciclismo economici sotto 70 euro": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "da|cykelbriller billige under 70 euro": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "nb|sykkelbriller billige under 70 euro": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "pl|okulary rowerowe tanie poniżej 70 euro": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "pt-PT|óculos de ciclismo baratos menos de 70 euros": {
+  "volume": 0,
+  "date": "2026-09-25"
+ },
+ "sv|cykelglasögon billiga under 70 euro": {
+  "volume": 0,
+  "date": "2026-09-25"
  }
 }

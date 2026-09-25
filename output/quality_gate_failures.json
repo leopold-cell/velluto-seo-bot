@@ -2737,5 +2737,38 @@
     "checked_at": "2026-09-24T04:43:28.652468Z",
     "title": "Bliz Cycling Glasses Alternative: StradaPro vs Bliz Compared",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — Velluto doesn't offer these — Satz: „neither lens is photochromic…“",
+      "[FACT] claims polarized lenses — Velluto doesn't offer these — Satz: „neither is polarized…“"
+    ],
+    "primary_keyword": "cycling sunglasses under 70 euro",
+    "market": "US",
+    "checked_at": "2026-09-25T04:19:57.959334Z",
+    "title": "Cycling Sunglasses Under 70 Euro: What You Actually Get",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '70 EUR' but config expects '69 EUR' for US"
+    ],
+    "primary_keyword": "cycling sunglasses under 70 euro",
+    "market": "US",
+    "checked_at": "2026-09-25T04:24:02.650843Z",
+    "title": "Cycling Sunglasses Under 70 Euro: What You Actually Get",
+    "brief_topic": null
   }
 ]

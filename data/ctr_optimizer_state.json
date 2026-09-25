@@ -140,7 +140,12 @@
   },
   "seo_title": "Cycling vs Regular Sunglasses: Key Differences",
   "meta_description": "Cycling glasses offer UV400 protection, lens swaps, and lightweight frames. See how specs compare to standard sunglasses for road riding.",
-  "measured": null
+  "measured": {
+   "date": "2026-09-25",
+   "ctr_before": 0.58,
+   "ctr_after": 0.75,
+   "outcome": "improved"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternative-cycling-sunglasses-2026-velluto": {
   "last_optimized": "2026-08-29",
