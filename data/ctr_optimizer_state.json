@@ -202,16 +202,16 @@
   }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-sunglasses-2026": {
-  "last_optimized": "2026-09-17",
+  "last_optimized": "2026-10-01",
   "article_id": 616863760725,
   "before": {
-   "ctr": 0.83,
-   "position": 6.9,
-   "impressions": 482,
+   "ctr": 0.78,
+   "position": 6.8,
+   "impressions": 384,
    "title": "Best Cycling Sunglasses 2026"
   },
   "seo_title": "Best Cycling Sunglasses 2026: UV400, Lightweight",
-  "meta_description": "Expert guide to top cycling sunglasses. UV400 protection, lightweight frames, swappable lenses. Find your perfect fit for road, gravel, MTB.",
+  "meta_description": "Compare top cycling sunglasses with UV400 protection, lightweight frames, and interchangeable lenses. Find your perfect fit for road and mountain biking.",
   "measured": null
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-dont-fit-with-helmet-heres-why": {
@@ -336,7 +336,12 @@
   },
   "seo_title": "Rudy Project Alternative Cycling Glasses: Compare",
   "meta_description": "StradaPro vs Rydon: UV400 protection, interchangeable lenses, weight specs, and warranty. Find your ideal Rudy Project alternative.",
-  "measured": null
+  "measured": {
+   "date": "2026-10-01",
+   "ctr_before": 0.49,
+   "ctr_after": 0.82,
+   "outcome": "improved"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/blurry-vision-at-high-speed-cycling-causes-and-fixes": {
   "last_optimized": "2026-09-27",
