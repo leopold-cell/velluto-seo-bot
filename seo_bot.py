@@ -209,18 +209,35 @@ VellutoVisione™ HIGH CONTRAST LENS:
 - Click-in system: lens swap in seconds
 - 100% compatible with Velluto StradaPro
 
+VELLUTO CHROMO (photochromic model, launched Oct 2026 — from 99 EUR, 4 colourways):
+- This is the ONLY Velluto product that is photochromic. The Chromo lens is
+  self-tinting: it adapts to the light as you ride, clear in low light, darkening
+  in bright sun. This is why it suits autumn/winter's changing light.
+- Mirrored (REVO) finish options: "Clear to Grey", "Clear to REVO Red",
+  "Clear to Blue", "Clear to Purple REVO". So the Chromo — and ONLY the Chromo —
+  may be described as photochromic AND as having a mirrored finish.
+- UV400 protection.
+- The StradaPro is still a two-lens interchangeable system and is NEITHER
+  photochromic NOR mirrored. Never blur the two: photochromic/mirrored belong to
+  the Chromo, the tool-free lens swap belongs to the StradaPro.
+
 ACCESSORIES:
 - Hard Case: anti-crash guarantee, fits all road cycling glasses, luxurious velvet finish
 - Microfiber Cleaning Cloth: 25×25cm, 80% polyester / 20% polyamide
 - Cleaning Spray: 50ml, apple fragrance, refillable, made in Germany
 - TACX Bidon (Limited Edition): 500ml, dishwasher safe up to 40°C, made in Netherlands
 
-WHAT VELLUTO DOES NOT OFFER — NEVER WRITE THESE:
-✗ Photochromic / self-tinting lenses
+WHAT THE STRADAPRO DOES NOT OFFER — NEVER ATTRIBUTE THESE TO THE STRADAPRO:
+✗ Photochromic / self-tinting lenses  → that is the CHROMO, a separate product
+✗ Mirrored lenses                     → that is the CHROMO, a separate product
+✗ Multiple lens tints beyond Puro (clear) and Visione (high contrast)
+The StradaPro solves changing light with its two interchangeable lenses, not with
+one adapting lens. If the topic is photochromic or mirrored, write about the
+CHROMO; never say the StradaPro is either.
+
+WHAT NO VELLUTO PRODUCT OFFERS — NEVER WRITE THESE:
 ✗ Polarized lenses
 ✗ Prescription lenses / optical inserts
-✗ Mirrored lenses (not mentioned in product range)
-✗ Multiple lens tints beyond Puro (clear) and Visione (high contrast)
 
 CRITICAL — NEVER CLAIM THIS:
 ✗ The StradaPro is NOT suitable to wear over normal prescription glasses (Over-Glasses use).
@@ -1158,12 +1175,16 @@ WRITING RULES:
 3. Only link to products using the EXACT URLs provided — never invent URLs.
 4. Use ONLY the image URLs provided — never invent image URLs.
 5. Before writing a single claim about Velluto products, verify it against BRAND_FACTS above.
-6. Velluto does NOT offer photochromic, polarized, or prescription lenses.
-   You MAY discuss these features when comparing to competitors OR in informational/FAQ sections.
-   You MUST NOT attribute them to Velluto products.
-   ✓ "Oakley's Prizm lenses are polarized; Velluto's interchangeable system gives you control without lock-in to one tint."
-   ✗ "The Velluto StradaPro's polarized lenses cut glare..."
-7. If a topic implies a feature Velluto doesn't have, reframe honestly: explain the category, then show how Velluto's actual lenses (Puro/Visione) solve the need.
+6. Photochromic and mirrored lenses belong to the Velluto CHROMO (a real product).
+   The StradaPro is NEITHER — it is a two-lens interchangeable system. Polarized and
+   prescription lenses exist in NO Velluto product.
+   ✓ "The Velluto Chromo is photochromic, clear to grey as the light changes."
+   ✓ "Oakley's Prizm lenses are polarized; the Velluto StradaPro gives you two click-in lenses instead."
+   ✗ "The Velluto StradaPro's photochromic lenses adapt..."  (false — that is the Chromo)
+   ✗ "The Velluto Chromo's polarized lenses..."  (false — no Velluto lens is polarized)
+7. If the topic is photochromic or mirrored, write about the CHROMO. If it implies a
+   feature NO Velluto product has (polarized, prescription), reframe honestly: explain
+   the category, then show how Velluto's actual lenses solve the need.
 8. NEVER use the em-dash "—" or a spaced en-dash " – " anywhere. Use commas, periods or colons instead. (Normal hyphens in compound words are fine.)"""
 
     user = f"""Date: {datetime.date.today().strftime('%d %B %Y')} | {get_cycling_context()}
@@ -1776,11 +1797,11 @@ WRITING RULES:
 2. No <img> tags in flowing text — the cover image is set separately. \
    Product images ONLY in .product-media divs using the APPROVED CDN URLs.
 3. Use ONLY the provided product URLs — do not invent URLs.
-4. Velluto does NOT offer photochromic, polarized, or prescription lenses.
-   You MAY discuss these features when comparing to competitors OR in informational/FAQ sections.
-   You MUST NOT attribute them to Velluto products.
-   ✓ "Oakley's Prizm lenses are polarized; Velluto's interchangeable system gives you the same control without the lock-in to one tint."
-   ✗ "The Velluto Strada Pro's polarized lenses cut glare..."
+4. Photochromic and mirrored lenses belong to the Velluto CHROMO (a real product);
+   the StradaPro is neither. Polarized and prescription lenses exist in NO Velluto
+   product. Never attribute photochromic/mirrored to the StradaPro.
+   ✓ "The Velluto Chromo is photochromic; the StradaPro instead gives you two click-in lenses."
+   ✗ "The Velluto Strada Pro's photochromic lenses adapt..."  (false — that is the Chromo)
 5. The result should feel like advice from a faster, more experienced cycling friend — not a sales pitch.
 6. Use the exact CSS class names from the template (hero, article, .toc, .faq, etc.).
 7. EVERY <img> MUST have descriptive alt text (product name + colour + context). NEVER output alt="" or alt="...". This is an accessibility + SEO requirement.
@@ -2226,9 +2247,11 @@ def _gen_native_paa(lang_name: str, target_kw: str, questions: list) -> str:
         f"Write in {lang_name}. Target keyword (use once if it fits): '{target_kw}'. Output ONLY HTML: "
         "for EACH question below, an <h3> with the question, then a <p> with a direct 40-60 word answer, "
         "then one <p> of added depth. No wrapper element, no markdown fences, no commentary.\n"
-        "Velluto is a GERMAN cycling-eyewear brand with Italian design; its lenses are clear VellutoPuro "
-        "and high-contrast VellutoVisione. It has NO photochromic, polarized or prescription lenses — "
-        "never claim it does. No competitor bashing, no invented facts, never an em-dash '—'."
+        "Velluto is a GERMAN cycling-eyewear brand with Italian design. The StradaPro uses clear "
+        "VellutoPuro and high-contrast VellutoVisione lenses (interchangeable, NOT photochromic, NOT "
+        "mirrored); the separate Velluto Chromo is the photochromic/mirrored model. No Velluto lens is "
+        "polarized or prescription. Never call the StradaPro photochromic. No competitor bashing, no "
+        "invented facts, never an em-dash '—'."
     )
     r = client.messages.create(model=ADAPT_MODEL, max_tokens=2000, system=sysp,
                                messages=[{"role": "user", "content": qs}])

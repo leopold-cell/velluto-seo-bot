@@ -15,12 +15,14 @@ import re
 # ── Incompatibility filter ────────────────────────────────────────────────────
 # Keywords matching any of these patterns cannot be served by Velluto's
 # current product range and are excluded from the queue.
+# Photochromic, self-tinting, transition and mirrored keywords USED to be
+# incompatible — until the Velluto Chromo launched (Oct 2026), which is exactly
+# those things. They are now servable (by the Chromo) and must reach the queue so
+# the bot can finally write the photochromic content the market keeps searching
+# for. Polarized, prescription, over-glasses, varifocal etc. remain incompatible —
+# no Velluto product offers them.
 INCOMPATIBLE_PATTERNS = [
-    r'photochromic',           # Velluto doesn't offer photochromic lenses
-    r'photochrom',             # German/multilingual photochromic
-    r'transition\s+lens',      # Transitions brand / photochromic
-    r'self.?tinting',
-    r'polariz',                # No polarized lenses
+    r'polariz',                # No polarized lenses (Chromo is photochromic, not polarized)
     r'polarised',
     r'prescription',           # No prescription option
     r'rx\s+cycling',
@@ -32,7 +34,6 @@ INCOMPATIBLE_PATTERNS = [
     r'fit.?over',              # "fit over" glasses
     r'fits?\s+over',
     r'over\s+spectacles',
-    r'mirror(ed)?\s+(lens|lenses|glass)',  # Mirrored lens claims
     r'progressive',            # Progressive / varifocal lenses
     r'varifocal',
     r'bifocal',

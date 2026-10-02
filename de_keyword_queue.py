@@ -63,9 +63,11 @@ DE_KEYWORD_QUEUE = [
     {
         "keyword": "photochrome fahrradbrille test",
         "volume": 500, "phase": 1,
-        "angle": "Photochrom vs. Wechselgläser: Reaktionszeit, Tunnel/Wald-Problem, Gewicht. "
-                 "Wann photochrom Sinn macht, wann nicht. "
-                 "VellutoPuro (klar) + VellutoVisione (getönt) als manuelle Alternative erklärt.",
+        "angle": "Velluto Chromo ist die photochrome Brille (klar bis grau/REVO) — als "
+                 "photochrome Option positionieren. Dazu ehrlich der Vergleich zum StradaPro mit "
+                 "zwei Wechselgläsern (VellutoPuro klar + VellutoVisione getönt): sofortiger "
+                 "Wechsel vs. langsames Mittönen, Tunnel/Wald, Gewicht. Beide als valide zeigen, "
+                 "der Leser entscheidet. Den StradaPro NIE photochrom nennen.",
     },
     {
         "keyword": "rennradbrille beschlägt nicht",
@@ -136,8 +138,10 @@ DE_KEYWORD_QUEUE = [
         "keyword": "rennradbrille verspiegelt",
         "volume": 500, "phase": 2,
         "angle": "Warum verspiegelte Gläser? Optik + Funktion (reflektiert Wärme). "
-                 "VellutoVisione™ leicht verspiegelt für Sommer. Unterschied verspiegelt vs. polarisiert. "
-                 "Welche Farbe für welches Wetter.",
+                 "Velluto Chromo mit verspiegelter REVO-Option (clear-to-REVO Red / Purple) als "
+                 "die verspiegelte Brille im Sortiment. Unterschied verspiegelt vs. polarisiert "
+                 "(Velluto führt kein polarisiert). Welche Farbe für welches Wetter. "
+                 "Den StradaPro/VellutoVisione NICHT als verspiegelt bezeichnen.",
     },
     {
         "keyword": "sportbrille radsport test",

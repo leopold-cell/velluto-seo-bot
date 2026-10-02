@@ -522,20 +522,34 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
 # over-glasses stays strict (negatable=False): BRAND_FACTS bans that phrasing
 # entirely, even negated — "does not fit over your glasses" is still the
 # forbidden framing.
+#
+# Fourth field `chromo_ok`: since the Velluto Chromo launched (2026-10), two of
+# these features are REAL on one product. The Chromo IS photochromic and HAS a
+# mirrored (REVO) finish; the StradaPro still is neither. So photochromic/mirror
+# are allowed when the context is the Chromo, and still blocked when attributed
+# to the StradaPro — the boundary that must not blur. Polarized, prescription and
+# over-glasses remain false for EVERY Velluto product (chromo_ok=False).
 FORBIDDEN_FEATURE_TOKENS = [
-    ("photochrom", "claims photochromic lenses — Velluto doesn't offer these", True),
-    ("polari",     "claims polarized lenses — Velluto doesn't offer these", True),
+    ("photochrom", "claims photochromic lenses", True, True),
+    ("polari",     "claims polarized lenses — no Velluto product has these", True, False),
     # 'polari' prefix matches both 'polarized' (US) and 'polarised' (UK)
     # Feature-specific tokens (not bare words) so "mirror finish" / "prescription
     # for" prose doesn't hit; sentence-aware attribution still lets competitor and
     # informational mentions through (see check_brand_facts / _is_velluto_price_context).
     (r"mirror(ed)?\s+(lens|lense|coating|finish|tint)",
-                   "claims mirrored lenses — Velluto doesn't offer these", True),
+                   "claims mirrored lenses", True, True),
     (r"prescription\s+(lens|lenses|insert|inserts|version|option|frame)",
-                   "claims prescription lenses — Velluto doesn't offer these", True),
+                   "claims prescription lenses — no Velluto product has these", True, False),
     (r"over[\s-]glasses|fits?\s+over\s+(your\s+|normal\s+|prescription\s+)?(glasses|spectacles|prescription)",
-                   "claims StradaPro fits over prescription glasses — it does not", False),
+                   "claims StradaPro fits over prescription glasses — it does not", False, False),
 ]
+
+# Products that MUST NOT be described as photochromic / mirrored (they are not).
+# The Chromo is the only one that may. "Starter/Performance Vision Kit" is how the
+# StradaPro is sold, so those names count as StradaPro too.
+_STRADAPRO_TOKENS = ("stradapro", "strada pro", "starter vision kit",
+                     "performance vision kit", "vellutopuro", "vellutovisione")
+_CHROMO_TOKEN = "chromo"
 
 # Negation and contrast markers, per shop language. "not only" is excluded — it
 # introduces a POSITIVE claim ("not only photochromic, but also…").
@@ -586,8 +600,9 @@ def check_brand_facts(post: dict) -> list[str]:
          (sentence has both brands → competitor wins per the helper logic)
     """
     body = (post.get("body_html") or "").lower()
+    has_chromo = _CHROMO_TOKEN in body          # is this a Chromo article at all?
     issues: list[str] = []
-    for token, msg, negatable in FORBIDDEN_FEATURE_TOKENS:
+    for token, msg, negatable, chromo_ok in FORBIDDEN_FEATURE_TOKENS:
         # one flag per token type is enough — break after first hit
         for m in re.finditer(token, body):
             if not _is_velluto_price_context(body, m.start(), m.end()):
@@ -597,13 +612,28 @@ def check_brand_facts(post: dict) -> list[str]:
             # An honest denial is not a claim — see FORBIDDEN_FEATURE_TOKENS.
             if negatable and _sentence_has_denial(sentence):
                 continue
+            flag_msg = msg
+            if chromo_ok:
+                # Photochromic / mirrored are real on the Chromo, false on the
+                # StradaPro. Allow when the Chromo is the subject; keep blocking
+                # when the StradaPro is. Three cases by what the sentence names:
+                names_strada = any(t in sentence for t in _STRADAPRO_TOKENS)
+                names_chromo = _CHROMO_TOKEN in sentence
+                if names_chromo and not names_strada:
+                    continue                      # correct product — legitimate
+                if not names_strada and has_chromo:
+                    continue                      # a Chromo article speaking generally
+                if names_strada:
+                    flag_msg = (msg + " — attributed to the StradaPro, which is not; "
+                                      "only the Chromo is")
+                # else: a non-Chromo article attributing it to Velluto → still a claim
             # Quote the sentence: "3 attempts failed" with no text to look at
             # kept publishing stalled for days. The quote flows into the retry
             # feedback (the model sees exactly what to remove), the failure log
             # and the daily mail.
             quote = re.sub(r"<[^>]+>", " ", sentence)
             quote = re.sub(r"\s+", " ", quote).strip()[:110]
-            issues.append(f"[FACT] {msg} — Satz: „{quote}…“")
+            issues.append(f"[FACT] {flag_msg} — Satz: „{quote}…“")
             break
     return issues
 

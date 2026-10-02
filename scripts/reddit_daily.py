@@ -173,23 +173,29 @@ def _threads_for(question: str, limit: int = 3) -> list[dict]:
     return out
 
 
-# Features Velluto does not sell. check_brand_facts() only flags them when the
-# same SENTENCE attributes them to Velluto, which is the right call for an article
-# — discussing photochromic lenses informatively is legitimate. A Reddit reply is
-# shorter and comes from the maker, so "decide if you want photochromic…" two
-# lines above "I ride Velluto" reads as a spec claim even across sentences.
-# Too ambiguous to block (it would flag honest comparisons), too risky to ignore:
-# it becomes a note on the human's read-check, which is what this list is for.
-_ABSENT_FEATURES = ("photochrom", "polari", "prescription", "varifocal", "mirrored")
+# Features NO Velluto product sells — these in a maker's Reddit reply read as a
+# false spec claim. photochromic/mirrored are NOT here: since the Chromo launched
+# they are real, and a reply may mention the Chromo. The note still fires if the
+# reply names the StradaPro together with photochromic/mirrored (that pairing is
+# false), handled by _stradapro_feature_clash below.
+_ABSENT_FEATURES = ("polari", "prescription", "varifocal")
+_STRADAPRO_WORDS = ("stradapro", "strada pro", "starter vision kit")
+_CHROMO_FEATURES = ("photochrom", "mirrored")
 
 
 def _feature_proximity(body: str) -> list[str]:
     low = (body or "").lower()
     if "velluto" not in low:
         return []
-    return [f"erwähnt „{f}“ — Velluto bietet das nicht an; sicherstellen, dass der "
-            f"Satz es nicht Velluto zuschreibt"
-            for f in _ABSENT_FEATURES if f in low]
+    notes = [f"erwähnt „{f}“ — kein Velluto-Produkt bietet das; sicherstellen, dass der "
+             f"Satz es nicht Velluto zuschreibt"
+             for f in _ABSENT_FEATURES if f in low]
+    # photochromic/mirrored belong to the Chromo. If the reply ties them to the
+    # StradaPro, that is the false pairing — flag it for the human read-check.
+    if any(s in low for s in _STRADAPRO_WORDS):
+        notes += [f"nennt StradaPro und „{f}“ — das ist der Chromo, nicht der StradaPro; prüfen"
+                  for f in _CHROMO_FEATURES if f in low]
+    return notes
 
 
 # link_builder's prompt was written for the automated poster that never ran. It
@@ -218,8 +224,9 @@ Write a reply of 120-180 words that:
   anti-fog, 30-day trial, from 69 EUR. Delete that sentence and the reply must
   still fully answer the question — that is r/{sub}'s actual rule, and a
   paragraph-long product pitch gets the comment removed.
-- NEVER mentions photochromic, polarised, prescription or mirrored lenses in any
-  way that could read as a Velluto feature — we do not sell them
+- NEVER calls the StradaPro photochromic or mirrored (it is neither — those are
+  the separate Velluto Chromo), and never mentions polarised or prescription
+  lenses as a Velluto feature — no Velluto product has those
 - never claims a test, ranking or comparison we did not run
 - makes no superiority claim over a named brand
 - contains NO disclosure, disclaimer or "I founded Velluto" line. One is appended

@@ -75,11 +75,12 @@ NL_QUEUE = [
         "volume": 50, "phase": 1,
         "title_nl": "Meekleurende fietsbril: hoe werkt het en zijn ze beter?",
         "angle": (
-            "Explain photochromic/auto-tinting lenses (what they are). "
-            "IMPORTANT: Velluto does NOT offer photochromic lenses — be honest about this. "
-            "Instead: explain why interchangeable lenses (VellutoPuro + VellutoVisione) "
-            "are a better solution: instant swap vs slow auto-tint, always optimal lens. "
-            "Reframe: 'Instead of meekleurende glazen, try verwisselbare glazen'."
+            "Explain photochromic/auto-tinting lenses (what they are, when they help). "
+            "Velluto's photochromic model is the CHROMO (clear-to-grey, clear-to-REVO): "
+            "position it as the meekleurende option. The StradaPro is the alternative for "
+            "riders who prefer two interchangeable lenses (VellutoPuro + VellutoVisione, "
+            "instant swap) over one adapting lens — present both honestly, let the reader "
+            "choose. Never call the StradaPro photochromic."
         ),
     },
     {
@@ -193,9 +194,10 @@ NL_QUEUE = [
         "angle": (
             "Educational + honest comparison. Explain photochromic technology. "
             "Pros: convenience. Cons: slow transition, temperature sensitive, premium price. "
-            "IMPORTANT: Velluto does NOT offer this — be honest. "
-            "Counter-argument: Velluto's verwisselbare glazen (instant swap) vs slow auto-tint. "
-            "Conclusion: for most NL cyclists, interchangeable = better."
+            "Velluto's photochromic option is the CHROMO — name it as the meekleurende "
+            "choice. The StradaPro is the two-lens interchangeable alternative (instant swap). "
+            "Present both as valid for different riders; the reader decides. "
+            "Never call the StradaPro photochromic."
         ),
     },
 

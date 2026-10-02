@@ -35,8 +35,10 @@ FR_KEYWORD_QUEUE = [
      "angle": "Gravel: conditions changeantes, poussière, long horizon. Verres interchangeables. "
               "Contexte: cols pyrénéens, Ardèche, routes du Tour."},
     {"keyword": "lunettes cyclisme photochromiques test", "volume_tier": "medium", "phase": 1, "locale": "fr",
-     "angle": "Photochromiques vs verres interchangeables: temps de réaction, tunnel/forêt, poids. "
-              "Quand choisir quoi."},
+     "angle": "Le Velluto Chromo est le modèle photochromique (clair à gris/REVO) — le positionner "
+              "comme l'option photochromique. Comparer honnêtement au StradaPro à deux verres "
+              "interchangeables: temps de réaction, tunnel/forêt, poids. Les deux sont valables, "
+              "au lecteur de choisir. Ne jamais qualifier le StradaPro de photochromique."},
     {"keyword": "lunettes cyclisme femme", "volume_tier": "medium", "phase": 1, "locale": "fr",
      "angle": "Exigences spécifiques: plaquette plus fine, monture légère. Variantes Viola/Arancia. "
               "Pourquoi le système réglable est universel."},
@@ -119,8 +121,10 @@ IT_KEYWORD_QUEUE = [
      "angle": "Perché il peso conta: pressione dopo 3h, scivolamento, aerodinamica. "
               "StradaPro 25g vs concorrenza 40-60g. Contesto: salitori, Dolomiti, Giro d'Italia."},
     {"keyword": "occhiali ciclismo fotocromatici test", "volume_tier": "medium", "phase": 1, "locale": "it",
-     "angle": "Fotocromatici vs lenti intercambiabili: tempo di reazione, gallerie, peso. "
-              "Quando scegliere cosa."},
+     "angle": "Il Velluto Chromo è il modello fotocromatico (da chiaro a grigio/REVO): presentarlo "
+              "come l'opzione fotocromatica. Confronto onesto con lo StradaPro a due lenti "
+              "intercambiabili: tempo di reazione, gallerie, peso. Entrambi validi, sceglie il "
+              "lettore. Non definire mai lo StradaPro fotocromatico."},
     {"keyword": "occhiali ciclismo donna", "volume_tier": "medium", "phase": 1, "locale": "it",
      "angle": "Requisiti specifici: nasello più stretto, montatura leggera. Varianti Viola/Arancia. "
               "Perché il sistema regolabile è universale."},
@@ -234,8 +238,10 @@ PL_KEYWORD_QUEUE = [
      "angle": "Dlaczego waga ma znaczenie: ucisk po 3h, zsuwanie, aerodynamika. "
               "StradaPro 25g vs konkurencja 40-60g. Długie trasy, Bieszczady, Tatry."},
     {"keyword": "okulary rowerowe fotochromowe test", "volume_tier": "medium", "phase": 1, "locale": "pl",
-     "angle": "Fotochromowe vs wymienne szkła: czas reakcji, tunele/las, waga. "
-              "Kiedy co wybrać."},
+     "angle": "Velluto Chromo to model fotochromowy (od przezroczystych do szarych/REVO) — "
+              "przedstaw go jako opcję fotochromową. Uczciwe porównanie ze StradaPro z dwiema "
+              "wymiennymi szkłami: czas reakcji, tunele/las, waga. Oba warianty sensowne, "
+              "wybiera czytelnik. Nigdy nie nazywaj StradaPro fotochromowym."},
     {"keyword": "okulary rowerowe damskie 2026", "volume_tier": "medium", "phase": 1, "locale": "pl",
      "angle": "Specyficzne wymagania: węższy nosek, lżejsza oprawa. Warianty Viola/Arancia. "
               "System regulacji pasuje każdemu."},
