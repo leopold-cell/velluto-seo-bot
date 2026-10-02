@@ -225,7 +225,12 @@
   },
   "seo_title": "Cycling Glasses & Helmet Fit: 5 Quick Solutions",
   "meta_description": "Why cycling glasses press into your helmet and exact fixes, plus how UV400 lenses stay secure. Find your comfortable setup now.",
-  "measured": null
+  "measured": {
+   "date": "2026-10-02",
+   "ctr_before": 1.52,
+   "ctr_after": 1.06,
+   "outcome": "no_lift"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/anti-fog-cycling-glasses-what-actually-works-in-2026": {
   "last_optimized": "2026-09-04",
