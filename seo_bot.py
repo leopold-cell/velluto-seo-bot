@@ -535,6 +535,11 @@ ALLOWED_HANDLES = {
     "velluto-microfiber-cleaning-cloth",
     "velluto-drinking-bottle-limited-edition",
     "velluto-cleaning-spray",
+    # The photochromic model (launched Oct 2026). Linkable so photochromic/mirror
+    # articles point at the right product. NOTE: stock is tiny (4 units at launch)
+    # — do NOT push ranking photochromic content until it is restocked, or the
+    # content outruns supply. See _dynamic_fallback_allowed / the queue note.
+    "velluto-chromo",
 }
 
 @retry(max_attempts=3, delay=5, label="get_products")
