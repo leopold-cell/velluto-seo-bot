@@ -1,6 +1,6 @@
-# Velluto 28-Day Blog Review — 2026-09-09
+# Velluto 28-Day Blog Review — 2026-10-07
 
-**Articles reviewed:** 0 (of 90 total)
+**Articles reviewed:** 0 (of 96 total)
 
 ## 1. Quality
 - Avg LLM score: None
@@ -8,7 +8,7 @@
 - Weak (LLM verdict): 0
 
 ## 2. Performance (GSC, 28d)
-- Window: ['2026-08-12', '2026-09-09']
+- Window: ['2026-09-09', '2026-10-07']
 - Dead: 0 · Weak: 0 · Low-CTR: 0 · Performing: 0 · No data: 0
 
 ## 3. Translations
