@@ -543,9 +543,11 @@ ALLOWED_HANDLES = {
     "velluto-drinking-bottle-limited-edition",
     "velluto-cleaning-spray",
     # The photochromic model (launched Oct 2026). Linkable so photochromic/mirror
-    # articles point at the right product. NOTE: stock is tiny (4 units at launch)
-    # — do NOT push ranking photochromic content until it is restocked, or the
-    # content outruns supply. See _dynamic_fallback_allowed / the queue note.
+    # articles point at the right product. Launch stock was 4 units; the operator
+    # confirmed on 2026-10-08 that it reaches ~100 within 4 weeks (early Nov), which
+    # is inside the 4-6 weeks new content needs to rank — so the photochromic queue
+    # entries are cleared to publish. If that restock slips, pause them in
+    # en_keyword_queue.py rather than let articles point at a sold-out product.
     "velluto-chromo",
 }
 

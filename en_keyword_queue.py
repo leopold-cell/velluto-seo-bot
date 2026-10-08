@@ -120,6 +120,30 @@ EN_KEYWORDS = [
                  "alternative for riders who prefer to choose by hand; reader decides. "
                  "Link https://velluto-shop.com/products/velluto-chromo .",
     },
+    # Chromo follow-ups, added once the operator confirmed Chromo stock reaches ~100
+    # units within 4 weeks (2026-10-08) — so ranking content will not outrun supply.
+    # Both verified as gaps: zero existing articles on mirrored lenses or on
+    # overcast/low-light riding (the lens-colours guide covers tints, not these).
+    {
+        "keyword": "mirrored cycling glasses",
+        "volume": 450, "phase": 1,
+        "angle": "What a mirrored coating does and when it helps (bright sun, glare), as "
+                 "general neutral education with no invented numbers. The Velluto Chromo "
+                 "is photochromic and mirrored in bright sun — the Velluto option here. "
+                 "The StradaPro is NOT mirrored; say so plainly if it comes up. Use only "
+                 "the facts in BRAND_FACTS: no heat-reflection, performance or durability "
+                 "claims, no test results. Link https://velluto-shop.com/products/velluto-chromo .",
+    },
+    {
+        "keyword": "cycling glasses for overcast days",
+        "volume": 200, "phase": 1,
+        "angle": "Grey, low-sun and early-dusk riding is the real autumn/winter problem. "
+                 "Lens choice for it: the VellutoVisione high-contrast lens (sharpens "
+                 "contrast and definition) and the clear VellutoPuro for the darkest "
+                 "conditions, both on the StradaPro; the Chromo as the adapting option for "
+                 "light that keeps changing. Present both routes, reader decides. Evidenced "
+                 "specs only, no light-transmission figures, no tests, no superiority claims.",
+    },
     # ── Phase 1: GENUINE GAPS only (added 2026-09-22) ─────────────────────────
     # The blog is saturated (93 articles: 7 rival "oakley alternative" pages, 5
     # anti-fog, 6 fit guides). Adding more of a covered angle just deepens the
