@@ -1,0 +1,23 @@
+# Real, time-limited offers — the ONLY place an offer may be defined.
+#
+# Why this file exists: an evergreen article outlives a time-limited offer. Left
+# alone it keeps advertising a deal that ended, which is misleading (§ 5 UWG) and
+# exactly the kind of retro-fit this repo is built to avoid. So:
+#   - en_keyword_queue.py reads this file and ONLY briefs the model about an offer
+#     while it is still running (it vanishes from new articles the day after `ends`);
+#   - the model must wrap the offer in a <p> carrying data-offer-id / data-offer-ends;
+#   - scripts/offer_expiry.py removes any such element whose end date has passed
+#     from already-published articles (daily, run.sh).
+# Never describe an offer anywhere else, and never invent one: if it is not in this
+# file it does not exist.
+offers:
+  - id: chromo-2x1
+    # EN wording the articles use. Deliberately terse: the operator supplied only
+    # "2x1 on the Chromo until end of November". Anything beyond that (free, a
+    # percentage, a EUR saving, same-colour or stock conditions) is NOT known and
+    # must not be written — readers are sent to the product page for conditions.
+    headline: "2-for-1 on the Velluto Chromo"
+    product_url: https://velluto-shop.com/products/velluto-chromo
+    ends: 2026-11-30          # inclusive; articles are cleaned from 2026-12-01
+    source: "operator message, 2026-10-08"
+    terms_known: false

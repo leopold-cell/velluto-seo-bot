@@ -46,6 +46,38 @@ def is_compatible(keyword: str) -> bool:
     return not any(re.search(p, kw_lower) for p in INCOMPATIBLE_PATTERNS)
 
 
+def _offer_note(offer_id: str) -> str:
+    """Brief for a real, time-limited offer from config/active_offers.yml.
+
+    Returns "" once the offer has ended, so a queue entry stops mentioning a dead
+    deal on its own — the angle is evaluated when the process starts, i.e. each
+    daily run. The model must wrap the offer in a marked <p> so
+    scripts/offer_expiry.py can remove it from the live article after `ends`.
+    """
+    try:
+        import datetime
+        import yaml
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "config", "active_offers.yml")
+        offers = (yaml.safe_load(open(path, encoding="utf-8")) or {}).get("offers") or []
+        o = next((x for x in offers if x.get("id") == offer_id), None)
+        if not o or datetime.date.today() > o["ends"]:
+            return ""
+        ends = o["ends"]
+        pretty = f"{ends.day} {ends.strftime('%B %Y')}"
+        return (
+            f" REAL OFFER (the only one that exists): {o['headline']}, valid until "
+            f"{pretty}. State it exactly like that, once, as a single paragraph written "
+            f'as <p class="velluto-offer" data-offer-id="{offer_id}" '
+            f'data-offer-ends="{ends.isoformat()}">…</p> linking {o["product_url"]} . '
+            "Do NOT describe its terms (free, any percentage, EUR saving, same-colour or "
+            "stock conditions) and do not compute any price: say conditions are on the "
+            "product page. Write no other offer, code or discount language anywhere."
+        )
+    except Exception:
+        return ""      # an unreadable config must never invent or leak an offer
+
+
 # ── Keyword queue ─────────────────────────────────────────────────────────────
 # Phase 1 = core commercial / high-intent (publish first)
 # Phase 2 = comparison / buying-guide content
@@ -71,11 +103,12 @@ EN_KEYWORDS = [
         "angle": "A buyer's checklist for shopping cycling glasses on Black Friday: what a "
                  "deal should still include (UV400 certification, weight, anti-fog, lens "
                  "system, a real trial period) and how to tell a genuine price from an "
-                 "inflated 'was' price. Evergreen advice first. Mention a Velluto offer ONLY "
-                 "if it is supplied in the commercial config for the market, with the exact "
-                 "figures given; NEVER invent a discount, a percentage or a former price. "
-                 "Evidenced Velluto specs only: StradaPro 25 g, UV400, tool-free "
-                 "interchangeable lenses, built-in anti-fog, 30-day trial.",
+                 "inflated 'was' price. Evergreen advice first. Velluto has NO Black Friday "
+                 "code or sitewide discount: never imply one, never invent a percentage or a "
+                 "former price. The only real offer is the Chromo one described below, if "
+                 "present. Evidenced Velluto specs only: StradaPro 25 g, UV400, tool-free "
+                 "interchangeable lenses, built-in anti-fog, 30-day trial."
+                 + _offer_note("chromo-2x1"),
     },
     {
         "keyword": "gifts for road cyclists",
@@ -86,7 +119,8 @@ EN_KEYWORDS = [
                  "19 EUR, VellutoVisione lens 39 EUR, StradaPro Starter Vision Kit from 69 "
                  "EUR, Velluto Chromo 119 EUR. Add general non-Velluto gift categories only "
                  "as neutral advice (no other brands). Include the 30-day trial as a gift "
-                 "reassurance. Do not claim stock, delivery dates or discounts.",
+                 "reassurance. Do not claim stock, delivery dates or discounts."
+                 + _offer_note("chromo-2x1"),
     },
     {
         "keyword": "stocking stuffers for cyclists",
@@ -118,7 +152,8 @@ EN_KEYWORDS = [
                  "transition-speed, light-transmission, temperature or durability claims, no "
                  "test results. Present the StradaPro (two click-in lenses) as the "
                  "alternative for riders who prefer to choose by hand; reader decides. "
-                 "Link https://velluto-shop.com/products/velluto-chromo .",
+                 "Link https://velluto-shop.com/products/velluto-chromo ."
+                 + _offer_note("chromo-2x1"),
     },
     # Chromo follow-ups, added once the operator confirmed Chromo stock reaches ~100
     # units within 4 weeks (2026-10-08) — so ranking content will not outrun supply.
@@ -132,7 +167,8 @@ EN_KEYWORDS = [
                  "is photochromic and mirrored in bright sun — the Velluto option here. "
                  "The StradaPro is NOT mirrored; say so plainly if it comes up. Use only "
                  "the facts in BRAND_FACTS: no heat-reflection, performance or durability "
-                 "claims, no test results. Link https://velluto-shop.com/products/velluto-chromo .",
+                 "claims, no test results. Link https://velluto-shop.com/products/velluto-chromo ."
+                 + _offer_note("chromo-2x1"),
     },
     {
         "keyword": "cycling glasses for overcast days",
