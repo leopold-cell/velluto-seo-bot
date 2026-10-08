@@ -209,13 +209,20 @@ VellutoVisione™ HIGH CONTRAST LENS:
 - Click-in system: lens swap in seconds
 - 100% compatible with Velluto StradaPro
 
-VELLUTO CHROMO (photochromic model, launched Oct 2026 — from 99 EUR, 4 colourways):
+VELLUTO CHROMO (photochromic model, launched Oct 2026 — 119 EUR, 4 colourways):
+- Product page: https://velluto-shop.com/products/velluto-chromo
 - This is the ONLY Velluto product that is photochromic. The Chromo lens is
   self-tinting: it adapts to the light as you ride, clear in low light, darkening
-  in bright sun. This is why it suits autumn/winter's changing light.
-- Mirrored (REVO) finish options: "Clear to Grey", "Clear to REVO Red",
-  "Clear to Blue", "Clear to Purple REVO". So the Chromo — and ONLY the Chromo —
-  may be described as photochromic AND as having a mirrored finish.
+  (and mirrored) in bright sun. This is why it suits autumn/winter's changing light.
+- Colourways (the product's variant names): Nero Fumo, Nero Fuoco, Bianco Lago,
+  Bianco Viola. Do NOT state which tint each one darkens to unless that is given.
+- Price is 119 EUR. Never write 99 EUR (that was the pre-order price).
+- So the Chromo — and ONLY the Chromo — may be described as photochromic AND as
+  having a mirrored finish in sun.
+- NOT supplied, so NEVER state or imply: transition speed in seconds, light
+  transmission percentages, temperature behaviour, durability or lifespan of the
+  photochromic coating, or any test result. If the article needs a number the
+  facts above do not contain, leave it out.
 - UV400 protection.
 - The StradaPro is still a two-lens interchangeable system and is NEITHER
   photochromic NOR mirrored. Never blur the two: photochromic/mirrored belong to

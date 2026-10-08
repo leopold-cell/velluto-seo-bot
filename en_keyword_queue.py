@@ -55,6 +55,71 @@ def is_compatible(keyword: str) -> bool:
 # angle = optional content angle / unique hook for the article.
 
 EN_KEYWORDS = [
+    # ── Phase 1: SEASONAL + CHROMO + SPORT (added 2026-10-08, /loop) ──────────
+    # Order is deliberate: the queue publishes one article a day, top to bottom,
+    # and Black Friday (27 Nov 2026) and Christmas need 4-6 weeks to rank, so the
+    # time-critical pieces go first. Verified against content_state.json on
+    # 2026-10-08: zero existing articles on gifts or Black Friday.
+    # volume = unverified placeholder estimate (no DataForSEO access when written).
+    #
+    # LEGAL for every entry below: no invented discounts or "was" prices (a
+    # reference price must be the lowest price of the prior 30 days), no
+    # "tested"/"review" framing, no superiority claims — only evidenced specs.
+    {
+        "keyword": "black friday cycling glasses",
+        "volume": 500, "phase": 1,
+        "angle": "A buyer's checklist for shopping cycling glasses on Black Friday: what a "
+                 "deal should still include (UV400 certification, weight, anti-fog, lens "
+                 "system, a real trial period) and how to tell a genuine price from an "
+                 "inflated 'was' price. Evergreen advice first. Mention a Velluto offer ONLY "
+                 "if it is supplied in the commercial config for the market, with the exact "
+                 "figures given; NEVER invent a discount, a percentage or a former price. "
+                 "Evidenced Velluto specs only: StradaPro 25 g, UV400, tool-free "
+                 "interchangeable lenses, built-in anti-fog, 30-day trial.",
+    },
+    {
+        "keyword": "gifts for road cyclists",
+        "volume": 900, "phase": 1,
+        "angle": "A gift guide organised by budget, built from products Velluto actually "
+                 "sells at their real prices: Cleaning Spray 8 EUR, Microfiber Cloth 8 EUR, "
+                 "TACX Bidon 14 EUR (limited edition), Hard Case 19 EUR, VellutoPuro lens "
+                 "19 EUR, VellutoVisione lens 39 EUR, StradaPro Starter Vision Kit from 69 "
+                 "EUR, Velluto Chromo 119 EUR. Add general non-Velluto gift categories only "
+                 "as neutral advice (no other brands). Include the 30-day trial as a gift "
+                 "reassurance. Do not claim stock, delivery dates or discounts.",
+    },
+    {
+        "keyword": "stocking stuffers for cyclists",
+        "volume": 250, "phase": 1,
+        "angle": "Small gifts at or under 20 EUR, distinct from the broad gift guide: "
+                 "Cleaning Spray 8 EUR, Microfiber Cloth 8 EUR, TACX Bidon 14 EUR, Hard "
+                 "Case 19 EUR, VellutoPuro lens 19 EUR. Why each is genuinely useful to a "
+                 "rider. Keep it short and practical; link the gift guide for bigger "
+                 "budgets rather than repeating it.",
+    },
+    {
+        "keyword": "sports glasses for cycling",
+        "volume": 400, "phase": 1,
+        "angle": "Targets the sport-glasses intent (DE 'Sportbrille Fahrrad'): what makes "
+                 "a sports glass different from lifestyle sunglasses, as an objective "
+                 "checklist — weight, coverage, ventilation and anti-fog, secure fit, lens "
+                 "swap. Velluto's evidenced specs only (StradaPro 25 g, UV400, adjustable "
+                 "nose pads, tool-free lenses, anti-fog, 30-day trial). NO impact-protection "
+                 "or safety-rating claims, no other-sport claims (running etc.) that are not "
+                 "evidenced.",
+    },
+    {
+        "keyword": "photochromic cycling glasses autumn winter",
+        "volume": 300, "phase": 1,
+        "angle": "Why changing autumn/winter light (low sun, grey days, early dusk) is the "
+                 "case for an adapting lens, built on the Velluto Chromo (119 EUR, "
+                 "photochromic, mirrored in bright sun, colourways Nero Fumo / Nero Fuoco / "
+                 "Bianco Lago / Bianco Viola). Use ONLY the facts in BRAND_FACTS: no "
+                 "transition-speed, light-transmission, temperature or durability claims, no "
+                 "test results. Present the StradaPro (two click-in lenses) as the "
+                 "alternative for riders who prefer to choose by hand; reader decides. "
+                 "Link https://velluto-shop.com/products/velluto-chromo .",
+    },
     # ── Phase 1: GENUINE GAPS only (added 2026-09-22) ─────────────────────────
     # The blog is saturated (93 articles: 7 rival "oakley alternative" pages, 5
     # anti-fog, 6 fit guides). Adding more of a covered angle just deepens the
