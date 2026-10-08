@@ -65,14 +65,25 @@ def _offer_note(offer_id: str) -> str:
             return ""
         ends = o["ends"]
         pretty = f"{ends.day} {ends.strftime('%B %Y')}"
+        if o.get("terms_known") and o.get("terms"):
+            # Exactly the operator-supplied terms, word for word, and nothing else.
+            terms = (f' The confirmed terms, which you may state and nothing beyond them: '
+                     f'"{o["terms"]}" ')
+            forbid = ("Do NOT add any other term: no percentage, no EUR saving, no computed "
+                      "or compared price, no promo code, nothing about how it is applied at "
+                      "checkout, and nothing about stock or shipping. For anything else say "
+                      "the conditions are on the product page. ")
+        else:
+            terms = " "
+            forbid = ("Do NOT describe its terms (free, any percentage, EUR saving, "
+                      "same-colour or stock conditions) and do not compute any price: say "
+                      "conditions are on the product page. ")
         return (
             f" REAL OFFER (the only one that exists): {o['headline']}, valid until "
-            f"{pretty}. State it exactly like that, once, as a single paragraph written "
+            f"{pretty}.{terms}State it once, as a single paragraph written "
             f'as <p class="velluto-offer" data-offer-id="{offer_id}" '
             f'data-offer-ends="{ends.isoformat()}">…</p> linking {o["product_url"]} . '
-            "Do NOT describe its terms (free, any percentage, EUR saving, same-colour or "
-            "stock conditions) and do not compute any price: say conditions are on the "
-            "product page. Write no other offer, code or discount language anywhere."
+            f"{forbid}Write no other offer, code or discount language anywhere."
         )
     except Exception:
         return ""      # an unreadable config must never invent or leak an offer

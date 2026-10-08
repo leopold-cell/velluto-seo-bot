@@ -20,4 +20,9 @@ offers:
     product_url: https://velluto-shop.com/products/velluto-chromo
     ends: 2026-11-30          # inclusive; articles are cleaned from 2026-12-01
     source: "operator message, 2026-10-08"
-    terms_known: false
+    # Terms supplied by the operator 2026-10-08, and nothing more: the second pair
+    # is free, and the two pairs do NOT have to be the same colour. Everything else
+    # (how it is applied at checkout, code or automatic, stock, shipping, other
+    # products) is unknown and must not be written.
+    terms_known: true
+    terms: "The second pair is free. The two pairs do not have to be the same colour."
