@@ -1,1 +1,63 @@
-[]
+[
+  {
+    "title": "Black Friday Cycling Glasses: What a Real Deal Looks Like",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/black-friday-cycling-glasses-what-a-real-deal-looks-like",
+    "topic": "black friday cycling glasses",
+    "keyword": "black friday cycling glasses",
+    "lang": "en",
+    "phase": 1,
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "Radsportbrille Black Friday Angebot",
+        "intent": "Find discounted cycling glasses during Black Friday sales in Germany.",
+        "volume": 0
+      },
+      "nl": {
+        "keyword": "fietsbril Black Friday korting",
+        "intent": "Look for discounted cycling glasses during Black Friday in the Netherlands.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "lunettes cyclisme Black Friday soldes",
+        "intent": "Find cycling glasses on sale during Black Friday in France.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "gafas ciclismo Black Friday oferta",
+        "intent": "Search for cycling glasses deals and discounts during Black Friday in Spain.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "occhiali ciclismo Black Friday sconto",
+        "intent": "Find discounted cycling glasses during Black Friday sales in Italy.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "cykelbriller Black Friday tilbud",
+        "intent": "Look for cycling glasses deals during Black Friday in Denmark.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "sykkelbriller Black Friday rabatt",
+        "intent": "Find discounted cycling glasses during Black Friday sales in Norway.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "okulary rowerowe Black Friday promocja",
+        "intent": "Search for cycling glasses discounts during Black Friday in Poland.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "\u00f3culos ciclismo Black Friday desconto",
+        "intent": "Find cycling glasses deals during Black Friday sales in Portugal.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "cykelglas\u00f6gon Black Friday erbjudande",
+        "intent": "Look for discounted cycling glasses during Black Friday in Sweden.",
+        "volume": 0
+      }
+    }
+  }
+]

@@ -2770,5 +2770,21 @@
     "checked_at": "2026-09-25T04:24:02.650843Z",
     "title": "Cycling Sunglasses Under 70 Euro: What You Actually Get",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „photochromic and mirrored belong to the chromo; tool-free lens swapping belongs to the stradapro…“"
+    ],
+    "primary_keyword": "black friday cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-09T04:37:33.079334Z",
+    "title": "Black Friday Cycling Glasses: What a Real Deal Looks Like",
+    "brief_topic": null
   }
 ]
