@@ -5395,7 +5395,61 @@
         }
       ],
       "serps_scanned": 132
+    },
+    "2026-10-10": {
+      "aio_serps": 30,
+      "velluto_cited": 0,
+      "competitor_cited": 2,
+      "velluto_gap": 4,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 6.7,
+      "total_citations": 38,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 12
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 2
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 2
+        },
+        {
+          "domain": "rudyprojectna.com",
+          "citations": 2
+        },
+        {
+          "domain": "rockbrosbike.us",
+          "citations": 2
+        },
+        {
+          "domain": "amazon.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 1
+        },
+        {
+          "domain": "smithoptics.com",
+          "citations": 1
+        },
+        {
+          "domain": "oakley.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 77
     }
   },
-  "latest": "2026-10-09"
+  "latest": "2026-10-10"
 }

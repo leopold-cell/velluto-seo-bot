@@ -2786,5 +2786,67 @@
     "checked_at": "2026-10-09T04:37:33.079334Z",
     "title": "Black Friday Cycling Glasses: What a Real Deal Looks Like",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '39 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '50 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '100 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '58 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '107 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „product price key feature best for cleaning spray 8 eur 50 ml, apple fragrance, refillable, made in germany an…“"
+    ],
+    "primary_keyword": "gifts for road cyclists",
+    "market": "US",
+    "checked_at": "2026-10-10T04:17:49.909561Z",
+    "title": "Gifts for Road Cyclists 2026: Budget Guide by Price",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '39 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '40 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '58 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „the mirrored finish that appears in bright sun is a feature of the chromo only: the stradapro's clear and high…“",
+      "[FACT] claims mirrored lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „the mirrored finish that appears in bright sun is a feature of the chromo only: the stradapro's clear and high…“"
+    ],
+    "primary_keyword": "gifts for road cyclists",
+    "market": "US",
+    "checked_at": "2026-10-10T04:21:39.628425Z",
+    "title": "Gifts for Road Cyclists 2026: Every Budget Covered",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '39 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '50 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '90 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '100 EUR' but config expects '69 EUR' for US"
+    ],
+    "primary_keyword": "gifts for road cyclists",
+    "market": "US",
+    "checked_at": "2026-10-10T04:25:13.964230Z",
+    "title": "Gifts for Road Cyclists 2026: Budget Guide by Price",
+    "brief_topic": null
   }
 ]
