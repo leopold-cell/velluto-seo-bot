@@ -40,6 +40,8 @@ step "content retrofit (28d gate)" python3 content_retrofit.py
 step "geo monitor"                 python3 geo_monitor.py
 step "perplexity geo (7d gate)"    python3 scripts/perplexity_monitor.py
 step "chatgpt geo (7d gate)"       python3 scripts/chatgpt_monitor.py
+step "gemini geo (7d gate)"        python3 scripts/gemini_monitor.py
+step "geo summary (daily)"        python3 scripts/geo_summary.py
 step "legal watchdog (7d gate)"    python3 scripts/legal_watchdog.py
 step "gsc mail watch (7d gate)"    python3 scripts/gsc_mail_watch.py
 # Orphan repair is mechanical (no LLM, no cost), idempotent, and self-limiting:

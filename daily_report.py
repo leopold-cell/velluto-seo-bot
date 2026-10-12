@@ -245,32 +245,24 @@ def build() -> tuple[str, str]:
             L.append(f"   • 7-Tage-Trend: {trend}")
     else:
         L.append("   • Noch keine AI-Overview-Daten erfasst.")
-    ppx = _load("data/perplexity_geo.json", [])
-    if ppx:
-        p = ppx[-1]
-        L.append(f"   • Perplexity ({p.get('date','?')}): Velluto zitiert bei "
-                 f"{p.get('velluto_cited',0)}/{p.get('questions',0)} Fragen "
-                 f"({p.get('rate',0)}%)")
-        bm = p.get("by_market") or {}
-        if bm:
-            per = " · ".join(f"{k.upper()} {v.get('rate',0):.0f}%" for k, v in bm.items())
-            L.append(f"       je Markt: {per}")
-    # ChatGPT: 'cited' = echte Quellenangabe. Reine Namensnennungen werden separat
-    # ausgewiesen und NICHT in die Rate gezählt (anders als bei Perplexity oben).
-    cgp = _load("data/chatgpt_geo.json", [])
-    if cgp:
-        c = cgp[-1]
-        L.append(f"   • ChatGPT ({c.get('date','?')}): Velluto zitiert bei "
-                 f"{c.get('velluto_cited',0)}/{c.get('questions',0)} Fragen "
-                 f"({c.get('rate',0)}%)")
-        if c.get("velluto_mentioned"):
-            L.append(f"       + {c['velluto_mentioned']}× nur erwähnt (ohne Quell-Link)")
-        bm = c.get("by_market") or {}
-        if bm:
-            per = " · ".join(f"{k.upper()} {v.get('rate',0):.0f}%" for k, v in bm.items())
-            L.append(f"       je Markt: {per}")
+    # One pooled figure per engine instead of last week's raw count: each engine
+    # answers the same prompt differently every time, so a single week is chance.
+    # Brand questions ("Are Velluto glasses any good?") are excluded — they name the
+    # brand, so the answer always does too. See scripts/geo_summary.py.
+    gs = _load("data/geo_summary.json", {})
+    if gs:
+        L.append("   • Sichtbarkeit auf ALLGEMEINE Fragen (4 Wochen gepoolt, ohne Markenfragen):")
+        for name in ("Perplexity", "ChatGPT", "Gemini"):
+            e = gs.get(name)
+            if not e:
+                L.append(f"       {name:10} noch keine Messung")
+                continue
+            n = e["now"]
+            lo, hi = n["generic_ci"]
+            L.append(f"       {name:10} {n['generic_visible']}/{n['generic_answers']} = "
+                     f"{n['generic_rate']}%  (95%: {lo}–{hi}%)  {e['verdict']}")
     else:
-        L.append("   • ChatGPT: noch keine Messung (läuft wöchentlich, 7-Tage-Gate)")
+        L.append("   • GEO-Auswertung noch nicht erzeugt (scripts/geo_summary.py)")
     L.append("")
 
     # Search Console alerts — read from Gmail weekly and re-verified against the

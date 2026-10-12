@@ -25,8 +25,8 @@ entry is >= 7 days old). Appends to data/chatgpt_geo.json. READ-ONLY, fails soft
 
 ENV: OPENAI_API_KEY (already configured — image_generator.py uses it).
      CHATGPT_MONITOR_MODEL to override the model (default below).
-Cost: ~40 web-search calls/week. Billed per tool call, so expect roughly
-      $0.40-1.00/week, not "a few cents". Printed per run.
+Cost: ~40 questions x GEO_REPEATS (default 3) = ~120 web-search calls/week.
+      Billed per tool call, so expect roughly $1-3/week. Printed per run.
 
 Usage:
   python3 scripts/chatgpt_monitor.py            # gated weekly
@@ -44,7 +44,8 @@ from dotenv import load_dotenv
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from geo_questions import (  # noqa: E402
-    GEO_MARKETS, ROOT, build_questions, domain_of, gate_ok, load_json,
+    GEO_MARKETS, REPEATS, ROOT, build_questions, domain_of, gate_ok,
+    is_brand_question, load_json, tally,
 )
 
 load_dotenv(os.path.join(ROOT, ".env"), override=True)
@@ -112,7 +113,9 @@ def ask(client, question: str) -> tuple[bool, bool, list[str]]:
         pass
 
     cited = any(DOMAIN in u for u in urls) or DOMAIN in text
-    mentioned = (not cited) and BRAND in text.lower()
+    # A brand question already contains the name, so its answer echoes it; a
+    # mention there proves nothing (see geo_questions.is_brand_question).
+    mentioned = (not cited) and (not is_brand_question(question)) and BRAND in text.lower()
     return cited, mentioned, domains
 
 
@@ -177,58 +180,68 @@ def main() -> None:
         print("   ChatGPT GEO: sampled <7 days ago — nothing to do")
         return
 
-    by_market, all_cited, all_ment, all_q, calls = {}, 0, 0, 0, 0
+    by_market, all_rows, calls = {}, [], 0
     for lang in GEO_MARKETS:
         questions = build_questions(lang)
-        print(f"💬 ChatGPT GEO [{lang}] — {len(questions)} native questions")
-        details, cited_n, ment_n = [], 0, 0
+        print(f"💬 ChatGPT GEO [{lang}] — {len(questions)} questions x {REPEATS} answers")
+        rows = []
         for q in questions:
-            try:
-                cited, mentioned, domains = ask(client, q)
-            except Exception as e:
-                # Config-level failures (dead key, no quota, wrong model) affect
-                # every remaining question — stop instead of repeating the same
-                # error 40 times and burying the cause.
-                fatal = _fatal_reason(e)
-                if fatal:
-                    print(f"   ✗ {fatal}")
-                    print("   → nothing recorded; the baseline stays untouched.")
-                    return
-                print(f"   ⚠️  '{q[:40]}': {str(e)[:120]}")
+            cited_n = ment_n = ok = 0
+            doms: list[str] = []
+            for _ in range(REPEATS):
+                try:
+                    cited, mentioned, domains = ask(client, q)
+                except Exception as e:
+                    # Config-level failures (dead key, no quota, wrong model) hit
+                    # every remaining call — stop instead of repeating the same
+                    # error and burying the cause.
+                    fatal = _fatal_reason(e)
+                    if fatal:
+                        print(f"   ✗ {fatal}")
+                        print("   → nothing recorded; the baseline stays untouched.")
+                        return
+                    print(f"   ⚠️  '{q[:40]}': {str(e)[:120]}")
+                    continue
+                calls += 1
+                ok += 1
+                cited_n += int(cited)
+                ment_n += int(mentioned)
+                for d in domains:
+                    if d not in doms:
+                        doms.append(d)
+                time.sleep(1)
+            if not ok:
                 continue
-            calls += 1
-            cited_n += int(cited)
-            ment_n += int(mentioned)
-            details.append({"question": q, "velluto_cited": cited,
-                            "velluto_mentioned": mentioned, "top_domains": domains[:5]})
-            print(f"   {'🟢' if cited else ('🟡' if mentioned else '⚪')} [{lang}] {q[:56]}")
-            time.sleep(1)
-        if details:
-            by_market[lang] = {"questions": len(details), "velluto_cited": cited_n,
-                               "velluto_mentioned": ment_n,
-                               "rate": round(cited_n / len(details) * 100, 1),
-                               "details": details}
-            all_cited += cited_n
-            all_ment += ment_n
-            all_q += len(details)
+            kind = "brand" if is_brand_question(q) else "generic"
+            rows.append({"question": q, "kind": kind, "runs": ok,
+                         "cited": cited_n, "mentioned": ment_n,
+                         "velluto_cited": bool(cited_n) or (kind == "generic" and bool(ment_n)),
+                         "top_domains": doms[:8]})
+            flag = "🟢" if cited_n else ("🟡" if ment_n else "⚪")
+            print(f"   {flag} [{lang}] {kind[:3]} {cited_n}+{ment_n}/{ok}  {q[:50]}")
+        if rows:
+            by_market[lang] = {"questions": len(rows), "details": rows, **tally(rows)}
+            all_rows += rows
 
-    if not all_q:
+    if not all_rows:
         print("   ChatGPT GEO: no successful queries — not recording")
         return
 
-    entry = {"date": dt.date.today().isoformat(), "model": MODEL,
-             "questions": all_q, "velluto_cited": all_cited,
-             "velluto_mentioned": all_ment,
-             "rate": round(all_cited / all_q * 100, 1),
-             "by_market": by_market}
+    t = tally(all_rows)
+    entry = {"schema": 2, "date": dt.date.today().isoformat(), "model": MODEL,
+             "repeats": REPEATS, "questions": t["generic_answers"],
+             "velluto_cited": t["generic_visible"], "rate": t["generic_rate"],
+             "by_market": by_market, **t}
     hist.append(entry)
     os.makedirs(os.path.dirname(HISTORY), exist_ok=True)
     with open(HISTORY, "w", encoding="utf-8") as f:
         json.dump(hist[-52:], f, ensure_ascii=False, indent=1)
 
-    mkt = " · ".join(f"{k}:{v['velluto_cited']}/{v['questions']}" for k, v in by_market.items())
-    print(f"   ✓ Velluto cited {all_cited}/{all_q} ({entry['rate']}%) — {mkt}")
-    print(f"     (+{all_ment} brand mentions without a source link)")
+    lo, hi = t["generic_ci"]
+    print(f"   ✓ GENERIC visibility {t['generic_visible']}/{t['generic_answers']} = "
+          f"{t['generic_rate']}% (95%: {lo}–{hi}%) — cited {t['generic_cited']}, "
+          f"mentioned {t['generic_mentioned']}")
+    print(f"     brand questions: {t['brand_cited']}/{t['brand_answers']} cited")
     print(f"     ~{calls} web-search calls this run — check billing if it looks off")
 
 

@@ -1,0 +1,32 @@
+{
+ "Perplexity": {
+  "now": {
+   "generic_answers": 144,
+   "generic_cited": 0,
+   "generic_mentioned": 0,
+   "generic_visible": 0,
+   "generic_rate": 0.0,
+   "generic_ci": [
+    0.0,
+    2.6
+   ],
+   "brand_answers": 16,
+   "brand_cited": 16
+  },
+  "before": {
+   "generic_answers": 144,
+   "generic_cited": 6,
+   "generic_mentioned": 0,
+   "generic_visible": 6,
+   "generic_rate": 4.17,
+   "generic_ci": [
+    1.92,
+    8.79
+   ],
+   "brand_answers": 16,
+   "brand_cited": 16
+  },
+  "verdict": "keine nachweisbare Veränderung",
+  "last": "2026-10-09"
+ }
+}

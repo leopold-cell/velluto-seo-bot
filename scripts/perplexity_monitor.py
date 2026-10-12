@@ -30,7 +30,8 @@ from dotenv import load_dotenv
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from geo_questions import (  # noqa: E402
-    GEO_MARKETS, ROOT, build_questions, gate_ok, load_json,
+    GEO_MARKETS, REPEATS, ROOT, build_questions, domain_of, gate_ok,
+    is_brand_question, load_json, tally,
 )
 
 load_dotenv(os.path.join(ROOT, ".env"), override=True)
@@ -50,8 +51,15 @@ def _load(path: str, default):
     return load_json(path, default)
 
 
-def ask(question: str) -> tuple[bool, list[str]]:
-    """(velluto_cited, cited_domains) for one Perplexity query."""
+def ask(question: str) -> tuple[bool, bool, list[str]]:
+    """(cited, mentioned, cited_domains) for ONE Perplexity answer.
+
+    cited      velluto-shop.com is among the sources (or written out in the text)
+    mentioned  the name appears in the text without a source link
+
+    Brand questions (see geo_questions.is_brand_question) can never score a
+    mention — the question already contains the name.
+    """
     r = requests.post(
         "https://api.perplexity.ai/chat/completions",
         headers={"Authorization": f"Bearer {API_KEY}",
@@ -66,19 +74,20 @@ def ask(question: str) -> tuple[bool, list[str]]:
     urls += [u for u in (data.get("citations") or []) if isinstance(u, str)]
     urls += [s.get("url", "") for s in (data.get("search_results") or [])
              if isinstance(s, dict)]
-    # answer text can mention the brand even without a formal citation
     text = ""
     try:
         text = data["choices"][0]["message"]["content"]
     except Exception:
         pass
-    domains = []
+    domains: list[str] = []
     for u in urls:
-        d = u.split("//")[-1].split("/")[0].lstrip("www.")
+        d = domain_of(u)     # the old lstrip("www.") stripped CHARACTERS, not a prefix
         if d and d not in domains:
             domains.append(d)
-    cited = any(DOMAIN in u for u in urls) or DOMAIN in text or "velluto" in text.lower()
-    return cited, domains
+    cited = any(DOMAIN in u for u in urls) or DOMAIN in text
+    mentioned = (not cited) and (not is_brand_question(question)) \
+        and "velluto" in text.lower()
+    return cited, mentioned, domains
 
 
 def main() -> None:
@@ -92,40 +101,62 @@ def main() -> None:
         print("   Perplexity: sampled <7 days ago — nothing to do")
         return
 
-    by_market, all_details, all_cited, all_q = {}, [], 0, 0
+    by_market, all_rows = {}, []
     for lang in GEO_MARKETS:
         questions = build_questions(lang)
-        print(f"🔮 Perplexity GEO [{lang}] — {len(questions)} native questions")
-        details, cited_n = [], 0
+        print(f"🔮 Perplexity GEO [{lang}] — {len(questions)} questions x {REPEATS} answers")
+        rows = []
         for q in questions:
-            try:
-                cited, domains = ask(q)
-            except Exception as e:
-                print(f"   ⚠️  '{q[:40]}': {e}")
+            cited_n = ment_n = ok = 0
+            doms: list[str] = []
+            for _ in range(REPEATS):
+                try:
+                    cited, mentioned, domains = ask(q)
+                except Exception as e:
+                    print(f"   ⚠️  '{q[:40]}': {e}")
+                    continue
+                ok += 1
+                cited_n += int(cited)
+                ment_n += int(mentioned)
+                for d in domains:
+                    if d not in doms:
+                        doms.append(d)
+                time.sleep(1)
+            if not ok:
                 continue
-            cited_n += int(cited)
-            details.append({"question": q, "velluto_cited": cited, "top_domains": domains[:5]})
-            print(f"   {'🟢' if cited else '⚪'} [{lang}] {q[:56]}")
-            time.sleep(1)
-        if details:
-            by_market[lang] = {"questions": len(details), "velluto_cited": cited_n,
-                               "rate": round(cited_n / len(details) * 100, 1),
-                               "details": details}
-            all_details += details; all_cited += cited_n; all_q += len(details)
+            kind = "brand" if is_brand_question(q) else "generic"
+            rows.append({"question": q, "kind": kind, "runs": ok,
+                         "cited": cited_n, "mentioned": ment_n,
+                         # kept for geo_gaps.py, which reads a per-question boolean
+                         "velluto_cited": bool(cited_n or ment_n) and kind == "generic"
+                                          or bool(cited_n),
+                         "top_domains": doms[:8]})
+            flag = "🟢" if cited_n else ("🟡" if ment_n else "⚪")
+            print(f"   {flag} [{lang}] {kind[:3]} {cited_n}+{ment_n}/{ok}  {q[:50]}")
+        if rows:
+            t = tally(rows)
+            by_market[lang] = {"questions": len(rows), "details": rows, **t}
+            all_rows += rows
 
-    if not all_q:
+    if not all_rows:
         print("   Perplexity: no successful queries — not recording")
         return
-    entry = {"date": dt.date.today().isoformat(),
-             "questions": all_q, "velluto_cited": all_cited,
-             "rate": round(all_cited / all_q * 100, 1),
-             "by_market": by_market}
+    t = tally(all_rows)
+    # schema 2: top-level questions / velluto_cited / rate now describe GENERIC
+    # answers only (the real visibility figure); brand answers are reported apart.
+    entry = {"schema": 2, "date": dt.date.today().isoformat(), "repeats": REPEATS,
+             "questions": t["generic_answers"], "velluto_cited": t["generic_visible"],
+             "rate": t["generic_rate"], "by_market": by_market, **t}
     hist.append(entry)
     os.makedirs(os.path.dirname(HISTORY), exist_ok=True)
     with open(HISTORY, "w", encoding="utf-8") as f:
         json.dump(hist[-52:], f, ensure_ascii=False, indent=1)
-    mkt = " · ".join(f"{k}:{v['velluto_cited']}/{v['questions']}" for k, v in by_market.items())
-    print(f"   ✓ Velluto cited {all_cited}/{all_q} ({entry['rate']}%) — {mkt}")
+    lo, hi = t["generic_ci"]
+    print(f"   ✓ GENERIC visibility {t['generic_visible']}/{t['generic_answers']} = "
+          f"{t['generic_rate']}% (95%: {lo}–{hi}%) — cited {t['generic_cited']}, "
+          f"mentioned {t['generic_mentioned']}")
+    print(f"     brand questions: {t['brand_cited']}/{t['brand_answers']} cited (describability, "
+          f"not recommendation)")
 
 
 if __name__ == "__main__":
