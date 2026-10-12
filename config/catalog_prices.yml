@@ -1,0 +1,19 @@
+# Real EUR prices of the products the blog may name, for briefs/quality_gate.py.
+#
+# The price check used to know ONE Velluto price (the StradaPro's 69 EUR from the
+# commercial config) and flagged every other Velluto-context price. Once the blog
+# started naming the Chromo (119 EUR), the VellutoVisione lens (39 EUR) and gift
+# bundles, every article about more than one product failed the gate. It now also
+# accepts a price when the SAME sentence (or table row) names a product that really
+# costs that much. A wrong pairing ("the StradaPro costs 119 EUR") is still caught.
+#
+# Update here when a price changes; nothing else needs touching.
+products:
+  - {name: "StradaPro Starter Vision Kit", eur: 69,  tokens: [stradapro, strada pro, starter vision kit, performance vision kit]}
+  - {name: "Velluto Chromo",               eur: 119, tokens: [chromo]}
+  - {name: "VellutoVisione lens",          eur: 39,  tokens: [visione]}
+  - {name: "VellutoPuro lens",             eur: 19,  tokens: [puro]}
+  - {name: "Hard Case",                    eur: 19,  tokens: [hard case]}
+  - {name: "Microfiber Cloth",             eur: 8,   tokens: [microfiber, cleaning cloth]}
+  - {name: "Cleaning Spray",               eur: 8,   tokens: [cleaning spray]}
+  - {name: "TACX Bidon",                   eur: 14,  tokens: [bidon, drinking bottle]}

@@ -435,20 +435,62 @@ def _is_velluto_price_context(body: str, match_start: int, match_end: int,
 
 
 def _sentence_bounds(text: str, pos: int) -> tuple[int, int]:
-    """Find the sentence boundaries (period, ?, !, or <p> tag) around pos.
-    Module-level so check_brand_facts judges the SAME sentence the attribution
-    check judged — the negation exemption must not look at different text."""
+    """Find the sentence boundaries (period, ?, !, a <p> tag, a table row or a list
+    item) around pos. Module-level so check_brand_facts judges the SAME sentence the
+    attribution check judged — the negation exemption must not look at different text.
+
+    Table rows and list items are boundaries because a comparison or gift table has
+    no full stops: the whole table used to be ONE "sentence", so a row about the
+    Chromo and a row about the StradaPro were read as a single claim."""
     start = 0
-    for end_token in [". ", "? ", "! ", "<p>", "</p>", "<br>", "<h1>", "<h2>"]:
-        i = text.rfind(end_token, 0, pos)
+    for tok in [". ", "? ", "! ", "<p>", "</p>", "<br>", "<h1>", "<h2>",
+                "<tr>", "<tr ", "</tr>", "<li>", "<li ", "</li>"]:
+        i = text.rfind(tok, 0, pos)
         if i > start:
-            start = i + len(end_token)
+            start = i + len(tok)
     end = len(text)
-    for end_token in [". ", "? ", "! ", "</p>", "<br>", "</h1>", "</h2>"]:
-        i = text.find(end_token, pos)
+    for tok in [". ", "? ", "! ", "</p>", "<br>", "</h1>", "</h2>",
+                "</tr>", "<tr>", "<tr ", "</li>", "<li>", "<li "]:
+        i = text.find(tok, pos)
         if i != -1 and i < end:
             end = i
     return start, end
+
+
+# ── Catalog-aware price tolerance ──────────────────────────────────────────────
+_CATALOG_FALLBACK = [
+    (69, ("stradapro", "strada pro", "starter vision kit", "performance vision kit")),
+    (119, ("chromo",)), (39, ("visione",)), (19, ("puro", "hard case")),
+    (8, ("microfiber", "cleaning cloth", "cleaning spray")), (14, ("bidon", "drinking bottle")),
+]
+_CATALOG_CACHE: list | None = None
+
+
+def _catalog() -> list[tuple[int, tuple[str, ...]]]:
+    global _CATALOG_CACHE
+    if _CATALOG_CACHE is None:
+        try:
+            import yaml
+            path = os.path.join(ROOT, "config", "catalog_prices.yml")
+            with open(path, encoding="utf-8") as f:
+                rows = (yaml.safe_load(f) or {}).get("products") or []
+            _CATALOG_CACHE = [(int(r["eur"]), tuple(t.lower() for t in r["tokens"]))
+                              for r in rows if r.get("eur") and r.get("tokens")]
+        except Exception:
+            _CATALOG_CACHE = []
+        if not _CATALOG_CACHE:
+            _CATALOG_CACHE = list(_CATALOG_FALLBACK)
+    return _CATALOG_CACHE
+
+
+def _price_matches_named_product(body: str, start: int, end: int, amt: int) -> bool:
+    """True when the sentence/table row holding this price names a product that
+    really costs `amt` EUR."""
+    low = body.lower()
+    s0, s1 = _sentence_bounds(low, start)
+    sentence = low[s0:s1]
+    return any(price == amt and any(t in sentence for t in toks)
+               for price, toks in _catalog())
 
 
 def check_commercial_config(post: dict, market_code: str, commercial: dict | None) -> list[str]:
@@ -511,6 +553,10 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
                     "envio gratis", "spedizione gratuita", "shipping", "versand",
                     "livraison", "verzend", "bezorg", "delivery")):
                 continue
+            # A real catalog price next to the product that actually costs it (the
+            # Chromo at 119, the VellutoVisione lens at 39): not an error.
+            if curr == "EUR" and _price_matches_named_product(body, m.start(), m.end(), amt):
+                continue
             # Tolerate exact match + UVP strikethrough
             if curr == expected_curr and amt == expected:
                 continue
@@ -564,6 +610,11 @@ FORBIDDEN_FEATURE_TOKENS = [
 # Products that MUST NOT be described as photochromic / mirrored (they are not).
 # The Chromo is the only one that may. "Starter/Performance Vision Kit" is how the
 # StradaPro is sold, so those names count as StradaPro too.
+# Clause delimiters inside one sentence. A sentence that compares the two products
+# ("the StradaPro's anti-fog system and the Chromo's photochromic lens") must be
+# judged clause by clause, otherwise any honest comparison trips the check.
+_CLAUSE_SPLIT = re.compile(
+    r"[;:,()]|\s[\u2014\u2013-]\s|\b(?:and|while|whereas|but|instead|unlike|versus|vs\.?)\b")
 _STRADAPRO_TOKENS = ("stradapro", "strada pro", "starter vision kit",
                      "performance vision kit", "vellutopuro", "vellutovisione")
 _CHROMO_TOKEN = "chromo"
@@ -632,18 +683,38 @@ def check_brand_facts(post: dict) -> list[str]:
             flag_msg = msg
             if chromo_ok:
                 # Photochromic / mirrored are real on the Chromo, false on the
-                # StradaPro. Allow when the Chromo is the subject; keep blocking
-                # when the StradaPro is. Three cases by what the sentence names:
-                names_strada = any(t in sentence for t in _STRADAPRO_TOKENS)
-                names_chromo = _CHROMO_TOKEN in sentence
-                if names_chromo and not names_strada:
-                    continue                      # correct product — legitimate
-                if not names_strada and has_chromo:
-                    continue                      # a Chromo article speaking generally
-                if names_strada:
+                # StradaPro. Decide by the CLAUSE the feature word sits in:
+                #   names the Chromo            -> legitimate
+                #   names the StradaPro only    -> false claim, flag
+                #   names neither               -> inherits the nearest earlier clause
+                #                                  that names a product; if none, a
+                #                                  Chromo article speaking generally is ok
+                off = m.start() - s0
+                clauses, last = [], 0
+                for sp in _CLAUSE_SPLIT.finditer(sentence):
+                    clauses.append((last, sp.start())); last = sp.end()
+                clauses.append((last, len(sentence)))
+                idx = next((i for i, (a, b) in enumerate(clauses) if a <= off <= b),
+                           len(clauses) - 1)
+
+                def _names(txt: str) -> tuple[bool, bool]:
+                    return (any(t in txt for t in _STRADAPRO_TOKENS), _CHROMO_TOKEN in txt)
+
+                st, ch = _names(sentence[clauses[idx][0]:clauses[idx][1]])
+                if not (st or ch):
+                    for j in range(idx - 1, -1, -1):
+                        pst, pch = _names(sentence[clauses[j][0]:clauses[j][1]])
+                        if pst or pch:
+                            st, ch = pst and not pch, pch
+                            break
+                if ch and not st:
+                    continue
+                if not st and not ch and has_chromo:
+                    continue
+                if st and not ch:
                     flag_msg = (msg + " — attributed to the StradaPro, which is not; "
                                       "only the Chromo is")
-                # else: a non-Chromo article attributing it to Velluto → still a claim
+                # else: a non-Chromo article attributing it to Velluto -> still a claim
             # Quote the sentence: "3 attempts failed" with no text to look at
             # kept publishing stalled for days. The quote flows into the retry
             # feedback (the model sees exactly what to remove), the failure log

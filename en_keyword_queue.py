@@ -130,7 +130,11 @@ EN_KEYWORDS = [
                  "19 EUR, VellutoVisione lens 39 EUR, StradaPro Starter Vision Kit from 69 "
                  "EUR, Velluto Chromo 119 EUR. Add general non-Velluto gift categories only "
                  "as neutral advice (no other brands). Include the 30-day trial as a gift "
-                 "reassurance. Do not claim stock, delivery dates or discounts."
+                 "reassurance. Do not claim stock, delivery dates or discounts. "
+                 "STRUCTURE BY GIFT TYPE (stocking stuffer / useful extra / the main gift), "
+                 "NOT by numeric budget tiers: write no 'under 50 EUR' or 'up to 100 EUR' "
+                 "headings, and never add prices up or state a total or bundle price. Each "
+                 "Velluto price appears only next to the one product that costs it."
                  + _offer_note("chromo-2x1"),
     },
     {
@@ -513,12 +517,44 @@ def _save_used(used: set) -> None:
     json.dump(sorted(used), open(EN_USED_LOG, "w", encoding="utf-8"), indent=2)
 
 
+MAX_FAILED_DAYS = 3      # distinct days a keyword may fail the gate before it is parked
+FAIL_WINDOW_DAYS = 14
+
+
+def _failed_days(keyword: str) -> int:
+    """Distinct recent days on which this keyword was blocked by the quality gate.
+
+    A keyword that fails is never marked used, so the bot retried the same one every
+    morning: "gifts for road cyclists" failed on 3 days (6 attempts) and the five
+    articles behind it, including the Black Friday ones, waited with it. After
+    MAX_FAILED_DAYS failing days it is skipped, so one stubborn keyword costs three
+    days instead of the whole queue, and the failure log says why.
+    """
+    try:
+        import datetime
+        path = os.path.join(_QUEUE_DIR, "output", "quality_gate_failures.json")
+        cutoff = (datetime.date.today() - datetime.timedelta(days=FAIL_WINDOW_DAYS)).isoformat()
+        days = {str(r.get("checked_at", ""))[:10] for r in json.load(open(path, encoding="utf-8"))
+                if isinstance(r, dict) and not r.get("passed")
+                and (r.get("primary_keyword") or "").strip().lower() == keyword.strip().lower()
+                and str(r.get("checked_at", ""))[:10] >= cutoff}
+        return len(days)
+    except Exception:
+        return 0
+
+
 def get_next_en_keyword() -> dict | None:
-    """Return the next unused, compatible keyword (lowest phase first, then order in list)."""
+    """Return the next unused, compatible keyword (lowest phase first, then order in
+    list), skipping any that has failed the quality gate on MAX_FAILED_DAYS recent days."""
     used = _load_used()
     for kw in sorted(EN_KEYWORDS, key=lambda k: k["phase"]):
-        if kw["keyword"] not in used and is_compatible(kw["keyword"]):
-            return kw
+        if kw["keyword"] in used or not is_compatible(kw["keyword"]):
+            continue
+        if _failed_days(kw["keyword"]) >= MAX_FAILED_DAYS:
+            print(f"   ⏭  '{kw['keyword']}' parked: failed the quality gate on "
+                  f"{_failed_days(kw['keyword'])} recent days (see output/quality_gate_failures.json)")
+            continue
+        return kw
     return None
 
 
