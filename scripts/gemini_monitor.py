@@ -33,6 +33,7 @@ Usage:
   python3 scripts/gemini_monitor.py            # gated weekly
   python3 scripts/gemini_monitor.py --force
   python3 scripts/gemini_monitor.py --force --dry-run   # 1 question, show raw shape
+  python3 scripts/gemini_monitor.py --list-models       # which model names this key can use
 """
 import datetime as dt
 import json
@@ -60,6 +61,35 @@ BRAND   = "velluto"
 URL     = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
 
+MODELS_URL = "https://generativelanguage.googleapis.com/v1beta/models?pageSize=200"
+
+
+def list_models() -> list[str]:
+    """Model ids this key can call generateContent on, best monitor candidates first.
+
+    Model names are retired on Google's schedule, not ours: 'gemini-2.5-flash' stopped
+    resolving for this key (404). Asking the API what exists is more reliable than a
+    name written into the code. Stable 'flash' models come first (cheap, grounded
+    search); preview/experimental, lite, image, audio and live variants go last.
+    """
+    r = requests.get(MODELS_URL, headers={"x-goog-api-key": API_KEY}, timeout=30)
+    r.raise_for_status()
+    ids = []
+    for m in r.json().get("models", []):
+        if "generateContent" not in (m.get("supportedGenerationMethods") or []):
+            continue
+        name = (m.get("name") or "").removeprefix("models/")
+        if name.startswith("gemini"):
+            ids.append(name)
+
+    def rank(n: str):
+        bad = any(x in n for x in ("lite", "image", "tts", "audio", "live", "embedding",
+                                   "thinking", "robotics", "computer"))
+        pre = any(x in n for x in ("preview", "exp"))
+        return (bad, pre, "flash" not in n, n)
+    return sorted(ids, key=rank)
+
+
 class FatalError(Exception):
     """Config-level failure: retrying the remaining questions cannot help."""
 
@@ -77,8 +107,12 @@ def _call(question: str) -> dict:
         raise FatalError("GEMINI_API_KEY is rejected. Create one at "
                          "aistudio.google.com/apikey and update .env.")
     if r.status_code == 404:
-        raise FatalError(f"Model '{MODEL}' not found. Set GEMINI_MONITOR_MODEL in .env "
-                         "to a current model name.")
+        try:
+            cands = ", ".join(list_models()[:6])
+        except Exception:
+            cands = "(list failed — run: python3 scripts/gemini_monitor.py --list-models)"
+        raise FatalError(f"Model '{MODEL}' not found for this key. Put one of these in "
+                         f".env as GEMINI_MONITOR_MODEL=<name>: {cands}")
     if r.status_code == 429:
         raise FatalError("Gemini rate/quota limit (429) — check quota in AI Studio.")
     r.raise_for_status()
@@ -134,6 +168,17 @@ def main() -> None:
     if not API_KEY:
         print("   Gemini GEO: GEMINI_API_KEY missing — skipping "
               "(create one at aistudio.google.com/apikey)")
+        return
+    if "--list-models" in sys.argv:
+        try:
+            names = list_models()
+        except Exception as e:
+            print(f"   ✗ could not list models: {str(e)[:150]}")
+            return
+        print(f"{len(names)} models support generateContent for this key "
+              f"(best monitor candidates first):")
+        for n in names[:25]:
+            print("  ", n)
         return
     if "--dry-run" in sys.argv:
         try:
