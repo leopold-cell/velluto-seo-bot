@@ -83,7 +83,14 @@ def build_questions(lang: str = "en") -> list[str]:
             kw = (row.get("keys") or [""])[0]
             if kw and kw.lower() != "velluto":
                 out.append(f"What are the {kw}?" if not kw.endswith("?") else kw)
-    return list(dict.fromkeys(out))[:MAX_QUESTIONS]
+    out = list(dict.fromkeys(out))[:MAX_QUESTIONS]
+    # Brand questions ("Are Velluto glasses any good?") are not asked by default: the
+    # answer always names the brand, so they measure nothing about visibility, and
+    # every one costs a paid call per engine per run. GEO_INCLUDE_BRAND=1 brings them
+    # back, e.g. for an occasional check that engines can describe us correctly.
+    if os.getenv("GEO_INCLUDE_BRAND", "0") != "1":
+        out = [q for q in out if "velluto" not in q.lower()]
+    return out
 
 
 # ── Measurement statistics ────────────────────────────────────────────────────
@@ -102,7 +109,21 @@ def build_questions(lang: str = "en") -> list[str]:
 #    Google AI. A single answer is a coin flip, so week-on-week movements of a few
 #    points are noise. The defensible quantity is a RATE over many answers, with an
 #    interval, compared between periods.
-REPEATS = int(os.getenv("GEO_REPEATS", "3"))     # answers collected per question
+# Answers collected per question, per engine. Cost is per answer, and what the
+# interval depends on is the TOTAL number of generic answers pooled over the window
+# (see geo_summary.py), not on re-asking one question many times. So the default is
+# deliberately lean, and ChatGPT — by far the most expensive per call because every
+# answer pays a web-search fee plus the search content as tokens — gets one answer
+# per question. Override per engine with GEO_REPEATS_<ENGINE>, or all with GEO_REPEATS.
+_REPEAT_DEFAULTS = {"perplexity": 2, "gemini": 2, "chatgpt": 1}
+
+
+def repeats_for(engine: str) -> int:
+    for key in (f"GEO_REPEATS_{engine.upper()}", "GEO_REPEATS"):
+        v = os.getenv(key, "").strip()
+        if v.isdigit() and int(v) > 0:
+            return int(v)
+    return _REPEAT_DEFAULTS.get(engine.lower(), 2)
 
 import math
 
@@ -152,8 +173,12 @@ def tally(rows: list[dict]) -> dict:
             "brand_answers": b_n, "brand_cited": b_cit}
 
 
-def gate_ok(hist: list, force: bool, days: int = 7) -> bool:
-    """True when the last history entry is >= `days` old (or there is none)."""
+def gate_ok(hist: list, force: bool, days: int | None = None) -> bool:
+    """True when the last history entry is >= `days` old (or there is none).
+    Default 7; GEO_GATE_DAYS=14 halves the cost again, at the price of half as many
+    answers per pooled window."""
+    if days is None:
+        days = int(os.getenv("GEO_GATE_DAYS", "7") or 7)
     if force or not hist:
         return True
     try:

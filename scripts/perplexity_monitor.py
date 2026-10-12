@@ -30,11 +30,13 @@ from dotenv import load_dotenv
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from geo_questions import (  # noqa: E402
-    GEO_MARKETS, REPEATS, ROOT, build_questions, domain_of, gate_ok,
-    is_brand_question, load_json, tally,
+    GEO_MARKETS, ROOT, build_questions, domain_of, gate_ok,
+    is_brand_question, load_json, repeats_for, tally,
 )
 
 load_dotenv(os.path.join(ROOT, ".env"), override=True)
+
+REPEATS = repeats_for("perplexity")      # answers per question, see geo_questions
 
 API_KEY  = os.getenv("PERPLEXITY_API_KEY", "")
 HISTORY  = os.path.join(ROOT, "data", "perplexity_geo.json")
