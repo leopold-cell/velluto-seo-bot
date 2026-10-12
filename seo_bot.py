@@ -1520,7 +1520,8 @@ def get_article_number() -> str:
 
 # TODO: replace Claude lookup with Google Keyword Planner API for real volume data
 @retry(max_attempts=2, delay=5, label="research_market_keywords")
-def research_market_keywords(en_keyword: str, skip_volumes: bool = False) -> dict:
+def research_market_keywords(en_keyword: str, skip_volumes: bool = False,
+                             forced: dict | None = None) -> dict:
     """
     Given the primary EN keyword, return the best keyword + search intent + volume
     for ALL shop markets (DE + SHOP_LOCALES).
@@ -1553,7 +1554,13 @@ def research_market_keywords(en_keyword: str, skip_volumes: bool = False) -> dic
             f"Primary EN keyword: {en_keyword}\n\n"
             "For EACH market locale below, find the BEST local search keyword a cyclist would "
             "actually type (NOT a literal translation — use natural local search behaviour and "
-            "terminology for that country) and describe the search intent in one sentence.\n\n"
+            "terminology for that country) and describe the search intent in one sentence.\n"
+            "The keyword must show BUYING or CHOOSING intent: the wording a rider uses when "
+            "ready to buy or compare (the local equivalents of 'buy', 'best', 'price', "
+            "'cheap', 'alternative', 'vs', 'gift'). Never an informational how/what/why "
+            "phrase. Avoid keywords built on 'test' or 'review': the shop does not run "
+            "product tests, so such a keyword would promise content it cannot honestly "
+            "deliver.\n\n"
             "Return exactly this JSON structure:\n"
             "{{\n"
             f"{locale_list}\n"
@@ -1573,6 +1580,14 @@ def research_market_keywords(en_keyword: str, skip_volumes: bool = False) -> dic
         normalised[loc] = result.get(loc, fallback)
     for entry in normalised.values():
         entry.setdefault("volume", 0)
+    # Operator-chosen target keywords win over the model's pick (en_keyword_queue
+    # "market_keywords"): the home markets (DE, NL) are where the orders are, so the
+    # buying phrase is set deliberately instead of left to a guess.
+    for loc, forced_kw in (forced or {}).items():
+        if loc in normalised and forced_kw:
+            normalised[loc] = {"keyword": forced_kw, "volume": 0,
+                               "intent": "reader ready to buy or choose; fixed by the operator"}
+            print(f"   [{loc}] target keyword fixed: {forced_kw}")
 
     # ── Step 3: DataForSEO search_volume/live — attach real volumes ───────────
     # Skipped for compliance rewrites (replace_id): the article/topic already exists,
@@ -2602,7 +2617,8 @@ def publish_de_primary(kw: dict, products: list[dict], commercial: dict | None =
     print(f"   Researching market keywords...")
     try:
         # Rewrites (replace_id) skip the DataForSEO volume lookup — saves the daily cap.
-        mkt_kws = research_market_keywords(keyword, skip_volumes=bool(replace_id))
+        mkt_kws = research_market_keywords(keyword, skip_volumes=bool(replace_id),
+                                         forced=kw.get("market_keywords"))
         def _kw_label(loc):
             entry = mkt_kws[loc]
             vol   = entry.get("volume", 0)

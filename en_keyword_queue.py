@@ -57,9 +57,18 @@ def is_compatible(keyword: str) -> bool:
 _BUY_SIGNAL = re.compile(
     r"\b(best|top|buy|shop|price|prices|pricing|cost|costs|cheap|cheapest|affordable|"
     r"deal|deals|discount|sale|vs|versus|alternative|alternatives|compare|comparison|"
-    r"recommended?|gift|gifts|black friday|under \d+|for sale)\b", re.I)
+    r"recommended?|gift|gifts|black friday|under \d+|for sale|"
+    # DE
+    r"kaufen|bestellen|beste[rsn]?|g\u00fcnstig\w*|preis\w*|angebot\w*|vergleich\w*|"
+    r"alternative\w*|geschenk\w*|"
+    # NL
+    r"kopen|goedkoop\w*|prijs\w*|aanbieding\w*|vergelijk\w*|alternatief|cadeau\w*|"
+    # FR
+    r"acheter|meilleur\w*|pas cher|prix|comparatif|cadeau\w*)\b", re.I)
 _INFO_SIGNAL = re.compile(
-    r"^(how|what|why|when|where|does|do|is|are|can|should)\b|"
+    r"^(how|what|why|when|where|does|do|is|are|can|should|wie|was|warum|ist|hoe|wat|waarom|"
+    r"comment|pourquoi|quel|quelle)\b|"
+    r"\b(reinigen|pflege|ursachen?|anleitung|schoonmaken|onderhoud|nettoyer|entretien)\b|"
     r"\b(causes?|fix(es)?|care|cleaning|importance|explained|history|meaning|"
     r"definition|tips|ideas|reasons?)\b", re.I)
 
@@ -147,6 +156,7 @@ EN_KEYWORDS = [
     },
     {
         "keyword": "gifts for road cyclists",
+        "market_keywords": {"de": "geschenke für rennradfahrer"},
         "volume": 900, "phase": 1,
         "angle": "A gift guide organised by budget, built from products Velluto actually "
                  "sells at their real prices: Cleaning Spray 8 EUR, Microfiber Cloth 8 EUR, "
@@ -171,6 +181,7 @@ EN_KEYWORDS = [
     # request, so these target buy-side wording they do not.
     {
         "keyword": "buy photochromic cycling glasses",
+        "market_keywords": {"de": "photochrome fahrradbrille kaufen"},
         "volume": 300, "phase": 1,
         "angle": "A reader ready to buy: what to check before buying photochromic cycling "
                  "glasses (UV400 certification, weight, fit, how the lens behaves in the "
@@ -185,6 +196,7 @@ EN_KEYWORDS = [
     },
     {
         "keyword": "best mirrored cycling sunglasses",
+        "market_keywords": {"de": "verspiegelte fahrradbrille kaufen"},
         "volume": 400, "phase": 1,
         "angle": "Buyer's guide to mirrored cycling sunglasses: what a mirrored coating is "
                  "for (bright sun, glare) and what to check when choosing (UV400, weight, "
@@ -197,6 +209,7 @@ EN_KEYWORDS = [
     },
     {
         "keyword": "best sports glasses for cycling",
+        "market_keywords": {"de": "sportbrille fahrrad kaufen"},
         "volume": 500, "phase": 1,
         "angle": "Buyer's guide (DE 'Sportbrille Fahrrad'): what separates a cycling sports "
                  "glass from lifestyle sunglasses, as a checklist: weight, coverage, "
@@ -209,6 +222,7 @@ EN_KEYWORDS = [
     },
     {
         "keyword": "best gravel bike sunglasses",
+        "market_keywords": {"de": "gravelbike brille kaufen"},
         "volume": 250, "phase": 1,
         "angle": "Buyer's guide for gravel riders: what to check (coverage against dust and "
                  "spray, ventilation and anti-fog on slow climbs, a secure fit on rough "
@@ -222,6 +236,7 @@ EN_KEYWORDS = [
     },
     {
         "keyword": "cycling sports glasses price",
+        "market_keywords": {"de": "beste sportbrille preis leistung"},
         "volume": 350, "phase": 1,
         "angle": "What a rider gets at different price points, for a buyer deciding a "
                  "budget: which specs matter and which are marketing (weight, lens "
@@ -234,6 +249,7 @@ EN_KEYWORDS = [
     },
     {
         "keyword": "best cycling glasses for overcast days",
+        "market_keywords": {"de": "beste fahrradbrille bei schlechtem licht"},
         "volume": 200, "phase": 1,
         "angle": "Buyer's guide for grey, low-sun and early-dusk riding: the VellutoVisione "
                  "high-contrast lens (sharpens contrast and definition) and the clear "
