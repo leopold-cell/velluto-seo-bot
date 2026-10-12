@@ -38,6 +38,7 @@ Usage:
 import datetime as dt
 import json
 import os
+import re
 import sys
 import time
 
@@ -82,11 +83,18 @@ def list_models() -> list[str]:
         if name.startswith("gemini"):
             ids.append(name)
 
+    def version(n: str) -> float:
+        m = re.search(r"gemini-(\d+(?:\.\d+)?)", n)
+        return float(m.group(1)) if m else 0.0
+
     def rank(n: str):
         bad = any(x in n for x in ("lite", "image", "tts", "audio", "live", "embedding",
                                    "thinking", "robotics", "computer"))
         pre = any(x in n for x in ("preview", "exp"))
-        return (bad, pre, "flash" not in n, n)
+        alias = n.endswith("-latest")
+        # Newest version first: an older model can stay LISTED for years after Google
+        # stops serving it to new keys (it then answers 404). gemini-2.5-flash did.
+        return (bad, pre, alias, "flash" not in n, -version(n), n)
     return sorted(ids, key=rank)
 
 
@@ -111,8 +119,12 @@ def _call(question: str) -> dict:
             cands = ", ".join(list_models()[:6])
         except Exception:
             cands = "(list failed — run: python3 scripts/gemini_monitor.py --list-models)"
-        raise FatalError(f"Model '{MODEL}' not found for this key. Put one of these in "
-                         f".env as GEMINI_MONITOR_MODEL=<name>: {cands}")
+        try:
+            api_msg = (r.json().get("error") or {}).get("message", "")[:220]
+        except Exception:
+            api_msg = r.text[:220]
+        raise FatalError(f"Model '{MODEL}' answered 404: {api_msg}\n   A model can stay "
+                         f"LISTED yet be closed to new keys. Try, newest first: {cands}")
     if r.status_code == 429:
         raise FatalError("Gemini rate/quota limit (429) — check quota in AI Studio.")
     r.raise_for_status()
@@ -142,8 +154,14 @@ def parse(data: dict, question: str) -> tuple[bool, bool, list[str], list[str]]:
                                        if isinstance(q, str)]
 
 
+SERVED: set[str] = set()      # concrete model versions that actually answered
+
+
 def ask(question: str):
-    return parse(_call(question), question)
+    data = _call(question)
+    if data.get("modelVersion"):
+        SERVED.add(data["modelVersion"])     # an alias like -latest resolves to a version
+    return parse(data, question)
 
 
 def _dry_run() -> None:
@@ -157,6 +175,7 @@ def _dry_run() -> None:
     print("   groundingChunks[:2]    :", json.dumps((gm.get("groundingChunks") or [])[:2],
                                                      ensure_ascii=False)[:300])
     cited, mentioned, domains, sq = parse(data, q)
+    print("   modelVersion served    :", data.get("modelVersion"))
     print(f"   parsed → cited={cited} mentioned={mentioned} domains={domains[:6]}")
     if not gm:
         print("\n   ⚠️  no groundingMetadata: the search tool did not run. Check the model "
@@ -237,7 +256,8 @@ def main() -> None:
     t = tally(all_rows)
     top_fanout = sorted(fanout.items(), key=lambda kv: -kv[1])[:60]
     entry = {"schema": 2, "date": dt.date.today().isoformat(), "model": MODEL,
-             "repeats": REPEATS, "questions": t["generic_answers"],
+             "model_versions": sorted(SERVED), "repeats": REPEATS,
+             "questions": t["generic_answers"],
              "velluto_cited": t["generic_visible"], "rate": t["generic_rate"],
              "by_market": by_market, "search_queries": top_fanout, **t}
     hist.append(entry)
