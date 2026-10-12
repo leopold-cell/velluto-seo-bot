@@ -173,12 +173,30 @@ def tally(rows: list[dict]) -> dict:
             "brand_answers": b_n, "brand_cited": b_cit}
 
 
-def gate_ok(hist: list, force: bool, days: int | None = None) -> bool:
-    """True when the last history entry is >= `days` old (or there is none).
-    Default 7; GEO_GATE_DAYS=14 halves the cost again, at the price of half as many
-    answers per pooled window."""
+_GATE_DEFAULTS = {"chatgpt": 14}      # days; every other engine runs weekly
+
+
+def gate_days_for(engine: str | None) -> int:
+    """Days between runs. ChatGPT is the expensive engine (search fee plus search
+    content as tokens on every answer), so it samples every 14 days; Perplexity and
+    Gemini are cheap or free and stay weekly, which also makes them the early warning
+    for a dead key or a retired endpoint. Override per engine with
+    GEO_GATE_DAYS_<ENGINE>, or all at once with GEO_GATE_DAYS."""
+    if engine:
+        v = os.getenv(f"GEO_GATE_DAYS_{engine.upper()}", "").strip()
+        if v.isdigit() and int(v) > 0:
+            return int(v)
+    v = os.getenv("GEO_GATE_DAYS", "").strip()
+    if v.isdigit() and int(v) > 0:
+        return int(v)
+    return _GATE_DEFAULTS.get((engine or "").lower(), 7)
+
+
+def gate_ok(hist: list, force: bool, days: int | None = None,
+            engine: str | None = None) -> bool:
+    """True when the last history entry is >= `days` old (or there is none)."""
     if days is None:
-        days = int(os.getenv("GEO_GATE_DAYS", "7") or 7)
+        days = gate_days_for(engine)
     if force or not hist:
         return True
     try:

@@ -19,6 +19,7 @@ Usage:
   python3 scripts/geo_summary.py             # print + write data/geo_summary.json
   python3 scripts/geo_summary.py --window 4
 """
+import datetime as dt
 import json
 import os
 import sys
@@ -56,6 +57,25 @@ def entry_rows(entry: dict) -> list[dict]:
     return rows
 
 
+def in_window(hist: list[dict], weeks_ago_start: int, weeks_ago_end: int) -> list[dict]:
+    """Entries dated between `start` and `end` weeks before today (start > end).
+    By DATE, not by count: ChatGPT samples every 14 days and the others every 7, so
+    "the last 4 entries" would span 8 weeks for one engine and 4 for the others and
+    the engines would no longer be comparable."""
+    today = dt.date.today()
+    lo = today - dt.timedelta(weeks=weeks_ago_start)
+    hi = today - dt.timedelta(weeks=weeks_ago_end)
+    out = []
+    for e in hist:
+        try:
+            d = dt.date.fromisoformat(e["date"])
+        except Exception:
+            continue
+        if lo < d <= hi:
+            out.append(e)
+    return out
+
+
 def pool(entries: list[dict]) -> dict:
     rows = [r for e in entries for r in entry_rows(e)]
     return tally(rows) if rows else tally([])
@@ -85,8 +105,8 @@ def main() -> None:
         if not hist:
             print(f"  {name:11} noch keine Messung")
             continue
-        now = pool(hist[-window:])
-        before = pool(hist[-2 * window:-window])
+        now = pool(in_window(hist, window, 0))
+        before = pool(in_window(hist, 2 * window, window))
         lo, hi = now["generic_ci"]
         print(f"  {name:11} {now['generic_visible']:3}/{now['generic_answers']:<4} = "
               f"{now['generic_rate']:5.2f}%   95%: {lo:.1f}–{hi:.1f}%   "

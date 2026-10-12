@@ -209,8 +209,8 @@ def main() -> None:
         return
 
     hist = load_json(HISTORY, [])
-    if not gate_ok(hist, force):
-        print("   Gemini GEO: sampled <7 days ago — nothing to do")
+    if not gate_ok(hist, force, engine="gemini"):
+        print("   Gemini GEO: not due yet — nothing to do")
         return
 
     by_market, all_rows, fanout = {}, [], {}

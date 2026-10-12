@@ -178,8 +178,8 @@ def main() -> None:
         return
 
     hist = load_json(HISTORY, [])
-    if not gate_ok(hist, force):
-        print("   ChatGPT GEO: sampled <7 days ago — nothing to do")
+    if not gate_ok(hist, force, engine="chatgpt"):
+        print("   ChatGPT GEO: not due yet — nothing to do")
         return
 
     by_market, all_rows, calls = {}, [], 0

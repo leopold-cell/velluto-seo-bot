@@ -99,8 +99,8 @@ def main() -> None:
               "(create one at perplexity.ai/settings/api)")
         return
     hist = _load(HISTORY, [])
-    if not gate_ok(hist, force):
-        print("   Perplexity: sampled <7 days ago — nothing to do")
+    if not gate_ok(hist, force, engine="perplexity"):
+        print("   Perplexity: not due yet — nothing to do")
         return
 
     by_market, all_rows = {}, []
