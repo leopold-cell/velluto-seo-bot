@@ -46,6 +46,30 @@ def is_compatible(keyword: str) -> bool:
     return not any(re.search(p, kw_lower) for p in INCOMPATIBLE_PATTERNS)
 
 
+# ── Intent filter ─────────────────────────────────────────────────────────────
+# Operator decision 2026-10-14: new content targets HIGH-INTENT keywords only, those
+# a reader types when close to choosing or buying (photochromic and sports glasses
+# included). The 3 organic orders of September all came from comparison or
+# commercial pages; the informational guides earned the traffic and none of the
+# orders (narrow-face guide: 56 clicks, no order). A keyword needs a buy signal and
+# must not read as a how/what/why question. Enforced in get_next_en_keyword, so
+# even a keyword added by hand cannot slip an informational article into the queue.
+_BUY_SIGNAL = re.compile(
+    r"\b(best|top|buy|shop|price|prices|pricing|cost|costs|cheap|cheapest|affordable|"
+    r"deal|deals|discount|sale|vs|versus|alternative|alternatives|compare|comparison|"
+    r"recommended?|gift|gifts|black friday|under \d+|for sale)\b", re.I)
+_INFO_SIGNAL = re.compile(
+    r"^(how|what|why|when|where|does|do|is|are|can|should)\b|"
+    r"\b(causes?|fix(es)?|care|cleaning|importance|explained|history|meaning|"
+    r"definition|tips|ideas|reasons?)\b", re.I)
+
+
+def is_high_intent(keyword: str) -> bool:
+    """True when the keyword shows buying or choosing intent (see above)."""
+    kw = (keyword or "").strip()
+    return bool(_BUY_SIGNAL.search(kw)) and not _INFO_SIGNAL.search(kw)
+
+
 def _offer_note(offer_id: str) -> str:
     """Brief for a real, time-limited offer from config/active_offers.yml.
 
@@ -137,63 +161,88 @@ EN_KEYWORDS = [
                  "Velluto price appears only next to the one product that costs it."
                  + _offer_note("chromo-2x1"),
     },
+    # ── High-intent set (operator decision 2026-10-14) ────────────────────────
+    # Replaces the informational drafts that stood here (stocking stuffers, "sports
+    # glasses for cycling", "photochromic … autumn winter", "mirrored cycling glasses",
+    # "… for overcast days"). Each keyword now carries a buying signal. Intent is
+    # judged from the wording (no search-volume data when written); volumes are
+    # placeholders. The two older photochromic articles say "Velluto does not offer a
+    # photochromic lens", true when written and kept as legacy at the operator's
+    # request, so these target buy-side wording they do not.
     {
-        "keyword": "stocking stuffers for cyclists",
-        "volume": 250, "phase": 1,
-        "angle": "Small gifts at or under 20 EUR, distinct from the broad gift guide: "
-                 "Cleaning Spray 8 EUR, Microfiber Cloth 8 EUR, TACX Bidon 14 EUR, Hard "
-                 "Case 19 EUR, VellutoPuro lens 19 EUR. Why each is genuinely useful to a "
-                 "rider. Keep it short and practical; link the gift guide for bigger "
-                 "budgets rather than repeating it.",
-    },
-    {
-        "keyword": "sports glasses for cycling",
-        "volume": 400, "phase": 1,
-        "angle": "Targets the sport-glasses intent (DE 'Sportbrille Fahrrad'): what makes "
-                 "a sports glass different from lifestyle sunglasses, as an objective "
-                 "checklist — weight, coverage, ventilation and anti-fog, secure fit, lens "
-                 "swap. Velluto's evidenced specs only (StradaPro 25 g, UV400, adjustable "
-                 "nose pads, tool-free lenses, anti-fog, 30-day trial). NO impact-protection "
-                 "or safety-rating claims, no other-sport claims (running etc.) that are not "
-                 "evidenced.",
-    },
-    {
-        "keyword": "photochromic cycling glasses autumn winter",
+        "keyword": "buy photochromic cycling glasses",
         "volume": 300, "phase": 1,
-        "angle": "Why changing autumn/winter light (low sun, grey days, early dusk) is the "
-                 "case for an adapting lens, built on the Velluto Chromo (119 EUR, "
-                 "photochromic, mirrored in bright sun, colourways Nero Fumo / Nero Fuoco / "
-                 "Bianco Lago / Bianco Viola). Use ONLY the facts in BRAND_FACTS: no "
-                 "transition-speed, light-transmission, temperature or durability claims, no "
-                 "test results. Present the StradaPro (two click-in lenses) as the "
-                 "alternative for riders who prefer to choose by hand; reader decides. "
-                 "Link https://velluto-shop.com/pages/chromo ."
-                 + _offer_note("chromo-2x1"),
-    },
-    # Chromo follow-ups, added once the operator confirmed Chromo stock reaches ~100
-    # units within 4 weeks (2026-10-08) — so ranking content will not outrun supply.
-    # Both verified as gaps: zero existing articles on mirrored lenses or on
-    # overcast/low-light riding (the lens-colours guide covers tints, not these).
-    {
-        "keyword": "mirrored cycling glasses",
-        "volume": 450, "phase": 1,
-        "angle": "What a mirrored coating does and when it helps (bright sun, glare), as "
-                 "general neutral education with no invented numbers. The Velluto Chromo "
-                 "is photochromic and mirrored in bright sun — the Velluto option here. "
-                 "The StradaPro is NOT mirrored; say so plainly if it comes up. Use only "
-                 "the facts in BRAND_FACTS: no heat-reflection, performance or durability "
-                 "claims, no test results. Link https://velluto-shop.com/pages/chromo ."
+        "angle": "A reader ready to buy: what to check before buying photochromic cycling "
+                 "glasses (UV400 certification, weight, fit, how the lens behaves in the "
+                 "light you ride in, return policy) and where the Velluto Chromo fits: "
+                 "119 EUR, photochromic, mirrored in bright sun, colourways Nero Fumo / "
+                 "Nero Fuoco / Bianco Lago / Bianco Viola. The StradaPro (two click-in "
+                 "lenses, from 69 EUR, NOT photochromic) is the alternative for riders who "
+                 "prefer to choose by hand. Link https://velluto-shop.com/pages/chromo . "
+                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. "
+                 "No transition-speed, light-transmission, temperature or durability claims."
                  + _offer_note("chromo-2x1"),
     },
     {
-        "keyword": "cycling glasses for overcast days",
+        "keyword": "best mirrored cycling sunglasses",
+        "volume": 400, "phase": 1,
+        "angle": "Buyer's guide to mirrored cycling sunglasses: what a mirrored coating is "
+                 "for (bright sun, glare) and what to check when choosing (UV400, weight, "
+                 "fit, lens swap, return policy). The Velluto Chromo is the Velluto option: "
+                 "photochromic and mirrored in bright sun, 119 EUR. The StradaPro is NOT "
+                 "mirrored: say so plainly. Link https://velluto-shop.com/pages/chromo . "
+                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. "
+                 "No heat-reflection or performance claims."
+                 + _offer_note("chromo-2x1"),
+    },
+    {
+        "keyword": "best sports glasses for cycling",
+        "volume": 500, "phase": 1,
+        "angle": "Buyer's guide (DE 'Sportbrille Fahrrad'): what separates a cycling sports "
+                 "glass from lifestyle sunglasses, as a checklist: weight, coverage, "
+                 "ventilation and anti-fog, secure fit, lens swap, UV400, trial period. "
+                 "Velluto's evidenced specs: StradaPro 25 g, UV400-certified, adjustable "
+                 "nose pads, tool-free lenses, built-in anti-fog, 30-day trial, from 69 "
+                 "EUR; Chromo 119 EUR as the photochromic model (https://velluto-shop.com/"
+                 "pages/chromo). No impact-protection or safety-rating claims, no claims for "
+                 "other sports (running, skiing). " + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. ",
+    },
+    {
+        "keyword": "best gravel bike sunglasses",
+        "volume": 250, "phase": 1,
+        "angle": "Buyer's guide for gravel riders: what to check (coverage against dust and "
+                 "spray, ventilation and anti-fog on slow climbs, a secure fit on rough "
+                 "ground, lens choice for changing light under trees). Velluto's product "
+                 "copy says it is made for road and gravel riders, so the StradaPro "
+                 "(from 69 EUR, two click-in lenses) may be presented for gravel; the "
+                 "Chromo (119 EUR, photochromic) suits changing light "
+                 "(https://velluto-shop.com/pages/chromo). No impact or crash-protection "
+                 "claims. " + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. "
+                 + _offer_note("chromo-2x1"),
+    },
+    {
+        "keyword": "cycling sports glasses price",
+        "volume": 350, "phase": 1,
+        "angle": "What a rider gets at different price points, for a buyer deciding a "
+                 "budget: which specs matter and which are marketing (weight, lens "
+                 "standard, anti-fog, lens swap, return policy). Use ONLY Velluto's own "
+                 "prices, each beside the one product that costs it: StradaPro Starter "
+                 "Vision Kit from 69 EUR, VellutoVisione lens 39 EUR, VellutoPuro lens 19 "
+                 "EUR, Chromo 119 EUR. State NO market-wide price ranges, averages or "
+                 "competitor prices: none are supplied. Never add prices up. "
+                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. ",
+    },
+    {
+        "keyword": "best cycling glasses for overcast days",
         "volume": 200, "phase": 1,
-        "angle": "Grey, low-sun and early-dusk riding is the real autumn/winter problem. "
-                 "Lens choice for it: the VellutoVisione high-contrast lens (sharpens "
-                 "contrast and definition) and the clear VellutoPuro for the darkest "
-                 "conditions, both on the StradaPro; the Chromo as the adapting option for "
-                 "light that keeps changing. Present both routes, reader decides. Evidenced "
-                 "specs only, no light-transmission figures, no tests, no superiority claims.",
+        "angle": "Buyer's guide for grey, low-sun and early-dusk riding: the VellutoVisione "
+                 "high-contrast lens (sharpens contrast and definition) and the clear "
+                 "VellutoPuro for the darkest conditions, both on the StradaPro; the "
+                 "Chromo as the adapting option for light that keeps changing "
+                 "(https://velluto-shop.com/pages/chromo). Present both routes. "
+                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. "
+                 "No light-transmission figures."
+                 + _offer_note("chromo-2x1"),
     },
     # ── Phase 1: GENUINE GAPS only (added 2026-09-22) ─────────────────────────
     # The blog is saturated (93 articles: 7 rival "oakley alternative" pages, 5
@@ -549,6 +598,9 @@ def get_next_en_keyword() -> dict | None:
     used = _load_used()
     for kw in sorted(EN_KEYWORDS, key=lambda k: k["phase"]):
         if kw["keyword"] in used or not is_compatible(kw["keyword"]):
+            continue
+        if not is_high_intent(kw["keyword"]):
+            print(f"   ⏭  '{kw['keyword']}' skipped: no buying intent (queue is high-intent only)")
             continue
         if _failed_days(kw["keyword"]) >= MAX_FAILED_DAYS:
             print(f"   ⏭  '{kw['keyword']}' parked: failed the quality gate on "
