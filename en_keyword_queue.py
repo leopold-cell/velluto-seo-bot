@@ -72,12 +72,12 @@ def _offer_note(offer_id: str) -> str:
             forbid = ("Do NOT add any other term: no percentage, no EUR saving, no computed "
                       "or compared price, no promo code, nothing about how it is applied at "
                       "checkout, and nothing about stock or shipping. For anything else say "
-                      "the conditions are on the product page. ")
+                      "the conditions are on the Chromo page. ")
         else:
             terms = " "
             forbid = ("Do NOT describe its terms (free, any percentage, EUR saving, "
                       "same-colour or stock conditions) and do not compute any price: say "
-                      "conditions are on the product page. ")
+                      "conditions are on the Chromo page. ")
         return (
             f" REAL OFFER (the only one that exists): {o['headline']}, valid until "
             f"{pretty}.{terms}State it once, as a single paragraph written "
@@ -163,7 +163,7 @@ EN_KEYWORDS = [
                  "transition-speed, light-transmission, temperature or durability claims, no "
                  "test results. Present the StradaPro (two click-in lenses) as the "
                  "alternative for riders who prefer to choose by hand; reader decides. "
-                 "Link https://velluto-shop.com/products/velluto-chromo ."
+                 "Link https://velluto-shop.com/pages/chromo ."
                  + _offer_note("chromo-2x1"),
     },
     # Chromo follow-ups, added once the operator confirmed Chromo stock reaches ~100
@@ -178,7 +178,7 @@ EN_KEYWORDS = [
                  "is photochromic and mirrored in bright sun — the Velluto option here. "
                  "The StradaPro is NOT mirrored; say so plainly if it comes up. Use only "
                  "the facts in BRAND_FACTS: no heat-reflection, performance or durability "
-                 "claims, no test results. Link https://velluto-shop.com/products/velluto-chromo ."
+                 "claims, no test results. Link https://velluto-shop.com/pages/chromo ."
                  + _offer_note("chromo-2x1"),
     },
     {

@@ -17,7 +17,7 @@ offers:
     # percentage, a EUR saving, same-colour or stock conditions) is NOT known and
     # must not be written — readers are sent to the product page for conditions.
     headline: "2-for-1 on the Velluto Chromo"
-    product_url: https://velluto-shop.com/products/velluto-chromo
+    product_url: https://velluto-shop.com/pages/chromo
     ends: 2026-11-30          # inclusive; articles are cleaned from 2026-12-01
     source: "operator message, 2026-10-08"
     # Terms supplied by the operator 2026-10-08, and nothing more: the second pair

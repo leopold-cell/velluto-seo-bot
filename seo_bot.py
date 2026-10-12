@@ -210,7 +210,8 @@ VellutoVisione™ HIGH CONTRAST LENS:
 - 100% compatible with Velluto StradaPro
 
 VELLUTO CHROMO (photochromic model, launched Oct 2026 — 119 EUR, 4 colourways):
-- Product page: https://velluto-shop.com/products/velluto-chromo
+- ALWAYS link the Chromo to https://velluto-shop.com/pages/chromo (its page).
+  NEVER link /products/velluto-chromo, and never build a Chromo product card.
 - This is the ONLY Velluto product that is photochromic. The Chromo lens is
   self-tinting: it adapts to the light as you ride, clear in low light, darkening
   (and mirrored) in bright sun. This is why it suits autumn/winter's changing light.
@@ -542,13 +543,10 @@ ALLOWED_HANDLES = {
     "velluto-microfiber-cleaning-cloth",
     "velluto-drinking-bottle-limited-edition",
     "velluto-cleaning-spray",
-    # The photochromic model (launched Oct 2026). Linkable so photochromic/mirror
-    # articles point at the right product. Launch stock was 4 units; the operator
-    # confirmed on 2026-10-08 that it reaches ~100 within 4 weeks (early Nov), which
-    # is inside the 4-6 weeks new content needs to rank — so the photochromic queue
-    # entries are cleared to publish. If that restock slips, pause them in
-    # en_keyword_queue.py rather than let articles point at a sold-out product.
-    "velluto-chromo",
+    # The Chromo is deliberately NOT in this list. Articles link it to its page,
+    # https://velluto-shop.com/pages/chromo, not to the product listing, and a product
+    # here would give the model a /products/velluto-chromo URL to build a card from.
+    # (Launch stock was 4 units; the operator confirmed ~100 by early November.)
 }
 
 @retry(max_attempts=3, delay=5, label="get_products")

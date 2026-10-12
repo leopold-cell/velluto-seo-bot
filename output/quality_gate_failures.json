@@ -2907,5 +2907,20 @@
     "checked_at": "2026-10-12T05:07:58.543587Z",
     "title": "Gifts for Road Cyclists 2026: Every Budget Covered",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "pointed 1 Chromo link(s) at https://velluto-shop.com/pages/chromo",
+      "injected StradaPro collection (money-page) link"
+    ],
+    "hard_issues": [
+      "[KEYWORD] primary_keyword missing from H1: 'photochromic'"
+    ],
+    "primary_keyword": "photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-12T08:44:48.008902Z",
+    "title": "Photochromic cycling glasses",
+    "brief_topic": null
   }
 ]

@@ -101,6 +101,23 @@ def ensure_homepage_link(html: str) -> tuple[str, bool]:
     return fixed, True
 
 
+# ── Auto-fix step 1b: every Chromo link goes to the Chromo page ────────────────
+
+# The operator wants all Chromo articles to point at one landing page, not at the
+# product listing. The generation prompt says so, but a prompt is a request; this
+# makes it true even if the model (or a product card) links the product URL.
+CHROMO_PAGE_URL = "https://velluto-shop.com/pages/chromo"
+_CHROMO_PRODUCT_HREF = re.compile(
+    r"https?://velluto-shop\.com(?:/[a-z]{2}(?:-[a-z]{2,4})?)?/products/velluto-chromo(?![\w-])"
+    r"(?:\?[^\"'#\s]*)?(?:#[^\"'\s]*)?", re.I)
+
+
+def normalize_chromo_links(html: str) -> tuple[str, int]:
+    """Rewrite hrefs on the Chromo product URL (any locale prefix, any ?variant=)
+    to the Chromo page. Returns (html, links_rewritten)."""
+    return _CHROMO_PRODUCT_HREF.subn(CHROMO_PAGE_URL, html or "")
+
+
 # ── Auto-fix step 2b: inject contextual money-page (StradaPro collection) link ──
 
 # The canonical money page (verified 200; see scripts/fix_internal_links.py).
@@ -972,6 +989,10 @@ def gate(post: dict, brief: dict | None, market_code: str = "US",
     fixed_body, stripped = strip_competitor_links(body)
     if stripped:
         auto_fixes.append(f"stripped {len(stripped)} competitor link(s): {sorted(set(stripped))}")
+    # Auto-fix 1b: Chromo links point at the Chromo page
+    fixed_body, chromo_n = normalize_chromo_links(fixed_body)
+    if chromo_n:
+        auto_fixes.append(f"pointed {chromo_n} Chromo link(s) at {CHROMO_PAGE_URL}")
     # Auto-fix 2: inject homepage link
     fixed_body, injected = ensure_homepage_link(fixed_body)
     if injected:
