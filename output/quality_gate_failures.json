@@ -2848,5 +2848,64 @@
     "checked_at": "2026-10-10T04:25:13.964230Z",
     "title": "Gifts for Road Cyclists 2026: Budget Guide by Price",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '39 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '50 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „the stradapro's built-in anti-fog system and the chromo's photochromic coating both address this directly…“",
+      "[LEGAL] unverifiable superlative/comparative claim next to a named competitor ('…than anything/any/every X') — § 6 UWG needs objective, verifiable comparisons; state Velluto's own measured spec instead"
+    ],
+    "primary_keyword": "gifts for road cyclists",
+    "market": "US",
+    "checked_at": "2026-10-12T05:00:08.334066Z",
+    "title": "Gifts for Road Cyclists 2026: Every Budget Covered",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '39 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '50 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '100 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „where the stradapro solves changing light conditions with two interchangeable lenses that the rider swaps manu…“"
+    ],
+    "primary_keyword": "gifts for road cyclists",
+    "market": "US",
+    "checked_at": "2026-10-12T05:03:47.213328Z",
+    "title": "Gifts for Road Cyclists 2026: The Complete Budget Guide",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '49 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '99 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '100 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '39 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „product price best for key detail microfiber cleaning cloth 8 eur any cyclist 25x25 cm, 80% polyester / 20% po…“"
+    ],
+    "primary_keyword": "gifts for road cyclists",
+    "market": "US",
+    "checked_at": "2026-10-12T05:07:58.543587Z",
+    "title": "Gifts for Road Cyclists 2026: Every Budget Covered",
+    "brief_topic": null
   }
 ]

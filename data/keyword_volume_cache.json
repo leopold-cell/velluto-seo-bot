@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-10-10": 11
+   "2026-10-12": 7
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -2831,5 +2831,33 @@
  "sv|presenter till vägcyklister": {
   "volume": 0,
   "date": "2026-10-10"
+ },
+ "de|rennrad geschenke": {
+  "volume": 320,
+  "date": "2026-10-12"
+ },
+ "nl|cadeaus voor wielrenners": {
+  "volume": 0,
+  "date": "2026-10-12"
+ },
+ "fr|cadeaux cycliste route": {
+  "volume": 0,
+  "date": "2026-10-12"
+ },
+ "es|regalos ciclista carretera": {
+  "volume": 0,
+  "date": "2026-10-12"
+ },
+ "it|regali ciclisti strada": {
+  "volume": 0,
+  "date": "2026-10-12"
+ },
+ "da|gaver til vejcyklister": {
+  "volume": 0,
+  "date": "2026-10-12"
+ },
+ "nb|gaver til sykkelryttere": {
+  "volume": 0,
+  "date": "2026-10-12"
  }
 }
