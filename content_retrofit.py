@@ -472,8 +472,12 @@ def gen_native_expansion(client: Anthropic, title: str, body: str,
 # ── Shopify / state / reporting ──────────────────────────────────────────────
 
 def fetch_articles() -> list[dict]:
+    # published only: without the filter, articles that a merge had unpublished and
+    # 301'd stayed in data/content_state.json (93 entries against 85 live on
+    # 2026-10-12). That index feeds the Reddit article matcher, the legal watchdog
+    # and keyword selection, which could then point at redirected pages.
     out, url = [], (f"https://{SHOPIFY_STORE}/admin/api/2024-01/blogs/{BLOG_ID}/articles.json"
-                    "?fields=id,title,handle,body_html&limit=250")
+                    "?fields=id,title,handle,body_html&limit=250&published_status=published")
     while url:
         r = requests.get(url, headers=SHOPIFY_HEADERS, timeout=30)
         r.raise_for_status()
