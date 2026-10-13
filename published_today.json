@@ -1,1 +1,63 @@
-[]
+[
+  {
+    "title": "Gifts for Road Cyclists 2026: The Complete Guide",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/gifts-for-road-cyclists-2026-the-complete-guide",
+    "topic": "gifts for road cyclists",
+    "keyword": "gifts for road cyclists",
+    "lang": "en",
+    "phase": 1,
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "geschenke f\u00fcr rennradfahrer",
+        "volume": 1000,
+        "intent": "reader ready to buy or choose; fixed by the operator"
+      },
+      "nl": {
+        "keyword": "racefiets zonnebril kopen",
+        "intent": "Dutch cyclist actively looking to buy road cycling eyewear.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "lunettes cyclisme route pas cher",
+        "intent": "French cyclist seeking affordable road cycling glasses with buying intent.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "gafas ciclismo carretera comprar",
+        "intent": "Spanish cyclist ready to purchase road cycling eyewear.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "occhiali ciclismo strada migliori",
+        "intent": "Italian cyclist comparing and selecting the best road cycling glasses.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "cykelbriller landevej k\u00f8b",
+        "intent": "Danish road cyclist actively looking to buy cycling eyewear.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "sykkelbriller veisykling kj\u00f8p",
+        "intent": "Norwegian road cyclist ready to purchase cycling glasses.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "okulary rowerowe szosa kupi\u0107",
+        "intent": "Polish cyclist seeking to buy road cycling eyewear with purchase intent.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "\u00f3culos ciclismo estrada comprar",
+        "intent": "Portuguese road cyclist ready to purchase cycling glasses.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "cykelglas\u00f6gon v\u00e4g k\u00f6pa",
+        "intent": "Swedish road cyclist actively looking to buy cycling eyewear.",
+        "volume": 0
+      }
+    }
+  }
+]

@@ -28,5 +28,35 @@
   },
   "verdict": "keine nachweisbare Veränderung",
   "last": "2026-10-09"
+ },
+ "Gemini": {
+  "now": {
+   "generic_answers": 72,
+   "generic_cited": 3,
+   "generic_mentioned": 0,
+   "generic_visible": 3,
+   "generic_rate": 4.17,
+   "generic_ci": [
+    1.43,
+    11.55
+   ],
+   "brand_answers": 0,
+   "brand_cited": 0
+  },
+  "before": {
+   "generic_answers": 0,
+   "generic_cited": 0,
+   "generic_mentioned": 0,
+   "generic_visible": 0,
+   "generic_rate": 0.0,
+   "generic_ci": [
+    0.0,
+    0.0
+   ],
+   "brand_answers": 0,
+   "brand_cited": 0
+  },
+  "verdict": "Baseline (kein Vergleichszeitraum)",
+  "last": "2026-10-13"
  }
 }

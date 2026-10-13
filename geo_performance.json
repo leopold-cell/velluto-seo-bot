@@ -5557,7 +5557,61 @@
         }
       ],
       "serps_scanned": 241
+    },
+    "2026-10-13": {
+      "aio_serps": 24,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 5,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 4.2,
+      "total_citations": 27,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 9
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 4
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 3
+        },
+        {
+          "domain": "amazon.com",
+          "citations": 2
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 1
+        },
+        {
+          "domain": "goodr.com",
+          "citations": 1
+        },
+        {
+          "domain": "bolle.com",
+          "citations": 1
+        },
+        {
+          "domain": "rockbrosbike.us",
+          "citations": 1
+        },
+        {
+          "domain": "rockbrosus.com",
+          "citations": 1
+        },
+        {
+          "domain": "evileye.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 59
     }
   },
-  "latest": "2026-10-12"
+  "latest": "2026-10-13"
 }
