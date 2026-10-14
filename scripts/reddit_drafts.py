@@ -197,26 +197,18 @@ def _live_article_for(question: str) -> str:
     return best[1]
 
 
-def _draft_text(question: str, url: str) -> tuple[str, str]:
-    """Uses link_builder's Haiku generator when a key is present; otherwise a
-    clearly-marked skeleton so the digest is useful even without API access."""
-    api_key = os.getenv("ANTHROPIC_API_KEY", "")
-    if api_key:
-        try:
-            from link_builder import _generate_reddit_post
-            article = {"topic": question, "keyword": question,
-                       "title": question, "url": url or "https://velluto-shop.com"}
-            sub = _pick_subreddit(question)
-            return _generate_reddit_post(article, sub, "en")
-        except Exception:
-            pass
-    return (
-        question,
-        "[Rohentwurf — ohne ANTHROPIC_API_KEY nicht ausformuliert]\n"
-        f"Thema: {question}\n"
-        "Aufbau: eigene Rideerfahrung → konkrete Beobachtung → erst am Ende, "
-        f"falls jemand nachfragt, der Link: {url or '(kein passender Artikel gefunden)'}",
-    )
+def _draft_text(question: str, url: str, sub: str, lang: str) -> tuple[str, str]:
+    """Delegates to reddit_daily, which owns the one honest draft shape: the maker
+    answers the question, discloses who they are, and stops.
+
+    This used to call link_builder._generate_reddit_post, whose prompt told the model
+    to write as "a real cyclist" and say "I've been riding the Velluto StradaPro" —
+    invented rider experience from the manufacturer. The legal gate cannot catch it
+    (each sentence is individually true), and a disclosure line does not cure a
+    framing that is itself the lie."""
+    import reddit_daily
+    title, body = reddit_daily._draft_text(question, url, sub, lang)
+    return title, f"{body}\n\n{reddit_daily.DISCLOSURE.get(lang, reddit_daily.DISCLOSURE['en'])}"
 
 
 def build_drafts(count: int = DEFAULT_COUNT) -> list[dict]:
@@ -242,7 +234,7 @@ def build_drafts(count: int = DEFAULT_COUNT) -> list[dict]:
             sub = alt
         used_subs.add(sub)
         url = _live_article_for(q)
-        title, body = _draft_text(q, url)
+        title, body = _draft_text(q, url, sub, gap["market"] if gap["market"] in ("en", "de", "nl", "fr") else "en")
         issues = check_compliance({"title": title, "body_html": body}) if check_compliance else []
         drafts.append({
             "question": q,

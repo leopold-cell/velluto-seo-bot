@@ -48,13 +48,28 @@ OWN   = "velluto-shop.com"
 RETAILERS = ("amazon.", "decathlon.", "bike24", "bike-discount", "wiggle",
              "chainreactioncycles", "rosebikes", "rose-bikes", "bergfreunde",
              "bergzeit", "misterspex", "fielmann", "idealo", "ebay.", "alltricks",
-             "probikeshop", "kleinanzeigen", "otto.", "galaxus", "smec", "shopping24")
+             "probikeshop", "kleinanzeigen", "otto.", "galaxus", "smec", "shopping24",
+             "nakedoptics", "sigmasports", "fahrrad-xxl", "bike-x", "futurumshop",
+             "mammothbikes")
+# Marketplaces and price comparators: they list whatever a seller uploads, so there
+# is nobody to pitch. Kept in the retailer class (they are real AI sources) but
+# excluded from stockist outreach.
+MARKETPLACES = ("amazon.", "ebay.", "idealo", "otto.", "kleinanzeigen", "shopping24",
+                "beslist", "decathlon.", "galaxus")
+# Not outreach targets at all: search engines and social networks. They show up in
+# the SERP/AI data because they are everywhere, not because anyone there reviews gear.
+NON_TARGETS = ("google.", "facebook.com", "instagram.com", "pinterest.", "tiktok.",
+               "wikipedia.org", "x.com", "twitter.com", "linkedin.com")
 # Eyewear brands — they won't review a competitor. Skip from seeding.
 BRANDS = ("oakley", "sungod", "roka", "100percent", "rudyproject", "rudy-project",
           "poc-sports", "julbo", "bolle", "koo.", "sciconsports", "scicon",
           "alba-optics", "tifosi", "goodr", "shadyrays", "smithoptics", "uvex",
           "adidas", "evileye", "endurasport", "sportful", "ekoi", "van-rysel",
-          "lankeleisi", "blenderseyewear", "demonsun")
+          "lankeleisi", "blenderseyewear", "demonsun",
+          # Direct competitors that the SERP data files under "editorial" because
+          # they publish buying guides. They will not review a rival's product.
+          "canyon.com", "siroko.com", "poc.com", "spiuk", "rogelli",
+          "roav-eyewear")
 
 
 def _load(path, default):
@@ -65,17 +80,28 @@ def _load(path, default):
         return default
 
 
+def _norm(d: str) -> str:
+    """Host without a leading "www.". The old .lstrip("www.") stripped CHARACTERS,
+    not a prefix, so wielrenner.eu became ielrenner.eu and wiggle.co.uk became
+    iggle.co.uk — which then missed the retailer filter. perplexity_monitor.py
+    already fixed this; this copy had not."""
+    d = (d or "").strip().lower()
+    return d.removeprefix("www.")
+
+
 def _domain(item: dict) -> str:
-    d = (item.get("domain") or "").lower().lstrip("www.")
+    d = _norm(item.get("domain") or "")
     if not d:
         u = item.get("url") or ""
-        d = urlparse(u).netloc.lower().lstrip("www.") if u else ""
+        d = _norm(urlparse(u).netloc) if u else ""
     return d
 
 
 def classify(domain: str) -> str:
     if not domain or OWN in domain:
         return "own"
+    if any(n in domain for n in NON_TARGETS):
+        return "skip"
     if "youtube.com" in domain or "youtu.be" in domain:
         return "youtube"
     if "reddit.com" in domain:
@@ -128,7 +154,7 @@ def build() -> dict:
     for a in (aio.get("ai_overviews") or []):
         v_absent = not a.get("velluto_cited")
         for c in (a.get("cited_sources") or []):
-            d = (c.get("domain") or "").lower().lstrip("www.")
+            d = _norm(c.get("domain") or "")
             if not d:
                 continue
             t = _t(d)
@@ -144,7 +170,7 @@ def build() -> dict:
             for det in market.get("details", []):
                 v_absent = not det.get("velluto_cited")
                 for u in det.get("top_domains", []):
-                    d = (u or "").lower().lstrip("www.")
+                    d = _norm(u or "")
                     if not d:
                         continue
                     t = _t(d)
@@ -171,7 +197,8 @@ def build() -> dict:
 
     ranked = sorted(targets.values(), key=lambda t: t["score"], reverse=True)
     seeding  = [t for t in ranked if t["type"] in ("editorial", "youtube", "reddit")][:20]
-    stockist = [t for t in ranked if t["type"] == "retailer"][:8]
+    stockist = [t for t in ranked if t["type"] == "retailer"
+                and not any(m in t["domain"] for m in MARKETPLACES)][:8]
     return {"date": dt.date.today().isoformat(), "seeding": seeding, "stockist": stockist,
             "n_domains": len(targets)}
 
@@ -200,7 +227,13 @@ def digest(data: dict) -> str:
         L.append("")
         L.append("STOCKIST-Outreach (Händler, die ranken — Distribution):")
         for t in data["stockist"]:
-            L.append(f"  🏪 {t['domain']} — rankt #{t['best_rank']} für {', '.join(t['keywords'][:2])}")
+            # best_rank stays 99 for a domain that reached the list only through AI
+            # citations. "rankt #99 für (leer)" read like a ranking; it is a citation.
+            if t["best_rank"] <= 10:
+                why = f"rankt #{t['best_rank']} für {', '.join(t['keywords'][:2])}"
+            else:
+                why = f"KI zitiert sie {t['ai_cited']}× (rankt nicht in den Top 10)"
+            L.append(f"  🏪 {t['domain']} — {why}")
     L.append("")
     L.append("Priorität 1 = 🤖-Ziele: dort zitiert die KI, aber nicht Velluto — "
              "ein Review dort bringt dich ins AI-Answer-Set.")
@@ -216,13 +249,13 @@ def digest(data: dict) -> str:
     except Exception as e:
         L.append(f"\n   ⚠️  GEO-Lücken nicht ermittelbar: {e}")
 
-    try:
-        from reddit_drafts import build_drafts, format_drafts
-        L.append("")
-        L.append("=" * 62)
-        L.append(format_drafts(build_drafts()))
-    except Exception as e:
-        L.append(f"\n   ⚠️  Reddit-Entwürfe nicht ermittelbar: {e}")
+    # The Reddit worklist is its own daily step (scripts/reddit_daily.py): real open
+    # threads plus a disclosed maker reply. The drafts that used to be embedded here
+    # came from link_builder's prompt, which invented rider experience ("two seasons
+    # on the StradaPro") — astroturfing that no disclosure line repairs.
+    L.append("")
+    L.append("Reddit: siehe Tagesliste (output/reddit_daily.txt) — offene Threads + "
+             "offengelegte Hersteller-Antwort.")
 
     return "\n".join(L)
 

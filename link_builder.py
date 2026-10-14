@@ -104,7 +104,23 @@ def _generate_reddit_post(article: dict, subreddit: str, lang: str) -> tuple[str
 
 
 def post_to_reddit(article: dict) -> dict:
-    """Submit one article to the most relevant cycling subreddit."""
+    """DISABLED. Kept as a stub so the run.sh step and the log format keep working.
+
+    Two independent reasons, either sufficient:
+      1. _generate_reddit_post's prompt makes the manufacturer write as an
+         unaffiliated cyclist ("I've been riding the Velluto StradaPro") — covert
+         advertising (§ 5a Abs. 4 UWG) and a Reddit rule violation.
+      2. Reddit enforces against automated posting behaviourally, and the penalty
+         can reach the domain. reddit.com is the #1 seeding target; losing the
+         domain to a spam flag would destroy the asset this was meant to build.
+    The replacement is scripts/reddit_daily.py: real open threads plus a disclosed
+    maker reply, posted by a person.
+    """
+    return {"status": "skipped", "reason": "disabled_astroturf_and_automation_risk"}
+
+
+def _post_to_reddit_legacy(article: dict) -> dict:
+    """Original implementation, unreachable. Delete once nobody needs the reference."""
     if not all([REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USERNAME, REDDIT_PASSWORD]):
         print("   ⚠️  Reddit: credentials missing — skipping")
         return {"status": "skipped", "reason": "no_credentials"}
