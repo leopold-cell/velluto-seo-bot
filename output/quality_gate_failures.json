@@ -2922,5 +2922,59 @@
     "checked_at": "2026-10-12T08:44:48.008902Z",
     "title": "Photochromic cycling glasses",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas",
+      "trimmed meta_description 163→158"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „each frame is compatible with both the vellutopuro clear lens and the vellutovisione high-contrast lens via th…“"
+    ],
+    "primary_keyword": "buy photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-14T04:18:36.717852Z",
+    "title": "Buy Photochromic Cycling Glasses: What to Check First",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 3 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „06 · the alternative the stradapro: photochromic versus deliberate lens choice…“",
+      "[FACT] claims polarized lenses — no Velluto product has these — Satz: „the stradapro offers the vellutopuro clear lens and the vellutovisione high-contrast lens, neither of which is…“",
+      "[LEGAL] implies a test/review/first-hand experience that wasn't performed — no fabricated testing (§ 5/5a UWG, EU fake-review ban); reframe as an honest, spec-based buyer's guide"
+    ],
+    "primary_keyword": "buy photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-14T04:22:04.895817Z",
+    "title": "Buy Photochromic Cycling Glasses: What to Check First",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — Satz: „starter vision kit arancia weight 25 g protection uv400 nose pad adjustable lenses interchangeable click-in fr…“"
+    ],
+    "primary_keyword": "buy photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-14T04:25:51.810770Z",
+    "title": "Buy Photochromic Cycling Glasses: What to Check First",
+    "brief_topic": null
   }
 ]
