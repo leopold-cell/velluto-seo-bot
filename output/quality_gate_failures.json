@@ -2976,5 +2976,57 @@
     "checked_at": "2026-10-14T04:25:51.810770Z",
     "title": "Buy Photochromic Cycling Glasses: What to Check First",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — Satz: „full detail at velluto-shop.com/pages/chromo. what is the difference between the velluto chromo and the strada…“",
+      "[LEGAL] implies a test/review/first-hand experience that wasn't performed — no fabricated testing (§ 5/5a UWG, EU fake-review ban); reframe as an honest, spec-based buyer's guide"
+    ],
+    "primary_keyword": "buy photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-15T04:33:54.561028Z",
+    "title": "Buy Photochromic Cycling Glasses: What to Check in 2026",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — Satz: „full imagery and details for each colourway are on the chromo page at velluto-shop.com/pages/chromo. what is t…“"
+    ],
+    "primary_keyword": "buy photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-15T04:37:27.304890Z",
+    "title": "Buy Photochromic Cycling Glasses: What to Check First",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 3 Yes/No comparison-table cell(s)"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — Satz: „uv400 full uva and uvb protection 119 eur velluto chromo price 4 chromo colourways available 30 day risk-free …“"
+    ],
+    "primary_keyword": "buy photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-15T04:40:23.756892Z",
+    "title": "Buy Photochromic Cycling Glasses: What to Check in 2026",
+    "brief_topic": null
   }
 ]

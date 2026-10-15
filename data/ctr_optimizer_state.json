@@ -222,7 +222,12 @@
   },
   "seo_title": "Best Cycling Sunglasses 2026: UV400, Lightweight",
   "meta_description": "Compare top cycling sunglasses with UV400 protection, lightweight frames, and interchangeable lenses. Find your perfect fit for road and mountain biking.",
-  "measured": null
+  "measured": {
+   "date": "2026-10-15",
+   "ctr_before": 0.78,
+   "ctr_after": 1.73,
+   "outcome": "improved"
+  }
  },
  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-dont-fit-with-helmet-heres-why": {
   "last_optimized": "2026-09-18",
