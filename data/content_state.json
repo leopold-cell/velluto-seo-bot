@@ -1,6 +1,41 @@
 {
- "date": "2026-09-18",
+ "date": "2026-10-16",
  "articles": {
+  "https://velluto-shop.com/blogs/velluto-the-magazine/gifts-for-road-cyclists-2026-the-complete-guide": {
+   "handle": "gifts-for-road-cyclists-2026-the-complete-guide",
+   "title": "Gifts for Road Cyclists 2026: The Complete Guide",
+   "words": 5835,
+   "has_table": true,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/black-friday-cycling-glasses-what-a-real-deal-looks-like": {
+   "handle": "black-friday-cycling-glasses-what-a-real-deal-looks-like",
+   "title": "Black Friday Cycling Glasses: What a Real Deal Looks Like",
+   "words": 5447,
+   "has_table": true,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-sunglasses-under-70-euro-what-you-actually-get": {
+   "handle": "cycling-sunglasses-under-70-euro-what-you-actually-get",
+   "title": "Cycling Sunglasses Under 70 Euro: What You Actually Get",
+   "words": 5620,
+   "has_table": true,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/bliz-cycling-glasses-alternative-stradapro-vs-bliz": {
+   "handle": "bliz-cycling-glasses-alternative-stradapro-vs-bliz",
+   "title": "Bliz Cycling Glasses Alternative: StradaPro vs Bliz",
+   "words": 5151,
+   "has_table": true,
+   "has_faq_schema": true
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/tifosi-alternative-cycling-glasses-stradapro-vs-tifosi-2026": {
+   "handle": "tifosi-alternative-cycling-glasses-stradapro-vs-tifosi-2026",
+   "title": "Tifosi Alternative Cycling Glasses: StradaPro vs Tifosi 2026",
+   "words": 4742,
+   "has_table": true,
+   "has_faq_schema": true
+  },
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-buying-guide-2026-road-optics-that-deliver": {
    "handle": "cycling-glasses-buying-guide-2026-road-optics-that-deliver",
    "title": "Cycling Glasses Buying Guide 2026: Road Optics That Deliver",
@@ -60,7 +95,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/uv-protection-for-cyclists-eyes-the-complete-2026-guide": {
    "handle": "uv-protection-for-cyclists-eyes-the-complete-2026-guide",
    "title": "UV Protection for Cyclists Eyes: The Complete 2026 Guide",
-   "words": 4693,
+   "words": 4701,
    "has_table": false,
    "has_faq_schema": true
   },
@@ -81,7 +116,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-lens-colors-guide-which-tint-wins": {
    "handle": "cycling-glasses-lens-colors-guide-which-tint-wins",
    "title": "Cycling Glasses Lens Colors Guide: Which Tint Wins?",
-   "words": 4355,
+   "words": 4376,
    "has_table": false,
    "has_faq_schema": true
   },
@@ -130,7 +165,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-dont-fit-with-helmet-heres-why": {
    "handle": "cycling-glasses-dont-fit-with-helmet-heres-why",
    "title": "Cycling Glasses Don't Fit With Helmet? Here's Why",
-   "words": 6517,
+   "words": 6538,
    "has_table": false,
    "has_faq_schema": true
   },
@@ -138,20 +173,6 @@
    "handle": "road-bike-glasses-2026",
    "title": "Road Bike Glasses 2026",
    "words": 6038,
-   "has_table": true,
-   "has_faq_schema": true
-  },
-  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-sunglasses-buying-guide-2026": {
-   "handle": "cycling-sunglasses-buying-guide-2026",
-   "title": "Cycling Sunglasses Buying Guide 2026",
-   "words": 6107,
-   "has_table": false,
-   "has_faq_schema": true
-  },
-  "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-review-2026-criteria-top-picks": {
-   "handle": "cycling-glasses-review-2026-criteria-top-picks",
-   "title": "Cycling Glasses Review 2026 Criteria & Top Picks",
-   "words": 4508,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -186,7 +207,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-road-bike-sunglasses-2026-buyers-guide": {
    "handle": "best-road-bike-sunglasses-2026-buyers-guide",
    "title": "Best Road Bike Sunglasses 2026: Buyer's Guide",
-   "words": 5788,
+   "words": 7864,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -253,13 +274,6 @@
    "has_table": true,
    "has_faq_schema": true
   },
-  "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-2026-guide": {
-   "handle": "are-expensive-cycling-glasses-worth-it-2026-guide",
-   "title": "Are Expensive Cycling Glasses Worth It? (2026 Guide)",
-   "words": 8098,
-   "has_table": false,
-   "has_faq_schema": true
-  },
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-value-2026-oakley-vs-velluto-vs-decathlon": {
    "handle": "best-cycling-glasses-value-2026-oakley-vs-velluto-vs-decathlon",
    "title": "Cycling Glasses 2026: Oakley vs Decathlon vs Velluto",
@@ -267,31 +281,10 @@
    "has_table": true,
    "has_faq_schema": true
   },
-  "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-the-real-answer": {
-   "handle": "are-expensive-cycling-glasses-worth-it-the-real-answer",
-   "title": "Are Expensive Cycling Glasses Worth It? The Real Answer",
-   "words": 4778,
-   "has_table": false,
-   "has_faq_schema": true
-  },
   "https://velluto-shop.com/blogs/velluto-the-magazine/sungod-alternative-cycling-glasses-velluto-stradapro-tested": {
    "handle": "sungod-alternative-cycling-glasses-velluto-stradapro-tested",
    "title": "SunGod Alternative Cycling Glasses: Velluto StradaPro",
    "words": 5203,
-   "has_table": true,
-   "has_faq_schema": true
-  },
-  "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-2026": {
-   "handle": "best-cycling-glasses-2026",
-   "title": "Best Cycling Glasses 2026",
-   "words": 4414,
-   "has_table": true,
-   "has_faq_schema": true
-  },
-  "https://velluto-shop.com/blogs/velluto-the-magazine/best-road-cycling-glasses-2026": {
-   "handle": "best-road-cycling-glasses-2026",
-   "title": "Best Road Cycling Glasses 2026",
-   "words": 3998,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -327,20 +320,6 @@
    "handle": "best-oakley-alternatives-for-cyclists-2026-lighter-cheaper",
    "title": "Best Oakley Alternatives for Cyclists 2026 (Lighter & Cheaper)",
    "words": 3505,
-   "has_table": true,
-   "has_faq_schema": true
-  },
-  "https://velluto-shop.com/blogs/velluto-the-magazine/are-expensive-cycling-glasses-worth-it-honest-answer": {
-   "handle": "are-expensive-cycling-glasses-worth-it-honest-answer",
-   "title": "Are Expensive Cycling Glasses Worth It? Honest Answer",
-   "words": 3756,
-   "has_table": false,
-   "has_faq_schema": true
-  },
-  "https://velluto-shop.com/blogs/velluto-the-magazine/best-oakley-alternative-cycling-sunglasses-2026-velluto": {
-   "handle": "best-oakley-alternative-cycling-sunglasses-2026-velluto",
-   "title": "Best Oakley Alternative Cycling Sunglasses 2026 | Velluto",
-   "words": 5028,
    "has_table": true,
    "has_faq_schema": true
   },
@@ -403,7 +382,7 @@
   "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-for-tour-de-france-conditions-2026": {
    "handle": "best-cycling-glasses-for-tour-de-france-conditions-2026",
    "title": "Best Cycling Glasses for Tour de France Conditions 2026",
-   "words": 3678,
+   "words": 5593,
    "has_table": true,
    "has_faq_schema": false
   },
@@ -631,13 +610,6 @@
    "has_table": true,
    "has_faq_schema": true
   },
-  "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-glasses-2026-what-actually-makes-them-good": {
-   "handle": "best-cycling-glasses-2026-what-actually-makes-them-good",
-   "title": "Best Cycling Glasses 2026: What Actually Makes Them Good",
-   "words": 2652,
-   "has_table": false,
-   "has_faq_schema": true
-  },
   "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-for-amstel-gold-race-2026-velluto": {
    "handle": "cycling-glasses-for-amstel-gold-race-2026-velluto",
    "title": "Cycling Glasses for Amstel Gold Race 2026 | Velluto",
@@ -653,6 +625,6 @@
    "has_faq_schema": false
   }
  },
- "faq_schema_coverage": 0.62,
- "tables_on_comparison_pages": 19
+ "faq_schema_coverage": 0.61,
+ "tables_on_comparison_pages": 20
 }

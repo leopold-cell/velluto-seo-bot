@@ -3028,5 +3028,59 @@
     "checked_at": "2026-10-15T04:40:23.756892Z",
     "title": "Buy Photochromic Cycling Glasses: What to Check in 2026",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „02: adjustable nose pads the adjustable nose pad system on both the chromo and stradapro allows fine-tuning ac…“",
+      "[FACT] claims polarized lenses — no Velluto product has these — Satz: „neither product offers polarized or prescription lenses. what is the price of the velluto chromo? the velluto …“",
+      "[FACT] claims prescription lenses — no Velluto product has these — Satz: „neither product offers polarized or prescription lenses. what is the price of the velluto chromo? the velluto …“"
+    ],
+    "primary_keyword": "buy photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-16T04:21:14.852336Z",
+    "title": "Buy Photochromic Cycling Glasses: What to Check First",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 3 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas",
+      "trimmed meta_description 162→158"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '89 EUR' but config expects '69 EUR' for US"
+    ],
+    "primary_keyword": "buy photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-16T04:24:06.587686Z",
+    "title": "Buy Photochromic Cycling Glasses: What to Check First",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '50 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „the stradapro weighs 25 grams and includes adjustable nose pads for a stable, pressure-free fit. 04 · lens beh…“"
+    ],
+    "primary_keyword": "buy photochromic cycling glasses",
+    "market": "US",
+    "checked_at": "2026-10-16T04:27:27.214082Z",
+    "title": "Buy Photochromic Cycling Glasses: What to Check First",
+    "brief_topic": null
   }
 ]
