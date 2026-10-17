@@ -412,6 +412,26 @@
     "position": 10.1
    },
    "measured": null
+  },
+  "https://velluto-shop.com/blogs/velluto-the-magazine/best-cycling-sunglasses-2026": {
+   "cycle": 7,
+   "date": "2026-10-17",
+   "action": "expand",
+   "handle": "best-cycling-sunglasses-2026",
+   "added_words": 2198,
+   "native_markets": [
+    "de",
+    "nl",
+    "fr"
+   ],
+   "before": {
+    "words": 5608,
+    "clicks": 3,
+    "impressions": 156,
+    "ctr": 1.92,
+    "position": 9.1
+   },
+   "measured": null
   }
  }
 }
