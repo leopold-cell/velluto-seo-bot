@@ -3082,5 +3082,59 @@
     "checked_at": "2026-10-16T04:27:27.214082Z",
     "title": "Buy Photochromic Cycling Glasses: What to Check First",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas",
+      "trimmed meta_description 164→158"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '80 EUR' but config expects '69 EUR' for US",
+      "[PRICE] Velluto-context price '200 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „the velluto stradapro is an interchangeable-lens system: two click-in lenses, neither of which is mirrored or …“",
+      "[FACT] claims mirrored lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „starter vision kit , arancia weight 25 g protection uv400 nose pad adjustable lenses interchangeable from 69 e…“",
+      "[LEGAL] implies a test/review/first-hand experience that wasn't performed — no fabricated testing (§ 5/5a UWG, EU fake-review ban); reframe as an honest, spec-based buyer's guide"
+    ],
+    "primary_keyword": "best mirrored cycling sunglasses",
+    "market": "US",
+    "checked_at": "2026-10-18T04:34:52.283471Z",
+    "title": "Best Mirrored Cycling Sunglasses 2026: Buyer's Guide",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „100 % uva &amp; uvb blocked by uv400 certification 25 g frame weight on the velluto stradapro 119 eur for the …“"
+    ],
+    "primary_keyword": "best mirrored cycling sunglasses",
+    "market": "US",
+    "checked_at": "2026-10-18T04:37:58.078762Z",
+    "title": "Best Mirrored Cycling Sunglasses 2026: A Buyer's Guide",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 1 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Satz: „the velluto stradapro is neither mirrored nor photochromic…“"
+    ],
+    "primary_keyword": "best mirrored cycling sunglasses",
+    "market": "US",
+    "checked_at": "2026-10-18T04:41:22.834378Z",
+    "title": "Best Mirrored Cycling Sunglasses 2026: Buyer's Guide",
+    "brief_topic": null
   }
 ]
