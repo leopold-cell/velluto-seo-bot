@@ -434,6 +434,15 @@ def _is_velluto_price_context(body: str, match_start: int, match_end: int,
     return False  # market context
 
 
+# Block-level elements end a "sentence" too. The span used to run across several
+# headings and boxes ("02: adjustable nose pads ..." through the next section), so a
+# photochromic word two elements away was read next to a StradaPro mention.
+_BLOCK_TAGS = ("<h3", "</h3>", "<h4", "</h4>", "<div", "</div>", "<ul", "</ul>", "<ol",
+               "</ol>", "<table", "</table>", "<details", "</details>", "<summary",
+               "</summary>", "<section", "</section>", "<blockquote", "</blockquote>",
+               "<figure", "</figure>", "<aside", "</aside>", "<dt", "</dt>", "<dd", "</dd>")
+
+
 def _sentence_bounds(text: str, pos: int) -> tuple[int, int]:
     """Find the sentence boundaries (period, ?, !, a <p> tag, a table row or a list
     item) around pos. Module-level so check_brand_facts judges the SAME sentence the
@@ -444,13 +453,13 @@ def _sentence_bounds(text: str, pos: int) -> tuple[int, int]:
     Chromo and a row about the StradaPro were read as a single claim."""
     start = 0
     for tok in [". ", "? ", "! ", "<p>", "</p>", "<br>", "<h1>", "<h2>",
-                "<tr>", "<tr ", "</tr>", "<li>", "<li ", "</li>"]:
+                "<tr>", "<tr ", "</tr>", "<li>", "<li ", "</li>", *_BLOCK_TAGS]:
         i = text.rfind(tok, 0, pos)
         if i > start:
             start = i + len(tok)
     end = len(text)
     for tok in [". ", "? ", "! ", "</p>", "<br>", "</h1>", "</h2>",
-                "</tr>", "<tr>", "<tr ", "</li>", "<li>", "<li "]:
+                "</tr>", "<tr>", "<tr ", "</li>", "<li>", "<li ", *_BLOCK_TAGS]:
         i = text.find(tok, pos)
         if i != -1 and i < end:
             end = i
@@ -491,6 +500,12 @@ def _price_matches_named_product(body: str, start: int, end: int, amt: int) -> b
     sentence = low[s0:s1]
     return any(price == amt and any(t in sentence for t in toks)
                for price, toks in _catalog())
+
+
+def _plain_context(body: str, start: int, end: int, width: int = 80) -> str:
+    """Tag-free text around a match, for log lines."""
+    txt = re.sub(r"<[^>]+>", " ", body[max(0, start - width): end + width])
+    return re.sub(r"\s+", " ", txt).strip()
 
 
 def check_commercial_config(post: dict, market_code: str, commercial: dict | None) -> list[str]:
@@ -565,6 +580,9 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
             issues.append(
                 f"[PRICE] Velluto-context price '{amt} {curr}' but config expects "
                 f"'{expected} {expected_curr}' for {market_code}"
+                # Without the surrounding text a price flag cannot be diagnosed from
+                # the log ('89 EUR' and '50 EUR' recurred and nobody could see where).
+                f" — Stelle: „…{_plain_context(body, m.start(), m.end())}…“"
             )
     return list(dict.fromkeys(issues))  # dedupe preserving order
 
@@ -613,8 +631,12 @@ FORBIDDEN_FEATURE_TOKENS = [
 # Clause delimiters inside one sentence. A sentence that compares the two products
 # ("the StradaPro's anti-fog system and the Chromo's photochromic lens") must be
 # judged clause by clause, otherwise any honest comparison trips the check.
+_PRONOUNS = {"it", "its", "this", "that", "which", "they", "their", "these", "those",
+             "he", "she", "his", "her", "our", "your", "we", "you"}
+# NB: "instead" is deliberately NOT a delimiter: "instead of" is itself a negation, and
+# splitting it left the negation word in a different clause than the feature it denies.
 _CLAUSE_SPLIT = re.compile(
-    r"[;:,()]|\s[\u2014\u2013-]\s|\b(?:and|while|whereas|but|instead|unlike|versus|vs\.?)\b")
+    r"[;:,()]|\s[\u2014\u2013-]\s|\b(?:and|while|whereas|but|unlike|versus|vs\.?)\b")
 _STRADAPRO_TOKENS = ("stradapro", "strada pro", "starter vision kit",
                      "performance vision kit", "vellutopuro", "vellutovisione")
 _CHROMO_TOKEN = "chromo"
@@ -622,7 +644,8 @@ _CHROMO_TOKEN = "chromo"
 # Negation and contrast markers, per shop language. "not only" is excluded — it
 # introduces a POSITIVE claim ("not only photochromic, but also…").
 _NEGATION_RE = re.compile(
-    r"\b(?:not|no|never|without|lacks?|instead of|rather than|doesn'?t|does not|"
+    r"\b(?:not|no|never|neither|nor|none|without|lacks?|instead of|rather than|"
+    r"doesn'?t|does not|isn'?t|aren'?t|can'?t|cannot|won'?t|"
     r"nicht|kein\w*|ohne|statt|anstelle|verzichtet|"
     r"niet|geen|zonder|sans|pas|aucun\w*|senza|niente|sin|ningun\w*)\b", re.I)
 
@@ -631,6 +654,49 @@ def _sentence_has_denial(sentence: str) -> bool:
     if re.search(r"\bnot only\b", sentence, re.I):
         return False
     return bool(_NEGATION_RE.search(sentence))
+
+
+def _claim_is_denied(sentence: str, offset: int) -> bool:
+    """True when the feature word at `offset` is DENIED rather than claimed.
+
+    The negation has to sit in the same clause as the feature. Judging the whole
+    sentence let one "not"/"neither" anywhere free every claim in it: "Neither of our
+    frames is cheap, but the StradaPro is photochromic" passed as an honest denial.
+
+    One carve-out: a clause that names no product ("... does not offer photochromic
+    and polarized lenses", where "polarized lenses" is the second clause) continues
+    the negation of the clause before it.
+    """
+    clauses, last = [], 0
+    for sp in _CLAUSE_SPLIT.finditer(sentence):
+        clauses.append((last, sp.start()))
+        last = sp.end()
+    clauses.append((last, len(sentence)))
+    idx = next((i for i, (a, b) in enumerate(clauses) if a <= offset <= b), len(clauses) - 1)
+    text = sentence[clauses[idx][0]:clauses[idx][1]]
+    if _sentence_has_denial(text):
+        return True
+    # A product named BEFORE the feature is its subject ("the StradaPro is
+    # photochromic"): that clause must carry its own negation. A product named only
+    # AFTER it is a trailing phrase ("... polarized lenses on the StradaPro") and the
+    # clause still continues the negation before it.
+    before = text[:max(0, offset - clauses[idx][0])]
+    if any(t in before for t in _STRADAPRO_TOKENS) or _CHROMO_TOKEN in before:
+        return False
+    # The continuation only holds for a bare list item: the clause starts at (or
+    # right before) the feature word. Anything longer ahead of it, or a pronoun
+    # ("... is not heavy, but ITS photochromic lens adapts"), is a new subject making
+    # its own claim and needs its own negation.
+    lead = re.findall(r"[a-z']+", before)
+    if len(lead) > 2 or any(w in _PRONOUNS for w in lead):
+        return False
+    for j in range(idx - 1, -1, -1):
+        prev = sentence[clauses[j][0]:clauses[j][1]]
+        if _sentence_has_denial(prev):
+            return True
+        if any(t in prev for t in _STRADAPRO_TOKENS) or _CHROMO_TOKEN in prev:
+            return False
+    return False
 
 
 def check_image_alt_text(post: dict) -> list[str]:
@@ -678,7 +744,7 @@ def check_brand_facts(post: dict) -> list[str]:
             s0, s1 = _sentence_bounds(body, m.start())
             sentence = body[s0:s1]
             # An honest denial is not a claim — see FORBIDDEN_FEATURE_TOKENS.
-            if negatable and _sentence_has_denial(sentence):
+            if negatable and _claim_is_denied(sentence, m.start() - s0):
                 continue
             flag_msg = msg
             if chromo_ok:
@@ -719,9 +785,12 @@ def check_brand_facts(post: dict) -> list[str]:
             # kept publishing stalled for days. The quote flows into the retry
             # feedback (the model sees exactly what to remove), the failure log
             # and the daily mail.
-            quote = re.sub(r"<[^>]+>", " ", sentence)
-            quote = re.sub(r"\s+", " ", quote).strip()[:110]
-            issues.append(f"[FACT] {flag_msg} — Satz: „{quote}…“")
+            # Quote the text AROUND the offending word, not the start of the sentence:
+            # the start often says nothing about why the match fired.
+            lo_q, hi_q = max(s0, m.start() - 90), min(s1, m.end() + 90)
+            quote = re.sub(r"<[^>]+>", " ", body[lo_q:hi_q])
+            quote = re.sub(r"\s+", " ", quote).strip()
+            issues.append(f"[FACT] {flag_msg} — Stelle: „…{quote}…“")
             break
     return issues
 

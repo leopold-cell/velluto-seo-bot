@@ -190,7 +190,7 @@ EN_KEYWORDS = [
                  "Nero Fuoco / Bianco Lago / Bianco Viola. The StradaPro (two click-in "
                  "lenses, from 69 EUR, NOT photochromic) is the alternative for riders who "
                  "prefer to choose by hand. Link https://velluto-shop.com/pages/chromo . "
-                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. "
+                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. Never add prices together and never state a total, a saving or a bundle price. Each Velluto price appears only beside the one product that costs it. "
                  "No transition-speed, light-transmission, temperature or durability claims."
                  + _offer_note("chromo-2x1"),
     },
@@ -203,7 +203,7 @@ EN_KEYWORDS = [
                  "fit, lens swap, return policy). The Velluto Chromo is the Velluto option: "
                  "photochromic and mirrored in bright sun, 119 EUR. The StradaPro is NOT "
                  "mirrored: say so plainly. Link https://velluto-shop.com/pages/chromo . "
-                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. "
+                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. Never add prices together and never state a total, a saving or a bundle price. Each Velluto price appears only beside the one product that costs it. "
                  "No heat-reflection or performance claims."
                  + _offer_note("chromo-2x1"),
     },
@@ -218,7 +218,7 @@ EN_KEYWORDS = [
                  "nose pads, tool-free lenses, built-in anti-fog, 30-day trial, from 69 "
                  "EUR; Chromo 119 EUR as the photochromic model (https://velluto-shop.com/"
                  "pages/chromo). No impact-protection or safety-rating claims, no claims for "
-                 "other sports (running, skiing). " + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. ",
+                 "other sports (running, skiing). " + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. Never add prices together and never state a total, a saving or a bundle price. Each Velluto price appears only beside the one product that costs it. ",
     },
     {
         "keyword": "best gravel bike sunglasses",
@@ -231,7 +231,7 @@ EN_KEYWORDS = [
                  "(from 69 EUR, two click-in lenses) may be presented for gravel; the "
                  "Chromo (119 EUR, photochromic) suits changing light "
                  "(https://velluto-shop.com/pages/chromo). No impact or crash-protection "
-                 "claims. " + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. "
+                 "claims. " + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. Never add prices together and never state a total, a saving or a bundle price. Each Velluto price appears only beside the one product that costs it. "
                  + _offer_note("chromo-2x1"),
     },
     {
@@ -245,7 +245,7 @@ EN_KEYWORDS = [
                  "Vision Kit from 69 EUR, VellutoVisione lens 39 EUR, VellutoPuro lens 19 "
                  "EUR, Chromo 119 EUR. State NO market-wide price ranges, averages or "
                  "competitor prices: none are supplied. Never add prices up. "
-                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. ",
+                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. Never add prices together and never state a total, a saving or a bundle price. Each Velluto price appears only beside the one product that costs it. ",
     },
     {
         "keyword": "best cycling glasses for overcast days",
@@ -256,7 +256,7 @@ EN_KEYWORDS = [
                  "VellutoPuro for the darkest conditions, both on the StradaPro; the "
                  "Chromo as the adapting option for light that keeps changing "
                  "(https://velluto-shop.com/pages/chromo). Present both routes. "
-                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. "
+                 + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. Never add prices together and never state a total, a saving or a bundle price. Each Velluto price appears only beside the one product that costs it. "
                  "No light-transmission figures."
                  + _offer_note("chromo-2x1"),
     },
@@ -582,6 +582,10 @@ def _save_used(used: set) -> None:
     json.dump(sorted(used), open(EN_USED_LOG, "w", encoding="utf-8"), indent=2)
 
 
+# Failures logged before this date came from gate rules that have since been corrected
+# (negation across clauses, table rows, catalog prices). They must not keep a keyword
+# parked: "buy photochromic cycling glasses" had been parked on 3 such days.
+GATE_FIXED_ON = "2026-10-19"
 MAX_FAILED_DAYS = 3      # distinct days a keyword may fail the gate before it is parked
 FAIL_WINDOW_DAYS = 14
 
@@ -598,7 +602,8 @@ def _failed_days(keyword: str) -> int:
     try:
         import datetime
         path = os.path.join(_QUEUE_DIR, "output", "quality_gate_failures.json")
-        cutoff = (datetime.date.today() - datetime.timedelta(days=FAIL_WINDOW_DAYS)).isoformat()
+        cutoff = max((datetime.date.today() - datetime.timedelta(days=FAIL_WINDOW_DAYS)).isoformat(),
+                     GATE_FIXED_ON)
         days = {str(r.get("checked_at", ""))[:10] for r in json.load(open(path, encoding="utf-8"))
                 if isinstance(r, dict) and not r.get("passed")
                 and (r.get("primary_keyword") or "").strip().lower() == keyword.strip().lower()
