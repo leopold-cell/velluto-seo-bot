@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-10-19": 9
+   "2026-10-20": 6
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -3071,5 +3071,29 @@
  "sv|bästa speglade cykelsolglasögon köp": {
   "volume": 0,
   "date": "2026-10-19"
+ },
+ "fr|lunettes vélo photochromiques à acheter": {
+  "volume": 0,
+  "date": "2026-10-20"
+ },
+ "it|occhiali ciclismo fotocromici acquista": {
+  "volume": 0,
+  "date": "2026-10-20"
+ },
+ "da|køb cykelbriller fotokromiske": {
+  "volume": 0,
+  "date": "2026-10-20"
+ },
+ "nb|kjøp sykkelbriller fotokromiske": {
+  "volume": 0,
+  "date": "2026-10-20"
+ },
+ "pt-PT|óculos ciclismo fotocromáticos comprar": {
+  "volume": 0,
+  "date": "2026-10-20"
+ },
+ "sv|köp cykelglasögon fotokromiska": {
+  "volume": 0,
+  "date": "2026-10-20"
  }
 }
