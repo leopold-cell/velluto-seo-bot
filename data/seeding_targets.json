@@ -1,5 +1,5 @@
 {
- "date": "2026-10-14",
+ "date": "2026-10-21",
  "seeding": [
   {
    "domain": "reddit.com",
@@ -14,9 +14,26 @@
     "SunGod vs Oakley cycling glasses"
    ],
    "best_rank": 1,
+   "ai_cited": 5,
+   "ai_cited_velluto_absent": 5,
+   "score": 400
+  },
+  {
+   "domain": "youtube.com",
+   "type": "youtube",
+   "name": "",
+   "keywords": [
+    "Oakley alternative cycling sunglasses",
+    "Oakley alternative road cycling glasses",
+    "POC alternative cycling glasses",
+    "Rudy Project alternative cycling glasses",
+    "SunGod alternative cycling glasses",
+    "SunGod vs Oakley cycling glasses"
+   ],
+   "best_rank": 1,
    "ai_cited": 4,
    "ai_cited_velluto_absent": 4,
-   "score": 400
+   "score": 345
   },
   {
    "domain": "cyclingweekly.com",
@@ -24,178 +41,181 @@
    "name": "",
    "keywords": [
     "Oakley alternative cycling sunglasses",
-    "POC alternative cycling glasses",
-    "SunGod alternative cycling glasses",
-    "SunGod vs Velluto cycling glasses",
-    "UV400 cycling sunglasses",
-    "Velluto vs Oakley cycling glasses"
-   ],
-   "best_rank": 1,
-   "ai_cited": 9,
-   "ai_cited_velluto_absent": 9,
-   "score": 265
-  },
-  {
-   "domain": "youtube.com",
-   "type": "youtube",
-   "name": "",
-   "keywords": [
-    "Oakley alternative road cycling glasses",
-    "SunGod alternative cycling glasses",
-    "SunGod vs Oakley cycling glasses",
-    "SunGod vs Velluto cycling glasses",
-    "Velluto vs Oakley cycling glasses",
-    "are cheap sport sunglasses good"
-   ],
-   "best_rank": 2,
-   "ai_cited": 2,
-   "ai_cited_velluto_absent": 2,
-   "score": 265
-  },
-  {
-   "domain": "outdoorgearlab.com",
-   "type": "editorial",
-   "name": "Outdoorgearlab",
-   "keywords": [
-    "POC alternative cycling glasses",
-    "SunGod vs Oakley cycling glasses",
-    "UV400 cycling sunglasses",
-    "Velluto vs Oakley cycling glasses",
-    "affordable premium cycling sunglasses",
-    "anti fog cycling sunglasses"
-   ],
-   "best_rank": 1,
-   "ai_cited": 6,
-   "ai_cited_velluto_absent": 6,
-   "score": 215
-  },
-  {
-   "domain": "cyclingnews.com",
-   "type": "editorial",
-   "name": "",
-   "keywords": [
-    "Oakley alternative cycling sunglasses",
-    "POC alternative cycling glasses",
-    "affordable premium cycling sunglasses",
-    "anti fog cycling sunglasses",
-    "are cheap sport sunglasses good",
-    "are expensive cycling sunglasses worth it"
-   ],
-   "best_rank": 1,
-   "ai_cited": 5,
-   "ai_cited_velluto_absent": 5,
-   "score": 205
-  },
-  {
-   "domain": "facebook.com",
-   "type": "editorial",
-   "name": "",
-   "keywords": [
     "Oakley alternative road cycling glasses",
     "Rudy Project alternative cycling glasses",
     "SunGod vs Velluto cycling glasses",
     "UV400 cycling sunglasses",
-    "anti fog cycling sunglasses",
-    "are cheap sport sunglasses good"
-   ],
-   "best_rank": 1,
-   "ai_cited": 0,
-   "ai_cited_velluto_absent": 0,
-   "score": 185
-  },
-  {
-   "domain": "bikerumor.com",
-   "type": "editorial",
-   "name": "Bikerumor",
-   "keywords": [
-    "Oakley alternative cycling sunglasses",
-    "POC alternative cycling glasses",
-    "Rudy Project alternative cycling glasses",
-    "SunGod alternative cycling glasses",
-    "Velluto vs Oakley cycling glasses",
     "affordable premium cycling sunglasses"
    ],
    "best_rank": 1,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
-   "score": 175
+   "ai_cited": 12,
+   "ai_cited_velluto_absent": 12,
+   "score": 285
   },
   {
    "domain": "bikeradar.com",
    "type": "editorial",
    "name": "",
    "keywords": [
+    "Oakley alternative cycling sunglasses",
+    "Oakley alternative road cycling glasses",
     "SunGod alternative cycling glasses",
     "SunGod vs Oakley cycling glasses",
     "Velluto vs Oakley cycling glasses",
-    "affordable premium cycling sunglasses",
-    "best cycling sunglasses",
-    "best road cycling sunglasses"
+    "affordable premium cycling sunglasses"
    ],
    "best_rank": 1,
    "ai_cited": 10,
    "ai_cited_velluto_absent": 10,
-   "score": 165
+   "score": 245
+  },
+  {
+   "domain": "cyclingnews.com",
+   "type": "editorial",
+   "name": "",
+   "keywords": [
+    "Oakley alternative road cycling glasses",
+    "Rudy Project alternative cycling glasses",
+    "affordable premium cycling sunglasses",
+    "anti fog cycling sunglasses",
+    "are cheap sport sunglasses good",
+    "are expensive cycling sunglasses worth it"
+   ],
+   "best_rank": 1,
+   "ai_cited": 8,
+   "ai_cited_velluto_absent": 8,
+   "score": 225
+  },
+  {
+   "domain": "outdoorgearlab.com",
+   "type": "editorial",
+   "name": "Outdoorgearlab",
+   "keywords": [
+    "Oakley alternative road cycling glasses",
+    "Rudy Project alternative cycling glasses",
+    "SunGod vs Oakley cycling glasses",
+    "UV400 cycling sunglasses",
+    "Velluto vs Oakley cycling glasses",
+    "affordable premium cycling sunglasses"
+   ],
+   "best_rank": 3,
+   "ai_cited": 10,
+   "ai_cited_velluto_absent": 10,
+   "score": 215
+  },
+  {
+   "domain": "facebook.com",
+   "type": "editorial",
+   "name": "",
+   "keywords": [
+    "POC alternative cycling glasses",
+    "SunGod vs Oakley cycling glasses",
+    "SunGod vs Velluto cycling glasses",
+    "anti fog cycling sunglasses",
+    "are expensive cycling sunglasses worth it",
+    "best road cycling sunglasses"
+   ],
+   "best_rank": 1,
+   "ai_cited": 0,
+   "ai_cited_velluto_absent": 0,
+   "score": 205
   },
   {
    "domain": "cyclist.co.uk",
    "type": "editorial",
    "name": "Cyclist",
    "keywords": [
+    "Oakley alternative road cycling glasses",
     "SunGod alternative cycling glasses",
     "SunGod vs Oakley cycling glasses",
     "SunGod vs Velluto cycling glasses",
     "Velluto vs Oakley cycling glasses",
-    "are expensive cycling sunglasses worth it",
-    "best Oakley alternative cycling sunglasses"
+    "are expensive cycling sunglasses worth it"
    ],
-   "best_rank": 3,
+   "best_rank": 1,
    "ai_cited": 0,
    "ai_cited_velluto_absent": 0,
+   "score": 165
+  },
+  {
+   "domain": "bikerumor.com",
+   "type": "editorial",
+   "name": "Bikerumor",
+   "keywords": [
+    "Oakley alternative road cycling glasses",
+    "affordable premium cycling sunglasses",
+    "are expensive cycling sunglasses worth it",
+    "best Oakley alternative cycling sunglasses",
+    "best value cycling glasses",
+    "cycling glasses with interchangeable lenses"
+   ],
+   "best_rank": 1,
+   "ai_cited": 3,
+   "ai_cited_velluto_absent": 3,
+   "score": 155
+  },
+  {
+   "domain": "intheknowcycling.com",
+   "type": "editorial",
+   "name": "Intheknow",
+   "keywords": [
+    "Oakley alternative cycling sunglasses",
+    "affordable premium cycling sunglasses",
+    "best Oakley alternative cycling sunglasses",
+    "best cycling sunglasses",
+    "best road cycling sunglasses",
+    "best value cycling glasses"
+   ],
+   "best_rank": 1,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
    "score": 135
   },
   {
-   "domain": "220triathlon.com",
+   "domain": "bicycling.com",
    "type": "editorial",
-   "name": "220triathlon",
+   "name": "BI",
    "keywords": [
-    "SunGod vs Oakley cycling glasses",
-    "affordable premium cycling sunglasses",
-    "best Oakley alternative cycling sunglasses",
-    "best value cycling glasses",
-    "photochromic vs interchangeable cycling glasses"
-   ],
-   "best_rank": 4,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
-   "score": 118
-  },
-  {
-   "domain": "canyon.com",
-   "type": "editorial",
-   "name": "",
-   "keywords": [
-    "best road cycling sunglasses",
-    "cycling glasses with interchangeable lenses",
-    "cycling sunglasses"
+    "Oakley alternative road cycling glasses",
+    "cycling sunglasses",
+    "cycling sunglasses for bugs and insects",
+    "uv protection while cycling"
    ],
    "best_rank": 1,
    "ai_cited": 2,
    "ai_cited_velluto_absent": 2,
-   "score": 105
+   "score": 115
   },
   {
-   "domain": "siroko.com",
+   "domain": "agu.com",
    "type": "editorial",
-   "name": "Siroko",
+   "name": "AGU",
    "keywords": [
-    "cycling glasses don't fit with helmet",
-    "photochromic vs interchangeable cycling glasses",
-    "uv protection while cycling"
+    "cycling glasses for wind protection",
+    "cycling glasses keep fogging up",
+    "cycling sunglasses for bugs and insects",
+    "wind protection cycling glasses"
    ],
-   "best_rank": 3,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
+   "best_rank": 1,
+   "ai_cited": 7,
+   "ai_cited_velluto_absent": 7,
+   "score": 115
+  },
+  {
+   "domain": "road.cc",
+   "type": "editorial",
+   "name": "Road",
+   "keywords": [
+    "Oakley alternative cycling sunglasses",
+    "SunGod alternative cycling glasses",
+    "affordable premium cycling sunglasses",
+    "are expensive cycling sunglasses worth it",
+    "best Oakley alternative cycling sunglasses",
+    "best cycling sunglasses"
+   ],
+   "best_rank": 1,
+   "ai_cited": 0,
+   "ai_cited_velluto_absent": 0,
    "score": 105
   },
   {
@@ -207,31 +227,18 @@
     "best road cycling sunglasses",
     "best value cycling glasses"
    ],
-   "best_rank": 7,
+   "best_rank": 8,
    "ai_cited": 2,
    "ai_cited_velluto_absent": 2,
    "score": 98
   },
   {
-   "domain": "bicycling.com",
+   "domain": "bbbcycling.com",
    "type": "editorial",
-   "name": "BI",
+   "name": "BBB",
    "keywords": [
-    "best value cycling glasses",
-    "uv protection while cycling"
-   ],
-   "best_rank": 1,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
-   "score": 95
-  },
-  {
-   "domain": "nakedoptics.net",
-   "type": "editorial",
-   "name": "Nakedoptics.net",
-   "keywords": [
-    "cycling glasses don't fit with helmet",
-    "cycling glasses with interchangeable lenses"
+    "cycling glasses keep fogging up",
+    "cycling glasses worth the money"
    ],
    "best_rank": 3,
    "ai_cited": 1,
@@ -243,9 +250,9 @@
    "type": "editorial",
    "name": "",
    "keywords": [
-    "best cycling sunglasses",
     "best road cycling sunglasses",
-    "best value cycling glasses"
+    "cycling glasses with interchangeable lenses",
+    "wind protection cycling glasses"
    ],
    "best_rank": 99,
    "ai_cited": 7,
@@ -253,83 +260,117 @@
    "score": 90
   },
   {
-   "domain": "sigmasports.com",
+   "domain": "rei.com",
    "type": "editorial",
-   "name": "Sigma",
+   "name": "REI",
    "keywords": [
-    "anti fog cycling sunglasses",
+    "best road cycling sunglasses",
     "cycling glasses with interchangeable lenses"
    ],
-   "best_rank": 8,
+   "best_rank": 7,
    "ai_cited": 1,
    "ai_cited_velluto_absent": 1,
    "score": 88
   },
   {
-   "domain": "poc.com",
-   "type": "editorial",
-   "name": "POC",
-   "keywords": [
-    "POC alternative cycling glasses"
-   ],
-   "best_rank": 5,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
-   "score": 78
-  },
-  {
-   "domain": "runningsupply.substack.com",
+   "domain": "mensfitness.co.uk",
    "type": "editorial",
    "name": "",
    "keywords": [
-    "Oakley alternative cycling sunglasses"
-   ],
-   "best_rank": 7,
-   "ai_cited": 4,
-   "ai_cited_velluto_absent": 4,
-   "score": 78
-  },
-  {
-   "domain": "road.cc",
-   "type": "editorial",
-   "name": "Road",
-   "keywords": [
+    "Oakley alternative cycling sunglasses",
+    "Oakley alternative road cycling glasses",
+    "SunGod alternative cycling glasses",
     "SunGod vs Oakley cycling glasses",
-    "are expensive cycling sunglasses worth it",
-    "best road cycling sunglasses",
-    "best value cycling glasses",
-    "cycling sunglasses",
-    "cycling sunglasses for bugs and insects"
+    "best Oakley alternative cycling sunglasses",
+    "best road cycling sunglasses"
    ],
-   "best_rank": 2,
+   "best_rank": 1,
    "ai_cited": 0,
    "ai_cited_velluto_absent": 0,
-   "score": 75
+   "score": 85
+  },
+  {
+   "domain": "coachweb.com",
+   "type": "editorial",
+   "name": "",
+   "keywords": [
+    "SunGod vs Oakley cycling glasses"
+   ],
+   "best_rank": 1,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
+   "score": 85
+  },
+  {
+   "domain": "rouleur.cc",
+   "type": "editorial",
+   "name": "",
+   "keywords": [
+    "Oakley alternative road cycling glasses",
+    "SunGod vs Oakley cycling glasses",
+    "affordable premium cycling sunglasses",
+    "anti fog cycling sunglasses",
+    "best Oakley alternative cycling sunglasses",
+    "best value cycling glasses"
+   ],
+   "best_rank": 1,
+   "ai_cited": 0,
+   "ai_cited_velluto_absent": 0,
+   "score": 85
   }
  ],
  "stockist": [
+  {
+   "domain": "amazon.com",
+   "type": "retailer",
+   "name": "",
+   "keywords": [
+    "SunGod alternative cycling glasses",
+    "UV400 cycling sunglasses",
+    "anti fog cycling sunglasses",
+    "are cheap sport sunglasses good",
+    "best value cycling glasses",
+    "cycling glasses for wind protection"
+   ],
+   "best_rank": 1,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
+   "score": 175
+  },
   {
    "domain": "bike24.com",
    "type": "retailer",
    "name": "",
    "keywords": [
-    "anti fog cycling sunglasses",
+    "affordable premium cycling sunglasses",
     "best cycling sunglasses",
-    "cycling glasses for wind protection",
     "cycling glasses with interchangeable lenses",
-    "cycling sunglasses for bugs and insects"
+    "cycling sunglasses for bugs and insects",
+    "wind protection cycling glasses"
    ],
-   "best_rank": 1,
+   "best_rank": 2,
    "ai_cited": 1,
    "ai_cited_velluto_absent": 1,
    "score": 125
+  },
+  {
+   "domain": "decathlon.fr",
+   "type": "retailer",
+   "name": "",
+   "keywords": [
+    "UV400 cycling sunglasses"
+   ],
+   "best_rank": 3,
+   "ai_cited": 4,
+   "ai_cited_velluto_absent": 4,
+   "score": 85
   },
   {
    "domain": "bergfreunde.eu",
    "type": "retailer",
    "name": "Bergfreunde",
    "keywords": [
-    "anti fog cycling sunglasses"
+    "Rudy Project alternative cycling glasses"
    ],
    "best_rank": 9,
    "ai_cited": 1,
@@ -337,65 +378,65 @@
    "score": 78
   },
   {
+   "domain": "amazon.es",
+   "type": "retailer",
+   "name": "",
+   "keywords": [
+    "SunGod alternative cycling glasses",
+    "UV400 cycling sunglasses",
+    "anti fog cycling sunglasses",
+    "cycling glasses for wind protection",
+    "cycling glasses with interchangeable lenses",
+    "wind protection cycling glasses"
+   ],
+   "best_rank": 1,
+   "ai_cited": 0,
+   "ai_cited_velluto_absent": 0,
+   "score": 75
+  },
+  {
+   "domain": "amazon.de",
+   "type": "retailer",
+   "name": "",
+   "keywords": [
+    "UV400 cycling sunglasses",
+    "anti fog cycling sunglasses",
+    "cycling glasses for wind protection",
+    "cycling glasses with interchangeable lenses",
+    "cycling sunglasses",
+    "wind protection cycling glasses"
+   ],
+   "best_rank": 2,
+   "ai_cited": 0,
+   "ai_cited_velluto_absent": 0,
+   "score": 75
+  },
+  {
+   "domain": "amazon.it",
+   "type": "retailer",
+   "name": "",
+   "keywords": [
+    "POC alternative cycling glasses",
+    "UV400 cycling sunglasses",
+    "anti fog cycling sunglasses",
+    "cycling glasses for wind protection",
+    "cycling sunglasses"
+   ],
+   "best_rank": 1,
+   "ai_cited": 0,
+   "ai_cited_velluto_absent": 0,
+   "score": 65
+  },
+  {
    "domain": "bergzeit.de",
    "type": "retailer",
    "name": "Bergzeit",
    "keywords": [],
    "best_rank": 99,
-   "ai_cited": 5,
-   "ai_cited_velluto_absent": 5,
-   "score": 60
-  },
-  {
-   "domain": "idealo.de",
-   "type": "retailer",
-   "name": "Idealo",
-   "keywords": [],
-   "best_rank": 99,
-   "ai_cited": 2,
-   "ai_cited_velluto_absent": 2,
-   "score": 60
-  },
-  {
-   "domain": "otto.de",
-   "type": "retailer",
-   "name": "Otto",
-   "keywords": [],
-   "best_rank": 99,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
-   "score": 60
-  },
-  {
-   "domain": "bike24.de",
-   "type": "retailer",
-   "name": "",
-   "keywords": [],
-   "best_rank": 99,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
-   "score": 60
-  },
-  {
-   "domain": "d.otto.de",
-   "type": "retailer",
-   "name": "",
-   "keywords": [],
-   "best_rank": 99,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
-   "score": 60
-  },
-  {
-   "domain": "decathlon.de",
-   "type": "retailer",
-   "name": "",
-   "keywords": [],
-   "best_rank": 99,
-   "ai_cited": 2,
-   "ai_cited_velluto_absent": 2,
+   "ai_cited": 7,
+   "ai_cited_velluto_absent": 7,
    "score": 60
   }
  ],
- "n_domains": 285
+ "n_domains": 393
 }

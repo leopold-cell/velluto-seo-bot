@@ -3169,5 +3169,23 @@
     "checked_at": "2026-10-19T04:51:44.361382Z",
     "title": "Best Mirrored Cycling Sunglasses 2026: Buyer's Guide",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas",
+      "trimmed meta_description 167→158"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…rast) integrated photochromic lens…“",
+      "[LEGAL] unverifiable superlative/comparative claim next to a named competitor ('…than anything/any/every X') — § 6 UWG needs objective, verifiable comparisons; state Velluto's own measured spec instead"
+    ],
+    "primary_keyword": "best sports glasses for cycling",
+    "market": "US",
+    "checked_at": "2026-10-21T04:34:46.310121Z",
+    "title": "Best Sports Glasses for Cycling: The Complete 2026 Buyer's Guide",
+    "brief_topic": null
   }
 ]
