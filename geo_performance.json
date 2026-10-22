@@ -6043,7 +6043,61 @@
         }
       ],
       "serps_scanned": 140
+    },
+    "2026-10-22": {
+      "aio_serps": 33,
+      "velluto_cited": 0,
+      "competitor_cited": 2,
+      "velluto_gap": 4,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 6.1,
+      "total_citations": 33,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 10
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 4
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 2
+        },
+        {
+          "domain": "tifosioptics.com",
+          "citations": 2
+        },
+        {
+          "domain": "rockbrosbike.us",
+          "citations": 2
+        },
+        {
+          "domain": "amazon.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 1
+        },
+        {
+          "domain": "bikerumor.com",
+          "citations": 1
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 1
+        },
+        {
+          "domain": "competitivecyclist.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 72
     }
   },
-  "latest": "2026-10-21"
+  "latest": "2026-10-22"
 }
