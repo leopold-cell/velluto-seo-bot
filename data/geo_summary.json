@@ -1,17 +1,17 @@
 {
  "Perplexity": {
   "now": {
-   "generic_answers": 180,
-   "generic_cited": 0,
+   "generic_answers": 216,
+   "generic_cited": 6,
    "generic_mentioned": 0,
-   "generic_visible": 0,
-   "generic_rate": 0.0,
+   "generic_visible": 6,
+   "generic_rate": 2.78,
    "generic_ci": [
-    0.0,
-    2.09
+    1.28,
+    5.93
    ],
-   "brand_answers": 12,
-   "brand_cited": 12
+   "brand_answers": 8,
+   "brand_cited": 8
   },
   "before": {
    "generic_answers": 144,
@@ -27,7 +27,7 @@
    "brand_cited": 16
   },
   "verdict": "keine nachweisbare Veränderung",
-  "last": "2026-10-16"
+  "last": "2026-10-23"
  },
  "Gemini": {
   "now": {

@@ -3187,5 +3187,22 @@
     "checked_at": "2026-10-21T04:34:46.310121Z",
     "title": "Best Sports Glasses for Cycling: The Complete 2026 Buyer's Guide",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas",
+      "trimmed meta_description 162→158"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '39 EUR' but config expects '69 EUR' for US — Stelle: „…ces, spot gravel and judge distance in variable light. It is sold separately at 39 EUR and is fully compatible with the Velluto StradaPro frame via the click-in syste…“"
+    ],
+    "primary_keyword": "cycling sports glasses price",
+    "market": "US",
+    "checked_at": "2026-10-23T04:18:37.713484Z",
+    "title": "Cycling Sports Glasses Price: What You Actually Get",
+    "brief_topic": null
   }
 ]
