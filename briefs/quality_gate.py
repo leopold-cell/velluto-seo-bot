@@ -108,7 +108,7 @@ def ensure_homepage_link(html: str) -> tuple[str, bool]:
 # makes it true even if the model (or a product card) links the product URL.
 CHROMO_PAGE_URL = "https://velluto-shop.com/pages/chromo"
 _CHROMO_PRODUCT_HREF = re.compile(
-    r"https?://velluto-shop\.com(?:/[a-z]{2}(?:-[a-z]{2,4})?)?/products/velluto-chromo(?![\w-])"
+    r"https?://velluto-shop\.com(?:/[a-z]{2}(?:-[a-z]{2,4})?)?/products/velluto-chromo(?:-(?:nero-fumo|nero-fuoco|bianco-lago|bianco-viola))?(?![\w-])"
     r"(?:\?[^\"'#\s]*)?(?:#[^\"'\s]*)?", re.I)
 
 

@@ -2235,6 +2235,9 @@ def _adaptation_messages(en_body: str, lang_name: str, target_kw: str, intent: s
         f"1. Write entirely in {lang_name} — no German words anywhere.\n"
         f"2. Use '{target_kw}' naturally in H1, opening paragraph, and at least one H2.\n"
         f"6. Adapt local references to reflect: {cycling_ctx}.\n"
+        f"7. Translate TEXT only. Copy every HTML attribute (class, id, data-*) and every "
+        f"href/src URL character-for-character, including <p class=\"velluto-offer\" "
+        f"data-offer-id=… data-offer-ends=…>; never drop, rename or move such an element.\n"
         f"{price_rule}{paa_rule}"
     )
     return [{"role": "user", "content": [
@@ -2471,6 +2474,13 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
     en_title = (de_post.get("title", "") or "").strip().lower()
     if en_title and adapted_title.strip().lower() == en_title and target_kw:
         adapted_title = _clip_words(target_kw, 70)
+
+    # The model may rewrite hrefs while translating; Chromo is always the /pages/chromo page.
+    try:
+        from briefs.quality_gate import normalize_chromo_links
+        adapted_body, _n = normalize_chromo_links(adapted_body)
+    except Exception as _e:
+        print(f"   ⚠️  [{target_locale}] chromo link normalisation skipped: {_e}")
 
     adapted = {
         "title":     adapted_title,

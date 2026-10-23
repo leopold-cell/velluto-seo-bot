@@ -74,6 +74,55 @@ def unmarked_mentions(body: str, offers: list[dict], today: dt.date) -> list[str
     return hits
 
 
+_TR_QUERY = """
+query($id: ID!, $locale: String!) {
+  translatableResource(resourceId: $id) {
+    translatableContent { key digest }
+    translations(locale: $locale) { key value }
+  }
+}"""
+
+_TR_MUTATION = """
+mutation($id: ID!, $tr: [TranslationInput!]!) {
+  translationsRegister(resourceId: $id, translations: $tr) { userErrors { message } }
+}"""
+
+
+def clean_translations(article_id: int, expired: list[dict], today: dt.date) -> tuple[int, list[str]]:
+    """Strip expired marked offers from every stored translation of one article.
+    Returns (translations_cleaned, locales_with_unmarked_mentions)."""
+    from seo_bot import LOCALE_LANG_NAMES, graphql_with_vars
+
+    gid = f"gid://shopify/Article/{article_id}"
+    cleaned, manual = 0, []
+    for locale in LOCALE_LANG_NAMES:
+        if locale == "en":
+            continue
+        res = (graphql_with_vars(_TR_QUERY, {"id": gid, "locale": locale})
+               .get("translatableResource") or {})
+        body = next((t["value"] for t in res.get("translations") or []
+                     if t.get("key") == "body_html" and t.get("value")), "")
+        if not body:
+            continue
+        new_body, n = strip_expired(body, today)
+        if n:
+            digest = next((c["digest"] for c in res.get("translatableContent") or []
+                           if c.get("key") == "body_html"), "")
+            print(f"     ✂ [{locale}] {n} abgelaufene(r) Angebotsabsatz")
+            if APPLY and digest:
+                out = graphql_with_vars(_TR_MUTATION, {"id": gid, "tr": [{
+                    "key": "body_html", "value": new_body, "locale": locale,
+                    "translatableContentDigest": digest}]})
+                errs = (out.get("translationsRegister") or {}).get("userErrors")
+                if errs:
+                    print(f"     ✗ [{locale}] {errs}")
+                    continue
+            cleaned += 1
+        if unmarked_mentions(new_body, expired, today):
+            manual.append(locale)
+    return cleaned, manual
+
+
 def main() -> None:
     import requests
     import yaml
@@ -116,6 +165,12 @@ def main() -> None:
                     cleaned.append(a["handle"])
                 else:
                     print(f"     ✗ Schreiben fehlgeschlagen: HTTP {resp.status_code}")
+        t_cleaned, t_manual = clean_translations(a["id"], expired, today)
+        if t_cleaned:
+            cleaned.append(f"{a['handle']} (+{t_cleaned} Übersetzungen)")
+        if t_manual:
+            manual.append({"handle": a["handle"], "translations": t_manual})
+            print(f"  ⚠️  {a['handle']}: Übersetzungen {t_manual} erwähnen das Angebot OHNE Markierung")
         left = unmarked_mentions(new_body, expired, today)
         if left:
             manual.append({"handle": a["handle"], "offers": left})
