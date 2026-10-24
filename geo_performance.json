@@ -6151,7 +6151,61 @@
         }
       ],
       "serps_scanned": 77
+    },
+    "2026-10-24": {
+      "aio_serps": 71,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 2,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 1.4,
+      "total_citations": 14,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 4
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 1
+        },
+        {
+          "domain": "cyclingnews.com",
+          "citations": 1
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 1
+        },
+        {
+          "domain": "rei.com",
+          "citations": 1
+        },
+        {
+          "domain": "tifosioptics.com",
+          "citations": 1
+        },
+        {
+          "domain": "evileye.com",
+          "citations": 1
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 1
+        },
+        {
+          "domain": "amazon.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 137
     }
   },
-  "latest": "2026-10-23"
+  "latest": "2026-10-24"
 }
