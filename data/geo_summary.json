@@ -31,14 +31,14 @@
  },
  "Gemini": {
   "now": {
-   "generic_answers": 144,
-   "generic_cited": 4,
+   "generic_answers": 216,
+   "generic_cited": 5,
    "generic_mentioned": 0,
-   "generic_visible": 4,
-   "generic_rate": 2.78,
+   "generic_visible": 5,
+   "generic_rate": 2.31,
    "generic_ci": [
-    1.09,
-    6.92
+    0.99,
+    5.3
    ],
    "brand_answers": 0,
    "brand_cited": 0
@@ -57,6 +57,6 @@
    "brand_cited": 0
   },
   "verdict": "Baseline (kein Vergleichszeitraum)",
-  "last": "2026-10-20"
+  "last": "2026-10-27"
  }
 }
