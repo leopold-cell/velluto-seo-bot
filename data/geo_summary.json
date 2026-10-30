@@ -1,33 +1,33 @@
 {
  "Perplexity": {
   "now": {
-   "generic_answers": 216,
-   "generic_cited": 6,
+   "generic_answers": 252,
+   "generic_cited": 12,
    "generic_mentioned": 0,
-   "generic_visible": 6,
-   "generic_rate": 2.78,
+   "generic_visible": 12,
+   "generic_rate": 4.76,
    "generic_ci": [
-    1.28,
-    5.93
+    2.74,
+    8.14
    ],
-   "brand_answers": 8,
-   "brand_cited": 8
+   "brand_answers": 4,
+   "brand_cited": 4
   },
   "before": {
    "generic_answers": 144,
-   "generic_cited": 4,
+   "generic_cited": 2,
    "generic_mentioned": 0,
-   "generic_visible": 4,
-   "generic_rate": 2.78,
+   "generic_visible": 2,
+   "generic_rate": 1.39,
    "generic_ci": [
-    1.09,
-    6.92
+    0.38,
+    4.92
    ],
    "brand_answers": 16,
    "brand_cited": 16
   },
   "verdict": "keine nachweisbare Veränderung",
-  "last": "2026-10-23"
+  "last": "2026-10-30"
  },
  "Gemini": {
   "now": {
