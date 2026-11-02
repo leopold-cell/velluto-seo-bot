@@ -37,5 +37,19 @@
     "blog_clicks": 309,
     "blog_cr_pct": 0.0,
     "generated_at": "2026-10-01T05:00:10.440822Z"
+  },
+  {
+    "month": "2026-10",
+    "seo_orders": 0,
+    "seo_revenue": 0.0,
+    "goal": 20,
+    "acq_orders": 0,
+    "acq_revenue": 0.0,
+    "harvest_orders": 0,
+    "blog_orders": 0,
+    "blog_revenue": 0.0,
+    "blog_clicks": 335,
+    "blog_cr_pct": 0.0,
+    "generated_at": "2026-11-01T06:00:08.824491Z"
   }
 ]
