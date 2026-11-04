@@ -1,0 +1,25 @@
+{
+ "goal": "min. 30 SEO/GEO orders per month from season 2027",
+ "started": "2026-11-04",
+ "next_review": "2026-12-02",
+ "rule": "Change nothing between reviews except the daily queue publishing; at the review compare the 28-day window against this baseline, then adjust once and wait another 28 days.",
+ "baseline_2026-11-04": {
+  "gsc_28d_clicks": 406,
+  "gsc_28d_impressions": 22615,
+  "gsc_avg_position": 6.7,
+  "seo_orders_2026-10": 0,
+  "blog_clicks_2026-10": 335,
+  "gemini_generic_cited": "8 of 288 answers over 4 weekly runs (2.8 %)",
+  "perplexity": "0 of 180 (last 4 weeks, 2026-10)",
+  "chatgpt": "no measurement yet: data/chatgpt_geo.json missing (OpenAI key/run to be checked)",
+  "queue_open_keywords": 22,
+  "last_article": "2026-10-24"
+ },
+ "review_checks": [
+  "articles published since 2026-11-05 (expect ~1/day while queue lasts)",
+  "GSC 28-day clicks/impressions/position vs baseline, and queries at position 8-20",
+  "Gemini/Perplexity pooled generic rate with Wilson interval; ChatGPT first baseline",
+  "orders with source search or AI referrers (Shopify) vs 0 in October",
+  "Chromo stock/feed status in Merchant Center; offer expiry 2026-11-30 applied to EN and translations"
+ ]
+}
