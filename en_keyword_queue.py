@@ -122,6 +122,14 @@ def _offer_note(offer_id: str) -> str:
         return ""      # an unreadable config must never invent or leak an offer
 
 
+_LEGAL = (
+    "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or "
+    "'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. "
+    "Never add prices together and never state a total, a saving or a bundle price. Each Velluto "
+    "price appears only beside the one product that costs it. "
+)
+
+
 # ── Keyword queue ─────────────────────────────────────────────────────────────
 # Phase 1 = core commercial / high-intent (publish first)
 # Phase 2 = comparison / buying-guide content
@@ -259,6 +267,78 @@ EN_KEYWORDS = [
                  + "Equal detail for every option, the reader decides: no superiority claim, no 'tested' or 'review' framing, no invented numbers or test results. Velluto facts only from BRAND_FACTS. Never add prices together and never state a total, a saving or a bundle price. Each Velluto price appears only beside the one product that costs it. "
                  "No light-transmission figures."
                  + _offer_note("chromo-2x1"),
+    },
+    # ── Phase 1: REFILL (added 2026-11-04, queue was empty since 24 Oct) ───────
+    # High-intent only, Velluto facts only from BRAND_FACTS (no fit/face-size,
+    # contact-lens, dust or crash claims: none are evidenced).
+    {
+        "keyword": "buy cycling glasses with interchangeable lenses",
+        "market_keywords": {"de": "fahrradbrille mit wechselglas kaufen"},
+        "volume": 300, "phase": 1,
+        "angle": "Buyer's guide to interchangeable-lens cycling glasses: how swap systems differ "
+                 "(tool-free or not, lens cost, which lens for which light, storage). Velluto: "
+                 "the StradaPro Starter Vision Kit from 69 EUR with click-in lenses, VellutoVisione "
+                 "high-contrast lens 39 EUR, VellutoPuro clear lens 19 EUR; the Chromo (119 EUR) "
+                 "adapts without swapping (https://velluto-shop.com/pages/chromo). "
+                 + _LEGAL + _offer_note("chromo-2x1"),
+    },
+    {
+        "keyword": "road cycling glasses under 100 euro",
+        "market_keywords": {"de": "rennradbrille unter 100 euro kaufen"},
+        "volume": 250, "phase": 1,
+        "angle": "What a rider gets under 100 EUR and which specs matter at that budget "
+                 "(weight, UV400, anti-fog, lens swap, trial period). Use ONLY Velluto's own "
+                 "prices, each beside its product: StradaPro Starter Vision Kit from 69 EUR, "
+                 "VellutoVisione 39 EUR, VellutoPuro 19 EUR. The Chromo (119 EUR) is above this "
+                 "budget: mention it only as the photochromic step up. State NO market price "
+                 "ranges or competitor prices. " + _LEGAL,
+    },
+    {
+        "keyword": "buy anti fog cycling glasses",
+        "market_keywords": {"de": "fahrradbrille gegen beschlagen kaufen"},
+        "volume": 250, "phase": 1,
+        "angle": "Buyer's guide: why cycling glasses fog on climbs and at traffic lights and what "
+                 "to look for (ventilation, anti-fog coating, fit, lens spacing). Velluto: "
+                 "StradaPro with built-in anti-fog, from 69 EUR. No claim that it never fogs, "
+                 "no test results. " + _LEGAL,
+    },
+    {
+        "keyword": "buy road bike glasses",
+        "market_keywords": {"de": "rennradbrille kaufen"},
+        "volume": 400, "phase": 1,
+        "angle": "Buyer's checklist for road bike glasses: weight, coverage, UV400, lens system, "
+                 "fit adjustment, trial period. Velluto: StradaPro 25 g, UV400, adjustable nose "
+                 "pads, tool-free lenses, built-in anti-fog, 30-day trial, from 69 EUR; Chromo "
+                 "119 EUR as the photochromic model (https://velluto-shop.com/pages/chromo). "
+                 + _LEGAL + _offer_note("chromo-2x1"),
+    },
+    {
+        "keyword": "buy lightweight cycling glasses",
+        "market_keywords": {"de": "leichte rennradbrille kaufen"},
+        "volume": 200, "phase": 1,
+        "angle": "Why frame weight matters on long rides and what else to check next to it "
+                 "(nose-pad adjustment, lens size, secure fit). Velluto: StradaPro 25 g "
+                 "(this is a manufacturer spec, state it as such), from 69 EUR. No comparison "
+                 "weights for other brands unless supplied. " + _LEGAL,
+    },
+    {
+        "keyword": "best cycling glasses for beginners",
+        "market_keywords": {"de": "fahrradbrille für anfänger kaufen"},
+        "volume": 200, "phase": 1,
+        "angle": "What a first-time buyer needs and what is optional: UV400, fit, one clear "
+                 "lens plus one sun lens, price. Velluto: StradaPro Starter Vision Kit from "
+                 "69 EUR with a 30-day trial; extra lenses VellutoVisione 39 EUR and "
+                 "VellutoPuro 19 EUR. " + _LEGAL,
+    },
+    {
+        "keyword": "chromo 2-for-1 cycling glasses deal",
+        "market_keywords": {"de": "photochrome fahrradbrille angebot"},
+        "volume": 150, "phase": 1,
+        "angle": "What photochromic cycling glasses do and who they suit, with the real "
+                 "Chromo offer stated once. Velluto Chromo 119 EUR, colourways Nero Fumo, "
+                 "Nero Fuoco, Bianco Lago, Bianco Viola, photochromic and mirrored in sun, "
+                 "link https://velluto-shop.com/pages/chromo . No speed, transmission or "
+                 "durability claims. " + _LEGAL + _offer_note("chromo-2x1"),
     },
     # ── Phase 1: GENUINE GAPS only (added 2026-09-22) ─────────────────────────
     # The blog is saturated (93 articles: 7 rival "oakley alternative" pages, 5
@@ -650,7 +730,8 @@ def get_en_queue_status() -> dict:
             entry["done"] += 1
     return {
         "total": len(EN_KEYWORDS),
-        "used":  len(used),
+        # only keywords still in the list: `used` also holds retired legacy entries
+        "used":  sum(1 for kw in EN_KEYWORDS if kw["keyword"] in used),
         "by_phase": by_phase,
     }
 

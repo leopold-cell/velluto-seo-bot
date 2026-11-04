@@ -108,11 +108,25 @@ def build() -> tuple[str, str]:
         if gap is not None and gap >= 2:
             problems.append(
                 f"Seit {gap} Tagen kein Artikel veröffentlicht (zuletzt {last}). "
-                "Der Zähler article_num läuft weiter, es entsteht aber nichts — "
-                "Ursache steht in output/quality_gate_failures.json.")
+                "Ursache: Keyword-Queue leer oder Quality Gate "
+                "(output/quality_gate_failures.json).")
         else:
             notes.append("Heute wurde kein neuer Artikel veröffentlicht "
                          "(evtl. Keyword-Pool leer oder Generierung fehlgeschlagen).")
+    # The queue running dry is the other way publishing stops, and it leaves no gate
+    # failure behind (2026-10-24 → 11-04: eleven silent days). Warn before it happens.
+    try:
+        from en_keyword_queue import get_en_queue_status, get_next_en_keyword
+        st = get_en_queue_status()
+        left = st["total"] - st["used"]
+        if get_next_en_keyword() is None:
+            problems.append(
+                "Keyword-Queue leer (en_keyword_queue.py): es wird KEIN Artikel mehr erzeugt, "
+                "der dynamische Fallback ist aus. Neue kaufnahe Keywords eintragen.")
+        elif left <= 3:
+            notes.append(f"Keyword-Queue fast leer: nur noch {left} offene Keywords — nachfüllen.")
+    except Exception:
+        pass
     try:
         os.makedirs(os.path.dirname(pw_path), exist_ok=True)
         with open(pw_path, "w", encoding="utf-8") as _f:
