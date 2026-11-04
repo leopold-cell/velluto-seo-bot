@@ -340,6 +340,112 @@ EN_KEYWORDS = [
                  "link https://velluto-shop.com/pages/chromo . No speed, transmission or "
                  "durability claims. " + _LEGAL + _offer_note("chromo-2x1"),
     },
+    # ── Phase 1: FAN-OUT BATCH (added 2026-11-04; use cases from Gemini fan-out + BRAND_FACTS) ──
+    {
+        "keyword": "best cycling glasses for rain and wet roads",
+        "market_keywords": {"de": "beste fahrradbrille bei regen kaufen", "nl": "beste wielrenbril bij regen kopen", "fr": "meilleures lunettes velo pluie acheter"},
+        "volume": 250, "phase": 1,
+        "angle": "Buyer's guide for wet-weather riding: a clear lens for dull light, ventilation against fogging, a secure fit. Lead with the VellutoPuro clear lens on the StradaPro. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. "
+                  + _LEGAL + _offer_note("chromo-2x1"),
+    },
+    {
+        "keyword": "best cycling glasses for winter riding",
+        "market_keywords": {"de": "beste fahrradbrille winter kaufen", "nl": "beste wielrenbril winter kopen", "fr": "meilleures lunettes velo hiver acheter"},
+        "volume": 200, "phase": 1,
+        "angle": 'Winter-riding checklist: low sun, cold air and fogging, clear versus tinted lens. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL + _offer_note("chromo-2x1"),
+    },
+    {
+        "keyword": "best cycling glasses for commuting",
+        "market_keywords": {"de": "fahrradbrille pendeln kaufen", "nl": "beste fietsbril woon-werkverkeer kopen", "fr": "lunettes velo trajet quotidien acheter"},
+        "volume": 200, "phase": 1,
+        "angle": "Commuter buyer's guide: a clear lens for early and late rides, tool-free lens change, a case for the bag (Velluto Hard Case 19 EUR). Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. "
+                  + _LEGAL,
+    },
+    {
+        "keyword": "best cycling glasses for hot weather",
+        "market_keywords": {"de": "beste fahrradbrille bei hitze kaufen", "nl": "beste wielrenbril warm weer kopen", "fr": "meilleures lunettes velo chaleur acheter"},
+        "volume": 200, "phase": 1,
+        "angle": 'Summer-riding checklist: UV400, ventilation, anti-fog on slow climbs, a light frame. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL,
+    },
+    {
+        "keyword": "best cycling glasses for racing and criteriums",
+        "market_keywords": {"de": "rennradbrille fuer rennen kaufen", "nl": "beste wielrenbril voor koersen kopen", "fr": "lunettes velo course acheter"},
+        "volume": 150, "phase": 1,
+        "angle": 'What a racing rider checks: low weight, a secure fit under effort, a fast lens change between conditions. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. No claim that Velluto is used by racers or teams. '
+                  + _LEGAL,
+    },
+    {
+        "keyword": "buy clear lens cycling glasses",
+        "market_keywords": {"de": "klare fahrradbrille kaufen", "nl": "heldere fietsbril kopen", "fr": "lunettes velo verres transparents acheter"},
+        "volume": 200, "phase": 1,
+        "angle": 'When a clear lens is the right choice (dusk, dawn, tunnels, overcast, night-adjacent commutes) and how a swap system makes it a 19 EUR add-on. Feature the VellutoPuro clear lens. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL,
+    },
+    {
+        "keyword": "buy high contrast cycling lenses",
+        "market_keywords": {"de": "kontrastlinse fahrradbrille kaufen", "nl": "contrastlens fietsbril kopen", "fr": "verres contraste lunettes velo acheter"},
+        "volume": 150, "phase": 1,
+        "angle": 'What a high-contrast lens is for (grey light, mixed light, varied surfaces) and what it is not. Feature the VellutoVisione lens at 39 EUR; fits the StradaPro frame. No claim about measured contrast or transmission values. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL,
+    },
+    {
+        "keyword": "best cycling glasses for triathlon",
+        "market_keywords": {"de": "triathlon fahrradbrille kaufen", "nl": "beste triatlonbril kopen", "fr": "lunettes triathlon velo acheter"},
+        "volume": 150, "phase": 1,
+        "angle": "Triathlon buyer's checklist for the bike leg: low weight, a stable fit in an aero position, quick lens swap, UV400. Do not claim transition or swim use. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. "
+                  + _LEGAL,
+    },
+    {
+        "keyword": "buy cycling glasses online trial period and returns",
+        "market_keywords": {"de": "fahrradbrille online kaufen probezeit", "nl": "fietsbril online kopen proefperiode", "fr": "lunettes velo acheter en ligne essai"},
+        "volume": 200, "phase": 1,
+        "angle": 'How to buy cycling glasses online without regret: fit cannot be tried in a shop, so check trial period, return conditions, lens availability and spare lenses. Velluto: 30-day trial (state it exactly as BRAND_FACTS says, nothing about who pays shipping). Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL,
+    },
+    {
+        "keyword": "best cycling glasses for e-bike riders",
+        "market_keywords": {"de": "fahrradbrille e-bike kaufen", "nl": "beste fietsbril e-bike kopen", "fr": "lunettes velo velo electrique acheter"},
+        "volume": 150, "phase": 1,
+        "angle": 'Higher average speed means more wind in the eyes: coverage, fit and a clear lens for low light. Keep it to buying criteria. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL,
+    },
+    {
+        "keyword": "best cycling glasses for men",
+        "market_keywords": {"de": "fahrradbrille herren kaufen", "nl": "fietsbril heren kopen", "fr": "lunettes velo homme acheter"},
+        "volume": 300, "phase": 1,
+        "angle": "Buyer's guide for men: fit range, frame size, colourways. Velluto colourways StradaPro: Nero, Viola, Espresso, Arancia; Chromo: Nero Fumo, Nero Fuoco, Bianco Lago, Bianco Viola. No claim that the glasses are gender-specific or that sizes suit particular head sizes. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. "
+                  + _LEGAL + _offer_note("chromo-2x1"),
+    },
+    {
+        "keyword": "buy replacement lenses for cycling glasses",
+        "market_keywords": {"de": "ersatzglaeser fahrradbrille kaufen", "nl": "vervangende glazen fietsbril kopen", "fr": "verres de rechange lunettes velo acheter"},
+        "volume": 150, "phase": 1,
+        "angle": 'What to check before buying spare lenses (compatibility, colour use case, price per lens). Only Velluto lenses fit the StradaPro: VellutoVisione 39 EUR, VellutoPuro 19 EUR. Never claim compatibility with other brands. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL,
+    },
+    {
+        "keyword": "best cycling glasses for spring classics and cobbles",
+        "market_keywords": {"de": "fahrradbrille frühjahrsklassiker kaufen", "nl": "beste fietsbril klassiekers kopen", "fr": "lunettes velo classiques pave acheter"},
+        "volume": 100, "phase": 1,
+        "angle": 'Rough surfaces, spray and changing spring light: secure fit, lens choice for variable light, ventilation. Keep to buying criteria, no claim about shock absorption. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL + _offer_note("chromo-2x1"),
+    },
+    {
+        "keyword": "buy cycling glasses that stop watery eyes",
+        "market_keywords": {"de": "fahrradbrille gegen tränende augen kaufen", "nl": "fietsbril tegen tranende ogen kopen", "fr": "lunettes velo yeux qui pleurent acheter"},
+        "volume": 150, "phase": 1,
+        "angle": 'Why eyes water on descents (wind, cold) and which buying criteria help: coverage, fit, a snug frame. Do not promise that any glasses stop it. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL,
+    },
+    {
+        "keyword": "buy cycling glasses with adjustable nose pads",
+        "market_keywords": {"de": "fahrradbrille verstellbare nasenpads kaufen", "nl": "fietsbril verstelbare neuspads kopen", "fr": "lunettes velo plaquettes nez reglables acheter"},
+        "volume": 150, "phase": 1,
+        "angle": 'Fit as a buying criterion: adjustable nose pads, helmet compatibility, slipping on sweaty rides. Velluto StradaPro has adjustable nose pads. No claim that it fits every face. Velluto facts only: StradaPro 25 g, UV400, adjustable nose pads, tool-free click-in lenses, built-in anti-fog, 30-day trial, from 69 EUR; VellutoVisione high-contrast lens 39 EUR; VellutoPuro clear lens 19 EUR; Chromo 119 EUR photochromic (https://velluto-shop.com/pages/chromo). No impact, crash-protection or waterproof claims, no test results. '
+                  + _LEGAL,
+    },
     # ── Phase 1: GENUINE GAPS only (added 2026-09-22) ─────────────────────────
     # The blog is saturated (93 articles: 7 rival "oakley alternative" pages, 5
     # anti-fog, 6 fit guides). Adding more of a covered angle just deepens the
