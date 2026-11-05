@@ -3204,5 +3204,57 @@
     "checked_at": "2026-10-23T04:18:37.713484Z",
     "title": "Cycling Sports Glasses Price: What You Actually Get",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US — Stelle: „…ola. UV400 protection is included. It launched in October 2026 and is priced at 119 EUR. The Chromo and the StradaPro are distinct products that solve the same…“",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…>damp tarmac, low sun angle, variable light: the conditions that make a two-lens kit or a photochromic model worthwhile in november.…“"
+    ],
+    "primary_keyword": "buy cycling glasses with interchangeable lenses",
+    "market": "US",
+    "checked_at": "2026-11-05T05:35:47.211063Z",
+    "title": "Buy Cycling Glasses with Interchangeable Lenses: 2026 Guide",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "removed qualifier from 2 Yes/No comparison-table cell(s)"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US — Stelle: „…ns and develops a mirrored finish. It launched in October 2026 and is priced at 119 EUR. The Chromo and the StradaPro solve the same underlying problem, changi…“",
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…criterion interchangeable lens system (stradapro) photochromic lens (chromo)…“",
+      "[LEGAL] subjective superiority claim over a named competitor ('better value than X', 'superior to X', 'beats X') — § 6 UWG requires objective, verifiable comparisons; reframe as a neutral comparison or an 'alternative to X', or compare only Velluto's own measurable specs"
+    ],
+    "primary_keyword": "buy cycling glasses with interchangeable lenses",
+    "market": "US",
+    "checked_at": "2026-11-05T05:39:21.665594Z",
+    "title": "Buy Cycling Glasses with Interchangeable Lenses: 2026 Guide",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…it does not use the stradapro's click-in lens system; it is a fixed-lens photochromic frame, which means there is nothing to swap, no spare to carry and no need for a second…“"
+    ],
+    "primary_keyword": "buy cycling glasses with interchangeable lenses",
+    "market": "US",
+    "checked_at": "2026-11-05T05:43:09.474656Z",
+    "title": "Buy Cycling Glasses with Interchangeable Lenses: 2026 Guide",
+    "brief_topic": null
   }
 ]
