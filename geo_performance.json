@@ -6853,7 +6853,45 @@
         }
       ],
       "serps_scanned": 133
+    },
+    "2026-11-06": {
+      "aio_serps": 29,
+      "velluto_cited": 0,
+      "competitor_cited": 1,
+      "velluto_gap": 1,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 3.4,
+      "total_citations": 9,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 4
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 1
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 1
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 1
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 1
+        },
+        {
+          "domain": "oakley.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 69
     }
   },
-  "latest": "2026-11-05"
+  "latest": "2026-11-06"
 }
