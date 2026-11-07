@@ -3272,5 +3272,23 @@
     "checked_at": "2026-11-06T05:18:50.457390Z",
     "title": "Buy Cycling Glasses with Interchangeable Lenses: 2026 Guide",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '100 EUR' but config expects '69 EUR' for US — Stelle: „…kdown When to step up: the Velluto Chromo above 100 EUR Frequently Asked Questions </…“",
+      "[PRICE] Velluto-context price '100 EUR' but config expects '69 EUR' for US — Stelle: „…span> The Starter Vision Kit is the most complete under-100 EUR cycling glasses package available from Velluto because it covers the full spect…“",
+      "[PRICE] Velluto-context price '100 EUR' but config expects '69 EUR' for US — Stelle: „…guide, the StradaPro stays the recommendation for riders who want to stay under 100 EUR. The Chromo is the named alternative for anyone who reads this and decides that…“"
+    ],
+    "primary_keyword": "road cycling glasses under 100 euro",
+    "market": "US",
+    "checked_at": "2026-11-07T05:17:57.807976Z",
+    "title": "Road Cycling Glasses Under 100 Euro: What You Actually Get",
+    "brief_topic": null
   }
 ]

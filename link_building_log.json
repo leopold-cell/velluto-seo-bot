@@ -1080,5 +1080,13 @@
       "reason": "no_credentials",
       "timestamp": "2026-11-06T05:28:19.966427"
     }
+  ],
+  "2026-11-07": [
+    {
+      "channel": "reddit",
+      "status": "skipped",
+      "reason": "no_credentials",
+      "timestamp": "2026-11-07T05:27:26.324715"
+    }
   ]
 }
