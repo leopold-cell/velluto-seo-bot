@@ -1,12 +1,18 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-09-14",
+  "date": "2026-11-08",
   "locale": "fr-FR",
   "locale_short": "fr",
   "market_code": "FR",
   "master_topic": "cycling glasses",
   "local_primary_keyword": "cycling glasses",
-  "local_secondary_keywords": [],
+  "local_secondary_keywords": [
+    "Are photochromic sunglasses worth it cycling?",
+    "Does photochromic mean transition lenses?",
+    "What are the key differences between polarized and photochromic glasses?",
+    "Is UV400 glass polarized?",
+    "What are the best UV sunglasses for men?"
+  ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
   "local_adaptation_notes": [
@@ -25,7 +31,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-09-14",
+    "last_updated": "2026-11-08",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }

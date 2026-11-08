@@ -1,17 +1,16 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-09-14",
+  "date": "2026-11-08",
   "locale": "de-DE",
   "locale_short": "de",
   "market_code": "DE",
   "master_topic": "cycling glasses",
   "local_primary_keyword": "cycling glasses",
   "local_secondary_keywords": [
-    "What are the best glasses for bike riding?",
-    "What are the best brands for cycling glasses?",
-    "Which are the best cycling glasses?",
-    "Which sunglasses are better than Oakley?",
-    "Who makes the best cycling glasses?"
+    "Can wind burn affect your eyes?",
+    "What are the best wind protection glasses for motorcycle riding?",
+    "How to prevent glasses from fogging in a helmet?",
+    "What is the best anti-fog agent for glasses?"
   ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -31,7 +30,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-09-14",
+    "last_updated": "2026-11-08",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }

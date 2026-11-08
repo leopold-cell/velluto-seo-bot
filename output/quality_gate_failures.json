@@ -3290,5 +3290,20 @@
     "checked_at": "2026-11-07T05:17:57.807976Z",
     "title": "Road Cycling Glasses Under 100 Euro: What You Actually Get",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US — Stelle: „…at. Photochromic, mirrored in strong sun, UV400. Available from October 2026 at 119 EUR. See it at vellu…“"
+    ],
+    "primary_keyword": "cycling glasses",
+    "market": "US",
+    "checked_at": "2026-11-08T05:47:13.602188Z",
+    "title": "Cycling Glasses Buying Guide 2026: What Actually Matters",
+    "brief_topic": "cycling glasses"
   }
 ]
