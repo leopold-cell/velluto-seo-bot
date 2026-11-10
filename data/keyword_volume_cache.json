@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-11-09": 11
+   "2026-11-10": 10
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -3507,5 +3507,45 @@
  "sv|antidugg cykelglasögon köp": {
   "volume": 0,
   "date": "2026-11-09"
+ },
+ "de|rennradbrille kaufen": {
+  "volume": 10,
+  "date": "2026-11-10"
+ },
+ "en|buy road bike glasses": {
+  "volume": 0,
+  "date": "2026-11-10"
+ },
+ "nl|racefiets bril kopen": {
+  "volume": 0,
+  "date": "2026-11-10"
+ },
+ "fr|lunettes vélo route pas cher": {
+  "volume": 0,
+  "date": "2026-11-10"
+ },
+ "it|occhiali bici strada prezzo": {
+  "volume": 0,
+  "date": "2026-11-10"
+ },
+ "da|køb landevejscykelbriller": {
+  "volume": 0,
+  "date": "2026-11-10"
+ },
+ "nb|kjøp veisykkelbriller": {
+  "volume": 0,
+  "date": "2026-11-10"
+ },
+ "pl|kupić okulary rowerowe szosowe": {
+  "volume": 0,
+  "date": "2026-11-10"
+ },
+ "pt-PT|comprar óculos bicicleta estrada": {
+  "volume": 0,
+  "date": "2026-11-10"
+ },
+ "sv|köp vägsykelglasögon": {
+  "volume": 0,
+  "date": "2026-11-10"
  }
 }

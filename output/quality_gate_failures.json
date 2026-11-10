@@ -3321,5 +3321,54 @@
     "checked_at": "2026-11-09T05:46:31.406134Z",
     "title": "Buy Anti-Fog Cycling Glasses: What to Look For in 2026",
     "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…it is a separate product from the stradapro, with a photochromic lens that self-tints in response to light intensity: clear or lightly tinted in low lig…“",
+      "[FACT] claims polarized lenses — no Velluto product has these — Stelle: „…if you need a polarized lens: neither the stradapro nor the chromo offers a polarized lens option…“",
+      "[FACT] claims mirrored lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…clear or lightly tinted in low light conditions, darkening progressively and developing a mirrored finish in bright sun.…“"
+    ],
+    "primary_keyword": "buy road bike glasses",
+    "market": "US",
+    "checked_at": "2026-11-10T05:17:50.577164Z",
+    "title": "How to Buy Road Bike Glasses: The Complete 2027 Checklist",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US — Stelle: „…ed finish in bright sun. It is a separate product from the StradaPro, priced at 119 EUR, and is available in four colourways: Nero Fumo, Nero Fuoco, Bianco Lago, and B…“"
+    ],
+    "primary_keyword": "buy road bike glasses",
+    "market": "US",
+    "checked_at": "2026-11-10T05:21:51.785700Z",
+    "title": "Buy Road Bike Glasses: The Complete Checklist 2027",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…if you need a photochromic lens. the stradapro is an interchangeable lens frame…“",
+      "[FACT] claims prescription lenses — no Velluto product has these — Stelle: „…models offers, and what you will not find in the velluto range, is a polarized lens or a prescription insert…“"
+    ],
+    "primary_keyword": "buy road bike glasses",
+    "market": "US",
+    "checked_at": "2026-11-10T05:25:24.446761Z",
+    "title": "How to Buy Road Bike Glasses: A Complete Checklist",
+    "brief_topic": null
   }
 ]
