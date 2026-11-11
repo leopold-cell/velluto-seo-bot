@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-11-10": 10
+   "2026-11-11": 5
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -3547,5 +3547,25 @@
  "sv|köp vägsykelglasögon": {
   "volume": 0,
   "date": "2026-11-10"
+ },
+ "es|comprar gafas ciclismo carretera": {
+  "volume": 0,
+  "date": "2026-11-11"
+ },
+ "it|occhiali bici da strada prezzo": {
+  "volume": 0,
+  "date": "2026-11-11"
+ },
+ "da|køb landevej cykelbriller": {
+  "volume": 0,
+  "date": "2026-11-11"
+ },
+ "nb|kjøp veisyning sykkelbriller": {
+  "volume": 0,
+  "date": "2026-11-11"
+ },
+ "sv|köp väg cykelglasögon": {
+  "volume": 0,
+  "date": "2026-11-11"
  }
 }
