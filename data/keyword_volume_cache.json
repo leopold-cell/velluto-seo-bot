@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-11-11": 5
+   "2026-11-12": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -3567,5 +3567,49 @@
  "sv|köp väg cykelglasögon": {
   "volume": 0,
   "date": "2026-11-11"
+ },
+ "de|leichte rennradbrille kaufen": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "en|buy lightweight cycling glasses": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "nl|lichte fietsenbril kopen": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "fr|lunettes de cyclisme légères à acheter": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "es|comprar gafas de ciclismo ligeras": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "it|acquistare occhiali da ciclismo leggeri": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "da|køb lette cykelbriller": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "nb|kjøp lette sykkelbriller": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "pl|kupić lekkie okulary rowerowe": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "pt-PT|comprar óculos de ciclismo leves": {
+  "volume": 0,
+  "date": "2026-11-12"
+ },
+ "sv|köp lätta cykelglasögon": {
+  "volume": 0,
+  "date": "2026-11-12"
  }
 }

@@ -3,54 +3,6 @@
     "passed": false,
     "auto_fixes": [],
     "hard_issues": [
-      "[PRICE] body contains '280 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '110 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '350 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '300 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '149 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '230 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '270 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '250 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '99 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '30 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '100 EUR' but config expects '149 USD' for US",
-      "[PRICE] body contains '150 EUR' but config expects '149 USD' for US"
-    ],
-    "primary_keyword": "are expensive cycling sunglasses worth it",
-    "market": "US",
-    "checked_at": "2026-05-26T11:42:29.765764Z",
-    "title": "Are Expensive Cycling Sunglasses Worth It? (2026 Guide)",
-    "brief_topic": "are expensive cycling sunglasses worth it"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [],
-    "hard_issues": [
-      "[FACT] claims polarized lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "are expensive cycling sunglasses worth it",
-    "market": "US",
-    "checked_at": "2026-05-29T04:11:33.441160Z",
-    "title": "Are Expensive Cycling Sunglasses Worth It? Honest Answer",
-    "brief_topic": "are expensive cycling sunglasses worth it"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [],
-    "hard_issues": [
-      "[META] meta_description length 163 > 160",
-      "[FACT] claims photochromic lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "Oakley alternative cycling sunglasses",
-    "market": "US",
-    "checked_at": "2026-05-30T04:10:57.232423Z",
-    "title": "Oakley Alternative Cycling Sunglasses 2026 | Velluto StradaPro",
-    "brief_topic": "Oakley alternative cycling sunglasses"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [],
-    "hard_issues": [
       "[FACT] claims polarized lenses — Velluto doesn't offer these"
     ],
     "primary_keyword": "are expensive cycling sunglasses worth it",
@@ -3369,6 +3321,55 @@
     "market": "US",
     "checked_at": "2026-11-10T05:25:24.446761Z",
     "title": "How to Buy Road Bike Glasses: A Complete Checklist",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…>is the velluto stradapro a photochromic lens?…“",
+      "[LEGAL] implies a test/review/first-hand experience that wasn't performed — no fabricated testing (§ 5/5a UWG, EU fake-review ban); reframe as an honest, spec-based buyer's guide"
+    ],
+    "primary_keyword": "buy lightweight cycling glasses",
+    "market": "US",
+    "checked_at": "2026-11-12T05:18:29.234891Z",
+    "title": "Buy Lightweight Cycling Glasses: What to Check Beyond Weight",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "trimmed meta_description 163→158"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…>is the velluto stradapro a photochromic lens?…“"
+    ],
+    "primary_keyword": "buy lightweight cycling glasses",
+    "market": "US",
+    "checked_at": "2026-11-12T05:22:03.089162Z",
+    "title": "Buy Lightweight Cycling Glasses: What to Check Beyond Weight",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…>is the velluto stradapro a photochromic lens?…“"
+    ],
+    "primary_keyword": "buy lightweight cycling glasses",
+    "market": "US",
+    "checked_at": "2026-11-12T05:25:36.118652Z",
+    "title": "Buy Lightweight Cycling Glasses: What to Check Beyond Weight",
     "brief_topic": null
   }
 ]
