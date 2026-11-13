@@ -7211,7 +7211,20 @@
         }
       ],
       "serps_scanned": 72
+    },
+    "2026-11-13": {
+      "aio_serps": 29,
+      "velluto_cited": 0,
+      "competitor_cited": 0,
+      "velluto_gap": 0,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 0.0,
+      "total_citations": 0,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [],
+      "serps_scanned": 73
     }
   },
-  "latest": "2026-11-12"
+  "latest": "2026-11-13"
 }
