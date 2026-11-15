@@ -1128,5 +1128,13 @@
       "reason": "no_credentials",
       "timestamp": "2026-11-14T05:37:53.143089"
     }
+  ],
+  "2026-11-15": [
+    {
+      "channel": "reddit",
+      "status": "skipped",
+      "reason": "no_credentials",
+      "timestamp": "2026-11-15T05:24:05.856486"
+    }
   ]
 }
