@@ -1,43 +1,6 @@
 [
   {
     "passed": false,
-    "auto_fixes": [],
-    "hard_issues": [
-      "[FACT] claims polarized lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "are expensive cycling sunglasses worth it",
-    "market": "US",
-    "checked_at": "2026-05-31T04:06:52.050509Z",
-    "title": "Are Expensive Cycling Sunglasses Worth It? Honest 2026 Guide",
-    "brief_topic": "are expensive cycling sunglasses worth it"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [],
-    "hard_issues": [
-      "[PRICE] Velluto-context price '99 EUR' but config expects '149 USD' for US",
-      "[PRICE] Velluto-context price '350 USD' but config expects '149 USD' for US"
-    ],
-    "primary_keyword": "are expensive cycling sunglasses worth it",
-    "market": "US",
-    "checked_at": "2026-06-01T04:11:30.190698Z",
-    "title": "Are Expensive Cycling Sunglasses Worth It? The Honest Answer",
-    "brief_topic": "are expensive cycling sunglasses worth it"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [],
-    "hard_issues": [
-      "[FACT] claims polarized lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "are expensive cycling sunglasses worth it",
-    "market": "US",
-    "checked_at": "2026-06-02T04:08:33.389197Z",
-    "title": "Are Expensive Cycling Sunglasses Worth It? 2026 Guide | Velluto",
-    "brief_topic": "are expensive cycling sunglasses worth it"
-  },
-  {
-    "passed": false,
     "auto_fixes": [
       "replaced em-dashes with commas"
     ],
@@ -3370,6 +3333,52 @@
     "market": "US",
     "checked_at": "2026-11-12T05:25:36.118652Z",
     "title": "Buy Lightweight Cycling Glasses: What to Check Beyond Weight",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US — Stelle: „…UR Frame from 69 EUR / VellutoVisione lens 39 EUR 119 EUR A few notes on reading this table honest…“"
+    ],
+    "primary_keyword": "best cycling glasses for rain and wet roads",
+    "market": "US",
+    "checked_at": "2026-11-16T05:58:39.561691Z",
+    "title": "Best Cycling Glasses for Rain and Wet Roads 2027",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…>two interchangeable click-in lenses (vellutopuro + vellutovisione) single photochromic lens, self-tinting…“"
+    ],
+    "primary_keyword": "best cycling glasses for rain and wet roads",
+    "market": "US",
+    "checked_at": "2026-11-16T06:02:01.573398Z",
+    "title": "Best Cycling Glasses for Rain and Wet Roads 2027",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US — Stelle: „…EUR (frame + lenses) VellutoVisione lens: 39 EUR 119 EUR The StradaPro with the VellutoPuro is th…“",
+      "[PRICE] Velluto-context price '39 EUR' but config expects '69 EUR' for US — Stelle: „…d, uses the same tool-free click-in system as the VellutoPuro, and is priced at 39 EUR as an individual lens. It is fully compatible with every StradaPro colourway.</…“"
+    ],
+    "primary_keyword": "best cycling glasses for rain and wet roads",
+    "market": "US",
+    "checked_at": "2026-11-16T06:05:32.491918Z",
+    "title": "Best Cycling Glasses for Rain and Wet Roads 2027",
     "brief_topic": null
   }
 ]
