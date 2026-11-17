@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-11-16": 11
+   "2026-11-17": 1
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -3767,5 +3767,9 @@
  "sv|cykelglasögon regn köpa": {
   "volume": 0,
   "date": "2026-11-16"
+ },
+ "sv|cykelglasögon regn köp": {
+  "volume": 0,
+  "date": "2026-11-17"
  }
 }

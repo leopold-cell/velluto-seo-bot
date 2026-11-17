@@ -32,31 +32,31 @@
  "Gemini": {
   "now": {
    "generic_answers": 288,
-   "generic_cited": 7,
+   "generic_cited": 9,
    "generic_mentioned": 0,
-   "generic_visible": 7,
-   "generic_rate": 2.43,
+   "generic_visible": 9,
+   "generic_rate": 3.12,
    "generic_ci": [
-    1.18,
-    4.93
+    1.65,
+    5.83
    ],
    "brand_answers": 0,
    "brand_cited": 0
   },
   "before": {
-   "generic_answers": 72,
-   "generic_cited": 3,
+   "generic_answers": 144,
+   "generic_cited": 4,
    "generic_mentioned": 0,
-   "generic_visible": 3,
-   "generic_rate": 4.17,
+   "generic_visible": 4,
+   "generic_rate": 2.78,
    "generic_ci": [
-    1.43,
-    11.55
+    1.09,
+    6.92
    ],
    "brand_answers": 0,
    "brand_cited": 0
   },
   "verdict": "keine nachweisbare Veränderung",
-  "last": "2026-11-10"
+  "last": "2026-11-17"
  }
 }

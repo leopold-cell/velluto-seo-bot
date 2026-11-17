@@ -5,50 +5,6 @@
       "replaced em-dashes with commas"
     ],
     "hard_issues": [
-      "[FACT] claims photochromic lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "best cycling sunglasses 2026",
-    "market": "US",
-    "checked_at": "2026-06-19T04:32:33.448879Z",
-    "title": "Best Cycling Sunglasses 2026: Tested, Ranked & Compared",
-    "brief_topic": "best cycling sunglasses 2026"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [
-      "replaced em-dashes with commas"
-    ],
-    "hard_issues": [
-      "[PRICE] Velluto-context price '100 EUR' but config expects '149 USD' for US",
-      "[PRICE] Velluto-context price '99 USD' but config expects '149 USD' for US"
-    ],
-    "primary_keyword": "best cycling sunglasses 2026",
-    "market": "US",
-    "checked_at": "2026-06-19T04:35:00.808097Z",
-    "title": "Best Cycling Sunglasses 2026: Tested, Ranked & Compared",
-    "brief_topic": "best cycling sunglasses 2026"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [
-      "replaced em-dashes with commas"
-    ],
-    "hard_issues": [
-      "[FACT] claims photochromic lenses — Velluto doesn't offer these",
-      "[FACT] claims polarized lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "best Oakley alternative cycling sunglasses",
-    "market": "US",
-    "checked_at": "2026-06-19T04:55:48.525940Z",
-    "title": "Best Oakley Alternative Cycling Sunglasses 2026",
-    "brief_topic": "best Oakley alternative cycling sunglasses"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [
-      "replaced em-dashes with commas"
-    ],
-    "hard_issues": [
       "[META] title length 68 > 65",
       "[FACT] claims photochromic lenses — Velluto doesn't offer these",
       "[FACT] claims polarized lenses — Velluto doesn't offer these"
@@ -3379,6 +3335,53 @@
     "market": "US",
     "checked_at": "2026-11-16T06:05:32.491918Z",
     "title": "Best Cycling Glasses for Rain and Wet Roads 2027",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…at 119 eur it sits at a higher price point than the stradapro entry, reflecting the photochromic technology…“"
+    ],
+    "primary_keyword": "best cycling glasses for rain and wet roads",
+    "market": "US",
+    "checked_at": "2026-11-17T05:41:40.882332Z",
+    "title": "Best Cycling Glasses for Rain and Wet Roads 2026",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US — Stelle: „…ro Fuoco, Bianco Lago, and Bianco Viola. It is UV400 certified. It is priced at 119 EUR. It is Velluto's only photochromic product, and the photochromic and mirrored c…“",
+      "[PRICE] Velluto-context price '119 EUR' but config expects '69 EUR' for US — Stelle: „…and winter riding where light levels shift constantly during a single ride. At 119 EUR it is Velluto's premium option. The Chromo is a separate product from the Strad…“"
+    ],
+    "primary_keyword": "best cycling glasses for rain and wet roads",
+    "market": "US",
+    "checked_at": "2026-11-17T05:46:02.782483Z",
+    "title": "Best Cycling Glasses for Rain and Wet Roads 2026",
+    "brief_topic": null
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[PRICE] Velluto-context price '39 EUR' but config expects '69 EUR' for US — Stelle: „…is UV400 certified and click-in compatible with the StradaPro. It is priced at 39 EUR. For very dark or indoor conditions the VellutoPuro clear lens gives more light…“"
+    ],
+    "primary_keyword": "best cycling glasses for rain and wet roads",
+    "market": "US",
+    "checked_at": "2026-11-17T05:49:28.536843Z",
+    "title": "Best Cycling Glasses for Rain and Wet Roads 2026",
     "brief_topic": null
   }
 ]
