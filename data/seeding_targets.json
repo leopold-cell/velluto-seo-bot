@@ -1,5 +1,5 @@
 {
- "date": "2026-11-11",
+ "date": "2026-11-18",
  "seeding": [
   {
    "domain": "google.com",
@@ -14,8 +14,8 @@
     "SunGod vs Oakley cycling glasses"
    ],
    "best_rank": 1,
-   "ai_cited": 13,
-   "ai_cited_velluto_absent": 13,
+   "ai_cited": 20,
+   "ai_cited_velluto_absent": 20,
    "score": 405
   },
   {
@@ -25,38 +25,24 @@
    "keywords": [
     "best cycling sunglasses",
     "best road cycling sunglasses",
-    "cycling sunglasses"
+    "cycling glasses for wind protection"
    ],
    "best_rank": 99,
-   "ai_cited": 8,
-   "ai_cited_velluto_absent": 8,
+   "ai_cited": 7,
+   "ai_cited_velluto_absent": 6,
    "score": 95
-  },
-  {
-   "domain": "cyclingweekly.com",
-   "type": "editorial",
-   "name": "",
-   "keywords": [
-    "best cycling sunglasses",
-    "best road cycling sunglasses",
-    "cycling sunglasses"
-   ],
-   "best_rank": 99,
-   "ai_cited": 17,
-   "ai_cited_velluto_absent": 16,
-   "score": 90
   },
   {
    "domain": "youtube.com",
    "type": "youtube",
    "name": "",
    "keywords": [
-    "best cycling sunglasses",
+    "cycling glasses for wind protection",
     "cycling sunglasses"
    ],
    "best_rank": 99,
-   "ai_cited": 3,
-   "ai_cited_velluto_absent": 3,
+   "ai_cited": 4,
+   "ai_cited_velluto_absent": 4,
    "score": 90
   },
   {
@@ -68,34 +54,22 @@
     "best road cycling sunglasses"
    ],
    "best_rank": 99,
-   "ai_cited": 10,
-   "ai_cited_velluto_absent": 9,
+   "ai_cited": 6,
+   "ai_cited_velluto_absent": 5,
    "score": 80
   },
   {
-   "domain": "cyclist.co.uk",
-   "type": "editorial",
-   "name": "Cyclist",
-   "keywords": [
-    "best cycling sunglasses",
-    "cycling sunglasses"
-   ],
-   "best_rank": 99,
-   "ai_cited": 9,
-   "ai_cited_velluto_absent": 8,
-   "score": 80
-  },
-  {
-   "domain": "cyclingnews.com",
+   "domain": "cyclingweekly.com",
    "type": "editorial",
    "name": "",
    "keywords": [
-    "best cycling sunglasses"
+    "best road cycling sunglasses",
+    "cycling sunglasses"
    ],
    "best_rank": 99,
-   "ai_cited": 14,
-   "ai_cited_velluto_absent": 13,
-   "score": 70
+   "ai_cited": 7,
+   "ai_cited_velluto_absent": 6,
+   "score": 80
   },
   {
    "domain": "femmecyclist.com",
@@ -105,20 +79,8 @@
     "best cycling sunglasses"
    ],
    "best_rank": 99,
-   "ai_cited": 2,
-   "ai_cited_velluto_absent": 2,
-   "score": 70
-  },
-  {
-   "domain": "bikerumor.com",
-   "type": "editorial",
-   "name": "Bikerumor",
-   "keywords": [
-    "best cycling sunglasses"
-   ],
-   "best_rank": 99,
-   "ai_cited": 8,
-   "ai_cited_velluto_absent": 8,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
    "score": 70
   },
   {
@@ -129,38 +91,50 @@
     "cycling sunglasses"
    ],
    "best_rank": 99,
-   "ai_cited": 23,
-   "ai_cited_velluto_absent": 22,
+   "ai_cited": 7,
+   "ai_cited_velluto_absent": 7,
    "score": 70
   },
   {
-   "domain": "hatsthebest.co.uk",
+   "domain": "bicyclewarehouse.com",
+   "type": "editorial",
+   "name": "Bicyclewarehouse",
+   "keywords": [
+    "cycling glasses for wind protection"
+   ],
+   "best_rank": 99,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
+   "score": 70
+  },
+  {
+   "domain": "cyclingnews.com",
    "type": "editorial",
    "name": "",
    "keywords": [],
    "best_rank": 99,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
+   "ai_cited": 5,
+   "ai_cited_velluto_absent": 4,
    "score": 60
   },
   {
-   "domain": "polarizedclub.com",
+   "domain": "bikerumor.com",
    "type": "editorial",
-   "name": "Polarizedclub",
+   "name": "Bikerumor",
    "keywords": [],
    "best_rank": 99,
-   "ai_cited": 4,
+   "ai_cited": 3,
    "ai_cited_velluto_absent": 3,
    "score": 60
   },
   {
-   "domain": "opumo.com",
+   "domain": "cyclist.co.uk",
    "type": "editorial",
-   "name": "",
+   "name": "Cyclist",
    "keywords": [],
    "best_rank": 99,
    "ai_cited": 3,
-   "ai_cited_velluto_absent": 2,
+   "ai_cited_velluto_absent": 3,
    "score": 60
   },
   {
@@ -174,19 +148,19 @@
    "score": 60
   },
   {
-   "domain": "active.com",
+   "domain": "verywellfit.com",
    "type": "editorial",
-   "name": "Active",
+   "name": "Verywellfit",
    "keywords": [],
    "best_rank": 99,
-   "ai_cited": 3,
-   "ai_cited_velluto_absent": 3,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
    "score": 60
   },
   {
-   "domain": "sigmasports.com",
+   "domain": "expertreviews.co.uk",
    "type": "editorial",
-   "name": "Sigma",
+   "name": "",
    "keywords": [],
    "best_rank": 99,
    "ai_cited": 1,
@@ -204,17 +178,7 @@
    "score": 60
   },
   {
-   "domain": "bike-magazin.de",
-   "type": "editorial",
-   "name": "Bike Magazin",
-   "keywords": [],
-   "best_rank": 99,
-   "ai_cited": 2,
-   "ai_cited_velluto_absent": 2,
-   "score": 60
-  },
-  {
-   "domain": "zeiss.co.uk",
+   "domain": "zeiss.com",
    "type": "editorial",
    "name": "",
    "keywords": [],
@@ -232,29 +196,47 @@
    "ai_cited": 1,
    "ai_cited_velluto_absent": 1,
    "score": 60
-  }
- ],
- "stockist": [
+  },
   {
-   "domain": "decathlon.co.uk",
-   "type": "retailer",
+   "domain": "britishcycling.org.uk",
+   "type": "editorial",
    "name": "",
-   "keywords": [
-    "cycling sunglasses"
-   ],
+   "keywords": [],
    "best_rank": 99,
    "ai_cited": 1,
    "ai_cited_velluto_absent": 1,
-   "score": 70
+   "score": 60
   },
+  {
+   "domain": "framesdirect.com",
+   "type": "editorial",
+   "name": "Framesdirect",
+   "keywords": [],
+   "best_rank": 99,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
+   "score": 60
+  },
+  {
+   "domain": "allaboutvision.com",
+   "type": "editorial",
+   "name": "",
+   "keywords": [],
+   "best_rank": 99,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
+   "score": 60
+  }
+ ],
+ "stockist": [
   {
    "domain": "bike24.com",
    "type": "retailer",
    "name": "",
    "keywords": [],
    "best_rank": 99,
-   "ai_cited": 2,
-   "ai_cited_velluto_absent": 2,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
    "score": 60
   },
   {
@@ -263,22 +245,42 @@
    "name": "Bergfreunde",
    "keywords": [],
    "best_rank": 99,
+   "ai_cited": 3,
+   "ai_cited_velluto_absent": 3,
+   "score": 60
+  },
+  {
+   "domain": "decathlon.ie",
+   "type": "retailer",
+   "name": "",
+   "keywords": [],
+   "best_rank": 99,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
+   "score": 60
+  },
+  {
+   "domain": "us.amazon.com",
+   "type": "retailer",
+   "name": "",
+   "keywords": [],
+   "best_rank": 99,
+   "ai_cited": 1,
+   "ai_cited_velluto_absent": 1,
+   "score": 60
+  },
+  {
+   "domain": "amazon.it",
+   "type": "retailer",
+   "name": "",
+   "keywords": [],
+   "best_rank": 99,
    "ai_cited": 1,
    "ai_cited_velluto_absent": 1,
    "score": 60
   },
   {
    "domain": "decathlon.com.gr",
-   "type": "retailer",
-   "name": "",
-   "keywords": [],
-   "best_rank": 99,
-   "ai_cited": 2,
-   "ai_cited_velluto_absent": 2,
-   "score": 60
-  },
-  {
-   "domain": "amazon.com.be",
    "type": "retailer",
    "name": "",
    "keywords": [],
@@ -293,24 +295,14 @@
    "name": "Bergzeit",
    "keywords": [],
    "best_rank": 99,
-   "ai_cited": 7,
-   "ai_cited_velluto_absent": 7,
+   "ai_cited": 9,
+   "ai_cited_velluto_absent": 8,
    "score": 60
   },
   {
-   "domain": "bike24.de",
+   "domain": "bergfreunde.de",
    "type": "retailer",
-   "name": "",
-   "keywords": [],
-   "best_rank": 99,
-   "ai_cited": 1,
-   "ai_cited_velluto_absent": 1,
-   "score": 60
-  },
-  {
-   "domain": "otto.de",
-   "type": "retailer",
-   "name": "Otto",
+   "name": "Bergfreunde",
    "keywords": [],
    "best_rank": 99,
    "ai_cited": 2,
@@ -318,5 +310,5 @@
    "score": 60
   }
  ],
- "n_domains": 138
+ "n_domains": 151
 }

@@ -7424,7 +7424,61 @@
         }
       ],
       "serps_scanned": 150
+    },
+    "2026-11-18": {
+      "aio_serps": 45,
+      "velluto_cited": 0,
+      "competitor_cited": 2,
+      "velluto_gap": 4,
+      "velluto_citation_rate": 0.0,
+      "competitor_citation_rate": 4.4,
+      "total_citations": 36,
+      "velluto_citations": 0,
+      "owned_citation_share": 0.0,
+      "top_cited_domains": [
+        {
+          "domain": "google.com",
+          "citations": 20
+        },
+        {
+          "domain": "reddit.com",
+          "citations": 3
+        },
+        {
+          "domain": "youtube.com",
+          "citations": 3
+        },
+        {
+          "domain": "outdoorgearlab.com",
+          "citations": 2
+        },
+        {
+          "domain": "cyclingweekly.com",
+          "citations": 2
+        },
+        {
+          "domain": "femmecyclist.com",
+          "citations": 1
+        },
+        {
+          "domain": "oakley.com",
+          "citations": 1
+        },
+        {
+          "domain": "us.sciconsports.com",
+          "citations": 1
+        },
+        {
+          "domain": "bikeradar.com",
+          "citations": 1
+        },
+        {
+          "domain": "evileye.com",
+          "citations": 1
+        }
+      ],
+      "serps_scanned": 86
     }
   },
-  "latest": "2026-11-17"
+  "latest": "2026-11-18"
 }
