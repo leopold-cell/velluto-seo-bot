@@ -1,16 +1,17 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-11-08",
+  "date": "2026-11-19",
   "locale": "nl-NL",
   "locale_short": "nl",
   "market_code": "NL",
   "master_topic": "cycling glasses",
   "local_primary_keyword": "cycling glasses",
   "local_secondary_keywords": [
-    "Who makes the best cycling glasses?",
-    "Which brand of sunglasses is better than Oakley?",
-    "Are Oakley cycling glasses worth it?",
-    "Can wind burn affect your eyes?"
+    "Which is better, Oakley or Rudy Project?",
+    "Are photochromic lenses worth it for cycling?",
+    "Are Oakleys worth it for cycling?",
+    "Is Oakley Prizm or Prizm Polarized better?",
+    "What color lens is best for mountain biking?"
   ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -30,7 +31,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-11-08",
+    "last_updated": "2026-11-19",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
