@@ -9967,5 +9967,728 @@
   ],
   "brand_answers": 0,
   "brand_cited": 0
+ },
+ {
+  "schema": 2,
+  "date": "2026-11-20",
+  "repeats": 2,
+  "questions": 72,
+  "velluto_cited": 4,
+  "rate": 5.56,
+  "by_market": {
+   "en": {
+    "questions": 9,
+    "details": [
+     {
+      "question": "What are the best cycling glasses in 2026?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "bikeradar.com",
+       "cyclingweekly.com",
+       "cyclist.co.uk",
+       "outdoorgearlab.com",
+       "cyclingnews.com",
+       "whatsthebest.co.uk",
+       "bikerumor.com",
+       "ridereview.com"
+      ]
+     },
+     {
+      "question": "What are the best Oakley alternatives for road cycling?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 2,
+      "mentioned": 0,
+      "velluto_cited": true,
+      "top_domains": [
+       "polarizedclub.com",
+       "bexst.com",
+       "velluto-shop.com",
+       "rydecruz.com",
+       "shadeandtemple.com",
+       "chapeleyewear.com",
+       "cyclingweekly.com",
+       "cyclingnews.com"
+      ]
+     },
+     {
+      "question": "What are the best lightweight cycling sunglasses?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingnews.com",
+       "bicycling.com",
+       "bikeradar.com",
+       "bikerumor.com",
+       "road.cc",
+       "cyclist.co.uk",
+       "bikehikesafari.com",
+       "cyclingweekly.com"
+      ]
+     },
+     {
+      "question": "Which cycling glasses have interchangeable lenses?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "decathlon.ie",
+       "bike24.com",
+       "amazon.co.za",
+       "amazon.com.be",
+       "sportrx.com",
+       "trekbikes.com",
+       "evileye.com"
+      ]
+     },
+     {
+      "question": "Do I need cycling glasses?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "yellowjersey.co.uk",
+       "swinnertoncycles.co.uk",
+       "cyclesuk.com",
+       "cyclescheme.co.uk",
+       "2020mag.com",
+       "tour-magazin.de",
+       "zeiss.com",
+       "agu.com"
+      ]
+     },
+     {
+      "question": "Are cheap sunglasses just as good as expensive ones?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "mcgill.ca",
+       "lifehacker.com",
+       "stuff.co.nz",
+       "clearvieweyes.com",
+       "bbc.com",
+       "yahoo.com",
+       "bbc.co.uk",
+       "allaboutvision.com"
+      ]
+     },
+     {
+      "question": "Is $200 for glasses a lot?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "1800contacts.com",
+       "d37id5jfbyuoag.cloudfront.net",
+       "glasses.com",
+       "reddit.com",
+       "atlantafi.com",
+       "medicalxpress.com",
+       "boards.straightdope.com"
+      ]
+     },
+     {
+      "question": "Is $600 a lot for glasses?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "blingoptical.com",
+       "reddit.com",
+       "health.costhelper.com",
+       "kxan.com",
+       "boards.straightdope.com"
+      ]
+     },
+     {
+      "question": "What glasses are best for cycling?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingnews.com",
+       "bikeradar.com",
+       "zeiss.com",
+       "bicycling.com",
+       "outdoorgearlab.com",
+       "cyclingweekly.com",
+       "cyclist.co.uk",
+       "gearinstitute.com"
+      ]
+     }
+    ],
+    "generic_answers": 18,
+    "generic_cited": 2,
+    "generic_mentioned": 0,
+    "generic_visible": 2,
+    "generic_rate": 11.11,
+    "generic_ci": [
+     3.1,
+     32.8
+    ],
+    "brand_answers": 0,
+    "brand_cited": 0
+   },
+   "de": {
+    "questions": 9,
+    "details": [
+     {
+      "question": "Was sind die besten Fahrradbrillen 2026?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingweekly.com",
+       "cyclingnews.com",
+       "treelinereview.com",
+       "outdoorgearlab.com",
+       "bikeradar.com",
+       "bikerumor.com",
+       "velo.outsideonline.com",
+       "bikehikesafari.com"
+      ]
+     },
+     {
+      "question": "Was ist die beste Alternative zu Oakley Fahrradbrillen?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingweekly.com",
+       "reddit.com",
+       "outdoorgearlab.com",
+       "cyclingnews.com",
+       "opumo.com",
+       "cobbledclimbs.com",
+       "thespectaclefactory.com",
+       "bikeradar.com"
+      ]
+     },
+     {
+      "question": "Welche Rennradbrille hat Wechselgläser?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "rockbrosbike.de",
+       "backcountry.com",
+       "bike24.com",
+       "evileye.com",
+       "demonsunglasses.com",
+       "u-buy.jp",
+       "reddit.com",
+       "amazon.com.be"
+      ]
+     },
+     {
+      "question": "Was ist die beste leichte Rennradbrille?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingnews.com",
+       "bikerumor.com",
+       "bikeradar.com",
+       "bicycling.com",
+       "amazon.com.be",
+       "amazon.de",
+       "rennrad-news.de",
+       "bike-x.de"
+      ]
+     },
+     {
+      "question": "Welche Fahrradbrille ist die beste?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "faz.net",
+       "bikeradar.com",
+       "chip.de",
+       "rtl.de",
+       "bergfreunde.eu",
+       "bergzeit.at",
+       "amazon.de",
+       "mantel.com"
+      ]
+     },
+     {
+      "question": "Welche Brille beim Fahrradfahren?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "tour-magazin.de",
+       "zeiss.com",
+       "agu.com",
+       "amazon.com.be",
+       "mammothbikes.com",
+       "rouvy.com",
+       "bergfreunde.eu",
+       "biketips.com"
+      ]
+     },
+     {
+      "question": "Auf was sollte man bei einer Fahrradbrille achten?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "fahrrad-xxl.de",
+       "agu.com",
+       "bergzeit.de",
+       "faz.net",
+       "die-sportbrillen-shop.de",
+       "brille-und-sehen.de",
+       "bobshop.com",
+       "rockbrosbike.de"
+      ]
+     },
+     {
+      "question": "Ist eine Fahrradbrille sinnvoll?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "tour-magazin.de",
+       "reddit.com",
+       "fahrrad-xxl.de",
+       "shop.zweirad-stadler.de",
+       "sport-schuster.de",
+       "agu.com",
+       "bikes.de"
+      ]
+     },
+     {
+      "question": "Welche Sonnenbrille beim Radfahren?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "bikeradar.com",
+       "agu.com",
+       "bicycling.com",
+       "yesglasses.com",
+       "amazon.com.be",
+       "sun-sentinel.com",
+       "solaroshades.com",
+       "sporteyes.com"
+      ]
+     }
+    ],
+    "generic_answers": 18,
+    "generic_cited": 0,
+    "generic_mentioned": 0,
+    "generic_visible": 0,
+    "generic_rate": 0.0,
+    "generic_ci": [
+     0.0,
+     17.59
+    ],
+    "brand_answers": 0,
+    "brand_cited": 0
+   },
+   "nl": {
+    "questions": 9,
+    "details": [
+     {
+      "question": "Wat is de beste wielrenbril in 2026?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingweekly.com",
+       "cyclingnews.com",
+       "treelinereview.com",
+       "outdoorgearlab.com",
+       "tacticalgearguy.com",
+       "active.com",
+       "bikeradar.com",
+       "whatsthebest.co.uk"
+      ]
+     },
+     {
+      "question": "Wat is het beste alternatief voor een Oakley wielrenbril?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "polarizedclub.com",
+       "reddit.com",
+       "runnersworld.com",
+       "opumo.com",
+       "cyclingnews.com",
+       "cyclingweekly.com",
+       "thespectaclefactory.com",
+       "singletrackworld.com"
+      ]
+     },
+     {
+      "question": "Welke fietsbril heeft verwisselbare glazen?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "amazon.nl",
+       "evileye.com",
+       "tour-magazin.de",
+       "bbbcycling.com",
+       "anwb.nl",
+       "amazon.com.be",
+       "bike24.nl"
+      ]
+     },
+     {
+      "question": "Wat is de beste lichte wielrenbril?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "bicycling.com",
+       "bikeradar.com",
+       "tacticalgearguy.com",
+       "bikerumor.com",
+       "cyclingnews.com",
+       "cyclingweekly.com",
+       "julbo.us",
+       "eroadbikeguide.com"
+      ]
+     },
+     {
+      "question": "Wat is de beste bril voor wielrennen?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingnews.com",
+       "cyclingweekly.com",
+       "bikeradar.com",
+       "bicycling.com",
+       "eroadbikeguide.com",
+       "thetoolstrunk.com",
+       "tour-magazin.de",
+       "wielrenner.eu"
+      ]
+     },
+     {
+      "question": "Waar moet ik op letten bij het kopen van een fietsbril?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "sporteyes.com",
+       "britishcycling.org.uk",
+       "decathlon.nl",
+       "asadventure.com",
+       "futurumshop.nl",
+       "pearle.be",
+       "mantel.com",
+       "alpinstore.com"
+      ]
+     },
+     {
+      "question": "Wat zijn de top 5 brillen?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "couponzania.com",
+       "opti-illusions.com",
+       "eu.rayneo.com",
+       "vergelijk.nl",
+       "edel-optics.at",
+       "viture.com",
+       "oakley.com"
+      ]
+     },
+     {
+      "question": "Wat zijn de top 10 beste fietsbrillen?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "outdoorgearlab.com",
+       "gearweare.net",
+       "bicycling.com",
+       "bikeradar.com",
+       "bikerumor.com",
+       "road.cc",
+       "cyclingweekly.com",
+       "wielrenner.eu"
+      ]
+     },
+     {
+      "question": "Welke categorie fietsbril heb ik nodig?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "decathlon.com",
+       "bolle.com",
+       "roadmancycling.com",
+       "mammothbikes.com",
+       "futurumshop.nl",
+       "fahrrad-xxl.at",
+       "decathlon.nl",
+       "faz.net"
+      ]
+     }
+    ],
+    "generic_answers": 18,
+    "generic_cited": 0,
+    "generic_mentioned": 0,
+    "generic_visible": 0,
+    "generic_rate": 0.0,
+    "generic_ci": [
+     0.0,
+     17.59
+    ],
+    "brand_answers": 0,
+    "brand_cited": 0
+   },
+   "fr": {
+    "questions": 9,
+    "details": [
+     {
+      "question": "Quelles sont les meilleures lunettes de vélo en 2026 ?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingnews.com",
+       "bikeradar.com",
+       "cyclingweekly.com",
+       "outdoorgearlab.com",
+       "bikerumor.com",
+       "cyclist.co.uk",
+       "tacticalgearguy.com",
+       "bikehikesafari.com"
+      ]
+     },
+     {
+      "question": "Quelle est la meilleure alternative aux lunettes Oakley pour le vélo ?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "rydecruz.com",
+       "cyclingweekly.com",
+       "beautasteyewear.com",
+       "cyclingnews.com",
+       "opumo.com",
+       "outdoorgearlab.com",
+       "bikerumor.com",
+       "bicycling.com"
+      ]
+     },
+     {
+      "question": "Quelles lunettes de cyclisme ont des verres interchangeables ?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "bike24.com",
+       "amazon.com.be",
+       "bikeradar.com",
+       "cube.eu",
+       "competitivecyclist.com",
+       "decathlon.fr",
+       "evileye.com"
+      ]
+     },
+     {
+      "question": "Quelles sont les meilleures lunettes de vélo légères ?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingnews.com",
+       "bicycling.com",
+       "bikeradar.com",
+       "bikerumor.com",
+       "visio-net.fr",
+       "decathlon.fr",
+       "idealo.fr",
+       "altitude-sports.com"
+      ]
+     },
+     {
+      "question": "Quelles lunettes pour faire du vélo ?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "visio-net.fr",
+       "zeiss.com",
+       "bikeradar.com",
+       "bicycling.com",
+       "sporteyes.com",
+       "decathlon.fr",
+       "cyclingweekly.com",
+       "idealo.fr"
+      ]
+     },
+     {
+      "question": "Quelles sont les meilleures lunettes de vélo pour la route ?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "visio-net.fr",
+       "decathlon.fr",
+       "idealo.fr",
+       "tour-magazin.de",
+       "materiel-velo.com",
+       "us.horus-x.com",
+       "fflose.com",
+       "allaboutvision.com"
+      ]
+     },
+     {
+      "question": "Pourquoi lunettes à l'envers sur casque vélo ?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 2,
+      "mentioned": 0,
+      "velluto_cited": true,
+      "top_domains": [
+       "forum.slowtwitch.com",
+       "en.brujulabike.com",
+       "reddit.com",
+       "velluto-shop.com",
+       "bike-mailorder.com",
+       "fr.brujulabike.com",
+       "maxandthecity.co.uk"
+      ]
+     },
+     {
+      "question": "Quelles sont les meilleures lunettes de soleil pour le cyclisme ?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingweekly.com",
+       "cyclingnews.com",
+       "bikeradar.com",
+       "outdoorgearlab.com",
+       "cyclist.co.uk",
+       "road.cc",
+       "bikerumor.com",
+       "bicycling.com"
+      ]
+     },
+     {
+      "question": "Quelles lunettes pour le cyclisme ?",
+      "kind": "generic",
+      "runs": 2,
+      "cited": 0,
+      "mentioned": 0,
+      "velluto_cited": false,
+      "top_domains": [
+       "cyclingweekly.com",
+       "zeiss.com.au",
+       "bicycling.com",
+       "bikeradar.com",
+       "decathlon.fr",
+       "amazon.com.be",
+       "zeiss.com",
+       "tour-magazin.de"
+      ]
+     }
+    ],
+    "generic_answers": 18,
+    "generic_cited": 2,
+    "generic_mentioned": 0,
+    "generic_visible": 2,
+    "generic_rate": 11.11,
+    "generic_ci": [
+     3.1,
+     32.8
+    ],
+    "brand_answers": 0,
+    "brand_cited": 0
+   }
+  },
+  "generic_answers": 72,
+  "generic_cited": 4,
+  "generic_mentioned": 0,
+  "generic_visible": 4,
+  "generic_rate": 5.56,
+  "generic_ci": [
+   2.18,
+   13.43
+  ],
+  "brand_answers": 0,
+  "brand_cited": 0
  }
 ]
