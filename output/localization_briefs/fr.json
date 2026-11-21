@@ -1,18 +1,12 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-11-20",
+  "date": "2026-11-21",
   "locale": "fr-FR",
   "locale_short": "fr",
   "market_code": "FR",
   "master_topic": "cycling glasses",
   "local_primary_keyword": "cycling glasses",
-  "local_secondary_keywords": [
-    "Which Oakley sunglasses are best for running and cycling?",
-    "Is Oakley Prizm or Prizm Polarized better?",
-    "What color lens is best for mountain biking?",
-    "What are the best looking Oakley sunglasses?",
-    "What color lens is best for mountain biking?"
-  ],
+  "local_secondary_keywords": [],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
   "local_adaptation_notes": [
@@ -31,7 +25,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-11-20",
+    "last_updated": "2026-11-21",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }
