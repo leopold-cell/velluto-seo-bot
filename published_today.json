@@ -1,7 +1,7 @@
 [
   {
-    "title": "7 Oakley Alternatives for Cyclists (25g, 2026)",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/7-oakley-alternatives-for-cyclists-25g-2026",
+    "title": "7 Oakley Alternatives for Cyclists 2026, From 69 EUR",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/7-oakley-alternatives-for-cyclists-2026-from-69-eur",
     "topic": "oakley alternatives",
     "keyword": "oakley alternatives",
     "lang": "en",
@@ -9,53 +9,114 @@
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Oakley Alternativen Rennrad",
-        "intent": "Cyclist searching for comparable cycling eyewear brands to Oakley at potentially better prices.",
+        "keyword": "Oakley Alternativen Radsportbrille",
+        "intent": "Cyclist searching for comparable cycling eyewear brands to replace or compare with Oakley.",
         "volume": 0
       },
       "nl": {
-        "keyword": "Oakley alternatieven kopen fiets",
-        "intent": "Dutch cyclist looking to buy comparable cycling glasses instead of Oakley.",
+        "keyword": "Oakley alternatieven fietsenbril kopen",
+        "intent": "Dutch cyclist looking to purchase comparable cycling eyewear options instead of Oakley.",
         "volume": 0
       },
       "fr": {
-        "keyword": "meilleures alternatives Oakley cyclisme",
-        "intent": "French cyclist comparing and choosing alternative eyewear brands to Oakley for cycling.",
+        "keyword": "meilleures alternatives Oakley lunettes cyclisme",
+        "intent": "French cyclist comparing and choosing alternative cycling eyewear brands to Oakley.",
         "volume": 0
       },
       "es": {
-        "keyword": "alternativas a Oakley gafas ciclismo",
-        "intent": "Spanish cyclist choosing alternative cycling eyewear brands instead of Oakley.",
+        "keyword": "mejores alternativas a Oakley gafas ciclismo",
+        "intent": "Spanish cyclist seeking to buy comparable cycling glasses as an alternative to Oakley.",
         "volume": 0
       },
       "it": {
-        "keyword": "alternative Oakley occhiali ciclismo",
-        "intent": "Italian cyclist comparing and buying alternative cycling eyewear to Oakley.",
+        "keyword": "migliori alternative Oakley occhiali ciclismo",
+        "intent": "Italian cyclist ready to choose alternative cycling eyewear brands to Oakley.",
         "volume": 0
       },
       "da": {
         "keyword": "Oakley alternativer cykelbriller k\u00f8b",
-        "intent": "Danish cyclist ready to buy alternative cycling eyewear instead of Oakley.",
+        "intent": "Danish cyclist looking to purchase comparable cycling eyewear instead of Oakley.",
         "volume": 0
       },
       "nb": {
-        "keyword": "beste Oakley alternativer sykkelbriller",
-        "intent": "Norwegian cyclist comparing and choosing alternative cycling glasses to Oakley.",
+        "keyword": "beste Oakley alternativer sykkelbrill",
+        "intent": "Norwegian cyclist searching for alternative cycling eyewear options to buy instead of Oakley.",
         "volume": 0
       },
       "pl": {
-        "keyword": "alternatywy dla Oakley okulary rowerowe",
-        "intent": "Polish cyclist searching for comparable cycling eyewear alternatives to Oakley.",
+        "keyword": "najlepsze alternatywy Oakley okulary rowerowe",
+        "intent": "Polish cyclist ready to buy comparable cycling eyewear brands as alternatives to Oakley.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "alternativas Oakley \u00f3culos ciclismo comprar",
-        "intent": "Portuguese cyclist ready to buy alternative cycling eyewear instead of Oakley.",
+        "keyword": "melhores alternativas Oakley \u00f3culos ciclismo",
+        "intent": "Portuguese cyclist seeking to purchase alternative cycling eyewear options to Oakley.",
         "volume": 0
       },
       "sv": {
         "keyword": "b\u00e4sta Oakley alternativ cykelglas\u00f6gon",
-        "intent": "Swedish cyclist comparing and choosing alternative cycling eyewear brands to Oakley.",
+        "intent": "Swedish cyclist looking to buy comparable cycling eyewear brands instead of Oakley.",
+        "volume": 0
+      }
+    }
+  },
+  {
+    "title": "Cycling Glasses Buying Guide 2026: Optics, Fit and Value",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-glasses-buying-guide-2026-optics-fit-and-value",
+    "topic": "cycling glasses",
+    "keyword": "cycling glasses",
+    "lang": "en",
+    "phase": "decision-extra",
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "Radsportbrille kaufen",
+        "intent": "Cyclist ready to purchase cycling glasses online.",
+        "volume": 0
+      },
+      "nl": {
+        "keyword": "fietsenbril kopen",
+        "intent": "Cyclist ready to buy cycling glasses.",
+        "volume": 0
+      },
+      "fr": {
+        "keyword": "lunettes cyclisme acheter",
+        "intent": "Cyclist ready to purchase cycling eyewear.",
+        "volume": 0
+      },
+      "es": {
+        "keyword": "gafas ciclismo comprar",
+        "intent": "Cyclist ready to buy cycling glasses.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "occhiali ciclismo acquistare",
+        "intent": "Cyclist ready to purchase cycling eyewear.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "cykelbriller k\u00f8b",
+        "intent": "Cyclist ready to buy cycling glasses.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "sykkelbriller kj\u00f8p",
+        "intent": "Cyclist ready to purchase cycling eyewear.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "okulary rowerowe kupi\u0107",
+        "intent": "Cyclist ready to buy cycling glasses.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "\u00f3culos ciclismo comprar",
+        "intent": "Cyclist ready to purchase cycling eyewear.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "cykelglas\u00f6gon k\u00f6pa",
+        "intent": "Cyclist ready to buy cycling glasses.",
         "volume": 0
       }
     }

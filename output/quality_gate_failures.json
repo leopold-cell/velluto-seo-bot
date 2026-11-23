@@ -7,23 +7,6 @@
       "replaced em-dashes with commas"
     ],
     "hard_issues": [
-      "[FACT] claims photochromic lenses — Velluto doesn't offer these",
-      "[FACT] claims polarized lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "oakley vs suunto",
-    "market": "US",
-    "checked_at": "2026-07-04T04:31:53.291005Z",
-    "title": "Oakley vs Suunto Cycling Glasses 2026: Which Wins?",
-    "brief_topic": "oakley vs suunto"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [
-      "injected StradaPro collection (money-page) link",
-      "injected 2 related-article internal link(s)",
-      "replaced em-dashes with commas"
-    ],
-    "hard_issues": [
       "[FACT] claims photochromic lenses — Velluto doesn't offer these"
     ],
     "primary_keyword": "Rudy Project alternative cycling glasses",
@@ -3395,6 +3378,22 @@
     "market": "US",
     "checked_at": "2026-11-22T05:17:30.895627Z",
     "title": "7 Oakley Alternatives for Cyclists (25g, 2026)",
+    "brief_topic": "oakley alternatives"
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[LEGAL] subjective superiority claim over a named competitor ('better value than X', 'superior to X', 'beats X') — § 6 UWG requires objective, verifiable comparisons; reframe as a neutral comparison or an 'alternative to X', or compare only Velluto's own measurable specs"
+    ],
+    "primary_keyword": "oakley alternatives",
+    "market": "US",
+    "checked_at": "2026-11-23T06:39:41.173077Z",
+    "title": "7 Oakley Alternatives for Cyclists 2026 — From 69 EUR",
     "brief_topic": "oakley alternatives"
   }
 ]
