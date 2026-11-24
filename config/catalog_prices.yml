@@ -9,7 +9,9 @@
 #
 # Update here when a price changes; nothing else needs touching.
 products:
-  - {name: "StradaPro Starter Vision Kit", eur: 69,  tokens: [stradapro, strada pro, starter vision kit, performance vision kit]}
+  - {name: "StradaPro Starter Vision Kit", eur: 69,  tokens: [stradapro, strada pro, starter vision kit]}
+  - {name: "Performance Vision Kit",       eur: 99,  tokens: [performance vision kit]}
+  - {name: "Ultimate Vision Kit",          eur: 119, tokens: [ultimate vision kit]}
   - {name: "Velluto Chromo",               eur: 119, tokens: [chromo]}
   - {name: "VellutoVisione lens",          eur: 39,  tokens: [visione]}
   - {name: "VellutoPuro lens",             eur: 19,  tokens: [puro]}

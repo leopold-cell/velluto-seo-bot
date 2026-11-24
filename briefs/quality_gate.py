@@ -468,8 +468,8 @@ def _sentence_bounds(text: str, pos: int) -> tuple[int, int]:
 
 # ── Catalog-aware price tolerance ──────────────────────────────────────────────
 _CATALOG_FALLBACK = [
-    (69, ("stradapro", "strada pro", "starter vision kit", "performance vision kit")),
-    (119, ("chromo",)), (39, ("visione",)), (19, ("puro", "hard case")),
+    (69, ("stradapro", "strada pro", "starter vision kit")), (99, ("performance vision kit",)),
+    (119, ("chromo", "ultimate vision kit")), (39, ("visione",)), (19, ("puro", "hard case")),
     (8, ("microfiber", "cleaning cloth", "cleaning spray")), (14, ("bidon", "drinking bottle")),
 ]
 _CATALOG_CACHE: list | None = None
