@@ -58,6 +58,8 @@ step "flatten redirects (daily)"   python3 scripts/flatten_redirect_chains.py --
 # Removes the bot's own marked limited-offer paragraphs once their end date has
 # passed (config/active_offers.yml). A no-op until the first offer expires.
 step "offer expiry (daily)"       python3 scripts/offer_expiry.py --apply
+# Night Glow link in the gift articles (EN + translations); idempotent, no LLM.
+step "night glow gift link (daily)" python3 scripts/link_night_glow.py --apply
 step "ai act watch (7d gate)"     python3 scripts/ai_act_watch.py
 step "reddit worklist (daily)"     python3 scripts/reddit_daily.py
 step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py
