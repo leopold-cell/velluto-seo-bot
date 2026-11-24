@@ -1,18 +1,12 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-11-23",
+  "date": "2026-11-24",
   "locale": "da-DK",
   "locale_short": "da",
   "market_code": "DA",
   "master_topic": "cycling glasses",
   "local_primary_keyword": "cycling glasses",
-  "local_secondary_keywords": [
-    "What are the best glasses for cycling?",
-    "What are the best cycling glasses in 2026?",
-    "Are Maui Jims better than Oakley?",
-    "Which Oakley lenses are best for cycling?",
-    "Which Oakley lenses are best for cycling?"
-  ],
+  "local_secondary_keywords": [],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
   "local_adaptation_notes": [
@@ -31,7 +25,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-11-23",
+    "last_updated": "2026-11-24",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }

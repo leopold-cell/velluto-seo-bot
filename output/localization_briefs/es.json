@@ -1,18 +1,12 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-11-23",
+  "date": "2026-11-24",
   "locale": "es-ES",
   "locale_short": "es",
   "market_code": "ES",
   "master_topic": "cycling glasses",
   "local_primary_keyword": "cycling glasses",
-  "local_secondary_keywords": [
-    "Are photochromic lenses worth it for cycling?",
-    "What color sunglass lenses are best for running?",
-    "What are the best photochromic cycling glasses?",
-    "Are photochromic lenses worth it for cycling?",
-    "What are the best glasses for cycling?"
-  ],
+  "local_secondary_keywords": [],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
   "local_adaptation_notes": [
@@ -31,7 +25,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-11-23",
+    "last_updated": "2026-11-24",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }

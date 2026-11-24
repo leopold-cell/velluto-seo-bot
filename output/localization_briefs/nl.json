@@ -1,17 +1,17 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-11-23",
+  "date": "2026-11-24",
   "locale": "nl-NL",
   "locale_short": "nl",
   "market_code": "NL",
   "master_topic": "cycling glasses",
   "local_primary_keyword": "cycling glasses",
   "local_secondary_keywords": [
-    "Are photochromic lenses worth it for cycling?",
-    "Which is better, UV or polarized sunglasses?",
-    "Which brand of photochromic glasses is best?",
-    "What is the best inexpensive sunglass brand?",
-    "What color sunglass lens is best for cycling?"
+    "What are the best glasses for motorcycle riders?",
+    "Is it worth buying more expensive glasses?",
+    "What sunglasses are best for cycling?",
+    "Is 12 mph wind strong for cycling?",
+    "What are the best windproof cycling glasses?"
   ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -31,7 +31,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-11-23",
+    "last_updated": "2026-11-24",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }

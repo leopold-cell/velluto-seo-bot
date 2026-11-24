@@ -1,17 +1,17 @@
 {
   "brief_type": "localization_brief",
-  "date": "2026-11-23",
+  "date": "2026-11-24",
   "locale": "de-DE",
   "locale_short": "de",
   "market_code": "DE",
   "master_topic": "cycling glasses",
   "local_primary_keyword": "cycling glasses",
   "local_secondary_keywords": [
-    "Who makes the best cycling glasses?",
-    "Which sunglasses are better than Oakley?",
-    "Are Oakley cycling glasses worth it?",
-    "Which Oakley lenses are best for cycling?",
-    "Are photochromic lenses worth it for cycling?"
+    "Are expensive sunglasses worth it?",
+    "What color sunglass lens is best for cycling?",
+    "What are the best glasses to keep wind out of my eyes?",
+    "Why are my safety glasses fogging up?",
+    "Does Dawn dish soap prevent fogging?"
   ],
   "local_search_intent": "commercial investigation",
   "rewrite_level": "high",
@@ -31,7 +31,7 @@
     "free_shipping_threshold": null,
     "guarantee": null,
     "delivery_claim": null,
-    "last_updated": "2026-11-23",
+    "last_updated": "2026-11-24",
     "in_stock": true,
     "product_handle": "velluto-stradapro-cycling-glasses-nero"
   }

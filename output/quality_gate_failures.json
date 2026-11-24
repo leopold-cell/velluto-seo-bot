@@ -7,55 +7,6 @@
       "replaced em-dashes with commas"
     ],
     "hard_issues": [
-      "[FACT] claims photochromic lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "Rudy Project alternative cycling glasses",
-    "market": "US",
-    "checked_at": "2026-07-04T04:40:18.650420Z",
-    "title": "Rudy Project Alternative Cycling Glasses 2026 | Velluto",
-    "brief_topic": "Rudy Project alternative cycling glasses"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [
-      "injected StradaPro collection (money-page) link",
-      "injected 2 related-article internal link(s)",
-      "replaced em-dashes with commas"
-    ],
-    "hard_issues": [
-      "[FACT] claims photochromic lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "Rudy Project alternative cycling glasses",
-    "market": "US",
-    "checked_at": "2026-07-04T04:42:51.815389Z",
-    "title": "Rudy Project Alternative Cycling Glasses 2026 | Velluto",
-    "brief_topic": "Rudy Project alternative cycling glasses"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [
-      "injected StradaPro collection (money-page) link",
-      "injected 2 related-article internal link(s)",
-      "replaced em-dashes with commas"
-    ],
-    "hard_issues": [
-      "[FACT] claims photochromic lenses — Velluto doesn't offer these",
-      "[FACT] claims polarized lenses — Velluto doesn't offer these"
-    ],
-    "primary_keyword": "Rudy Project alternative cycling glasses",
-    "market": "US",
-    "checked_at": "2026-07-04T04:45:29.775304Z",
-    "title": "Rudy Project Alternative Cycling Glasses 2026 | Velluto",
-    "brief_topic": "Rudy Project alternative cycling glasses"
-  },
-  {
-    "passed": false,
-    "auto_fixes": [
-      "injected StradaPro collection (money-page) link",
-      "injected 2 related-article internal link(s)",
-      "replaced em-dashes with commas"
-    ],
-    "hard_issues": [
       "[PRICE] Velluto-context price '99 USD' but config expects '149 USD' for US",
       "[FACT] claims photochromic lenses — Velluto doesn't offer these"
     ],
@@ -3395,5 +3346,58 @@
     "checked_at": "2026-11-23T06:39:41.173077Z",
     "title": "7 Oakley Alternatives for Cyclists 2026 — From 69 EUR",
     "brief_topic": "oakley alternatives"
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…serious cyclists who want to explore both interchangeable and photochromic options can compare the stradapro with the <a class=\"inline\" href=\"https://velluto-shop…“"
+    ],
+    "primary_keyword": "cycling glasses",
+    "market": "US",
+    "checked_at": "2026-11-24T05:34:03.604922Z",
+    "title": "Cycling Glasses 2026: Honest Buyer's Guide for Road Cyclists",
+    "brief_topic": "cycling glasses"
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "removed qualifier from 1 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims polarized lenses — no Velluto product has these — Stelle: „…you want polarized lenses…“",
+      "[LEGAL] implies a test/review/first-hand experience that wasn't performed — no fabricated testing (§ 5/5a UWG, EU fake-review ban); reframe as an honest, spec-based buyer's guide"
+    ],
+    "primary_keyword": "cycling glasses",
+    "market": "US",
+    "checked_at": "2026-11-24T05:37:59.212240Z",
+    "title": "Cycling Glasses 2026: The Honest Buyer's Guide",
+    "brief_topic": "cycling glasses"
+  },
+  {
+    "passed": false,
+    "auto_fixes": [
+      "injected StradaPro collection (money-page) link",
+      "injected 2 related-article internal link(s)",
+      "removed qualifier from 2 Yes/No comparison-table cell(s)",
+      "replaced em-dashes with commas"
+    ],
+    "hard_issues": [
+      "[FACT] claims photochromic lenses — attributed to the StradaPro, which is not; only the Chromo is — Stelle: „…ed lenses (vellutopuro for low light, vellutovisione for high contrast) will outperform a photochromic lens in its optimised zone…“",
+      "[LEGAL] disparaging or doubt-casting competitor phrasing ('(stated)', or a negative term next to a named competitor) — § 6 Abs. 2 Nr. 5 UWG; use neutral, verifiable, current facts only"
+    ],
+    "primary_keyword": "cycling glasses",
+    "market": "US",
+    "checked_at": "2026-11-24T05:42:04.609787Z",
+    "title": "Cycling Glasses Buying Guide 2026: What Actually Matters",
+    "brief_topic": "cycling glasses"
   }
 ]
