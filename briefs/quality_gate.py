@@ -527,12 +527,12 @@ def check_commercial_config(post: dict, market_code: str, commercial: dict | Non
     money_patterns = [
         (r"€\s*(\d{2,4})(?:[.,]\d{2})?",         "EUR"),
         (r"\$\s*(\d{2,4})(?:[.,]\d{2})?",         "USD"),
-        (r"(\d{2,4})\s*EUR\b",                    "EUR"),
-        (r"(\d{2,4})\s*USD\b",                    "USD"),
-        (r"(\d{2,4})\s*DKK\b",                    "DKK"),
-        (r"(\d{2,4})\s*NOK\b",                    "NOK"),
-        (r"(\d{2,4})\s*PLN\b",                    "PLN"),
-        (r"(\d{2,4})\s*SEK\b",                    "SEK"),
+        (r"(?<![\d.,])(\d{2,4})(?:[.,]\d{2})?\s*EUR\b",                    "EUR"),
+        (r"(?<![\d.,])(\d{2,4})(?:[.,]\d{2})?\s*USD\b",                    "USD"),
+        (r"(?<![\d.,])(\d{2,4})(?:[.,]\d{2})?\s*DKK\b",                    "DKK"),
+        (r"(?<![\d.,])(\d{2,4})(?:[.,]\d{2})?\s*NOK\b",                    "NOK"),
+        (r"(?<![\d.,])(\d{2,4})(?:[.,]\d{2})?\s*PLN\b",                    "PLN"),
+        (r"(?<![\d.,])(\d{2,4})(?:[.,]\d{2})?\s*SEK\b",                    "SEK"),
     ]
     for pat, curr in money_patterns:
         for m in re.finditer(pat, body):

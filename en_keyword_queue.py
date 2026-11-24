@@ -268,6 +268,35 @@ EN_KEYWORDS = [
                  "No light-transmission figures."
                  + _offer_note("chromo-2x1"),
     },
+    # ── Phase 1: NIGHT GLOW + GIFTS (added 2026-11-24, Christmas season: published first) ──
+    {
+        "keyword": "cycling gifts under 25 euro",
+        "market_keywords": {"de": "fahrrad geschenke unter 25 euro", "nl": "fietscadeaus onder 25 euro kopen", "fr": "cadeaux cycliste moins de 25 euros"},
+        "volume": 300, "phase": 1,
+        "angle": 'Gift guide for cyclists on a small budget, Christmas 2026: small things a rider will actually use. Feature the Velluto Night Glow LED valve cap lights as one idea (2-pack 14.99 EUR; 4-pack 24.99 EUR is just above 25, say \'a 4-pack at 24.99 EUR\'), plus other Velluto accessories at their real prices: Microfiber Cleaning Cloth 8 EUR, Cleaning Spray 8 EUR, TACX Bidon 14 EUR, Hard Case 19 EUR, VellutoPuro lens 19 EUR. Each price only beside its own product, never summed. Product facts only from BRAND_FACTS (VELLUTO NIGHT GLOW): decorative LED valve cap lights, motion-activated, Schrader and Dunlop valves, NOT Presta, 2-pack 14.99 EUR, 4-pack 24.99 EUR, 8-pack Mixed 39.99 EUR, link https://velluto-shop.com/products/velluto-night-glow-led-valve-caps . State the Presta limit and that it does not replace StVZO lighting and reflectors. No safety promise, no "best price", no brightness or battery-life figures. '
+                 + _LEGAL,
+    },
+    {
+        "keyword": "best stocking fillers for cyclists",
+        "market_keywords": {"de": "kleine geschenke fuer radfahrer kaufen", "nl": "kleine cadeaus voor wielrenners kopen", "fr": "petits cadeaux pour cyclistes acheter"},
+        "volume": 250, "phase": 1,
+        "angle": 'Short stocking-filler list for cyclists. Feature the Night Glow valve cap lights, the Cleaning Spray, the Cleaning Cloth and the TACX Bidon, each with its real price beside it. Product facts only from BRAND_FACTS (VELLUTO NIGHT GLOW): decorative LED valve cap lights, motion-activated, Schrader and Dunlop valves, NOT Presta, 2-pack 14.99 EUR, 4-pack 24.99 EUR, 8-pack Mixed 39.99 EUR, link https://velluto-shop.com/products/velluto-night-glow-led-valve-caps . State the Presta limit and that it does not replace StVZO lighting and reflectors. No safety promise, no "best price", no brightness or battery-life figures. '
+                 + _LEGAL,
+    },
+    {
+        "keyword": "buy led valve cap lights for bike",
+        "market_keywords": {"de": "led ventilkappen fahrrad kaufen", "nl": "led ventieldopjes fiets kopen", "fr": "bouchons de valve led velo acheter"},
+        "volume": 200, "phase": 1,
+        "angle": 'Buyer\'s checklist for LED valve cap lights: valve type (Schrader, Dunlop, Presta), motion activation, battery replacement, colours, pack size. Present Velluto Night Glow as one option with its exact limits. Product facts only from BRAND_FACTS (VELLUTO NIGHT GLOW): decorative LED valve cap lights, motion-activated, Schrader and Dunlop valves, NOT Presta, 2-pack 14.99 EUR, 4-pack 24.99 EUR, 8-pack Mixed 39.99 EUR, link https://velluto-shop.com/products/velluto-night-glow-led-valve-caps . State the Presta limit and that it does not replace StVZO lighting and reflectors. No safety promise, no "best price", no brightness or battery-life figures. '
+                 + _LEGAL,
+    },
+    {
+        "keyword": "best motion activated bike wheel lights",
+        "market_keywords": {"de": "bewegungsaktivierte fahrrad radlichter kaufen", "nl": "bewegingsgestuurde fiets wiellichten kopen", "fr": "lumieres de roue velo activees par le mouvement acheter"},
+        "volume": 150, "phase": 1,
+        "angle": 'Explain what motion-activated wheel lights are (decorative accent vs legally required lighting under StVZO) and who buys them. Present Velluto Night Glow as the Velluto option. Product facts only from BRAND_FACTS (VELLUTO NIGHT GLOW): decorative LED valve cap lights, motion-activated, Schrader and Dunlop valves, NOT Presta, 2-pack 14.99 EUR, 4-pack 24.99 EUR, 8-pack Mixed 39.99 EUR, link https://velluto-shop.com/products/velluto-night-glow-led-valve-caps . State the Presta limit and that it does not replace StVZO lighting and reflectors. No safety promise, no "best price", no brightness or battery-life figures. '
+                 + _LEGAL,
+    },
     # ── Phase 1: REFILL (added 2026-11-04, queue was empty since 24 Oct) ───────
     # High-intent only, Velluto facts only from BRAND_FACTS (no fit/face-size,
     # contact-lens, dust or crash claims: none are evidenced).

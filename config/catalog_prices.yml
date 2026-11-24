@@ -17,3 +17,8 @@ products:
   - {name: "Microfiber Cloth",             eur: 8,   tokens: [microfiber, cleaning cloth]}
   - {name: "Cleaning Spray",               eur: 8,   tokens: [cleaning spray]}
   - {name: "TACX Bidon",                   eur: 14,  tokens: [bidon, drinking bottle]}
+  # Night Glow LED valve cap lights (added 2026-11-24). The gate reads whole euros only
+  # ("14,99" is seen as 14), so eur is the integer part of 14.99 / 24.99 / 39.99.
+  - {name: "Velluto Night Glow",           eur: 14,  tokens: [night glow, valve cap, ventilkappen]}
+  - {name: "Velluto Night Glow 4-pack",    eur: 24,  tokens: [night glow, valve cap, ventilkappen]}
+  - {name: "Velluto Night Glow 8-pack",    eur: 39,  tokens: [night glow, valve cap, ventilkappen]}

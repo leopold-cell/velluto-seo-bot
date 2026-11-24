@@ -235,6 +235,25 @@ ACCESSORIES:
 - Cleaning Spray: 50ml, apple fragrance, refillable, made in Germany
 - TACX Bidon (Limited Edition): 500ml, dishwasher safe up to 40°C, made in Netherlands
 
+VELLUTO NIGHT GLOW (LED valve cap lights, launched Nov 2026; page https://velluto-shop.com/products/velluto-night-glow-led-valve-caps):
+- Decorative accessory: a motion-activated LED ring on the valve. A vibration sensor
+  switches it on as soon as the wheel turns, so the wheel shows a full ring of colour
+  that others see from the side.
+- 5.8 cm tall, rain-resistant, for bicycles, e-bikes and motorcycles.
+- Fits Schrader (car) and Dunlop/Blitz valves (adapter included); it does NOT fit
+  Presta valves. State this wherever the product is recommended: most road bikes
+  have Presta valves.
+- Includes 3 AG10 button cells per light (replaceable) and comes in a black Velluto box.
+- Colours: Green, Blue, Pink, Yellow, Mixed. Sets: 2-pack (one pair, both wheels of
+  one bike) 14.99 EUR; 4-pack (two bikes) 24.99 EUR; 8-pack Mixed 39.99 EUR.
+  Quote a price only beside the pack that costs it. Never add prices together.
+- It is decorative. It does NOT replace the lighting and reflectors required by
+  StVZO; say so whenever the "visible in the dark" idea comes up. Never call it a
+  safety product, never promise fewer accidents, never write "safer" or "protects".
+- Do NOT write "best price", test results, battery life, brightness (lumens),
+  waterproof ratings or any figure that is not listed here.
+- Link: https://velluto-shop.com/products/velluto-night-glow-led-valve-caps
+
 WHAT THE STRADAPRO DOES NOT OFFER — NEVER ATTRIBUTE THESE TO THE STRADAPRO:
 ✗ Photochromic / self-tinting lenses  → that is the CHROMO, a separate product
 ✗ Mirrored lenses                     → that is the CHROMO, a separate product
@@ -2946,6 +2965,16 @@ def publish_one(topic: str, trends: str, products: list[dict], post_num: int):
     json.dump(published, open(PUBLISHED_LOG, "w"), indent=2)
 
 
+def _keyword_already_published(keyword: str | None) -> bool:
+    """True when this keyword is in en_keywords_used.json (case-insensitive)."""
+    try:
+        from en_keyword_queue import _load_used
+        kw = (keyword or "").strip().lower()
+        return bool(kw) and kw in {u.strip().lower() for u in _load_used()}
+    except Exception:
+        return False
+
+
 def _dynamic_fallback_allowed() -> bool:
     """Whether the bot may invent a topic when the curated queue is empty.
     Default False — see the gated fallback in main() and publishing_rules.yml."""
@@ -3043,6 +3072,15 @@ def main():
         print("\n📊 Monitor-only day: no publish, no update. Strategic decision logged.")
         # Skip publish; still let downstream optimizer scripts run via run.sh.
 
+    elif (decision and decision.get("chosen_action") == "create_new_article"
+          and _keyword_already_published(decision.get("chosen_keyword"))):
+        # The decision layer keeps proposing keywords we already published (it re-chose
+        # "oakley alternatives" nine times between 20 and 24 Nov 2026, up to two articles a
+        # day), re-creating the cannibalisation the merges removed. Treat it as "no new
+        # article from the decision layer"; the curated queue below fills the day instead.
+        print(f"\n⏭  Decision wants '{decision.get('chosen_keyword')}', already published "
+              f"(en_keywords_used.json) — skipping, the EN queue publishes instead.")
+
     elif decision and decision.get("chosen_action") == "create_new_article":
         kw_decision = {
             "keyword":   decision["chosen_keyword"],
@@ -3099,6 +3137,8 @@ def main():
                 if cand.get("recommended_action") != "create_new_article":
                     continue
                 if cand.get("keyword") == primary_kw:
+                    continue
+                if _keyword_already_published(cand.get("keyword")):
                     continue
                 strong = (cand.get("opportunity_score", 0) >= STRONG_SIGNAL_SCORE
                           and (cand.get("commercial_comparison")
