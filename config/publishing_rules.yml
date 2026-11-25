@@ -119,3 +119,9 @@ optimization_timeline:
 # run the improve-existing steps instead. Refill the queue to resume.
 content:
   dynamic_topic_fallback: false
+
+  # Fewer, stronger articles (2026-11-29, operator decision after the Ramp case study:
+  # AI engines cite pages they already trust; more posts did not move our Gemini rate).
+  # Weekdays with a new article, Monday=0 … Sunday=6. Default here: Mon, Wed, Fri = 3 a week.
+  # Remove the line to publish daily again. daily_report.py reads the same list.
+  publish_weekdays: [0, 2, 4]

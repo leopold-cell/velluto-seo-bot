@@ -86,10 +86,21 @@ def ask(question: str) -> tuple[bool, bool, list[str]]:
         d = domain_of(u)     # the old lstrip("www.") stripped CHARACTERS, not a prefix
         if d and d not in domains:
             domains.append(d)
+    for u in urls:
+        if DOMAIN in u:
+            CITED_URLS.setdefault(u.split("?")[0].split("#")[0], []).append(question)
     cited = any(DOMAIN in u for u in urls) or DOMAIN in text
     mentioned = (not cited) and (not is_brand_question(question)) \
         and "velluto" in text.lower()
     return cited, mentioned, domains
+
+
+CITED_URLS: dict[str, list[str]] = {}   # our page URL -> questions it was cited for
+
+
+def cited_pages() -> dict:
+    """{url: {"count": n, "questions": [...]}} for velluto-shop.com pages cited this run."""
+    return {u: {"count": len(qs), "questions": sorted(set(qs))} for u, qs in CITED_URLS.items()}
 
 
 def main() -> None:
@@ -148,7 +159,8 @@ def main() -> None:
     # answers only (the real visibility figure); brand answers are reported apart.
     entry = {"schema": 2, "date": dt.date.today().isoformat(), "repeats": REPEATS,
              "questions": t["generic_answers"], "velluto_cited": t["generic_visible"],
-             "rate": t["generic_rate"], "by_market": by_market, **t}
+             "rate": t["generic_rate"], "by_market": by_market,
+             "velluto_pages": cited_pages(), **t}
     hist.append(entry)
     os.makedirs(os.path.dirname(HISTORY), exist_ok=True)
     with open(HISTORY, "w", encoding="utf-8") as f:

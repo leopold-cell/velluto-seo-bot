@@ -2994,6 +2994,26 @@ def _keyword_already_published(keyword: str | None) -> bool:
         return False
 
 
+def _publish_weekdays() -> list[int]:
+    """Weekdays (Mon=0) on which a new article may be published, from
+    config/publishing_rules.yml content.publish_weekdays. Missing/unreadable: every day."""
+    try:
+        import yaml
+        rules = yaml.safe_load(open(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "config", "publishing_rules.yml"),
+            encoding="utf-8")) or {}
+        days = (rules.get("content") or {}).get("publish_weekdays")
+        if isinstance(days, list) and days:
+            return sorted({int(d) for d in days if 0 <= int(d) <= 6})
+    except Exception:
+        pass
+    return list(range(7))
+
+
+def _publish_day_allowed() -> bool:
+    return datetime.date.today().weekday() in _publish_weekdays()
+
+
 def _dynamic_fallback_allowed() -> bool:
     """Whether the bot may invent a topic when the curated queue is empty.
     Default False — see the gated fallback in main() and publishing_rules.yml."""
@@ -3061,28 +3081,36 @@ def main():
     # if decision layer fails OR returns an action not yet implemented.
     decision = None
     decision_keyword = None
-    try:
-        print("\n🧠 Building content inventory + scoring opportunities...")
-        from decision.content_inventory  import build as build_inventory
-        from decision.opportunity_scorer import score as score_opportunities
-        from decision.topic_selector     import choose as choose_topic
-        from decision.topic_selector     import write_daily_research_report
+    if not _publish_day_allowed():
+        # Fewer, stronger articles: publishing runs only on the weekdays in
+        # publishing_rules.yml (content.publish_weekdays). The decision layer is skipped
+        # too, so a non-publishing day costs no research or generation.
+        print("\n⏸  Heute ist kein Veröffentlichungstag (content.publish_weekdays) — "
+              "kein neuer Artikel, Bestandsoptimierung läuft weiter.")
+        decision = {"chosen_action": "monitor_only", "chosen_topic": "(kein Veröffentlichungstag)"}
+    else:
+        try:
+            print("\n🧠 Building content inventory + scoring opportunities...")
+            from decision.content_inventory  import build as build_inventory
+            from decision.opportunity_scorer import score as score_opportunities
+            from decision.topic_selector     import choose as choose_topic
+            from decision.topic_selector     import write_daily_research_report
 
-        inventory = build_inventory()
-        scored    = score_opportunities(research, inventory)
-        decision  = choose_topic(scored, research, inventory)
-        write_daily_research_report(decision, scored, research)
-        print(f"   ✓ Decision: {decision['chosen_action']} "
-              f"(topic='{decision.get('chosen_topic')}', score={decision.get('opportunity_score')})")
-        if decision.get("native_volume"):
-            print(f"     🎯 Target market: {decision.get('target_market')} "
-                  f"(native demand {decision.get('native_volume'):,}/mo)")
-        if decision.get("why_this_topic"):
-            print(f"     Why: {decision['why_this_topic']}")
-    except Exception as e:
-        print(f"   ⚠️  Decision layer failed: {e} — falling back to EN keyword queue")
-        import traceback; traceback.print_exc()
-        decision = None
+            inventory = build_inventory()
+            scored    = score_opportunities(research, inventory)
+            decision  = choose_topic(scored, research, inventory)
+            write_daily_research_report(decision, scored, research)
+            print(f"   ✓ Decision: {decision['chosen_action']} "
+                  f"(topic='{decision.get('chosen_topic')}', score={decision.get('opportunity_score')})")
+            if decision.get("native_volume"):
+                print(f"     🎯 Target market: {decision.get('target_market')} "
+                      f"(native demand {decision.get('native_volume'):,}/mo)")
+            if decision.get("why_this_topic"):
+                print(f"     Why: {decision['why_this_topic']}")
+        except Exception as e:
+            print(f"   ⚠️  Decision layer failed: {e} — falling back to EN keyword queue")
+            import traceback; traceback.print_exc()
+            decision = None
 
     published = 0
 

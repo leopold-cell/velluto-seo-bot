@@ -105,12 +105,22 @@ def build() -> tuple[str, str]:
                 gap = (TODAY - datetime.date.fromisoformat(last)).days
             except Exception:
                 gap = None
-        if gap is not None and gap >= 2:
+        # With publish_weekdays (e.g. Mon/Wed/Fri) the longest normal quiet stretch is the
+        # biggest gap between publishing days (Fri→Mon = 3), so alert two days beyond it.
+        try:
+            import yaml
+            _days = sorted((yaml.safe_load(open(os.path.join(BASE, "config", "publishing_rules.yml"),
+                            encoding="utf-8")) or {}).get("content", {}).get("publish_weekdays") or range(7))
+            _gaps = [((_days[(i + 1) % len(_days)] - d) % 7) or 7 for i, d in enumerate(_days)]
+            _quiet_ok = max(_gaps) if len(_days) > 1 else 7
+        except Exception:
+            _days, _quiet_ok = list(range(7)), 1
+        if gap is not None and gap >= _quiet_ok + 1 and gap >= 2:
             problems.append(
                 f"Seit {gap} Tagen kein Artikel veröffentlicht (zuletzt {last}). "
                 "Ursache: Keyword-Queue leer oder Quality Gate "
                 "(output/quality_gate_failures.json).")
-        else:
+        elif TODAY.weekday() in _days:
             notes.append("Heute wurde kein neuer Artikel veröffentlicht "
                          "(evtl. Keyword-Pool leer oder Generierung fehlgeschlagen).")
     # The queue running dry is the other way publishing stops, and it leaves no gate
