@@ -23,6 +23,7 @@ import calendar
 import datetime as dt
 import json
 import os
+import re
 
 import requests
 from dotenv import load_dotenv
@@ -74,6 +75,21 @@ def _fetch_orders(start: str, end: str) -> list[dict]:
     return orders
 
 
+# Referrers of AI assistants. A buyer who clicks a link inside an AI answer is GEO, but
+# Shopify files it as a referral (or direct), never as SEO, so the headline above cannot
+# see it. Counted separately; ChatGPT also appends utm_source=chatgpt.com to its links.
+AI_REFERRERS = ("chatgpt.com", "chat.openai.com", "openai.com", "perplexity", "gemini.google",
+                "bard.google", "claude.ai", "anthropic", "copilot.microsoft", "copilot.com",
+                "deepseek", "you.com", "phind", "grok")
+
+
+def _ai_source(o: dict) -> str:
+    """The AI assistant that sent this order's first visit, or ''."""
+    fv = ((o.get("customerJourneySummary") or {}).get("firstVisit")) or {}
+    hay = f"{fv.get('source') or ''} {fv.get('landingPage') or ''}".lower()
+    return next((r for r in AI_REFERRERS if r in hay), "")
+
+
 def _is_seo(o: dict) -> bool:
     fv = ((o.get("customerJourneySummary") or {}).get("firstVisit")) or {}
     return (fv.get("sourceType") or "").upper() == "SEO"
@@ -101,6 +117,7 @@ def analyze(start: str, end: str) -> dict:
     blog_orders, blog_rev = 0, 0.0
     acq_orders, acq_rev = 0, 0.0        # SEO DISCOVERED the buyer (deep landing)
     by_page: dict[str, dict] = {}
+    ai_orders, ai_rev, ai_by = 0, 0.0, {}
     for o in orders:
         try:
             rev = float(o["totalPriceSet"]["shopMoney"]["amount"])
@@ -108,6 +125,11 @@ def analyze(start: str, end: str) -> dict:
             rev = 0.0
         if rev <= 0:            # skip B2B / free / 0 EUR
             continue
+        ai = _ai_source(o)
+        if ai:
+            ai_orders += 1
+            ai_rev += rev
+            ai_by[ai] = ai_by.get(ai, 0) + 1
         if not _is_seo(o):
             continue
         seo_orders += 1
@@ -132,7 +154,8 @@ def analyze(start: str, end: str) -> dict:
     return {"orders": seo_orders, "revenue": round(seo_rev, 2), "top_pages": top,
             "blog_orders": blog_orders, "blog_revenue": round(blog_rev, 2),
             "acq_orders": acq_orders, "acq_revenue": round(acq_rev, 2),
-            "harvest_orders": seo_orders - acq_orders}
+            "harvest_orders": seo_orders - acq_orders,
+            "ai_orders": ai_orders, "ai_revenue": round(ai_rev, 2), "ai_by_source": ai_by}
 
 
 def _blog_clicks(start: str, end: str) -> int | None:
@@ -249,6 +272,9 @@ def main():
         f"SEO revenue: {cur['revenue']} EUR  (prev {prv['revenue']}); Akquise-Umsatz {cur['acq_revenue']} EUR",
         blog_line,
         f"Goal (Akquise): {acq}/{GOAL}  {bar}  {status}",
+        f"GEO (Bestellungen über KI-Antworten): {cur['ai_orders']} ({cur['ai_revenue']} EUR)"
+        + (f" {cur['ai_by_source']}" if cur["ai_by_source"] else "")
+        + f"  (Vormonat {prv['ai_orders']})",
     ]
     if cur["top_pages"]:
         lines.append("")
@@ -264,6 +290,7 @@ def main():
         "seo_revenue": cur["revenue"], "goal": GOAL,
         "acq_orders": acq, "acq_revenue": cur["acq_revenue"],
         "harvest_orders": cur["harvest_orders"],
+        "ai_orders": cur["ai_orders"], "ai_revenue": cur["ai_revenue"],
         "blog_orders": cur["blog_orders"], "blog_revenue": cur["blog_revenue"],
         "blog_clicks": clicks,
         "blog_cr_pct": round(cur["blog_orders"] / clicks * 100, 2) if clicks else None,

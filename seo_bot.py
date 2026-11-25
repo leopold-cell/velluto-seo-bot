@@ -229,6 +229,15 @@ VELLUTO CHROMO (photochromic model, launched Oct 2026 — 119 EUR, 4 colourways)
   photochromic NOR mirrored. Never blur the two: photochromic/mirrored belong to
   the Chromo, the tool-free lens swap belongs to the StradaPro.
 
+STANDING OFFER (permanent, confirmed by the operator 2026-11-29): the 30-day trial on the
+StradaPro glasses: riders can try them for 30 days. State it ONCE per article, in the
+first half, in plain words ("30-day trial", "test them on real rides"). Add NO condition
+that is not given here (who pays return shipping, refund timing, wear state): say the
+conditions are on the product page. It is not a discount and not time-limited. It does
+not cover accessories: e.g. the Night Glow valve caps only carry the statutory 14-day
+withdrawal right, so never promise a trial for them. Whether the Chromo is covered is NOT
+confirmed: do not extend the trial to the Chromo.
+
 ACCESSORIES:
 - Hard Case: anti-crash guarantee, fits all road cycling glasses, luxurious velvet finish
 - Microfiber Cleaning Cloth: 25×25cm, 80% polyester / 20% polyamide

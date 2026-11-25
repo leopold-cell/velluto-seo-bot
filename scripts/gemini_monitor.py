@@ -151,12 +151,34 @@ def parse(data: dict, question: str) -> tuple[bool, bool, list[str], list[str]]:
             domains.append(d)
         if DOMAIN in title or DOMAIN in uri:
             cited = True
+            if uri:
+                CITED_URIS.setdefault(uri, []).append(question)
     mentioned = (not cited) and (not is_brand_question(question)) and BRAND in text.lower()
     return cited, mentioned, domains, [q for q in (gm.get("webSearchQueries") or [])
                                        if isinstance(q, str)]
 
 
 SERVED: set[str] = set()      # concrete model versions that actually answered
+CITED_URIS: dict[str, list[str]] = {}   # grounding redirect -> questions it was cited for
+
+
+def resolve_cited_pages() -> dict:
+    """Which velluto-shop.com pages Gemini actually cites. The grounding link is a Google
+    redirect, so follow it (only for our own hits, a handful per run, no API cost) and
+    count the final page. {url: {"count": n, "questions": [...]}}. Knowing the cited pages
+    lets us strengthen those instead of writing new ones."""
+    pages: dict[str, dict] = {}
+    for uri, qs in CITED_URIS.items():
+        try:
+            r = requests.get(uri, allow_redirects=True, timeout=12, stream=True)
+            final = r.url.split("?")[0].split("#")[0]
+            r.close()
+        except Exception:
+            final = "(nicht aufgelöst)"
+        e = pages.setdefault(final, {"count": 0, "questions": []})
+        e["count"] += len(qs)
+        e["questions"] = sorted(set(e["questions"]) | set(qs))
+    return pages
 
 
 def ask(question: str):
@@ -261,11 +283,14 @@ def main() -> None:
              "model_versions": sorted(SERVED), "repeats": REPEATS,
              "questions": t["generic_answers"],
              "velluto_cited": t["generic_visible"], "rate": t["generic_rate"],
-             "by_market": by_market, "search_queries": top_fanout, **t}
+             "by_market": by_market, "search_queries": top_fanout,
+             "velluto_pages": resolve_cited_pages(), **t}
     hist.append(entry)
     os.makedirs(os.path.dirname(HISTORY), exist_ok=True)
     with open(HISTORY, "w", encoding="utf-8") as f:
         json.dump(hist[-52:], f, ensure_ascii=False, indent=1)
+    for page, v in sorted(entry["velluto_pages"].items(), key=lambda kv: -kv[1]["count"]):
+        print(f"   📄 zitierte Seite: {page}  ({v['count']}x)")
     lo, hi = t["generic_ci"]
     print(f"   ✓ GENERIC visibility {t['generic_visible']}/{t['generic_answers']} = "
           f"{t['generic_rate']}% (95%: {lo}–{hi}%) — cited {t['generic_cited']}, "
