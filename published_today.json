@@ -1,61 +1,61 @@
 [
   {
-    "title": "7 Oakley Alternatives for Cyclists 2026 Picks",
-    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/7-oakley-alternatives-for-cyclists-2026-picks",
-    "topic": "oakley alternatives",
-    "keyword": "oakley alternatives",
+    "title": "Cycling Gifts Under 25 Euro: Christmas 2026 Ideas",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/cycling-gifts-under-25-euro-christmas-2026-ideas",
+    "topic": "cycling gifts under 25 euro",
+    "keyword": "cycling gifts under 25 euro",
     "lang": "en",
-    "phase": "decision",
+    "phase": 1,
     "tags": "cycling glasses,road cycling,velluto,StradaPro",
     "translations": {
       "de": {
-        "keyword": "Oakley Alternativen Rennrad",
-        "intent": "Cyclist seeking comparable cycling eyewear brands to Oakley at different price points.",
-        "volume": 0
+        "keyword": "fahrrad geschenke unter 25 euro",
+        "volume": 0,
+        "intent": "reader ready to buy or choose; fixed by the operator"
       },
       "nl": {
-        "keyword": "alternatieven voor Oakley fietsbril",
-        "intent": "Dutch cyclist searching for comparable cycling eyewear brands to replace or supplement Oakley.",
-        "volume": 0
+        "keyword": "fietscadeaus onder 25 euro kopen",
+        "volume": 0,
+        "intent": "reader ready to buy or choose; fixed by the operator"
       },
       "fr": {
-        "keyword": "meilleures alternatives Oakley v\u00e9lo",
-        "intent": "French cyclist comparing cycling eyewear options to Oakley for purchase.",
-        "volume": 0
+        "keyword": "cadeaux cycliste moins de 25 euros",
+        "volume": 0,
+        "intent": "reader ready to buy or choose; fixed by the operator"
       },
       "es": {
-        "keyword": "gafas ciclismo alternativas a Oakley",
-        "intent": "Spanish cyclist looking to buy cycling eyewear as a substitute for Oakley.",
+        "keyword": "regalos ciclismo baratos bajo 25 euros",
+        "intent": "Spanish buyer looking for inexpensive cycling gift options within a 25-euro price point.",
         "volume": 0
       },
       "it": {
-        "keyword": "occhiali ciclismo alternativi a Oakley",
-        "intent": "Italian cyclist seeking comparable cycling eyewear brands to Oakley.",
+        "keyword": "regali bici economici sotto 25 euro",
+        "intent": "Italian cyclist searching for affordable gift ideas for cycling enthusiasts on a limited budget.",
         "volume": 0
       },
       "da": {
-        "keyword": "cykelbriller alternativer til Oakley",
-        "intent": "Danish cyclist comparing cycling eyewear options as alternatives to Oakley.",
+        "keyword": "cykelgaver under 25 euro",
+        "intent": "Danish shopper seeking cheap cycling gift options that don't exceed a 25-euro budget.",
         "volume": 0
       },
       "nb": {
-        "keyword": "sykkelbrillar alternativer til Oakley",
-        "intent": "Norwegian cyclist looking to purchase cycling eyewear comparable to Oakley.",
+        "keyword": "sykkelmgaver billig under 25 euro",
+        "intent": "Norwegian buyer looking for affordable cycling gifts within a strict 25-euro spending limit.",
         "volume": 0
       },
       "pl": {
-        "keyword": "okulary rowerowe alternatywy Oakley",
-        "intent": "Polish cyclist searching for cycling eyewear brands similar to Oakley for purchase.",
+        "keyword": "tankie prezenty rowerowe poni\u017cej 25 euro",
+        "intent": "Polish cyclist searching for budget-friendly cycling gift alternatives under 25 euros.",
         "volume": 0
       },
       "pt-PT": {
-        "keyword": "melhores alternativas Oakley \u00f3culos ciclismo",
-        "intent": "Portuguese cyclist comparing and purchasing cycling eyewear alternatives to Oakley.",
+        "keyword": "presentes ciclismo baratos menos de 25 euros",
+        "intent": "Portuguese shopper seeking affordable cycling gift options within a 25-euro budget constraint.",
         "volume": 0
       },
       "sv": {
-        "keyword": "cykelglas\u00f6gon alternativ till Oakley",
-        "intent": "Swedish cyclist seeking comparable cycling eyewear options to Oakley for buying.",
+        "keyword": "cykelg\u00e5vor billiga under 25 euro",
+        "intent": "Swedish buyer hunting for inexpensive cycling gifts that stay within a 25-euro price limit.",
         "volume": 0
       }
     }

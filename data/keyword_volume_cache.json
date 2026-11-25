@@ -1,7 +1,7 @@
 {
  "_meta": {
   "tasks": {
-   "2026-11-24": 5
+   "2026-11-25": 11
   }
  },
  "de|teure radsportbrille lohnt sich": {
@@ -3999,5 +3999,49 @@
  "nb|sykkelbrillen kjøpe": {
   "volume": 0,
   "date": "2026-11-24"
+ },
+ "de|fahrrad geschenke unter 25 euro": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "en|cycling gifts under 25 euros": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "nl|fietscadeaus onder 25 euro kopen": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "fr|cadeaux cycliste moins de 25 euros": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "es|regalos ciclismo baratos bajo 25 euros": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "it|regali bici economici sotto 25 euro": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "da|cykelgaver under 25 euro": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "nb|sykkelmgaver billig under 25 euro": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "pl|tankie prezenty rowerowe poniżej 25 euro": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "pt-PT|presentes ciclismo baratos menos de 25 euros": {
+  "volume": 0,
+  "date": "2026-11-25"
+ },
+ "sv|cykelgåvor billiga under 25 euro": {
+  "volume": 0,
+  "date": "2026-11-25"
  }
 }
