@@ -127,6 +127,21 @@ def build() -> tuple[str, str]:
             notes.append(f"Keyword-Queue fast leer: nur noch {left} offene Keywords — nachfüllen.")
     except Exception:
         pass
+    # Unattended stretches: say what the automatic duplicate merge did, and flag a
+    # missing ChatGPT measurement (an invalid OpenAI key is only fixable on the server).
+    try:
+        ml = _load("data/merge_duplicates_log.json", []) or []
+        if ml and ml[-1].get("date") == TODAY_S:
+            last = ml[-1]
+            notes.append(f"Duplikat-Merge heute: {len(last.get('merged', []))} zusammengelegt, "
+                         f"{len(last.get('held', []))} Gruppen zur Prüfung zurückgehalten "
+                         "(data/merge_duplicates_log.json).")
+        cg = _load("data/chatgpt_geo.json", None)
+        cg_last = (cg[-1].get("date") if isinstance(cg, list) and cg else None)
+        if not cg_last or (TODAY - datetime.date.fromisoformat(cg_last)).days > 21:
+            notes.append("ChatGPT-Messung fehlt oder ist älter als 21 Tage: OpenAI-Key in .env prüfen.")
+    except Exception:
+        pass
     try:
         os.makedirs(os.path.dirname(pw_path), exist_ok=True)
         with open(pw_path, "w", encoding="utf-8") as _f:

@@ -24,12 +24,16 @@ WHAT IT DOES
      other order leaves a dead page live. Locale prefixes (/de/, /nl/ …) are
      handled by Shopify's redirect layer.
 
-NOT a pipeline step on purpose. A merge is a one-time editorial decision with a
-destructive half; it runs when a human reads the plan and says apply.
+A merge is an editorial decision with a destructive half, so --apply runs only when a
+human reads the plan. --auto (run.sh, 7-day gate) exists for stretches when nobody can
+reach the server: it applies only groups where the winner is unambiguous (see
+_auto_ok), at most MAX_AUTO_LOSERS per run, and logs to data/merge_duplicates_log.json.
+Losers are unpublished, never deleted, so every merge can be undone.
 
 Usage:
   python3 scripts/merge_duplicates.py            # plan only
   python3 scripts/merge_duplicates.py --apply
+  python3 scripts/merge_duplicates.py --auto     # guarded, weekly
 """
 import os
 import re
@@ -45,7 +49,15 @@ from seo_bot import BLOG_ID, SHOPIFY_HEADERS, SHOPIFY_STORE
 API = f"https://{SHOPIFY_STORE}/admin/api/2024-01"
 SITE = "https://velluto-shop.com"
 BLOG_PATH = "/blogs/velluto-the-magazine"
-APPLY = "--apply" in sys.argv
+AUTO = "--auto" in sys.argv
+APPLY = "--apply" in sys.argv or AUTO
+LOG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                   "data", "merge_duplicates_log.json")
+MAX_AUTO_LOSERS = 5          # per run
+CLICKS_AMBIGUOUS = 10        # two members at or above this: a human decides
+MIN_AGE_DAYS = 14            # a zero-click winner needs an old member to be credible
+# Pages that must never be a merge loser (or part of an automatic merge at all).
+_PROTECTED = re.compile(r"gift|geschenk|night-glow|chromo|black-friday", re.I)
 
 # Words that describe the FORMAT or the CLAIM of an article, not its topic.
 # Two handles that agree after removing these target the same query.
@@ -77,7 +89,7 @@ def core(handle: str) -> frozenset:
 
 def fetch_articles() -> list[dict]:
     out, url = [], (f"{API}/blogs/{BLOG_ID}/articles.json"
-                    "?fields=id,handle,title&limit=250&published_status=published")
+                    "?fields=id,handle,title,published_at&limit=250&published_status=published")
     while url:
         r = requests.get(url, headers=SHOPIFY_HEADERS, timeout=30)
         r.raise_for_status()
@@ -133,9 +145,55 @@ def redirect(old_handle: str, new_handle: str) -> bool:
     return r.status_code in (200, 201)
 
 
+def _age_days(a: dict) -> int:
+    import datetime
+    try:
+        d = datetime.datetime.fromisoformat((a.get("published_at") or "").replace("Z", "+00:00"))
+        return (datetime.datetime.now(datetime.timezone.utc) - d).days
+    except Exception:
+        return 0
+
+
+def _auto_ok(ranked: list[dict], stats: dict) -> str:
+    """'' when the group may be merged unattended, else the reason it may not."""
+    if any(_PROTECTED.search(a["handle"]) for a in ranked):
+        return "geschützter Artikel in der Gruppe"
+    if not all(a["handle"] in stats for a in ranked):
+        return "GSC-Daten unvollständig"
+    clicks = [stats[a["handle"]]["clicks"] for a in ranked]
+    # A runner-up that earns real clicks AND is close to the winner means there is no
+    # clear reader favourite; 40 vs 12 clicks is a clear one.
+    if len(clicks) > 1 and clicks[1] >= CLICKS_AMBIGUOUS and clicks[1] * 2 > clicks[0]:
+        return f"mehrdeutig, Zweiter hat {clicks[1]} von {clicks[0]} Klicks"
+    if clicks[0] == 0 and max(_age_days(a) for a in ranked) < MIN_AGE_DAYS:
+        return "zu früh, noch keine Klickdaten"
+    return ""
+
+
+def _load_log() -> list:
+    try:
+        import json
+        return json.load(open(LOG, encoding="utf-8"))
+    except Exception:
+        return []
+
+
+def _save_log(log: list) -> None:
+    import json
+    os.makedirs(os.path.dirname(LOG), exist_ok=True)
+    json.dump(log[-60:], open(LOG, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+
+
 def main() -> None:
     arts = fetch_articles()
-    print(f"=== merge_duplicates [{'APPLY' if APPLY else 'PLAN'}] — "
+    run_log = _load_log() if AUTO else []
+    if AUTO:
+        import datetime
+        from geo_questions import gate_ok
+        if not gate_ok(run_log, force="--force" in sys.argv, days=7):
+            print("   Merge: nächster automatischer Lauf frühestens 7 Tage nach dem letzten.")
+            return
+    print(f"=== merge_duplicates [{'AUTO' if AUTO else 'APPLY' if APPLY else 'PLAN'}] — "
           f"{len(arts)} veröffentlichte Artikel ===\n")
 
     # Two ways two handles are the same page. (1) EQUAL core after stripping
@@ -204,11 +262,14 @@ def main() -> None:
               "Sieger-Entscheidung. Auf dem VPS ausführen.\n")
 
     merged = 0
+    done: list[dict] = []
+    held: list[dict] = []
     for k, members in sorted(dupes.items(), key=lambda kv: -len(kv[1])):
         print(f"── Ziel-Keyword: {' '.join(sorted(k))}")
         ranked = sorted(members, key=lambda a: (
             -(stats_all.get(a["handle"], {}).get("clicks", 0)),
-            -(stats_all.get(a["handle"], {}).get("impressions", 0))))
+            -(stats_all.get(a["handle"], {}).get("impressions", 0)),
+            -_age_days(a)))
         for i, a in enumerate(ranked):
             s = stats_all.get(a["handle"], {})
             tag = "SIEGER " if i == 0 else "→ 301  "
@@ -218,6 +279,14 @@ def main() -> None:
             print()
             continue
         winner = ranked[0]
+        if AUTO:
+            why = _auto_ok(ranked, stats_all)
+            if not why and merged + len(ranked) - 1 > MAX_AUTO_LOSERS:
+                why = f"Limit von {MAX_AUTO_LOSERS} Zusammenlegungen pro Lauf erreicht"
+            if why:
+                print(f"   ⏸ nicht automatisch: {why}\n")
+                held.append({"winner": winner["handle"], "reason": why})
+                continue
         for loser in ranked[1:]:
             ok1 = unpublish(loser["id"])
             ok2 = redirect(loser["handle"], winner["handle"]) if ok1 else False
@@ -225,12 +294,22 @@ def main() -> None:
                   f"{winner['handle']}"
                   + ("" if ok1 and ok2 else "  (unpublish/redirect fehlgeschlagen)"))
             merged += ok1 and ok2
+            if ok1 and ok2:
+                done.append({"loser": loser["handle"], "winner": winner["handle"],
+                             "winner_clicks": stats_all.get(winner["handle"], {}).get("clicks"),
+                             "loser_clicks": stats_all.get(loser["handle"], {}).get("clicks")})
         print()
 
     if near:
         print("── Ähnlich, aber NICHT automatisch zusammengelegt (von Hand prüfen):")
         for a, b in near[:10]:
             print(f"   ? {a}\n     {b}")
+    if AUTO and stats_all:
+        import datetime
+        run_log.append({"date": datetime.date.today().isoformat(),
+                        "merged": done, "held": held,
+                        "near_misses": [list(n) for n in near[:10]]})
+        _save_log(run_log)
     if APPLY:
         print(f"\n{merged} Artikel zusammengelegt. Die Sieger-URLs in der GSC "
               "neu indexieren lassen; content_retrofit --force aktualisiert den Bestand.")
