@@ -21,7 +21,7 @@ Priority logic (highest first):
 Reads (all best-effort, generated on the VPS by the daily/weekly jobs):
   data/processed/serp_snapshots.json  (organic per keyword/market)
   data/processed/ai_overview_snapshots.json  (AI Overview citations)
-  data/perplexity_geo.json  (Perplexity citations, per market)
+  data/perplexity_geo.json, gemini_geo.json, chatgpt_geo.json  (AI citations, per market)
   competitors_discovered.json  (domain → name)
 Writes: data/seeding_targets.json  (for the influencer dashboard) + emails a
 weekly digest. Self-gated to 7 days (runs as a daily run.sh step).
@@ -103,6 +103,8 @@ def build() -> dict:
     serp = _load(os.path.join(ROOT, "data", "processed", "serp_snapshots.json"), {})
     aio  = _load(os.path.join(ROOT, "data", "processed", "ai_overview_snapshots.json"), {})
     ppx  = _load(os.path.join(ROOT, "data", "perplexity_geo.json"), [])
+    gem  = _load(os.path.join(ROOT, "data", "gemini_geo.json"), [])
+    cgpt = _load(os.path.join(ROOT, "data", "chatgpt_geo.json"), [])
     registry = _load(os.path.join(ROOT, "competitors_discovered.json"), {})
 
     targets: dict[str, dict] = {}
@@ -128,7 +130,8 @@ def build() -> dict:
     for a in (aio.get("ai_overviews") or []):
         v_absent = not a.get("velluto_cited")
         for c in (a.get("cited_sources") or []):
-            d = (c.get("domain") or "").lower().lstrip("www.")
+            d = (c.get("domain") or "").lower()
+            d = d[4:] if d.startswith("www.") else d
             if not d:
                 continue
             t = _t(d)
@@ -138,19 +141,27 @@ def build() -> dict:
             if a.get("keyword"):
                 t["keywords"].add(a["keyword"])
 
-    # 3) Perplexity citations (per market)
-    for entry in ppx[-1:]:  # latest sample
-        for market in (entry.get("by_market") or {}).values():
-            for det in market.get("details", []):
-                v_absent = not det.get("velluto_cited")
-                for u in det.get("top_domains", []):
-                    d = (u or "").lower().lstrip("www.")
-                    if not d:
+    # 3) Citations of the AI engines we measure (Perplexity, Gemini, ChatGPT), per market:
+    # the last four runs of each, generic questions only (a brand question names us).
+    def _bare(u: str) -> str:
+        u = (u or "").lower().strip()
+        return u[4:] if u.startswith("www.") else u     # lstrip("www.") ate letters
+
+    for hist in (ppx, gem, cgpt):
+        for entry in hist[-4:]:
+            for market in (entry.get("by_market") or {}).values():
+                for det in market.get("details", []):
+                    if det.get("kind", "generic") != "generic":
                         continue
-                    t = _t(d)
-                    t["ai_cited"] += 1
-                    if v_absent:
-                        t["ai_cited_velluto_absent"] += 1
+                    v_absent = not det.get("velluto_cited")
+                    for u in det.get("top_domains", []):
+                        d = _bare(u)
+                        if not d or d == OWN:
+                            continue
+                        t = _t(d)
+                        t["ai_cited"] += 1
+                        if v_absent:
+                            t["ai_cited_velluto_absent"] += 1
 
     # Score
     for t in targets.values():

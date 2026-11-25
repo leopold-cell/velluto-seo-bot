@@ -41,7 +41,6 @@ step "geo monitor"                 python3 geo_monitor.py
 step "perplexity geo (7d gate)"    python3 scripts/perplexity_monitor.py
 step "chatgpt geo (7d gate)"       python3 scripts/chatgpt_monitor.py
 step "gemini geo (7d gate)"        python3 scripts/gemini_monitor.py
-step "ai source map (7d gate)"      python3 scripts/ai_source_map.py
 # Standing offer (30-day trial) on the blog pages the AI engines already cite; no-op
 # until a monitor has recorded a cited page. Idempotent, no LLM.
 step "strengthen cited pages"      python3 scripts/strengthen_cited_pages.py --apply
