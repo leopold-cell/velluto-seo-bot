@@ -1,0 +1,539 @@
+{
+ "date": "2026-11-25",
+ "window_runs": 4,
+ "generic_answers": {
+  "gemini": 288,
+  "perplexity": 288,
+  "chatgpt": 0
+ },
+ "own_citations": 14,
+ "outreach_targets": [
+  {
+   "domain": "bikeradar.com",
+   "questions_cited": 62,
+   "gemini": 7,
+   "perplexity": 55,
+   "chatgpt": 0
+  },
+  {
+   "domain": "cyclingweekly.com",
+   "questions_cited": 57,
+   "gemini": 14,
+   "perplexity": 43,
+   "chatgpt": 0
+  },
+  {
+   "domain": "cyclingnews.com",
+   "questions_cited": 42,
+   "gemini": 3,
+   "perplexity": 39,
+   "chatgpt": 0
+  },
+  {
+   "domain": "outdoorgearlab.com",
+   "questions_cited": 40,
+   "gemini": 16,
+   "perplexity": 24,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bikerumor.com",
+   "questions_cited": 37,
+   "gemini": 16,
+   "perplexity": 21,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bergzeit.de",
+   "questions_cited": 30,
+   "gemini": 6,
+   "perplexity": 24,
+   "chatgpt": 0
+  },
+  {
+   "domain": "wielrenner.eu",
+   "questions_cited": 24,
+   "gemini": 8,
+   "perplexity": 16,
+   "chatgpt": 0
+  },
+  {
+   "domain": "futurumshop.nl",
+   "questions_cited": 23,
+   "gemini": 3,
+   "perplexity": 20,
+   "chatgpt": 0
+  },
+  {
+   "domain": "decathlon.fr",
+   "questions_cited": 22,
+   "gemini": 2,
+   "perplexity": 20,
+   "chatgpt": 0
+  },
+  {
+   "domain": "trieye.com",
+   "questions_cited": 20,
+   "gemini": 15,
+   "perplexity": 5,
+   "chatgpt": 0
+  },
+  {
+   "domain": "faz.net",
+   "questions_cited": 20,
+   "gemini": 0,
+   "perplexity": 20,
+   "chatgpt": 0
+  },
+  {
+   "domain": "agu.com",
+   "questions_cited": 16,
+   "gemini": 1,
+   "perplexity": 15,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bicycling.com",
+   "questions_cited": 16,
+   "gemini": 0,
+   "perplexity": 16,
+   "chatgpt": 0
+  },
+  {
+   "domain": "cyclist.co.uk",
+   "questions_cited": 15,
+   "gemini": 0,
+   "perplexity": 15,
+   "chatgpt": 0
+  },
+  {
+   "domain": "tour-magazin.de",
+   "questions_cited": 14,
+   "gemini": 3,
+   "perplexity": 11,
+   "chatgpt": 0
+  }
+ ],
+ "ranking": [
+  {
+   "domain": "bikeradar.com",
+   "questions_cited": 62,
+   "gemini": 7,
+   "perplexity": 55,
+   "chatgpt": 0
+  },
+  {
+   "domain": "cyclingweekly.com",
+   "questions_cited": 57,
+   "gemini": 14,
+   "perplexity": 43,
+   "chatgpt": 0
+  },
+  {
+   "domain": "cyclingnews.com",
+   "questions_cited": 42,
+   "gemini": 3,
+   "perplexity": 39,
+   "chatgpt": 0
+  },
+  {
+   "domain": "outdoorgearlab.com",
+   "questions_cited": 40,
+   "gemini": 16,
+   "perplexity": 24,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bikerumor.com",
+   "questions_cited": 37,
+   "gemini": 16,
+   "perplexity": 21,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bergzeit.de",
+   "questions_cited": 30,
+   "gemini": 6,
+   "perplexity": 24,
+   "chatgpt": 0
+  },
+  {
+   "domain": "wielrenner.eu",
+   "questions_cited": 24,
+   "gemini": 8,
+   "perplexity": 16,
+   "chatgpt": 0
+  },
+  {
+   "domain": "reddit.com",
+   "questions_cited": 24,
+   "gemini": 5,
+   "perplexity": 19,
+   "chatgpt": 0
+  },
+  {
+   "domain": "futurumshop.nl",
+   "questions_cited": 23,
+   "gemini": 3,
+   "perplexity": 20,
+   "chatgpt": 0
+  },
+  {
+   "domain": "decathlon.fr",
+   "questions_cited": 22,
+   "gemini": 2,
+   "perplexity": 20,
+   "chatgpt": 0
+  },
+  {
+   "domain": "trieye.com",
+   "questions_cited": 20,
+   "gemini": 15,
+   "perplexity": 5,
+   "chatgpt": 0
+  },
+  {
+   "domain": "faz.net",
+   "questions_cited": 20,
+   "gemini": 0,
+   "perplexity": 20,
+   "chatgpt": 0
+  },
+  {
+   "domain": "youtube.com",
+   "questions_cited": 18,
+   "gemini": 16,
+   "perplexity": 2,
+   "chatgpt": 0
+  },
+  {
+   "domain": "agu.com",
+   "questions_cited": 16,
+   "gemini": 1,
+   "perplexity": 15,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bicycling.com",
+   "questions_cited": 16,
+   "gemini": 0,
+   "perplexity": 16,
+   "chatgpt": 0
+  },
+  {
+   "domain": "cyclist.co.uk",
+   "questions_cited": 15,
+   "gemini": 0,
+   "perplexity": 15,
+   "chatgpt": 0
+  },
+  {
+   "domain": "velluto-shop.com",
+   "questions_cited": 14,
+   "gemini": 5,
+   "perplexity": 9,
+   "chatgpt": 0
+  },
+  {
+   "domain": "tour-magazin.de",
+   "questions_cited": 14,
+   "gemini": 3,
+   "perplexity": 11,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bolle.com",
+   "questions_cited": 14,
+   "gemini": 0,
+   "perplexity": 14,
+   "chatgpt": 0
+  },
+  {
+   "domain": "decathlon.nl",
+   "questions_cited": 14,
+   "gemini": 0,
+   "perplexity": 14,
+   "chatgpt": 0
+  },
+  {
+   "domain": "mammothbikes.com",
+   "questions_cited": 13,
+   "gemini": 0,
+   "perplexity": 13,
+   "chatgpt": 0
+  },
+  {
+   "domain": "rennrad-news.de",
+   "questions_cited": 12,
+   "gemini": 5,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "zeiss.com",
+   "questions_cited": 12,
+   "gemini": 0,
+   "perplexity": 12,
+   "chatgpt": 0
+  },
+  {
+   "domain": "lequipe.fr",
+   "questions_cited": 12,
+   "gemini": 0,
+   "perplexity": 12,
+   "chatgpt": 0
+  },
+  {
+   "domain": "amazon.com.be",
+   "questions_cited": 12,
+   "gemini": 0,
+   "perplexity": 12,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bike24.com",
+   "questions_cited": 11,
+   "gemini": 4,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "materiel-velo.com",
+   "questions_cited": 10,
+   "gemini": 6,
+   "perplexity": 4,
+   "chatgpt": 0
+  },
+  {
+   "domain": "beslist.nl",
+   "questions_cited": 10,
+   "gemini": 0,
+   "perplexity": 10,
+   "chatgpt": 0
+  },
+  {
+   "domain": "conseilsport.decathlon.fr",
+   "questions_cited": 10,
+   "gemini": 0,
+   "perplexity": 10,
+   "chatgpt": 0
+  },
+  {
+   "domain": "ekosport.fr",
+   "questions_cited": 10,
+   "gemini": 0,
+   "perplexity": 10,
+   "chatgpt": 0
+  },
+  {
+   "domain": "visio-net.fr",
+   "questions_cited": 10,
+   "gemini": 0,
+   "perplexity": 10,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bicycling.nl",
+   "questions_cited": 9,
+   "gemini": 4,
+   "perplexity": 5,
+   "chatgpt": 0
+  },
+  {
+   "domain": "allaboutvision.com",
+   "questions_cited": 9,
+   "gemini": 0,
+   "perplexity": 9,
+   "chatgpt": 0
+  },
+  {
+   "domain": "kita.de",
+   "questions_cited": 9,
+   "gemini": 0,
+   "perplexity": 9,
+   "chatgpt": 0
+  },
+  {
+   "domain": "mantel.com",
+   "questions_cited": 8,
+   "gemini": 3,
+   "perplexity": 5,
+   "chatgpt": 0
+  },
+  {
+   "domain": "poc.com",
+   "questions_cited": 8,
+   "gemini": 4,
+   "perplexity": 4,
+   "chatgpt": 0
+  },
+  {
+   "domain": "smithoptics.com",
+   "questions_cited": 8,
+   "gemini": 0,
+   "perplexity": 8,
+   "chatgpt": 0
+  },
+  {
+   "domain": "road.cc",
+   "questions_cited": 7,
+   "gemini": 0,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bergfreunde.eu",
+   "questions_cited": 7,
+   "gemini": 0,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bike24.be",
+   "questions_cited": 7,
+   "gemini": 0,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bike24.fr",
+   "questions_cited": 7,
+   "gemini": 0,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "polarizedclub.com",
+   "questions_cited": 7,
+   "gemini": 0,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "opumo.com",
+   "questions_cited": 7,
+   "gemini": 0,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "amazon.de",
+   "questions_cited": 7,
+   "gemini": 0,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "idealo.fr",
+   "questions_cited": 7,
+   "gemini": 0,
+   "perplexity": 7,
+   "chatgpt": 0
+  },
+  {
+   "domain": "bike-magazin.de",
+   "questions_cited": 6,
+   "gemini": 1,
+   "perplexity": 5,
+   "chatgpt": 0
+  },
+  {
+   "domain": "active.com",
+   "questions_cited": 6,
+   "gemini": 0,
+   "perplexity": 6,
+   "chatgpt": 0
+  },
+  {
+   "domain": "visioncenter.org",
+   "questions_cited": 6,
+   "gemini": 0,
+   "perplexity": 6,
+   "chatgpt": 0
+  },
+  {
+   "domain": "welt.de",
+   "questions_cited": 6,
+   "gemini": 0,
+   "perplexity": 6,
+   "chatgpt": 0
+  },
+  {
+   "domain": "rtl.de",
+   "questions_cited": 6,
+   "gemini": 0,
+   "perplexity": 6,
+   "chatgpt": 0
+  },
+  {
+   "domain": "runnersworld.de",
+   "questions_cited": 6,
+   "gemini": 0,
+   "perplexity": 6,
+   "chatgpt": 0
+  },
+  {
+   "domain": "intersport.de",
+   "questions_cited": 6,
+   "gemini": 0,
+   "perplexity": 6,
+   "chatgpt": 0
+  },
+  {
+   "domain": "sport-schuster.de",
+   "questions_cited": 6,
+   "gemini": 0,
+   "perplexity": 6,
+   "chatgpt": 0
+  },
+  {
+   "domain": "kennis.knwufondo.nl",
+   "questions_cited": 6,
+   "gemini": 0,
+   "perplexity": 6,
+   "chatgpt": 0
+  },
+  {
+   "domain": "tifosioptics.com",
+   "questions_cited": 5,
+   "gemini": 5,
+   "perplexity": 0,
+   "chatgpt": 0
+  },
+  {
+   "domain": "whatsthebest.co.uk",
+   "questions_cited": 5,
+   "gemini": 0,
+   "perplexity": 5,
+   "chatgpt": 0
+  },
+  {
+   "domain": "linexo.de",
+   "questions_cited": 5,
+   "gemini": 0,
+   "perplexity": 5,
+   "chatgpt": 0
+  },
+  {
+   "domain": "vanrysel.com",
+   "questions_cited": 5,
+   "gemini": 0,
+   "perplexity": 5,
+   "chatgpt": 0
+  },
+  {
+   "domain": "fahrrad-xxl.de",
+   "questions_cited": 5,
+   "gemini": 0,
+   "perplexity": 5,
+   "chatgpt": 0
+  },
+  {
+   "domain": "cyclingarchives.com",
+   "questions_cited": 5,
+   "gemini": 0,
+   "perplexity": 5,
+   "chatgpt": 0
+  }
+ ]
+}
