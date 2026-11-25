@@ -21,18 +21,32 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
-from briefs.ai_disclosure import add_notice, has_notice, notice_html  # noqa: E402
+from briefs.ai_disclosure import (add_notice, ai_image_stems, is_public_interest_topic,  # noqa: E402
+                                  label_ai_images)
 
 APPLY = "--apply" in sys.argv
 MAX_PER_RUN = 25
 STATE = os.path.join(ROOT, "data", "ai_disclosure_state.json")
 
 
-def _state() -> set:
+def _state(arts: list, stems: set) -> set:
+    """Finished article ids. v1 (a plain list, bottom label only) counts as finished only
+    for articles that do not need the label at the TOP or an image label."""
     try:
-        return set(json.load(open(STATE, encoding="utf-8")))
+        raw = json.load(open(STATE, encoding="utf-8"))
     except Exception:
         return set()
+    if isinstance(raw, dict) and raw.get("v") == 2:
+        return set(raw.get("done", []))
+    redo = {a["id"] for a in arts
+            if is_public_interest_topic(a.get("handle", ""))
+            or any(st in (a.get("body_html") or "") for st in stems)}
+    return {i for i in raw if i not in redo}
+
+
+def _fix(body: str, lang: str, top: bool, stems: set) -> str:
+    """The body as it should be: image labels and the notice in the right place."""
+    return add_notice(label_ai_images(body, lang, stems), lang, top=top)
 
 
 def main() -> None:
@@ -53,7 +67,8 @@ def main() -> None:
                     for p in r.headers.get("Link", "").split(",")
                     if 'rel="next"' in p), None)
 
-    done = _state()
+    stems = ai_image_stems()
+    done = _state(arts, stems)
     todo = [a for a in arts if a["id"] not in done]
     print(f"=== ai_disclosure_retrofit [{'APPLY' if APPLY else 'DRY-RUN'}] — "
           f"{len(todo)} von {len(arts)} Artikeln offen ===")
@@ -61,12 +76,14 @@ def main() -> None:
     for a in todo[:MAX_PER_RUN]:
         aid, body = a["id"], a.get("body_html") or ""
         ok_all = True
-        if not has_notice(body):
-            print(f"  [en] {a['handle']}")
+        top = is_public_interest_topic(a.get("handle", ""))
+        new_en = _fix(body, "en", top, stems)
+        if new_en.strip() != body.strip():
+            print(f"  [en] {a['handle']}" + (" (Hinweis oben)" if top else ""))
             if APPLY:
                 resp = requests.put(f"{api}/blogs/{BLOG_ID}/articles/{aid}.json",
                                     headers=SHOPIFY_HEADERS, timeout=30,
-                                    json={"article": {"id": aid, "body_html": add_notice(body, "en")}})
+                                    json={"article": {"id": aid, "body_html": new_en}})
                 ok_all = resp.status_code == 200
         gid = f"gid://shopify/Article/{aid}"
         digests = None
@@ -77,13 +94,14 @@ def main() -> None:
             tx = {t["key"]: t["value"] for t in
                   ((res.get("translatableResource") or {}).get("translations") or [])}
             tbody = tx.get("body_html", "")
-            if not tbody or notice_html(loc) in tbody:
+            new_tx = _fix(tbody, loc, top, stems) if tbody else ""
+            if not tbody or new_tx.strip() == tbody.strip():
                 continue
             print(f"  [{loc}] {a['handle']}")
             if APPLY:
                 digests = digests or get_translatable_digests(aid)
                 ok_all &= bool(register_shopify_translation(
-                    aid, loc, title=tx.get("title", ""), body_html=add_notice(tbody, loc),
+                    aid, loc, title=tx.get("title", ""), body_html=new_tx,
                     meta_desc=tx.get("meta_description", tx.get("summary_html", "")),
                     digests=digests))
         if APPLY and ok_all:
@@ -91,7 +109,7 @@ def main() -> None:
             n += 1
     if APPLY:
         os.makedirs(os.path.dirname(STATE), exist_ok=True)
-        json.dump(sorted(done), open(STATE, "w", encoding="utf-8"))
+        json.dump({"v": 2, "done": sorted(done)}, open(STATE, "w", encoding="utf-8"))
         left = len([a for a in arts if a["id"] not in done])
         print(f"\n{n} Artikel gekennzeichnet, {left} offen." if left
               else "\nalle Artikel gekennzeichnet.")
