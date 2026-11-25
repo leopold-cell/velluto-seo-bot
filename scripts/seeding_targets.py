@@ -48,13 +48,32 @@ OWN   = "velluto-shop.com"
 RETAILERS = ("amazon.", "decathlon.", "bike24", "bike-discount", "wiggle",
              "chainreactioncycles", "rosebikes", "rose-bikes", "bergfreunde",
              "bergzeit", "misterspex", "fielmann", "idealo", "ebay.", "alltricks",
-             "probikeshop", "kleinanzeigen", "otto.", "galaxus", "smec", "shopping24")
+             "probikeshop", "kleinanzeigen", "otto.", "galaxus", "smec", "shopping24", "sigmasports",
+             "futurumshop", "bike-components", "tredz", "evanscycles", "competitivecyclist")
 # Eyewear brands — they won't review a competitor. Skip from seeding.
 BRANDS = ("oakley", "sungod", "roka", "100percent", "rudyproject", "rudy-project",
           "poc-sports", "julbo", "bolle", "koo.", "sciconsports", "scicon",
           "alba-optics", "tifosi", "goodr", "shadyrays", "smithoptics", "uvex",
           "adidas", "evileye", "endurasport", "sportful", "ekoi", "van-rysel",
-          "lankeleisi", "blenderseyewear", "demonsun")
+          "lankeleisi", "blenderseyewear", "demonsun", "trieye", "rapha.cc", "castelli", "assos")
+
+
+# Not outreach targets at all: search engines, social platforms, encyclopaedias.
+NOT_TARGETS = ("google.", "bing.com", "duckduckgo", "wikipedia.", "facebook.", "instagram.",
+               "pinterest.", "tiktok.", "x.com", "twitter.com", "linkedin.", "quora.",
+               # general news / health / eyewear-shop pages that Gemini cites for non-cycling questions
+               "nytimes.", "bbc.", "cnn.", "forbes.", "wsj.", "yahoo.", "lifehacker.", "mcgill.",
+               "nih.gov", "webmd.", "mayoclinic.", "healthline.", "allaboutvision", "visioncenter",
+               "1800contacts", "framesdirect", "glasses.com", "zeiss.", "fostergrant")
+# Big editorial sites: they run their own test programmes, so a request from a small
+# brand rarely gets an answer (operator, 2026-11-29: "extremely hard"). Listed apart,
+# below the targets we can realistically reach.
+HARD = ("bikeradar", "cyclingweekly", "cyclingnews", "outdoorgearlab", "bikerumor",
+        "road.cc", "cyclist.co.uk", "cyclingtips", "escapecollective", "velonews",
+        "dcrainmaker", "wired.", "techradar", "tomsguide", "gearpatrol", "trainerroad",
+        "faz.net", "lequipe.fr", "220triathlon", "tour-magazin", "bike-x", "mtb-news", "roadbikereview", "bicycling.com",
+        "verywellfit", "active.com", "runnersworld", "menshealth", "outsideonline", "gq.com")
+FEEDBACK = os.path.join(ROOT, "data", "seeding_feedback.json")
 
 
 def _load(path, default):
@@ -76,6 +95,8 @@ def _domain(item: dict) -> str:
 def classify(domain: str) -> str:
     if not domain or OWN in domain:
         return "own"
+    if any(n in domain for n in NOT_TARGETS):
+        return "skip"
     if "youtube.com" in domain or "youtu.be" in domain:
         return "youtube"
     if "reddit.com" in domain:
@@ -84,6 +105,8 @@ def classify(domain: str) -> str:
         return "retailer"
     if any(b in domain for b in BRANDS):
         return "brand"
+    if any(h in domain for h in HARD):
+        return "hard"
     return "editorial"
 
 
@@ -177,14 +200,27 @@ def build() -> dict:
             s += 10
         elif t["type"] == "reddit":
             s += 5
+        s += min(30, 2 * t["ai_cited"])              # cited often = worth more than cited once
         t["score"] = s
         t["keywords"] = sorted(t["keywords"])[:6]
 
     ranked = sorted(targets.values(), key=lambda t: t["score"], reverse=True)
-    seeding  = [t for t in ranked if t["type"] in ("editorial", "youtube", "reddit")][:20]
-    stockist = [t for t in ranked if t["type"] == "retailer"][:8]
-    return {"date": dt.date.today().isoformat(), "seeding": seeding, "stockist": stockist,
-            "n_domains": len(targets)}
+    fb = _load(FEEDBACK, {})
+    today = dt.date.today().isoformat()
+    skipped = set(fb.get("skip", []))
+    done = fb.get("done", {})
+    later = {d: u for d, u in fb.get("later", {}).items() if u > today}
+
+    def _open(t):      # not rejected, not contacted, not postponed
+        d = t["domain"]
+        return d not in skipped and d not in done and d not in later
+
+    seeding  = [t for t in ranked if t["type"] in ("editorial", "youtube", "reddit") and _open(t)][:20]
+    hard     = [t for t in ranked if t["type"] == "hard" and _open(t)][:6]
+    stockist = [t for t in ranked if t["type"] == "retailer" and _open(t)][:8]
+    contacted = sorted(done)
+    return {"date": today, "seeding": seeding, "hard": hard, "stockist": stockist,
+            "contacted": contacted, "n_domains": len(targets)}
 
 
 def _why(t: dict) -> str:
@@ -202,8 +238,8 @@ def _why(t: dict) -> str:
 
 def digest(data: dict) -> str:
     L = [f"📮 Velluto Seeding-Ziele — {data['date']}  ({data['n_domains']} Domains analysiert)", ""]
-    icon = {"editorial": "✍️", "youtube": "▶️", "reddit": "👥"}
-    L.append("SEEDING (kostenlose StradaPro → Review/Backlink/Video):")
+    icon = {"editorial": "✍️", "youtube": "▶️", "reddit": "👥", "hard": "🏛"}
+    L.append("ERREICHBAR (Reddit, YouTube, kleinere Redaktionen; kostenlose StradaPro → Review/Backlink/Video):")
     for t in data["seeding"]:
         nm = f" ({t['name']})" if t["name"] else ""
         L.append(f"  {icon.get(t['type'],'•')} [{t['score']}] {t['domain']}{nm} — {_why(t)}")
@@ -211,10 +247,25 @@ def digest(data: dict) -> str:
         L.append("")
         L.append("STOCKIST-Outreach (Händler, die ranken — Distribution):")
         for t in data["stockist"]:
-            L.append(f"  🏪 {t['domain']} — rankt #{t['best_rank']} für {', '.join(t['keywords'][:2])}")
+            L.append(f"  🏪 {t['domain']} — {_why(t) or 'Händler'}")
+    if data.get("hard"):
+        L.append("")
+        L.append("SCHWER ERREICHBAR (große Redaktionen mit eigenem Testprogramm, nur beobachten):")
+        for t in data["hard"]:
+            L.append(f"  🏛 {t['domain']} — {_why(t)}")
+    if data.get("contacted"):
+        L.append("")
+        L.append("Schon kontaktiert: " + ", ".join(data["contacted"]))
     L.append("")
     L.append("Priorität 1 = 🤖-Ziele: dort zitiert die KI, aber nicht Velluto — "
              "ein Review dort bringt dich ins AI-Answer-Set.")
+    L.append("")
+    L.append("ANTWORTEN MIT FEEDBACK: Antworte auf diese Mail, eine Zeile pro Domain, z. B.")
+    L.append("   skip bikeradar.com      (nie wieder zeigen)")
+    L.append("   done reddit.com         (kontaktiert / erledigt)")
+    L.append("   später futurumshop.nl   (30 Tage zurückstellen)")
+    L.append("   reset bikeradar.com     (wieder zulassen)")
+    L.append("Freitext darunter wird gespeichert und von Claude gelesen. Gelesen wird beim nächsten Tageslauf.")
 
     # Off-site targets answer "WO fehlen wir"; the GEO gaps answer "WORAUF".
     # Both belong in the same weekly decision, so they ship in one digest.
@@ -251,7 +302,7 @@ def main() -> None:
         json.dump({"last_run": data["date"]}, f)
     text = digest(data)
     print(text)
-    if not data["seeding"] and not data["stockist"]:
+    if not data["seeding"] and not data["stockist"] and not data.get("hard"):
         print("   (no SERP/AI data yet — run the research bundle first)")
         return
     try:

@@ -70,6 +70,8 @@ step "merge duplicates (auto, 7d gate)" python3 scripts/merge_duplicates.py --au
 step "ai disclosure retrofit (daily)" python3 scripts/ai_disclosure_retrofit.py --apply
 step "ai act watch (7d gate)"     python3 scripts/ai_act_watch.py
 step "reddit worklist (daily)"     python3 scripts/reddit_daily.py
+# Replies to the weekly Seeding-Ziele mail (skip/done/später/reset <domain>) -> data/seeding_feedback.json
+step "seeding feedback (mail replies)" python3 scripts/seeding_feedback.py
 step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py
 step "meta ads weekly report"      python3 scripts/meta_ads_report.py
 step "seo sales report (monatlich)" python3 scripts/seo_sales_report.py --gated
