@@ -63,6 +63,8 @@ step "night glow gift link (daily)" python3 scripts/link_night_glow.py --apply
 # Guarded duplicate merge (7d gate inside the script): only unambiguous winners, max 5
 # per run, losers unpublished + 301, log in data/merge_duplicates_log.json.
 step "merge duplicates (auto, 7d gate)" python3 scripts/merge_duplicates.py --auto
+# AI-content label on articles published before 2026-11-25 (25 per run, idempotent).
+step "ai disclosure retrofit (daily)" python3 scripts/ai_disclosure_retrofit.py --apply
 step "ai act watch (7d gate)"     python3 scripts/ai_act_watch.py
 step "reddit worklist (daily)"     python3 scripts/reddit_daily.py
 step "seeding targets (7d gate)"   python3 scripts/seeding_targets.py

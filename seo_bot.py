@@ -2077,6 +2077,9 @@ def build_body_html(post: dict, cover_url: str) -> str:
     body = post["body_html"]
     # Replace cover placeholder
     body = body.replace("COVER_URL", cover_url)
+    # AI-content label at the bottom of every article (briefs/ai_disclosure.py).
+    from briefs.ai_disclosure import add_notice
+    body = add_notice(body, "en")
     # Append FAQ schema if present
     if post.get("faq_schema"):
         body += f'\n<script type="application/ld+json">\n{post["faq_schema"]}\n</script>\n'
@@ -2500,6 +2503,9 @@ def generate_market_adaptation(de_post: dict, target_locale: str, market: dict,
         adapted_body, _n = normalize_chromo_links(adapted_body)
     except Exception as _e:
         print(f"   ⚠️  [{target_locale}] chromo link normalisation skipped: {_e}")
+    # The label is re-added in the locale's own wording; the model's version is dropped.
+    from briefs.ai_disclosure import add_notice
+    adapted_body = add_notice(adapted_body, target_locale)
 
     adapted = {
         "title":     adapted_title,
