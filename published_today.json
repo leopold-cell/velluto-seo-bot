@@ -1,1 +1,63 @@
-[]
+[
+  {
+    "title": "Best Stocking Fillers for Cyclists 2026",
+    "url": "https://velluto-shop.com/blogs/velluto-the-magazine/best-stocking-fillers-for-cyclists-2026",
+    "topic": "best stocking fillers for cyclists",
+    "keyword": "best stocking fillers for cyclists",
+    "lang": "en",
+    "phase": 1,
+    "tags": "cycling glasses,road cycling,velluto,StradaPro",
+    "translations": {
+      "de": {
+        "keyword": "kleine geschenke fuer radfahrer kaufen",
+        "volume": 0,
+        "intent": "reader ready to buy or choose; fixed by the operator"
+      },
+      "nl": {
+        "keyword": "kleine cadeaus voor wielrenners kopen",
+        "volume": 0,
+        "intent": "reader ready to buy or choose; fixed by the operator"
+      },
+      "fr": {
+        "keyword": "petits cadeaux pour cyclistes acheter",
+        "volume": 0,
+        "intent": "reader ready to buy or choose; fixed by the operator"
+      },
+      "es": {
+        "keyword": "regalos peque\u00f1os ciclistas comprar",
+        "intent": "Spanish cyclist searching to purchase small gift items and stocking filler options.",
+        "volume": 0
+      },
+      "it": {
+        "keyword": "piccoli regali ciclisti da comprare",
+        "intent": "Italian cyclist looking to buy small gift items and stocking filler accessories.",
+        "volume": 0
+      },
+      "da": {
+        "keyword": "sm\u00e5 gaver til cyklister k\u00f8b",
+        "intent": "Danish cyclist searching to purchase small gift items and stocking filler ideas.",
+        "volume": 0
+      },
+      "nb": {
+        "keyword": "sm\u00e5 gaver til syklister kj\u00f8p",
+        "intent": "Norwegian cyclist looking to buy affordable small gift items for stocking fillers.",
+        "volume": 0
+      },
+      "pl": {
+        "keyword": "male prezenty dla rowerzyst\u00f3w kupi\u0107",
+        "intent": "Polish cyclist searching to purchase small gift items and stocking filler accessories.",
+        "volume": 0
+      },
+      "pt-PT": {
+        "keyword": "pequenos presentes para ciclistas comprar",
+        "intent": "Portuguese cyclist looking to buy small gift items and stocking filler options.",
+        "volume": 0
+      },
+      "sv": {
+        "keyword": "sm\u00e5 g\u00e5vor till cyklister k\u00f6p",
+        "intent": "Swedish cyclist searching to purchase small gift items and stocking filler accessories.",
+        "volume": 0
+      }
+    }
+  }
+]
